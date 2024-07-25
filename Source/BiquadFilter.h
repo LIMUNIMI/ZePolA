@@ -78,9 +78,9 @@ public:
         
     }
 
-    double processSample (float inputSample, int numCh)
+    double processSample (double inputSample, int numCh)
     {
-        float outputSample = b0 * inputSample + b1 * x1[numCh] + b2 * x2[numCh] - a1 * y1[numCh] - a2 * y2[numCh];
+        double outputSample = b0 * inputSample + b1 * x1[numCh] + b2 * x2[numCh] - a1 * y1[numCh] - a2 * y2[numCh];
         
         updatePastInputAndOutput(inputSample, outputSample, numCh);
         return outputSample;
@@ -117,11 +117,11 @@ private:
     Complex zero;
     Complex pole;
     
-    float b0, b1, b2, a0, a1;
+    double b0, b1, b2, a1, a2;
     
-    float x1[MAX_NUM_CHANNELS], x2[MAX_NUM_CHANNELS], y1[MAX_NUM_CHANNELS], y2[MAX_NUM_CHANNELS];
+    double x1[MAX_NUM_CHANNELS], x2[MAX_NUM_CHANNELS], y1[MAX_NUM_CHANNELS], y2[MAX_NUM_CHANNELS];
     
-    void updatePastInputAndOutput (float inputSample, float outputSample, int numCh)
+    void updatePastInputAndOutput (double inputSample, double outputSample, int numCh)
     {
         x2[numCh] = x1[numCh];
         x1[numCh] = inputSample;
