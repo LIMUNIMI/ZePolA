@@ -1,6 +1,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include "Parameters.h"
+#include <cmath>
 
 class Complex
 {
@@ -31,6 +32,16 @@ public:
     float getPhase ()
     {
         return phase.getCurrentValue();
+    }
+    
+    float getRealPart ()
+    {
+        return getMagnitude() * cos(getPhase() * 2 * PI);
+    }
+    
+    float getImaginaryPart ()
+    {
+        return getMagnitude() * sin(getPhase() * 2 * PI);
     }
 
 private:
@@ -73,17 +84,20 @@ public:
     
     void calculateCoefficients ()
     {
-        // Calcolo dei coefficienti b0, b1, b2, a0, a1
+        b0 = 1.0;
+        b1 = -2 * zero.getRealPart();
+        b2 = pow(zero.getMagnitude(), 2);
         
-        
+        a1 = -2 * pole.getRealPart();
+        a2 = -pow(pole.getMagnitude(), 2);
     }
 
-    double processSample (double inputSample, int numCh)
+    float processSample (double inputSample, int numCh)
     {
         double outputSample = b0 * inputSample + b1 * x1[numCh] + b2 * x2[numCh] - a1 * y1[numCh] - a2 * y2[numCh];
         
         updatePastInputAndOutput(inputSample, outputSample, numCh);
-        return outputSample;
+        return static_cast<float>(outputSample);
     }
     
     void updateParameters (const String& paramID, float newValue, double sampleRate)

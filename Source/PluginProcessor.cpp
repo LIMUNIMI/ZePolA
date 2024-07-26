@@ -25,12 +25,12 @@ void BiquadFilterEQAudioProcessor::releaseResources ()
 template <typename TargetType, typename SourceType>
 void castBuffer(AudioBuffer<TargetType>& destination, const AudioBuffer<SourceType>& source, const int numChannels, const int numSamples)
 {
-      auto dst = destination.getArrayOfWritePointers();
-      auto src = source.getArrayOfReadPointers();
+    auto dst = destination.getArrayOfWritePointers();
+    auto src = source.getArrayOfReadPointers();
 
-      for (int ch = 0; ch < numChannels; ++ch)
-            for (int smp = 0; smp < numSamples; ++smp)
-                  dst[ch][smp] = static_cast<TargetType>(src[ch][smp]);
+    for (int ch = 0; ch < numChannels; ++ch)
+        for (int smp = 0; smp < numSamples; ++smp)
+            dst[ch][smp] = static_cast<TargetType>(src[ch][smp]);
 }
 
 void BiquadFilterEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -40,17 +40,11 @@ void BiquadFilterEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     const auto numSamples = buffer.getNumSamples();
     const auto numChannels = buffer.getNumChannels();
     
-    AudioBuffer<double> newBuffer;
-    
-    castBuffer(newBuffer, buffer, buffer.getNumChannels(), buffer.getNumSamples());
-    
-    auto bufferData = newBuffer.getArrayOfWritePointers();
+    auto bufferData = buffer.getArrayOfWritePointers();
     
     for (int smp = 0; smp < numSamples; ++smp)
         for (int ch = 0; ch < numChannels; ++ch)
-            bufferData[ch][smp] = filter.processSample(bufferData[ch][smp], ch);
-    
-    castBuffer(buffer, newBuffer, newBuffer.getNumChannels(), newBuffer.getNumSamples());
+            bufferData[ch][smp] = filter.processSample(static_cast<double>(bufferData[ch][smp]), ch);
 }
 
 bool BiquadFilterEQAudioProcessor::hasEditor () const
