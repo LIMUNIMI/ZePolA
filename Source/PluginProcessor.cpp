@@ -74,10 +74,6 @@ void BiquadFilterEQAudioProcessor::setStateInformation (const void* data, int si
 
 void BiquadFilterEQAudioProcessor::parameterChanged (const String& paramID, float newValue)
 {
-    if (paramID == "ZP" or paramID == "PP")
-    {
-        newValue = jmap(newValue, 0.0f, static_cast<float>(getSampleRate())); // Mappatura della frequenza normalizzata phi newValue in 0 <= phi <= sampleRate
-    }
     filter.updateParameters(paramID, newValue, getSampleRate());
 }
 

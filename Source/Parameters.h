@@ -3,7 +3,6 @@
 
 // Generic constants
 #define MAX_NUM_CHANNELS                        2
-#define PI                                      3.141592653589793238462643383279502884197169399375105820974944
 
 // Zero constants
 #define ZERO_MAGNITUDE_NAME                     "ZM"

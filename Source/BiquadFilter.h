@@ -36,12 +36,12 @@ public:
     
     float getRealPart ()
     {
-        return getMagnitude() * cos(getPhase() * 2 * PI);
+        return getMagnitude() * cos(getPhase() * M_PI);
     }
     
     float getImaginaryPart ()
     {
-        return getMagnitude() * sin(getPhase() * 2 * PI);
+        return getMagnitude() * sin(getPhase() * M_PI);
     }
 
 private:
@@ -90,6 +90,14 @@ public:
         
         a1 = -2 * pole.getRealPart();
         a2 = -pow(pole.getMagnitude(), 2);
+        
+        DBG("\nCoeff");
+        DBG(b0);
+        DBG(b1);
+        DBG(b2);
+        DBG(a1);
+        DBG(a2);
+        
     }
 
     float processSample (double inputSample, int numCh)
