@@ -3,6 +3,7 @@
 
 // Generic constants
 #define MAX_NUM_CHANNELS                        2
+#define MAX_ORDER                               6
 
 // Zero constants
 #define ZERO_MAGNITUDE_NAME                     "ZM"
@@ -16,14 +17,14 @@
 // Pole constants
 #define POLE_MAGNITUDE_NAME                     "PM"
 #define POLE_MAGNITUDE_FLOOR                    0.0f
-#define POLE_MAGNITUDE_CEILING                  0.99999f
+#define POLE_MAGNITUDE_CEILING                  0.99f
 
 #define POLE_PHASE_NAME                         "PP"
 #define POLE_PHASE_FLOOR                        0.0f
 #define POLE_PHASE_CEILING                      1.0f
 
 #define COMPLEX_PHASE_AND_MAGNITUDE_DEFAULT     0.0f
-#define INTERVAL                                0.00001f
+#define INTERVAL                                0.01f
 
 
 namespace Parameters

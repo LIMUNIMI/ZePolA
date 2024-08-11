@@ -14,7 +14,7 @@ BiquadFilterEQAudioProcessor::~BiquadFilterEQAudioProcessor ()
 
 void BiquadFilterEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    filter.prepareToPlay(sampleRate);
+    filter.prepareToPlay();
 }
 
 void BiquadFilterEQAudioProcessor::releaseResources ()

@@ -52,17 +52,10 @@ private:
 class BiquadFilter
 {
 public:
-    BiquadFilter ()
-    {
-        zero.setMagnitude(0.0f);
-        zero.setPhase(0.0f);
-        pole.setMagnitude(0.0f);
-        pole.setPhase(0.0f);
-    }
-    
+    BiquadFilter () {}
     ~BiquadFilter () {}
     
-    void prepareToPlay (double sampleRate)
+    void prepareToPlay ()
     {
         x1[0] = 0.0f; x1[1] = 0.0f;
         x2[0] = 0.0f; x2[1] = 0.0f;
@@ -86,18 +79,14 @@ public:
     {
         b0 = 1.0;
         b1 = -2 * zero.getRealPart();
-        b2 = pow(zero.getMagnitude(), 2);
+        auto magnitude = zero.getMagnitude(); // dichiaro questa variabile altrimenti dovrei chiamare il metodo getMagnitude per due volte nell'operazione b2 = zero.getMagnitude * zero.getMagnitude
+        b2 = magnitude * magnitude;
         
         a1 = -2 * pole.getRealPart();
-        a2 = -pow(pole.getMagnitude(), 2);
+        magnitude = pole.getMagnitude();
+        a2 = magnitude * magnitude;
         
-        DBG("\nCoeff");
-        DBG(b0);
-        DBG(b1);
-        DBG(b2);
-        DBG(a1);
-        DBG(a2);
-        
+        coefficientsNormalization(&b0, &b1, &b2);
     }
 
     float processSample (double inputSample, int numCh)
@@ -150,6 +139,11 @@ private:
         
         y2[numCh] = y1[numCh];
         y1[numCh] = outputSample;
+    }
+    
+    void coefficientsNormalization (double *b0, double *b1, double *b2)
+    {
+        // Normalizzazione dei coefficienti della parte FIR
     }
 };
 
