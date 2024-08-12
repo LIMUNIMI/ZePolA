@@ -3,6 +3,7 @@
 #include "Parameters.h"
 #include <cmath>
 #include <vector>
+#include <memory>
 
 class FilterElement
 {
@@ -100,19 +101,27 @@ public:
     
     float processSample (double inputSample, int numCh)
     {
-        double outputSample = b0 * inputSample + b1 * x1[numCh] + b2 * x2[numCh] - a1 * y1[numCh] - a2 * y2[numCh];
-//        IN ALTERNATIVA
-//        if (type == ZERO)
-//        {
-//            double outputSample = b0 * inputSample + b1 * x1[numCh] + b2 * x2[numCh];
-//        } 
-//        else
-//        {
-//            double outputSample = - a1 * y1[numCh] - a2 * y2[numCh];
-//        }
+        double outputSample;
+        if (type == ZERO)
+        {
+            outputSample = b0 * inputSample + b1 * x1[numCh] + b2 * x2[numCh];
+        } 
+        else
+        {
+            outputSample = - a1 * y1[numCh] - a2 * y2[numCh];
+        }
         
         updatePastInputAndOutput(inputSample, outputSample, numCh);
         return static_cast<float>(outputSample);
+    }
+    
+    void processBlock (juce::AudioBuffer<float>& buffer, int numChannels, int numSamples)
+    {
+        auto bufferData = buffer.getArrayOfWritePointers();
+        
+        for (int smp = 0; smp < numSamples; ++smp)
+            for (int ch = 0; ch < numChannels; ++ch)
+                bufferData[ch][smp] = processSample(static_cast<double>(bufferData[ch][smp]), ch);
     }
     
     void updatePastInputAndOutput (double inputSample, double outputSample, int numCh)
@@ -133,10 +142,11 @@ private:
     double x1[MAX_NUM_CHANNELS], x2[MAX_NUM_CHANNELS], y1[MAX_NUM_CHANNELS], y2[MAX_NUM_CHANNELS];
 };
 
+
 class PoleAndZeroCascade
 {
 public:
-    PoleAndZeroCascade () 
+    PoleAndZeroCascade ()
     {
         activeZeros = 0;
         activePoles = 0;
@@ -145,70 +155,65 @@ public:
     
     void prepareToPlay ()
     {
-        for (int i = 0; i < activeZeros; ++i)
-            zerosPointers[i]->prepareToPlay();
+        for (auto& zero : zeros)
+            zero->prepareToPlay();
         
-        for (int i = 0; i < activePoles; ++i)
-            polesPointers[i]->prepareToPlay();
+        for (auto& pole : poles)
+            pole->prepareToPlay();
     }
     
     void releaseResources ()
     {
-        for (int i = 0; i < activeZeros; ++i)
-            zerosPointers[i]->releaseResources();
+        for (auto& zero : zeros)
+            zero->releaseResources();
         
-        for (int i = 0; i < activePoles; ++i)
-            polesPointers[i]->releaseResources();
+        for (auto& pole : poles)
+            pole->releaseResources();
     }
     
     void addZero ()
     {
-        ++ activeZeros;
+        if (activeZeros < MAX_ORDER)
+        {
+            zeros.push_back(std::make_unique<FilterElement>(FilterElement::ZERO));
+            ++activeZeros;
+        }
+        else
+        {
+            DBG("Non deve permettere di aggiungere un altro zero!");
+            jassertfalse;
+        }
     }
     
     void addPole ()
     {
-        ++ activePoles;
+        if (activePoles < MAX_ORDER)
+        {
+            poles.push_back(std::make_unique<FilterElement>(FilterElement::POLE));
+            ++activePoles;
+        }
+        else
+        {
+            DBG("Non deve permettere di aggiungere un altro polo!");
+            jassertfalse;
+        }
     }
     
-    float processSample (double inputSample, int numCh)
+    void processBlock (juce::AudioBuffer<float>& buffer)
     {
-        std::vector<double> FIR(activeZeros);
-        std::vector<double> IIR(activePoles);
+        const auto numChannels = buffer.getNumChannels();
+        const auto numSamples = buffer.getNumSamples();
         
-        for (int i = 0; i < activeZeros; ++i)
-        {
-            FIR[i] = zerosPointers[i]->processSample(inputSample);
-            inputSample = FIR[i];
-        }
+        for (auto& zero : zeros)
+            zero->processBlock(buffer, numChannels, numSamples);
         
-        for (int i = 0; i < activePoles; ++i)
-        {
-            IIR[i] = polesPointers[i]->processSample(inputSample);
-            inputSample = IIR[i];
-        }
-        auto outputSample = inputSample;
-        return static_cast<float>(outputSample);
+        for (auto& pole : poles)
+            pole->processBlock(buffer, numChannels, numSamples);
     }
     
 private:
-    
-    FilterElement z1(FilterElement::ZERO);
-    FilterElement z2(FilterElement::ZERO);
-    FilterElement z3(FilterElement::ZERO);
-    FilterElement z4(FilterElement::ZERO);
-    FilterElement z5(FilterElement::ZERO);
-    FilterElement z6(FilterElement::ZERO);
-    
-    FilterElement p1(FilterElement::POLE);
-    FilterElement p2(FilterElement::POLE);
-    FilterElement p3(FilterElement::POLE);
-    FilterElement p4(FilterElement::POLE);
-    FilterElement p5(FilterElement::POLE);
-    FilterElement p6(FilterElement::POLE);
-    
-    FilterElement* zerosPointers[] = { &z1, &z2, &z3, &z4, &z5, &z6 };
-    FilterElement* polesPointers[] = { &p1, &p2, &p3, &p4, &p5, &p6 };
+    std::vector<std::unique_ptr<FilterElement>> zeros;
+    std::vector<std::unique_ptr<FilterElement>> poles;
     
     int activeZeros, activePoles;
 };

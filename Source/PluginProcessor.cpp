@@ -36,15 +36,8 @@ void castBuffer(AudioBuffer<TargetType>& destination, const AudioBuffer<SourceTy
 void BiquadFilterEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    
-    const auto numSamples = buffer.getNumSamples();
-    const auto numChannels = buffer.getNumChannels();
-    
-    auto bufferData = buffer.getArrayOfWritePointers();
-    
-    for (int smp = 0; smp < numSamples; ++smp)
-        for (int ch = 0; ch < numChannels; ++ch)
-            bufferData[ch][smp] = filter.processSample(static_cast<double>(bufferData[ch][smp]), ch);
+
+    filter.processBlock(buffer);
 }
 
 bool BiquadFilterEQAudioProcessor::hasEditor () const
@@ -74,7 +67,7 @@ void BiquadFilterEQAudioProcessor::setStateInformation (const void* data, int si
 
 void BiquadFilterEQAudioProcessor::parameterChanged (const String& paramID, float newValue)
 {
-    filter.updateParameters(paramID, newValue, getSampleRate());
+    
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()

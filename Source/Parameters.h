@@ -3,7 +3,7 @@
 
 // Generic constants
 #define MAX_NUM_CHANNELS                        2
-#define MAX_ORDER                               6
+#define MAX_ORDER                               2
 
 // Zero constants
 #define ZERO_MAGNITUDE_NAME                     "ZM"
