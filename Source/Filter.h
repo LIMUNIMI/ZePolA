@@ -161,6 +161,16 @@ public:
             polesPointers[i]->releaseResources();
     }
     
+    void addZero ()
+    {
+        ++ activeZeros;
+    }
+    
+    void addPole ()
+    {
+        ++ activePoles;
+    }
+    
     float processSample (double inputSample, int numCh)
     {
         std::vector<double> FIR(activeZeros);
