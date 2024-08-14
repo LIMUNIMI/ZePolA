@@ -122,6 +122,7 @@ public:
         activeZeros = 0;
         activePoles = 0;
     }
+    
     ~PolesAndZerosCascade () {}
     
     void memoryReset ()
