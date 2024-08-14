@@ -114,15 +114,15 @@ private:
 };
 
 
-class PoleAndZeroCascade
+class PolesAndZerosCascade
 {
 public:
-    PoleAndZeroCascade ()
+    PolesAndZerosCascade ()
     {
         activeZeros = 0;
         activePoles = 0;
     }
-    ~PoleAndZeroCascade () {}
+    ~PolesAndZerosCascade () {}
     
     void memoryReset ()
     {
