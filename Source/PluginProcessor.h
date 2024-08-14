@@ -1,13 +1,12 @@
 #pragma once
 #include <JuceHeader.h>
-#include "BiquadFilter.h"
 #include "Filter.h"
 
-class BiquadFilterEQAudioProcessor  : public juce::AudioProcessor, public AudioProcessorValueTreeState::Listener
+class PolesAndZerosEQAudioProcessor  : public juce::AudioProcessor, public AudioProcessorValueTreeState::Listener
 {
 public:
-    BiquadFilterEQAudioProcessor();
-    ~BiquadFilterEQAudioProcessor() override;
+    PolesAndZerosEQAudioProcessor();
+    ~PolesAndZerosEQAudioProcessor() override;
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
@@ -38,7 +37,7 @@ private:
     
     AudioProcessorValueTreeState parameters;
     
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BiquadFilterEQAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PolesAndZerosEQAudioProcessor)
     
     PoleAndZeroCascade filter;
 };

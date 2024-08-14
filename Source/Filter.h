@@ -1,7 +1,6 @@
 #pragma once
 #include <JuceHeader.h>
 #include "Parameters.h"
-#include <cmath>
 #include <vector>
 #include <memory>
 
@@ -11,42 +10,15 @@ public:
     
     enum Type { ZERO, POLE };
     
-    FilterElement (Type t) : type(t)
+    FilterElement (Type t, double mg = 0.0, double ph = 0.0) : type(t)
     {
-        magnitude = COMPLEX_PHASE_AND_MAGNITUDE_DEFAULT;
-        phase = COMPLEX_PHASE_AND_MAGNITUDE_DEFAULT;
-        
-        b0 = 1.0f;
-        b1 = 0.0f;
-        b2 = 0.0f;
-        
-        a1 = 0.0f;
-        a2 = 0.0f;
+        magnitude = mg;
+        phase = ph;
         
         calculateCoefficients();
     }
     
     ~FilterElement () {}
-    
-    void prepareToPlay ()
-    {
-        x1[0] = 0.0f; x1[1] = 0.0f;
-        x2[0] = 0.0f; x2[1] = 0.0f;
-        
-        y1[0] = 0.0f; y1[1] = 0.0f;
-        y2[0] = 0.0f; y2[1] = 0.0f;
-        
-        calculateCoefficients();
-    }
-    
-    void releaseResources ()
-    {
-        x1[0] = 0.0f; x1[1] = 0.0f;
-        x2[0] = 0.0f; x2[1] = 0.0f;
-        
-        y1[0] = 0.0f; y1[1] = 0.0f;
-        y2[0] = 0.0f; y2[1] = 0.0f;
-    }
     
     void setMagnitude (double newValue)
     {
@@ -70,14 +42,9 @@ public:
         return phase;
     }
     
-    float getRealPart ()
+    double getRealPart ()
     {
-        return getMagnitude() * cos(getPhase() * M_PI);
-    }
-    
-    float getImaginaryPart ()
-    {
-        return getMagnitude() * sin(getPhase() * M_PI);
+        return getMagnitude() * cos(getPhase() * MathConstants<double>::pi);
     }
 
     enum Type getType ()
@@ -85,61 +52,65 @@ public:
         return type;
     }
     
+    void memoryReset ()
+    {
+        x1 = 0.0;
+        x2 = 0.0;
+        
+        y1 = 0.0;
+        y2 = 0.0;
+    }
+    
     void calculateCoefficients ()
     {
-        if (type == ZERO)
-        {
-            b1 = -2 * getRealPart();
-            b2 = magnitude * magnitude;
-        }
-        else
-        {
-            a1 = -2 * getRealPart();
-            a2 = magnitude * magnitude;
-        }
+        c1 = -2 * getRealPart();
+        c2 = magnitude * magnitude;
     }
     
-    float processSample (double inputSample, int numCh)
+    float processSample (double inputSample)
     {
         double outputSample;
-        if (type == ZERO)
+        switch (type)
         {
-            outputSample = b0 * inputSample + b1 * x1[numCh] + b2 * x2[numCh];
-        } 
-        else
-        {
-            outputSample = - a1 * y1[numCh] - a2 * y2[numCh];
+            case ZERO:
+            {
+                outputSample = inputSample + c1 * x1 + c2 * x2;
+            } break;
+                
+            case POLE:
+            {
+                outputSample = inputSample - c1 * y1 - c2 * y2;
+            } break;
         }
         
-        updatePastInputAndOutput(inputSample, outputSample, numCh);
-        return static_cast<float>(outputSample);
+        updatePastInputAndOutput(inputSample, outputSample);
+        return outputSample;
     }
     
-    void processBlock (juce::AudioBuffer<float>& buffer, int numChannels, int numSamples)
+    void processBlock (juce::AudioBuffer<double>& buffer, int numSamples)
     {
         auto bufferData = buffer.getArrayOfWritePointers();
         
         for (int smp = 0; smp < numSamples; ++smp)
-            for (int ch = 0; ch < numChannels; ++ch)
-                bufferData[ch][smp] = processSample(static_cast<double>(bufferData[ch][smp]), ch);
+                bufferData[0][smp] = processSample(bufferData[0][smp]);
     }
     
-    void updatePastInputAndOutput (double inputSample, double outputSample, int numCh)
+    void updatePastInputAndOutput (double inputSample, double outputSample)
     {
-        x2[numCh] = x1[numCh];
-        x1[numCh] = inputSample;
+        x2 = x1;
+        x1 = inputSample;
         
-        y2[numCh] = y1[numCh];
-        y1[numCh] = outputSample;
+        y2 = y1;
+        y1 = outputSample;
     }
     
 private:
     Type type;
     double magnitude, phase;
     
-    double b0, b1, b2, a1, a2;
+    double c1, c2;
 
-    double x1[MAX_NUM_CHANNELS], x2[MAX_NUM_CHANNELS], y1[MAX_NUM_CHANNELS], y2[MAX_NUM_CHANNELS];
+    double x1, x2, y1, y2;
 };
 
 
@@ -153,22 +124,13 @@ public:
     }
     ~PoleAndZeroCascade () {}
     
-    void prepareToPlay ()
+    void memoryReset ()
     {
         for (auto& zero : zeros)
-            zero->prepareToPlay();
+            zero->memoryReset();
         
         for (auto& pole : poles)
-            pole->prepareToPlay();
-    }
-    
-    void releaseResources ()
-    {
-        for (auto& zero : zeros)
-            zero->releaseResources();
-        
-        for (auto& pole : poles)
-            pole->releaseResources();
+            pole->memoryReset();
     }
     
     void addZero ()
@@ -180,9 +142,25 @@ public:
         }
         else
         {
-            DBG("Non deve permettere di aggiungere un altro zero!");
+            DBG("It should not be possibile to add another zero!");
             jassertfalse;
         }
+    }
+    
+    void removeZero ()
+    {
+        jassert(activeZeros == 0); // It should not be possibile to remove a zero if there is none
+        
+        zeros.pop_back();
+        --activeZeros;
+    }
+    
+    void removePole ()
+    {
+        jassert(activeZeros == 0); // It should not be possibile to remove a pole if there is none
+        
+        poles.pop_back();
+        --activePoles;
     }
     
     void addPole ()
@@ -194,21 +172,37 @@ public:
         }
         else
         {
-            DBG("Non deve permettere di aggiungere un altro polo!");
+            DBG("It should not be possibile to add another pole!");
             jassertfalse;
         }
     }
     
+    template <typename TargetType, typename SourceType>
+    void castBuffer(AudioBuffer<TargetType>& destination, const AudioBuffer<SourceType>& source, const int numChannels, const int numSamples)
+    {
+        auto dst = destination.getArrayOfWritePointers();
+        auto src = source.getArrayOfReadPointers();
+
+        for (int ch = 0; ch < numChannels; ++ch)
+            for (int smp = 0; smp < numSamples; ++smp)
+                dst[ch][smp] = static_cast<TargetType>(src[ch][smp]);
+    }
+    
     void processBlock (juce::AudioBuffer<float>& buffer)
     {
-        const auto numChannels = buffer.getNumChannels();
         const auto numSamples = buffer.getNumSamples();
         
+        AudioBuffer<double> doubleBuffer(1, numSamples);
+        
+        castBuffer(doubleBuffer, buffer, 1, numSamples);
+        
         for (auto& zero : zeros)
-            zero->processBlock(buffer, numChannels, numSamples);
+            zero->processBlock(doubleBuffer, numSamples);
         
         for (auto& pole : poles)
-            pole->processBlock(buffer, numChannels, numSamples);
+            pole->processBlock(doubleBuffer, numSamples);
+        
+        castBuffer(buffer, doubleBuffer, 1, numSamples);
     }
     
 private:
