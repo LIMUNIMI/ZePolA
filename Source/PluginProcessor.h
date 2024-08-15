@@ -21,6 +21,7 @@ public:
     bool acceptsMidi() const override { return false; }
     bool producesMidi() const override { return false; }
     bool isMidiEffect() const override { return false; }
+    
     double getTailLengthSeconds() const override { return 0.0; }
 
     int getNumPrograms() override { return 1; }
@@ -33,7 +34,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
-    void parameterChanged(const String& paramID, float newValue) override;
+    void parameterChanged(const String& parameterID, float newValue) override;
     
     AudioProcessorValueTreeState parameters;
     

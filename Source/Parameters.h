@@ -4,6 +4,8 @@
 // Generic constants
 #define MAX_ORDER                               6
 
+#define MUTE_NAME                               "MUTE"
+
 // Zero constants
 #define ZERO_MAGNITUDE_NAME                     "ZM"
 #define ZERO_MAGNITUDE_FLOOR                    0.0f
@@ -41,12 +43,14 @@ namespace Parameters
         params.push_back(std::make_unique<AudioParameterFloat>(POLE_MAGNITUDE_NAME, "Poles Magnitude", NormalisableRange<float>(POLE_MAGNITUDE_FLOOR, POLE_MAGNITUDE_CEILING, INTERVAL), MAGNITUDE_DEFAULT));
         params.push_back(std::make_unique<AudioParameterFloat>(POLE_PHASE_NAME, "Poles Phase", NormalisableRange<float>(POLE_PHASE_FLOOR, POLE_PHASE_CEILING, INTERVAL), PHASE_DEFAULT));
         
+        params.push_back(std::make_unique<AudioParameterBool>(MUTE_NAME, "Mute", false));
+        
         return {params.begin(), params.end()};
     }
 
     static void addListenerToAllParameters (AudioProcessorValueTreeState& valueTreeState, AudioProcessorValueTreeState::Listener* listener)
     {
-        std:: unique_ptr<XmlElement> xml(valueTreeState.copyState().createXml());
+        std::unique_ptr<XmlElement>xml(valueTreeState.copyState().createXml());
         
         for (auto element : xml->getChildWithTagNameIterator("PARAM"))
         {

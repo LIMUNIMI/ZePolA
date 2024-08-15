@@ -134,6 +134,12 @@ public:
             pole->memoryReset();
     }
     
+    void setMute (bool newValue)
+    {
+        active = !newValue;
+        memoryReset();
+    }
+    
     void addZero ()
     {
         if (activeZeros < MAX_ORDER)
@@ -156,14 +162,6 @@ public:
         --activeZeros;
     }
     
-    void removePole ()
-    {
-        jassert(activeZeros == 0); // It should not be possibile to remove a pole if there is none
-        
-        poles.pop_back();
-        --activePoles;
-    }
-    
     void addPole ()
     {
         if (activePoles < MAX_ORDER)
@@ -176,6 +174,14 @@ public:
             DBG("It should not be possibile to add another pole!");
             jassertfalse;
         }
+    }
+    
+    void removePole ()
+    {
+        jassert(activeZeros == 0); // It should not be possibile to remove a pole if there is none
+        
+        poles.pop_back();
+        --activePoles;
     }
     
     template <typename TargetType, typename SourceType>
@@ -191,6 +197,8 @@ public:
     
     void processBlock (juce::AudioBuffer<float>& buffer)
     {
+        if (!active) return;
+        
         const auto numSamples = buffer.getNumSamples();
         
         AudioBuffer<double> doubleBuffer(1, numSamples);
@@ -211,6 +219,8 @@ private:
     std::vector<std::unique_ptr<FilterElement>> poles;
     
     int activeZeros, activePoles;
+    
+    bool active = true;
 };
 
 
