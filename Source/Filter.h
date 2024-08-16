@@ -80,7 +80,7 @@ public:
             } break;
         }
         
-        updatePastInputAndOutput(inputSample, outputSample);
+        updateMemory(inputSample, outputSample);
         return outputSample;
     }
     
@@ -92,7 +92,7 @@ public:
                 bufferData[0][smp] = processSample(bufferData[0][smp]);
     }
     
-    void updatePastInputAndOutput (double inputSample, double outputSample)
+    void updateMemory (double inputSample, double outputSample)
     {
         memory2 = memory1;
         switch (type)
