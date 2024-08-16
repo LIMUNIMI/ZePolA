@@ -117,11 +117,7 @@ private:
 class PolesAndZerosCascade
 {
 public:
-    PolesAndZerosCascade ()
-    {
-        activeZeros = 0;
-        activePoles = 0;
-    }
+    PolesAndZerosCascade () {}
     
     ~PolesAndZerosCascade () {}
     
@@ -154,7 +150,7 @@ public:
     
     void removeZero ()
     {
-        jassert(activeZeros == 0); // It should not be possibile to remove a zero if there is none
+        jassert(zeros.size() == 0); // It should not be possibile to remove a zero if there is none
         
         zeros.pop_back();
     }
@@ -172,7 +168,7 @@ public:
     
     void removePole ()
     {
-        jassert(activeZeros == 0); // It should not be possibile to remove a pole if there is none
+        jassert(poles.size() == 0); // It should not be possibile to remove a pole if there is none
         
         poles.pop_back();
     }
