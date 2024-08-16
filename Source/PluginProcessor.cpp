@@ -58,7 +58,7 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
 {
     if (parameterID == "MUTE")
     {
-        filter.setMute(newValue > 0.5f);
+        filter.setUnsetMute(newValue > 0.5f);
     }
 }
 

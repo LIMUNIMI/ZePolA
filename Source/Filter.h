@@ -134,19 +134,17 @@ public:
             pole->memoryReset();
     }
     
-    void setMute (bool newValue)
+    void setUnsetMute (bool newValue)
     {
         active = !newValue;
-        memoryReset();
+        if (!active)
+            memoryReset();
     }
     
     void addZero ()
     {
-        if (activeZeros < MAX_ORDER)
-        {
+        if (zeros.size() < MAX_ORDER)
             zeros.push_back(std::make_unique<FilterElement>(FilterElement::ZERO));
-            ++activeZeros;
-        }
         else
         {
             DBG("It should not be possibile to add another zero!");
@@ -159,16 +157,12 @@ public:
         jassert(activeZeros == 0); // It should not be possibile to remove a zero if there is none
         
         zeros.pop_back();
-        --activeZeros;
     }
     
     void addPole ()
     {
-        if (activePoles < MAX_ORDER)
-        {
+        if (poles.size() < MAX_ORDER)
             poles.push_back(std::make_unique<FilterElement>(FilterElement::POLE));
-            ++activePoles;
-        }
         else
         {
             DBG("It should not be possibile to add another pole!");
@@ -181,7 +175,6 @@ public:
         jassert(activeZeros == 0); // It should not be possibile to remove a pole if there is none
         
         poles.pop_back();
-        --activePoles;
     }
     
     template <typename TargetType, typename SourceType>
@@ -217,8 +210,6 @@ public:
 private:
     std::vector<std::unique_ptr<FilterElement>> zeros;
     std::vector<std::unique_ptr<FilterElement>> poles;
-    
-    int activeZeros, activePoles;
     
     bool active = true;
 };
