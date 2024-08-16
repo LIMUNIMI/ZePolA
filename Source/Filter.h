@@ -54,17 +54,14 @@ public:
     
     void memoryReset ()
     {
-        x1 = 0.0;
-        x2 = 0.0;
-        
-        y1 = 0.0;
-        y2 = 0.0;
+        memory1 = 0.0;
+        memory2 = 0.0;
     }
     
     void calculateCoefficients ()
     {
-        c1 = -2 * getRealPart();
-        c2 = magnitude * magnitude;
+        coeff1 = -2 * getRealPart();
+        coeff2 = magnitude * magnitude;
     }
     
     float processSample (double inputSample)
@@ -74,12 +71,12 @@ public:
         {
             case ZERO:
             {
-                outputSample = inputSample + c1 * x1 + c2 * x2;
+                outputSample = inputSample + coeff1 * memory1 + coeff2 * memory2;
             } break;
                 
             case POLE:
             {
-                outputSample = inputSample - c1 * y1 - c2 * y2;
+                outputSample = inputSample - coeff1 * memory1 - coeff2 * memory2;
             } break;
         }
         
@@ -97,20 +94,28 @@ public:
     
     void updatePastInputAndOutput (double inputSample, double outputSample)
     {
-        x2 = x1;
-        x1 = inputSample;
-        
-        y2 = y1;
-        y1 = outputSample;
+        memory2 = memory1;
+        switch (type)
+        {
+            case ZERO:
+            {
+                memory1 = inputSample;
+            } break;
+                
+            case POLE:
+            {
+                memory1 = outputSample;
+            }
+        }
     }
     
 private:
     Type type;
     double magnitude, phase;
     
-    double c1, c2;
+    double coeff1, coeff2;
 
-    double x1, x2, y1, y2;
+    double memory1, memory2;
 };
 
 
