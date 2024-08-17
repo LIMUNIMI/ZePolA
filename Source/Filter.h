@@ -111,11 +111,15 @@ public:
     
 private:
     Type type;
-    double magnitude, phase;
     
-    double coeff1, coeff2;
+    double magnitude;
+    double phase;
+    
+    double coeff1;
+    double coeff2;
 
-    double memory1, memory2;
+    double memory1;
+    double memory2;
 };
 
 
@@ -128,11 +132,8 @@ public:
     
     void memoryReset ()
     {
-        for (auto& zero : zeros)
-            zero->memoryReset();
-        
-        for (auto& pole : poles)
-            pole->memoryReset();
+        for (auto& node : elements)
+            node->memoryReset();
     }
     
     void setUnsetMute (bool newValue)
@@ -142,40 +143,46 @@ public:
             memoryReset();
     }
     
-    void addZero ()
+    void addElement (FilterElement::Type type)
     {
-        if (zeros.size() < MAX_ORDER)
-            zeros.push_back(std::make_unique<FilterElement>(FilterElement::ZERO));
+        if (countElementsOfType(type) < MAX_ORDER)
+            elements.push_back(std::make_unique<FilterElement>(type));
         else
         {
-            DBG("It should not be possibile to add another zero!");
-            jassertfalse;
+            DBG(" You are trying to add a zero or a pole even if you have reached the maximum number of poles or zeros!");
+            jassertfalse; // You are trying to add a zero or a pole even if you have reached the maximum number of poles or zeros!
         }
     }
     
-    void removeZero ()
+    void removeElement (FilterElement::Type type)
     {
-        jassert(zeros.size() == 0); // It should not be possibile to remove a zero if there is none
-        
-        zeros.pop_back();
-    }
-    
-    void addPole ()
-    {
-        if (poles.size() < MAX_ORDER)
-            poles.push_back(std::make_unique<FilterElement>(FilterElement::POLE));
+        // ----------------------------------------------------------------------------
+        // ALTERNATIVA CHE ELIMINA IL PRIMO ELEMENTO CORRISPONDENTE AL TIPO SPECIFICATO
+        // ----------------------------------------------------------------------------
+        auto iterator = std::find_if(elements.begin(), elements.end(),
+                                   [type](const std::unique_ptr<FilterElement>& element) { return element->getType() == type; });
+        // find_if ritorna un iteratore al primo elemento che corrisponde al criterio di ricerca (type da eliminare)
+        if (iterator != elements.end())
+            elements.erase(iterator);
         else
         {
-            DBG("It should not be possibile to add another pole!");
+            DBG("No element of the specified type found!");
             jassertfalse;
         }
-    }
-    
-    void removePole ()
-    {
-        jassert(poles.size() == 0); // It should not be possibile to remove a pole if there is none
         
-        poles.pop_back();
+        // ----------------------------------------------------------------------------
+        // ALTERNATIVA CHE ELIMINA L'ULTIMO ELEMENTO CORRISPONDENTE AL TIPO SPECIFICATO
+        // ----------------------------------------------------------------------------
+//        auto iterator = std::find_if(elements.rbegin(), elements.rend(),
+//                                   [type](const std::unique_ptr<FilterElement>& element) { return element->getType() == type; });
+//        // find_if ritorna un iteratore al primo elemento che corrisponde al criterio di ricerca (type da eliminare)
+//        if (iterator != elements.rend())
+//            elements.erase(std::next(iterator).base());
+//        else
+//        {
+//            DBG("No element of the specified type found!");
+//            jassertfalse;
+//        }
     }
     
     template <typename TargetType, typename SourceType>
@@ -199,20 +206,27 @@ public:
         
         castBuffer(doubleBuffer, buffer, 1, numSamples);
         
-        for (auto& zero : zeros)
-            zero->processBlock(doubleBuffer, numSamples);
-        
-        for (auto& pole : poles)
-            pole->processBlock(doubleBuffer, numSamples);
-        
+        for (auto& element : elements)
+            element->processBlock(doubleBuffer, numSamples);
+            
         castBuffer(buffer, doubleBuffer, 1, numSamples);
     }
     
 private:
-    std::vector<std::unique_ptr<FilterElement>> zeros;
-    std::vector<std::unique_ptr<FilterElement>> poles;
+    std::vector<std::unique_ptr<FilterElement>> elements;
     
     bool active = true;
+    
+    int countElementsOfType(FilterElement::Type type)
+    {
+        int counter = 0;
+        
+        for (auto& element : elements)
+            if (element->getType() == type)
+                ++counter;
+        
+        return counter;
+    }
 };
 
 
