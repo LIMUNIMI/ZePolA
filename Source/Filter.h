@@ -159,30 +159,30 @@ public:
         // ----------------------------------------------------------------------------
         // ALTERNATIVA CHE ELIMINA IL PRIMO ELEMENTO CORRISPONDENTE AL TIPO SPECIFICATO
         // ----------------------------------------------------------------------------
-        auto iterator = std::find_if(elements.begin(), elements.end(),
-                                   [type](const std::unique_ptr<FilterElement>& element) { return element->getType() == type; });
-        // find_if ritorna un iteratore al primo elemento che corrisponde al criterio di ricerca (type da eliminare)
-        if (iterator != elements.end())
-            elements.erase(iterator);
-        else
-        {
-            DBG("No element of the specified type found!");
-            jassertfalse;
-        }
-        
-        // ----------------------------------------------------------------------------
-        // ALTERNATIVA CHE ELIMINA L'ULTIMO ELEMENTO CORRISPONDENTE AL TIPO SPECIFICATO
-        // ----------------------------------------------------------------------------
-//        auto iterator = std::find_if(elements.rbegin(), elements.rend(),
+//        auto iterator = std::find_if(elements.begin(), elements.end(),
 //                                   [type](const std::unique_ptr<FilterElement>& element) { return element->getType() == type; });
 //        // find_if ritorna un iteratore al primo elemento che corrisponde al criterio di ricerca (type da eliminare)
-//        if (iterator != elements.rend())
-//            elements.erase(std::next(iterator).base());
+//        if (iterator != elements.end())
+//            elements.erase(iterator);
 //        else
 //        {
 //            DBG("No element of the specified type found!");
 //            jassertfalse;
 //        }
+        
+        // ----------------------------------------------------------------------------
+        // ALTERNATIVA CHE ELIMINA L'ULTIMO ELEMENTO CORRISPONDENTE AL TIPO SPECIFICATO
+        // ----------------------------------------------------------------------------
+        auto iterator = std::find_if(elements.rbegin(), elements.rend(),
+                                   [type](const std::unique_ptr<FilterElement>& element) { return element->getType() == type; });
+        // find_if ritorna un iteratore all'ultimo elemento che corrisponde al criterio di ricerca (type da eliminare)
+        if (iterator != elements.rend())
+            elements.erase(std::next(iterator).base());
+        else
+        {
+            DBG("No element of the specified type found!");
+            jassertfalse;
+        }
     }
     
     template <typename TargetType, typename SourceType>
