@@ -126,7 +126,14 @@ private:
 class PolesAndZerosCascade
 {
 public:
-    PolesAndZerosCascade () {}
+    PolesAndZerosCascade (int nZeros = 0, int nPoles = 0)
+    {
+        for (int i = 0; i < nZeros; ++ i)
+            addElement(FilterElement::ZERO);
+        
+        for (int i = 0; i < nPoles; ++ i)
+            addElement(FilterElement::POLE);
+    }
     
     ~PolesAndZerosCascade () {}
     
