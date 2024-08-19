@@ -31,17 +31,26 @@
 
 namespace Parameters
 {
-    
-    
+
     static AudioProcessorValueTreeState::ParameterLayout createParameterLayout ()
-    {
+{
         std::vector<std::unique_ptr<RangedAudioParameter>> params;
         
-        params.push_back(std::make_unique<AudioParameterFloat>(ZERO_MAGNITUDE_NAME, "Zeros Magnitude", NormalisableRange<float>(ZERO_MAGNITUDE_FLOOR, ZERO_MAGNITUDE_CEILING, INTERVAL), MAGNITUDE_DEFAULT));
-        params.push_back(std::make_unique<AudioParameterFloat>(ZERO_PHASE_NAME, "Zeros Phase", NormalisableRange<float>(ZERO_PHASE_FLOOR, ZERO_PHASE_CEILING, INTERVAL), PHASE_DEFAULT));
+        for (int i = 0; i < MAX_ORDER; ++ i)
+        {
+            std::string number = std::to_string(i + 1);
+            
+            params.push_back(std::make_unique<AudioParameterFloat>(ZERO_MAGNITUDE_NAME + number, "Zero " + number + " Magnitude", NormalisableRange<float>(ZERO_MAGNITUDE_FLOOR, ZERO_MAGNITUDE_CEILING, INTERVAL), MAGNITUDE_DEFAULT));
+            params.push_back(std::make_unique<AudioParameterFloat>(ZERO_PHASE_NAME + number, "Zero " + number + " Phase", NormalisableRange<float>(ZERO_PHASE_FLOOR, ZERO_PHASE_CEILING, INTERVAL), PHASE_DEFAULT));
+        }
         
-        params.push_back(std::make_unique<AudioParameterFloat>(POLE_MAGNITUDE_NAME, "Poles Magnitude", NormalisableRange<float>(POLE_MAGNITUDE_FLOOR, POLE_MAGNITUDE_CEILING, INTERVAL), MAGNITUDE_DEFAULT));
-        params.push_back(std::make_unique<AudioParameterFloat>(POLE_PHASE_NAME, "Poles Phase", NormalisableRange<float>(POLE_PHASE_FLOOR, POLE_PHASE_CEILING, INTERVAL), PHASE_DEFAULT));
+        for (int i = 0; i < MAX_ORDER; ++ i)
+        {
+            std::string number = std::to_string(i + 1);
+            
+            params.push_back(std::make_unique<AudioParameterFloat>(POLE_MAGNITUDE_NAME + number, "Pole " + number + " Magnitude", NormalisableRange<float>(POLE_MAGNITUDE_FLOOR, POLE_MAGNITUDE_CEILING, INTERVAL), MAGNITUDE_DEFAULT));
+            params.push_back(std::make_unique<AudioParameterFloat>(POLE_PHASE_NAME + number, "Pole " + number + " Phase", NormalisableRange<float>(POLE_PHASE_FLOOR, POLE_PHASE_CEILING, INTERVAL), PHASE_DEFAULT));
+        }
         
         params.push_back(std::make_unique<AudioParameterBool>(BYPASS_NAME, "Bypass", false));
         

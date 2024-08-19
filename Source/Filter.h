@@ -204,12 +204,28 @@ public:
     
     void parameterChanged (const String& parameterID, float newValue)
     {
-        if (parameterID == "MUTE")
+        if (parameterID == "BYPASS")
         {
             setUnsetBypass(newValue > 0.5f);
+            return;
         }
         
+        juce::String type = parameterID.dropLastCharacters(2);
+        FilterElement::Type elementType = (type == "Z") ? FilterElement::ZERO : FilterElement::POLE;
+        juce::String elementParameter = parameterID.substring(1, 2);
+        const int elementNr = parameterID.getLastCharacters(1).getIntValue();
+
+        int i = 0;
         
+        for (auto& element : elements)
+        {
+            if (element->getType() == elementType)
+            {
+                ++ i;
+                if (i == elementNr)
+                    (elementParameter == "M") ? element->setMagnitude(newValue) : element->setPhase(newValue);
+            }
+        }
     }
     
 private:
