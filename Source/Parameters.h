@@ -4,7 +4,7 @@
 // Generic constants
 #define MAX_ORDER                               6
 
-#define MUTE_NAME                               "MUTE"
+#define BYPASS_NAME                             "BYPASS"
 
 // Zero constants
 #define ZERO_MAGNITUDE_NAME                     "ZM"
@@ -43,7 +43,7 @@ namespace Parameters
         params.push_back(std::make_unique<AudioParameterFloat>(POLE_MAGNITUDE_NAME, "Poles Magnitude", NormalisableRange<float>(POLE_MAGNITUDE_FLOOR, POLE_MAGNITUDE_CEILING, INTERVAL), MAGNITUDE_DEFAULT));
         params.push_back(std::make_unique<AudioParameterFloat>(POLE_PHASE_NAME, "Poles Phase", NormalisableRange<float>(POLE_PHASE_FLOOR, POLE_PHASE_CEILING, INTERVAL), PHASE_DEFAULT));
         
-        params.push_back(std::make_unique<AudioParameterBool>(MUTE_NAME, "Mute", false));
+        params.push_back(std::make_unique<AudioParameterBool>(BYPASS_NAME, "Bypass", false));
         
         return {params.begin(), params.end()};
     }

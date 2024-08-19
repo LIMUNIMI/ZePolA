@@ -143,7 +143,7 @@ public:
             node->memoryReset();
     }
     
-    void setUnsetMute (bool newValue)
+    void setUnsetBypass (bool newValue)
     {
         active = !newValue;
         if (!active)
@@ -163,23 +163,6 @@ public:
     
     void removeElement (FilterElement::Type type)
     {
-        // ----------------------------------------------------------------------------
-        // ALTERNATIVA CHE ELIMINA IL PRIMO ELEMENTO CORRISPONDENTE AL TIPO SPECIFICATO
-        // ----------------------------------------------------------------------------
-//        auto iterator = std::find_if(elements.begin(), elements.end(),
-//                                   [type](const std::unique_ptr<FilterElement>& element) { return element->getType() == type; });
-//        // find_if ritorna un iteratore al primo elemento che corrisponde al criterio di ricerca (type da eliminare)
-//        if (iterator != elements.end())
-//            elements.erase(iterator);
-//        else
-//        {
-//            DBG("No element of the specified type found!");
-//            jassertfalse;
-//        }
-        
-        // ----------------------------------------------------------------------------
-        // ALTERNATIVA CHE ELIMINA L'ULTIMO ELEMENTO CORRISPONDENTE AL TIPO SPECIFICATO
-        // ----------------------------------------------------------------------------
         auto iterator = std::find_if(elements.rbegin(), elements.rend(),
                                    [type](const std::unique_ptr<FilterElement>& element) { return element->getType() == type; });
         // find_if ritorna un iteratore all'ultimo elemento che corrisponde al criterio di ricerca (type da eliminare)
@@ -219,6 +202,16 @@ public:
         castBuffer(buffer, doubleBuffer, 1, numSamples);
     }
     
+    void parameterChanged (const String& parameterID, float newValue)
+    {
+        if (parameterID == "MUTE")
+        {
+            setUnsetBypass(newValue > 0.5f);
+        }
+        
+        
+    }
+    
 private:
     std::vector<std::unique_ptr<FilterElement>> elements;
     
@@ -226,13 +219,8 @@ private:
     
     int countElementsOfType(FilterElement::Type type)
     {
-        int counter = 0;
-        
-        for (auto& element : elements)
-            if (element->getType() == type)
-                ++counter;
-        
-        return counter;
+        return static_cast<int>(std::count_if(elements.begin(), elements.end(),
+                                     [type](const std::unique_ptr<FilterElement>& element) { return element->getType() == type; }));
     }
 };
 

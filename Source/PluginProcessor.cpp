@@ -56,10 +56,7 @@ void PolesAndZerosEQAudioProcessor::setStateInformation (const void* data, int s
 
 void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID, float newValue)
 {
-    if (parameterID == "MUTE")
-    {
-        filter.setUnsetMute(newValue > 0.5f);
-    }
+    filter.parameterChanged(parameterID, newValue);
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()
