@@ -4,66 +4,76 @@
 #include <vector>
 #include <memory>
 
+// La classe FilterElement rappresenta un numero complesso in modulo-fase. Un ZERO è un valore del piano complesso per il quale la funzione di trasferimento del filtro digitale diventa zero. Un POLE è un valore del piano complesso per il quale la funzione di trasferimento del filtro digitale diventa infinita. In generale la funzione di trasferimento di un filtro IIR è rappresentato come una polinomiale fratta: gli zeri sono le radici del numeratore (parte FIR del filtro) mentre i poli sono le radici del denominatore (parte IIR del filtro).
+// L'approccio per la creazione della classe FilterElement è quello di scomporre la catena di poli e zeri di un filtro digitale di ordine M in singoli filtri da uno zero o da un polo in cascata.
+// Ciascun FilterElement è composto dai seguenti parametri: magnitudine (modulo), fase, coeff1, coeff2 per i coefficienti dell'equazione alle differenze e per il calcolo del sample in uscita e da due variabili double per la memoria del filtro: sample precedente e due sample fa (in entrata se si tratta di uno ZERO e in uscita se si tratta di un POLE).
 class FilterElement
 {
 public:
     
     enum Type { ZERO, POLE };
     
-    FilterElement (Type t, double mg = 0.0, double ph = 0.0) : type(t)
+    // Il costruttore di FilterElement richiede obbligatoriamente la specifica del tipo dell'elemento (ZERO o POLO) mentre per magnitudine e fase sono descritti i valori di default: 0.0 per entrambi.
+    FilterElement (Type t, double mg = 0.0, double ph = 0.0) : type(t), magnitude(mg), phase(ph)
     {
-        magnitude = mg;
-        phase = ph;
-        
         calculateCoefficients();
     }
     
     ~FilterElement () {}
     
+    // Il metodo setMagnitude imposta la magnitudine del numero complesso con il valore di newValue e chiama il metodo calculateCoefficients per il calcolo dei nuovi coefficienti per l'equazione alle differenze.
     void setMagnitude (double newValue)
     {
         magnitude = newValue;
         calculateCoefficients();
     }
     
+    // Il metodo setPhase imposta la fase del numero complesso con il valore di newValue e chiama il metodo calculateCoefficients per il calcolo dei nuovi coefficienti per l'equazione alle differenze.
     void setPhase (double newValue)
     {
         phase = newValue;
         calculateCoefficients();
     }
     
+    // Il metodo getMagnitude restituisce la magnitudine (modulo) del numero complesso rappresentato da FilterElement.
     double getMagnitude ()
     {
         return magnitude;
     }
     
+    // Il metodo getPhase restituisce la fase del numero complesso rappresentato da FilterElement.
     double getPhase ()
     {
         return phase;
     }
     
+    // Il metodo getRealPart restituisce la parte reale del numero complesso rappresentato da FilterElement.
     double getRealPart ()
     {
         return getMagnitude() * cos(getPhase() * MathConstants<double>::pi);
     }
 
+    // Il metodo getType restituisce il tipo del FilterElement.
     enum Type getType ()
     {
         return type;
     }
     
+    // Il metodo memoryReset riporta a zero la memoria del FilterElement (sia esso uno ZERO o un POLO).
     void memoryReset ()
     {
         memory1 = 0.0;
         memory2 = 0.0;
     }
     
+    // Il metodo calculateCoefficients calcola, per il FilterElement, i coefficienti da utilizzare nel calcolo del sample in uscita. Per mantenere la simmetria hermitiana del filtro ogni zero e ogni polo hanno il loro coniugato. Il che significa che il calcolo dei coefficienti, sia nel caso di polo, che nel caso di zero si riduce a: somma dei coniugati (due volte la parte reale) e prodotto tra coniugati (quadrato del modulo).
     void calculateCoefficients ()
     {
         coeff1 = -2 * getRealPart();
         coeff2 = magnitude * magnitude;
     }
     
+    // Il metodo processSample viene chiamato per ogni sample del buffer in ingresso e processa un campione in entrata (istante attuale) calcolando il campione in uscita. È differente nel caso di elemento ZERO o elemento POLO. L'elemento ZERO calcola solamente la parte FIR (non ricorsiva) dell'equazione alle differenze: il sample in uscita dall'elemento ZERO è calcolata come somma tra il sample in entrata, il sample in entrata di un istante fa (moltiplicato per il coefficiente coeff1) e il sample in entrata due istanti fa (moltiplicato per il coefficiente coeff2). Con istante fa e due istanti fa si intende sample precedente e due sample fa. L'elemento POLO calcola solamente la parte IIR (ricorsiva) dell'equazione alle differenze: il sample in uscita dall'elemento POLO è calcolata come differenza tra il sample in entrata, il sample in uscita un istante fa (moltiplicato per il coefficiente coeff1) e il sample in uscita due istanti fa (moltiplicato per il coefficiente coeff2). Viene successivamente aggiornata la memoria del FilterElement per avere a disposizione la memoria per il calcolo del sample successivo nella chiamata al metodo processSample successivo.
     float processSample (double inputSample)
     {
         double outputSample;
@@ -84,6 +94,7 @@ public:
         return outputSample;
     }
     
+    // Il metodo processBlock riceve in input l'intero buffer di campioni audio e chiama la processSample per ciascuno dei campioni del buffer.
     void processBlock (juce::AudioBuffer<double>& buffer, int numSamples)
     {
         auto bufferData = buffer.getArrayOfWritePointers();
@@ -92,6 +103,7 @@ public:
                 bufferData[0][smp] = processSample(bufferData[0][smp]);
     }
     
+    // Il metodo updateMemory aggiorna la memoria del filtro. memory1 contiene il sample precedente in entrata se si tratta di uno ZERO o in uscita se si tratta di un POLE. memory2 contiene il sample di due istanti fa in entrata se si tratta di uno ZERO o in uscita se si tratta di un POLE.
     void updateMemory (double inputSample, double outputSample)
     {
         memory2 = memory1;
