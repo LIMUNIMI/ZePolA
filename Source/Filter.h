@@ -126,7 +126,7 @@ private:
 class PolesAndZerosCascade
 {
 public:
-    PolesAndZerosCascade (int nZeros = 0, int nPoles = 0)
+    PolesAndZerosCascade (int nZeros = 1, int nPoles = 1)
     {
         for (int i = 0; i < nZeros; ++ i)
             addElement(FilterElement::ZERO);
@@ -190,16 +190,22 @@ public:
     {
         if (!active) return;
         
-        const auto numSamples = buffer.getNumSamples();
+        const auto numSamples = buffer.getNumSamples(); // Calcolo del numero dei campioni su cui il filtro lavora, per non dover chiamare il metodo più volte si preferisce assegnare una variabile passata per copia a tutti i FilterElement
         
-        AudioBuffer<double> doubleBuffer(1, numSamples);
+        double const referenceRMS = buffer.getRMSLevel(0, 0, numSamples); // Calcolo RMS del buffer dry prima del filtro
         
-        castBuffer(doubleBuffer, buffer, 1, numSamples);
+        AudioBuffer<double> doubleBuffer(1, numSamples); // Creazione del buffer double che utilizzerà il filtro
         
-        for (auto& element : elements)
+        castBuffer(doubleBuffer, buffer, 1, numSamples); // Cast del buffer<float> in buffer<double>
+        
+        for (auto& element : elements) // Loop che chiama la processBlock di ciascuno degli elementi (FilterElement) attivi
             element->processBlock(doubleBuffer, numSamples);
             
-        castBuffer(buffer, doubleBuffer, 1, numSamples);
+        castBuffer(buffer, doubleBuffer, 1, numSamples); // Cast del buffer<double> in buffer<float>
+    
+        double const gain = referenceRMS / buffer.getRMSLevel(0, 0, numSamples); // Calcolo del gain da applicare al buffer wet in uscita dal filtro mediante il rapporto tra il referenceRMS e il valore RMS del buffer wet
+        
+        buffer.applyGain(0, 0, numSamples, static_cast<float>(gain)); // Applicazione del gain al buffer in uscita dal filtro
     }
     
     void parameterChanged (const String& parameterID, float newValue)
