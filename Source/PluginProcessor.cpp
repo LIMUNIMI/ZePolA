@@ -1,6 +1,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "Parameters.h"
+#include "PluginEditor.h"
 
 PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor()
 : parameters(*this, nullptr, "PolesAndZero-EQ", Parameters::createParameterLayout())
@@ -29,14 +30,9 @@ void PolesAndZerosEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
     filter.processBlock(buffer);
 }
 
-bool PolesAndZerosEQAudioProcessor::hasEditor () const
-{
-    return false;
-}
-
 juce::AudioProcessorEditor* PolesAndZerosEQAudioProcessor::createEditor()
 {
-    return nullptr;
+    return new PluginEditor(*this, parameters);
 }
 
 void PolesAndZerosEQAudioProcessor::getStateInformation (juce::MemoryBlock& destData)

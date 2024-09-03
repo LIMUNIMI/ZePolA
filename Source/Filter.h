@@ -214,7 +214,7 @@ public:
     /* The constructor of PolesAndZerosCascade has default values for the number
      of zeros and poles that the filter should have at the time of creation.
     */
-    PolesAndZerosCascade (int nZeros = 1, int nPoles = 1)
+    PolesAndZerosCascade (int nZeros = 0, int nPoles = 0)
     {
         for (int i = 0; i < nZeros; ++ i)
             addElement(FilterElement::ZERO);
@@ -276,6 +276,14 @@ public:
             jassertfalse;
         }
     }
+    
+//    void printQueue ()
+//    {
+//        DBG("\nElenco poli e zeri attivi:");
+//        for (auto& element : elements)
+//            DBG(element->getType());
+//        DBG("FINE\n");
+//    }
 
     /* The castBuffer method in the PolesAndZerosCascade class is a template
      function that converts and copies audio data between two buffers of

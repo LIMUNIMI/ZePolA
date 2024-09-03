@@ -14,7 +14,7 @@ public:
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     juce::AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override;
+    bool hasEditor() const override { return true ;};
 
     const juce::String getName() const override {return JucePlugin_Name; }
 
@@ -32,6 +32,26 @@ public:
 
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    void addZero ()
+    {
+        filter.addElement(FilterElement::ZERO);
+    }
+
+    void removeZero ()
+    {
+        filter.removeElement(FilterElement::ZERO);
+    }
+
+    void addPole ()
+    {
+        filter.addElement(FilterElement::POLE);
+    }
+
+    void removePole ()
+    {
+        filter.removeElement(FilterElement::POLE);
+    }
 
 private:
     void parameterChanged(const String& parameterID, float newValue) override;
