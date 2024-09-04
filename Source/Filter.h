@@ -39,26 +39,6 @@ public:
     
     ~FilterElement () {}
     
-    /* The method setMagnitude sets the magnitude of the complex number to the
-     value of newValue and calls the calculateCoefficients method to compute
-     the new coefficients for the difference equation.
-    */
-    void setMagnitude (double newValue)
-    {
-        magnitude = newValue;
-        calculateCoefficients();
-    }
-
-    /* The method setPhase sets the phase of the complex number to the value of
-     newValue and calls the calculateCoefficients method to compute the new
-     coefficients for the difference equation.
-    */
-    void setPhase (double newValue)
-    {
-        phase = newValue;
-        calculateCoefficients();
-    }
-
     /* The method getMagnitude returns the magnitude of the complex number
      represented by FilterElement.
     */
@@ -87,6 +67,49 @@ public:
     enum Type getType ()
     {
         return type;
+    }
+    
+    bool isActive()
+    {
+        return active;
+    }
+    
+    /* The method setMagnitude sets the magnitude of the complex number to the
+     value of newValue and calls the calculateCoefficients method to compute
+     the new coefficients for the difference equation.
+    */
+    void setMagnitude (double newValue)
+    {
+        magnitude = newValue;
+        calculateCoefficients();
+    }
+
+    /* The method setPhase sets the phase of the complex number to the value of
+     newValue and calls the calculateCoefficients method to compute the new
+     coefficients for the difference equation.
+    */
+    void setPhase (double newValue)
+    {
+        phase = newValue;
+        calculateCoefficients();
+    }
+    
+    /* The method setUnsetBypass sets to true if the element is active or false
+     if the element is inactive.
+    */
+    void setUnsetActive (bool newValue)
+    {
+        active = newValue;
+        if (!active)
+            memoryReset();
+    }
+    
+    /* The method setType changes the type of the element to the new type.
+    */
+    void setType (FilterElement::Type newType)
+    {
+        type = newType;
+        memoryReset();
     }
 
     /* The memoryReset method resets the memory of the FilterElement (whether it
@@ -190,6 +213,8 @@ private:
 
     double memory1;
     double memory2;
+    
+    bool active = false;
 };
 
 // -----------------------------------------------------------------------------
@@ -214,7 +239,7 @@ public:
     /* The constructor of PolesAndZerosCascade has default values for the number
      of zeros and poles that the filter should have at the time of creation.
     */
-    PolesAndZerosCascade (int nZeros = 0, int nPoles = 0)
+    PolesAndZerosCascade (int nZeros = 12, int nPoles = 0)
     {
         for (int i = 0; i < nZeros; ++ i)
             addElement(FilterElement::ZERO);
@@ -234,56 +259,15 @@ public:
             node->memoryReset();
     }
     
-    /* The setUnsetBypass method bypasses the entire filter depending on the
-     value of newValue chosen by the user as a parameter of the plugin.
-    */
-    void setUnsetBypass (bool newValue)
-    {
-        active = !newValue;
-        if (!active)
-            memoryReset();
-    }
-    
     /* The addElement method adds an element of the specified type to the
      cascade of zero or pole elements. The addition occurs at the end of the
      list of pointed elements.
     */
     void addElement (FilterElement::Type type)
     {
-        if (countElementsOfType(type) < MAX_ORDER)
+        if (countElementsOfType(type) < 2 * MAX_ORDER)
             elements.push_back(std::make_unique<FilterElement>(type));
-        else
-        {
-            DBG(" You are trying to add a zero or a pole even if you have reached the maximum number of poles or zeros!");
-            jassertfalse; // You are trying to add a zero or a pole even if you have reached the maximum number of poles or zeros!
-        }
     }
-    
-    /* The removeElement method removes an element of the specified type from
-     the cascade of zero or pole elements. The most recently added element that
-     matches the specified type is the one that gets removed.
-    */
-    void removeElement (FilterElement::Type type)
-    {
-        auto iterator = std::find_if(elements.rbegin(), elements.rend(),
-                                   [type](const std::unique_ptr<FilterElement>& element) { return element->getType() == type; });
-        // find_if ritorna un iteratore all'ultimo elemento che corrisponde al criterio di ricerca (type da eliminare)
-        if (iterator != elements.rend())
-            elements.erase(std::next(iterator).base());
-        else
-        {
-            DBG("No element of the specified type found!");
-            jassertfalse;
-        }
-    }
-    
-//    void printQueue ()
-//    {
-//        DBG("\nElenco poli e zeri attivi:");
-//        for (auto& element : elements)
-//            DBG(element->getType());
-//        DBG("FINE\n");
-//    }
 
     /* The castBuffer method in the PolesAndZerosCascade class is a template
      function that converts and copies audio data between two buffers of
@@ -315,9 +299,7 @@ public:
      output volumes.
     */
     void processBlock (juce::AudioBuffer<float>& buffer)
-    {
-        if (!active) return;
-        
+    {        
         const auto numSamples = buffer.getNumSamples();
         
         double const referenceRMS = buffer.getRMSLevel(0, 0, numSamples);
@@ -327,7 +309,10 @@ public:
         castBuffer(doubleBuffer, buffer, 1, numSamples);
         
         for (auto& element : elements)
-            element->processBlock(doubleBuffer, numSamples);
+        {
+            if (element->isActive())
+                element->processBlock(doubleBuffer, numSamples);
+        }
             
         castBuffer(buffer, doubleBuffer, 1, numSamples);
     
@@ -336,41 +321,57 @@ public:
         buffer.applyGain(0, 0, numSamples, static_cast<float>(gain));
     }
     
-    /* The parameterChanged method allows the adjustment of bypass values as
-     well as the magnitude and phase of each active zero and pole in the cascade.
-     The parameter parameterID contains a string that identifies the parameter
-     to be changed, and newValue contains the new value to be assigned.
-    */
-    void parameterChanged (const String& parameterID, float newValue)
+    void setMagnitude (const int elementNr, double newValue)
     {
-        if (parameterID == "BYPASS")
-        {
-            setUnsetBypass(newValue > 0.5f);
-            return;
-        }
-        
-        juce::String type = parameterID.dropLastCharacters(2);
-        FilterElement::Type elementType = (type == "Z") ? FilterElement::ZERO : FilterElement::POLE;
-        juce::String elementParameter = parameterID.substring(1, 2);
-        const int elementNr = parameterID.getLastCharacters(1).getIntValue();
-
-        int i = 0;
-        
+        int i = 1;
         for (auto& element : elements)
         {
-            if (element->getType() == elementType)
+            if (i == elementNr)
             {
-                ++ i;
-                if (i == elementNr)
-                    (elementParameter == "M") ? element->setMagnitude(newValue) : element->setPhase(newValue);
+                element->setMagnitude(newValue);
             }
+            ++ i;
+        }
+    }
+    
+    void setPhase (const int elementNr, double newValue)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                element->setPhase(newValue);
+            }
+            ++ i;
+        }
+    }
+    
+    void setUnsetElementActive (const int elementNr, bool newValue)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+                element->setUnsetActive(newValue);
+            ++ i;
+        }
+    }
+    
+    void setType (const int elementNr, bool newValue)
+    {
+        int i = 1;
+        FilterElement::Type newType = (newValue) ? FilterElement::ZERO : FilterElement::POLE;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+                element->setType(newType);
+            ++ i;
         }
     }
     
 private:
     std::vector<std::unique_ptr<FilterElement>> elements;
-    
-    bool active = true;
     
     int countElementsOfType(FilterElement::Type type)
     {

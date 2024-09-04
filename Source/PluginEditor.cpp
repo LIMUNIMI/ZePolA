@@ -115,25 +115,21 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
     if (buttonThatWasClicked == addZeroButton.get())
     {
         //[UserButtonCode_addZeroButton] -- add your button handler code here..
-        processor.addZero();
         //[/UserButtonCode_addZeroButton]
     }
     else if (buttonThatWasClicked == rmvZeroButton.get())
     {
         //[UserButtonCode_rmvZeroButton] -- add your button handler code here..
-        processor.removeZero();
         //[/UserButtonCode_rmvZeroButton]
     }
     else if (buttonThatWasClicked == addPoleButton.get())
     {
         //[UserButtonCode_addPoleButton] -- add your button handler code here..
-        processor.addPole();
         //[/UserButtonCode_addPoleButton]
     }
     else if (buttonThatWasClicked == rmvPoleButton.get())
     {
         //[UserButtonCode_rmvPoleButton] -- add your button handler code here..
-        processor.removePole();
         //[/UserButtonCode_rmvPoleButton]
     }
 

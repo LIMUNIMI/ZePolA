@@ -15,24 +15,41 @@ PolesAndZerosEQAudioProcessor::~PolesAndZerosEQAudioProcessor ()
 
 void PolesAndZerosEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = 1;
+    
+    gainProcessor.prepare(spec);
+    gainProcessor.setGainDecibels(GAIN_DEFAULT);
+    
     filter.memoryReset();
 }
 
 void PolesAndZerosEQAudioProcessor::releaseResources ()
 {
-    filter.memoryReset();
 }
 
 void PolesAndZerosEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
+    
+    if (!active) return;
 
     filter.processBlock(buffer);
+    
+    juce::dsp::AudioBlock<float> block (buffer);
+    gainProcessor.process(juce::dsp::ProcessContextReplacing<float> (block));
+}
+
+void PolesAndZerosEQAudioProcessor::processBlockBypassed(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+{
+    filter.memoryReset();
 }
 
 juce::AudioProcessorEditor* PolesAndZerosEQAudioProcessor::createEditor()
 {
-    return new PluginEditor(*this, parameters);
+    return nullptr;
 }
 
 void PolesAndZerosEQAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
@@ -52,7 +69,41 @@ void PolesAndZerosEQAudioProcessor::setStateInformation (const void* data, int s
 
 void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID, float newValue)
 {
-    filter.parameterChanged(parameterID, newValue);
+    if (parameterID == "BYPASS")
+    {
+        active = !(newValue > 0.5f);
+        if (!active)
+            filter.memoryReset();
+        return;
+    }
+    
+    if (parameterID == "GAIN")
+    {
+        gainProcessor.setGainDecibels(newValue);
+        return;
+    }
+    
+    juce::String parameter = parameterID.substring(0, 1);
+    const int elementNr = parameterID.substring(1).getIntValue();
+    
+    newValue = static_cast<double>(newValue);
+
+    if (parameter == "M")
+    {
+        filter.setMagnitude(elementNr, newValue);
+    }
+    else if (parameter == "P")
+    {
+        filter.setPhase(elementNr, newValue);
+    }
+    else if (parameter == "A")
+    {
+        filter.setUnsetElementActive(elementNr, newValue > 0.5);
+    }
+    else if (parameter == "T")
+    {
+        filter.setType(elementNr, newValue > 0.5);
+    }
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()

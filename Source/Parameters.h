@@ -4,29 +4,34 @@
 // Generic constants
 #define MAX_ORDER                               6
 
-#define BYPASS_NAME                             "BYPASS"
+#define FILTER_BYPASS_NAME                      "BYPASS"
+#define BYPASS_DEFAULT                          false
 
-// Zero constants
-#define ZERO_MAGNITUDE_NAME                     "ZM"
-#define ZERO_MAGNITUDE_FLOOR                    0.0f
-#define ZERO_MAGNITUDE_CEILING                  1.0f
+// FilterElement constants & ids
+#define MAGNITUDE_NAME                          "M"
+#define MAGNITUDE_FLOOR                         0.0f
+#define MAGNITUDE_CEILING                       0.9999f
 
-#define ZERO_PHASE_NAME                         "ZP"
-#define ZERO_PHASE_FLOOR                        0.0f
-#define ZERO_PHASE_CEILING                      1.0f
-
-// Pole constants
-#define POLE_MAGNITUDE_NAME                     "PM"
-#define POLE_MAGNITUDE_FLOOR                    0.0f
-#define POLE_MAGNITUDE_CEILING                  0.99f
-
-#define POLE_PHASE_NAME                         "PP"
-#define POLE_PHASE_FLOOR                        0.0f
-#define POLE_PHASE_CEILING                      1.0f
+#define PHASE_NAME                              "P"
+#define PHASE_FLOOR                             0.0f
+#define PHASE_CEILING                           1.0f
 
 #define MAGNITUDE_DEFAULT                       0.0f
 #define PHASE_DEFAULT                           0.0f
-#define INTERVAL                                0.01f
+#define INTERVAL                                0.0001f
+
+#define TYPE_NAME                               "T"
+#define TYPE_DEFAULT                            true
+
+#define ACTIVE_NAME                             "A"
+#define ACTIVE_DEFAULT                          false
+
+#define GAIN_NAME                               "GAIN"
+#define GAIN_FLOOR                              -24.0f
+#define GAIN_CEILING                            24.0f
+#define GAIN_INTERVAL                           0.01f
+#define GAIN_DEFAULT                            0.0f
+#define SMOOTHING_TIME                          0.01f
 
 
 namespace Parameters
@@ -36,23 +41,19 @@ namespace Parameters
 {
         std::vector<std::unique_ptr<RangedAudioParameter>> params;
         
-        for (int i = 0; i < MAX_ORDER; ++ i)
+        for (int i = 0; i < 2 * MAX_ORDER; ++ i)
         {
             std::string number = std::to_string(i + 1);
             
-            params.push_back(std::make_unique<AudioParameterFloat>(ZERO_MAGNITUDE_NAME + number, "Zero " + number + " Magnitude", NormalisableRange<float>(ZERO_MAGNITUDE_FLOOR, ZERO_MAGNITUDE_CEILING, INTERVAL), MAGNITUDE_DEFAULT));
-            params.push_back(std::make_unique<AudioParameterFloat>(ZERO_PHASE_NAME + number, "Zero " + number + " Phase", NormalisableRange<float>(ZERO_PHASE_FLOOR, ZERO_PHASE_CEILING, INTERVAL), PHASE_DEFAULT));
+            params.push_back(std::make_unique<AudioParameterFloat>(MAGNITUDE_NAME + number, "Element " + number + " Magnitude", NormalisableRange<float>(MAGNITUDE_FLOOR, MAGNITUDE_CEILING, INTERVAL), MAGNITUDE_DEFAULT));
+            params.push_back(std::make_unique<AudioParameterFloat>(PHASE_NAME + number, "Element " + number + " Phase", NormalisableRange<float>(PHASE_FLOOR, PHASE_CEILING, INTERVAL), PHASE_DEFAULT));
+            params.push_back(std::make_unique<AudioParameterBool>(ACTIVE_NAME + number, "Active " + number, ACTIVE_DEFAULT));
+            params.push_back(std::make_unique<AudioParameterBool>(TYPE_NAME + number, "Type" + number, TYPE_DEFAULT));
         }
         
-        for (int i = 0; i < MAX_ORDER; ++ i)
-        {
-            std::string number = std::to_string(i + 1);
-            
-            params.push_back(std::make_unique<AudioParameterFloat>(POLE_MAGNITUDE_NAME + number, "Pole " + number + " Magnitude", NormalisableRange<float>(POLE_MAGNITUDE_FLOOR, POLE_MAGNITUDE_CEILING, INTERVAL), MAGNITUDE_DEFAULT));
-            params.push_back(std::make_unique<AudioParameterFloat>(POLE_PHASE_NAME + number, "Pole " + number + " Phase", NormalisableRange<float>(POLE_PHASE_FLOOR, POLE_PHASE_CEILING, INTERVAL), PHASE_DEFAULT));
-        }
+        params.push_back(std::make_unique<AudioParameterBool>(FILTER_BYPASS_NAME, "EQ bypass", BYPASS_DEFAULT));
+        params.push_back(std::make_unique<AudioParameterFloat>(GAIN_NAME, "Gain (dB)", NormalisableRange<float>(GAIN_FLOOR, GAIN_CEILING, GAIN_INTERVAL), GAIN_DEFAULT));
         
-        params.push_back(std::make_unique<AudioParameterBool>(BYPASS_NAME, "Bypass", false));
         
         return {params.begin(), params.end()};
     }
