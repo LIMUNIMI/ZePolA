@@ -302,8 +302,6 @@ public:
     {        
         const auto numSamples = buffer.getNumSamples();
         
-        double const referenceRMS = buffer.getRMSLevel(0, 0, numSamples);
-        
         AudioBuffer<double> doubleBuffer(1, numSamples);
         
         castBuffer(doubleBuffer, buffer, 1, numSamples);
@@ -315,10 +313,6 @@ public:
         }
             
         castBuffer(buffer, doubleBuffer, 1, numSamples);
-    
-        double const gain = referenceRMS / buffer.getRMSLevel(0, 0, numSamples);
-        
-        buffer.applyGain(0, 0, numSamples, static_cast<float>(gain));
     }
     
     void setMagnitude (const int elementNr, double newValue)
