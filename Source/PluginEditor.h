@@ -22,6 +22,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "Graphs.h"
 //[/Headers]
 
 
@@ -34,7 +35,8 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class PluginEditor  : public juce::AudioProcessorEditor
+class PluginEditor  : public juce::AudioProcessorEditor,
+                      public juce::Slider::Listener
 {
 public:
     //==============================================================================
@@ -47,6 +49,7 @@ public:
 
     void paint (juce::Graphics& g) override;
     void resized() override;
+    void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
 
 
 
@@ -57,6 +60,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    std::unique_ptr<FrequencyResponse> frequency_response;
+    std::unique_ptr<juce::Label> freq_response_label;
+    std::unique_ptr<PhaseResponse> phase_response;
+    std::unique_ptr<juce::Label> ph_response_label;
+    std::unique_ptr<GaussianPlane> gaussian_plane;
+    std::unique_ptr<juce::Slider> juce__slider;
 
 
     //==============================================================================

@@ -106,6 +106,16 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
     }
 }
 
+std::vector<std::complex<double>> PolesAndZerosEQAudioProcessor::getFilterSpectrum ()
+{
+    return filter.getSpectrum(getSampleRate());
+}
+
+std::vector<std::shared_ptr<FilterElement>> PolesAndZerosEQAudioProcessor::getFilterElementsChain ()
+{
+    return filter.getElementsChain();
+}
+
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()
 {
     return new PolesAndZerosEQAudioProcessor();

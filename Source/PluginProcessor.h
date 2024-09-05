@@ -33,6 +33,9 @@ public:
 
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    std::vector<std::complex<double>> getFilterSpectrum ();
+    std::vector<std::shared_ptr<FilterElement>> getFilterElementsChain ();
 
 private:
     void parameterChanged(const String& parameterID, float newValue) override;

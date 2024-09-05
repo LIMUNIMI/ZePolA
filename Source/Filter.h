@@ -69,6 +69,7 @@ public:
         return type;
     }
     
+    // The method isActive returns true if the element is active, false otherwise.
     bool isActive()
     {
         return active;
@@ -202,7 +203,11 @@ public:
         }
     }
     
-    std::complex<double> getFrequencyResponse (const double phi)
+    /* The method getElementSpectrum returns a std::complex<double> value that
+     represent the value of the spectrum corresponding to the value of the
+     normalized frequency "phi".
+    */
+    std::complex<double> getElementSpectrum (const double phi)
     {
         switch (type)
         {
@@ -262,9 +267,13 @@ public:
     
     ~PolesAndZerosCascade () {}
     
-    std::vector<std::complex<double>> getFilterFrequencyResponse (const double sampleRate)
+    /* The method getSpectrum returns a std::vector of std::complex<double>
+     values of the spectrum calculated as the product between the spectra of
+     each element (zero or pole) of the filter chain.
+    */
+    std::vector<std::complex<double>> getSpectrum (const double sampleRate)
     {
-        std::vector<std::complex<double>> frequencyResponse(static_cast<int>(sampleRate), std::complex<double>(1.0, 0.0));
+        std::vector<std::complex<double>> spectrum(static_cast<int>(sampleRate), std::complex<double>(1.0, 0.0));
         
         double phi;
         int frequency;
@@ -275,14 +284,22 @@ public:
             for (auto& element : elements)
             {
                 if (element->isActive())
-                    frequencyResponse[frequency] *= element->getFrequencyResponse(phi);
+                    spectrum[frequency] *= element->getElementSpectrum(phi);
             }
         }
         
-        return frequencyResponse;
+        return spectrum;
     }
     
-    double getMagnitude (const int elementNr)
+    std::vector<std::shared_ptr<FilterElement>> getElementsChain ()
+    {
+        return elements;
+    }
+    
+    /* The method getElementMagnitude returns the value of the magnitude of the
+     "elementNr" element in the filter chain.
+    */
+    double getElementMagnitude (const int elementNr)
     {
         int i = 1;
         for (auto& element : elements)
@@ -296,7 +313,10 @@ public:
         return 0.0;
     }
     
-    double getPhase (const int elementNr)
+    /* The method getElementPhase returns the value of the phase of the "elementNr"
+     element in the filter chain.
+    */
+    double getElementPhase (const int elementNr)
     {
         int i = 1;
         for (auto& element : elements)
@@ -310,6 +330,9 @@ public:
         return 0.0;
     }
     
+    /* The method setElementMagnitude sets the value of the magnitude of the
+     "elementNr" element in the filter chain.
+    */
     void setMagnitude (const int elementNr, double newValue)
     {
         int i = 1;
@@ -324,6 +347,9 @@ public:
         }
     }
     
+    /* The method setElementPhase sets the value of the phase of the "elementNr"
+     element in the filter chain.
+    */
     void setPhase (const int elementNr, double newValue)
     {
         int i = 1;
@@ -338,6 +364,9 @@ public:
         }
     }
     
+    /* The method setUnsetElementActive sets to true or false the "active" bool
+     value of the "elementNr" element in the filter chain.
+    */
     void setUnsetElementActive (const int elementNr, bool newValue)
     {
         int i = 1;
@@ -352,6 +381,9 @@ public:
         }
     }
     
+    /* The method setType sets the type of the "elementNr" element in the filter
+     chain.
+    */
     void setType (const int elementNr, bool newValue)
     {
         int i = 1;
@@ -382,8 +414,7 @@ public:
     */
     void addElement (FilterElement::Type type)
     {
-        if (countElementsOfType(type) < 2 * MAX_ORDER)
-            elements.push_back(std::make_unique<FilterElement>(type));
+        elements.push_back(std::make_unique<FilterElement>(type));
     }
 
     /* The castBuffer method in the PolesAndZerosCascade class is a template
@@ -433,13 +464,7 @@ public:
     }
     
 private:
-    std::vector<std::unique_ptr<FilterElement>> elements;
-    
-    int countElementsOfType(FilterElement::Type type)
-    {
-        return static_cast<int>(std::count_if(elements.begin(), elements.end(),
-                                     [type](const std::unique_ptr<FilterElement>& element) { return element->getType() == type; }));
-    }
+    std::vector<std::shared_ptr<FilterElement>> elements;
 };
 
 
