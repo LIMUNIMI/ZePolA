@@ -49,7 +49,7 @@ void PolesAndZerosEQAudioProcessor::processBlockBypassed(juce::AudioBuffer<float
 
 juce::AudioProcessorEditor* PolesAndZerosEQAudioProcessor::createEditor()
 {
-    return nullptr;
+    return new PluginEditor(*this, parameters);
 }
 
 void PolesAndZerosEQAudioProcessor::getStateInformation (juce::MemoryBlock& destData)

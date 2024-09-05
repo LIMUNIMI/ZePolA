@@ -202,6 +202,18 @@ public:
         }
     }
     
+    std::complex<double> getFrequencyResponse (const double phi)
+    {
+        switch (type)
+        {
+            case ZERO:
+                return (1.0 + coeff1 * std::polar(1.0, -2 * MathConstants<double>::pi * phi) + coeff2 * std::polar(1.0, 4 * MathConstants<double>::pi * phi));
+                
+            case POLE:
+                return (1.0 / (1.0 + coeff1 * std::polar(1.0, -2 * MathConstants<double>::pi * phi) + coeff2 * std::polar(1.0, 4 * MathConstants<double>::pi * phi)));
+        }
+    }
+    
 private:
     Type type;
     
@@ -249,6 +261,73 @@ public:
     }
     
     ~PolesAndZerosCascade () {}
+    
+    void setMagnitude (const int elementNr, double newValue)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                element->setMagnitude(newValue);
+            }
+            ++ i;
+        }
+    }
+    
+    void setPhase (const int elementNr, double newValue)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                element->setPhase(newValue);
+            }
+            ++ i;
+        }
+    }
+    
+    void setUnsetElementActive (const int elementNr, bool newValue)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+                element->setUnsetActive(newValue);
+            ++ i;
+        }
+    }
+    
+    void setType (const int elementNr, bool newValue)
+    {
+        int i = 1;
+        FilterElement::Type newType = (newValue) ? FilterElement::ZERO : FilterElement::POLE;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+                element->setType(newType);
+            ++ i;
+        }
+    }
+    
+    std::vector<std::complex<double>> getFilterFrequencyResponse (const double sampleRate)
+    {
+        std::vector<std::complex<double>> frequencyResponse(static_cast<int>(sampleRate), std::complex<double>(1.0, 0.0));
+        
+        double phi;
+        int frequency;
+        
+        for (frequency = 0; frequency < sampleRate; ++ frequency)
+        {
+            phi = static_cast<double>(frequency) / sampleRate;
+            for (auto& element : elements)
+            {
+                if (element->isActive())
+                    frequencyResponse[frequency] *= element->getFrequencyResponse(phi);
+            }
+        }
+    }
     
     /* The memoryReset method resets the memory of the entire filter by calling
      the reset method for all the elements that make up the filter's cascade.
@@ -313,55 +392,6 @@ public:
         }
             
         castBuffer(buffer, doubleBuffer, 1, numSamples);
-    }
-    
-    void setMagnitude (const int elementNr, double newValue)
-    {
-        int i = 1;
-        for (auto& element : elements)
-        {
-            if (i == elementNr)
-            {
-                element->setMagnitude(newValue);
-            }
-            ++ i;
-        }
-    }
-    
-    void setPhase (const int elementNr, double newValue)
-    {
-        int i = 1;
-        for (auto& element : elements)
-        {
-            if (i == elementNr)
-            {
-                element->setPhase(newValue);
-            }
-            ++ i;
-        }
-    }
-    
-    void setUnsetElementActive (const int elementNr, bool newValue)
-    {
-        int i = 1;
-        for (auto& element : elements)
-        {
-            if (i == elementNr)
-                element->setUnsetActive(newValue);
-            ++ i;
-        }
-    }
-    
-    void setType (const int elementNr, bool newValue)
-    {
-        int i = 1;
-        FilterElement::Type newType = (newValue) ? FilterElement::ZERO : FilterElement::POLE;
-        for (auto& element : elements)
-        {
-            if (i == elementNr)
-                element->setType(newType);
-            ++ i;
-        }
     }
     
 private:

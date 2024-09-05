@@ -36,8 +36,7 @@ typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class PluginEditor  : public juce::AudioProcessorEditor,
-                      public juce::Button::Listener
+class PluginEditor  : public juce::AudioProcessorEditor
 {
 public:
     //==============================================================================
@@ -50,7 +49,6 @@ public:
 
     void paint (juce::Graphics& g) override;
     void resized() override;
-    void buttonClicked (juce::Button* buttonThatWasClicked) override;
 
 
 
@@ -61,10 +59,6 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<juce::TextButton> addZeroButton;
-    std::unique_ptr<juce::TextButton> rmvZeroButton;
-    std::unique_ptr<juce::TextButton> addPoleButton;
-    std::unique_ptr<juce::TextButton> rmvPoleButton;
 
 
     //==============================================================================
