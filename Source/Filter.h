@@ -262,55 +262,6 @@ public:
     
     ~PolesAndZerosCascade () {}
     
-    void setMagnitude (const int elementNr, double newValue)
-    {
-        int i = 1;
-        for (auto& element : elements)
-        {
-            if (i == elementNr)
-            {
-                element->setMagnitude(newValue);
-            }
-            ++ i;
-        }
-    }
-    
-    void setPhase (const int elementNr, double newValue)
-    {
-        int i = 1;
-        for (auto& element : elements)
-        {
-            if (i == elementNr)
-            {
-                element->setPhase(newValue);
-            }
-            ++ i;
-        }
-    }
-    
-    void setUnsetElementActive (const int elementNr, bool newValue)
-    {
-        int i = 1;
-        for (auto& element : elements)
-        {
-            if (i == elementNr)
-                element->setUnsetActive(newValue);
-            ++ i;
-        }
-    }
-    
-    void setType (const int elementNr, bool newValue)
-    {
-        int i = 1;
-        FilterElement::Type newType = (newValue) ? FilterElement::ZERO : FilterElement::POLE;
-        for (auto& element : elements)
-        {
-            if (i == elementNr)
-                element->setType(newType);
-            ++ i;
-        }
-    }
-    
     std::vector<std::complex<double>> getFilterFrequencyResponse (const double sampleRate)
     {
         std::vector<std::complex<double>> frequencyResponse(static_cast<int>(sampleRate), std::complex<double>(1.0, 0.0));
@@ -329,6 +280,91 @@ public:
         }
         
         return frequencyResponse;
+    }
+    
+    double getMagnitude (const int elementNr)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                return element->getMagnitude();
+            }
+            ++ i;
+        }
+        return 0.0;
+    }
+    
+    double getPhase (const int elementNr)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                return element->getPhase();
+            }
+            ++ i;
+        }
+        return 0.0;
+    }
+    
+    void setMagnitude (const int elementNr, double newValue)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                element->setMagnitude(newValue);
+                return;
+            }
+            ++ i;
+        }
+    }
+    
+    void setPhase (const int elementNr, double newValue)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                element->setPhase(newValue);
+                return;
+            }
+            ++ i;
+        }
+    }
+    
+    void setUnsetElementActive (const int elementNr, bool newValue)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                element->setUnsetActive(newValue);
+                return;
+            }
+            ++ i;
+        }
+    }
+    
+    void setType (const int elementNr, bool newValue)
+    {
+        int i = 1;
+        FilterElement::Type newType = (newValue) ? FilterElement::ZERO : FilterElement::POLE;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                element->setType(newType);
+                return;
+            }
+            ++ i;
+        }
     }
     
     /* The memoryReset method resets the memory of the entire filter by calling
