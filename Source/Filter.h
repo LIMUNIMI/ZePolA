@@ -327,6 +327,8 @@ public:
                     frequencyResponse[frequency] *= element->getFrequencyResponse(phi);
             }
         }
+        
+        return frequencyResponse;
     }
     
     /* The memoryReset method resets the memory of the entire filter by calling
