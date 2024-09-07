@@ -113,7 +113,7 @@ public:
     
     void paint(juce::Graphics& g) override
     {
-        g.fillAll(juce::Colours::black);
+        g.fillAll(juce::Colours::white);
         drawPlane(g);
         drawPolesAndZeros(g);
     }
@@ -143,12 +143,12 @@ private:
         auto height = getHeight();
         
         // Axis paint
-        g.setColour(juce::Colours::white);
-        g.drawLine(0, height / 2, width, height / 2, 2.0f);
-        g.drawLine(width / 2, 0, width / 2, height, 2.0f);
+        g.setColour(juce::Colours::black);
+        g.drawLine(0, height / 2, width, height / 2, 1.0f);
+        g.drawLine(width / 2, 0, width / 2, height, 1.0f);
         
         // Circumference paint
-        g.setColour(juce::Colours::yellow);
+        g.setColour(juce::Colours::grey);
         float radius = std::min(width, height) / 2.0f;
         g.drawEllipse((width / 2) - radius, (height / 2) - radius, radius * 2, radius * 2, 1.5f);
     }
@@ -176,7 +176,7 @@ private:
             float x = (std::real(pole) * (width / 2)) + (width / 2);
             float y = (-(std::imag(pole)) * (height / 2)) + (height / 2);
             
-            g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f); // Disegna "X"
+            g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
             g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
         }
     }

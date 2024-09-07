@@ -11,6 +11,7 @@
         <FILE id="HNvN2h" name="PluginEditor.cpp" compile="1" resource="0"
               file="Source/PluginEditor.cpp"/>
         <FILE id="KJdboJ" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+        <FILE id="htO7Xe" name="Graphs.h" compile="0" resource="0" file="Source/Graphs.h"/>
       </GROUP>
       <GROUP id="{D2A8AF86-7D3D-AB40-6162-437A1EDBDD1A}" name="DSP">
         <FILE id="eZApCn" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
@@ -32,6 +33,7 @@
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
@@ -57,6 +59,7 @@
         <MODULEPATH id="juce_graphics" path="../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
