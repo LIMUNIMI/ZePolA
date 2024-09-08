@@ -28,5 +28,34 @@ public:
         g.drawText(juce::String(slider.getValue()), x + 4, y + 4, width, height, juce::Justification::centredBottom);
     }
     
+    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
+                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    {
+        auto bounds = button.getLocalBounds().toFloat();
+        auto cornerSize = 6.0f;  // Angoli arrotondati
+        
+        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
+        
+        if (shouldDrawButtonAsDown)
+            baseColour = baseColour.darker(0.2f);
+        else if (shouldDrawButtonAsHighlighted)
+            baseColour = baseColour.brighter(0.2f);
+        
+        g.setColour(baseColour);
+        g.fillRoundedRectangle(bounds, cornerSize);
+        
+        g.setColour(button.findColour(juce::ComboBox::outlineColourId));  // Bordo del pulsante
+        g.drawRoundedRectangle(bounds, cornerSize, 2.0f);
+    }
+    
+    
+    void drawButtonText(juce::Graphics& g, juce::TextButton& button, bool /*shouldDrawButtonAsHighlighted*/, bool /*shouldDrawButtonAsDown*/) override
+    {
+        g.setFont(juce::Font ("Poppins", 19.0f, juce::Font::plain).withTypefaceStyle ("Regular").withExtraKerningFactor (0.020f));
+        g.setColour(button.findColour(juce::TextButton::textColourOnId));
+        
+        auto textBounds = button.getLocalBounds();
+        g.drawFittedText(button.getButtonText(), textBounds, juce::Justification::centred, 1);
+    }
     
 };

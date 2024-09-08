@@ -47,8 +47,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     reset_button.reset (new juce::TextButton ("Reset"));
     addAndMakeVisible (reset_button.get());
-    reset_button->setButtonText (juce::String());
+    reset_button->setButtonText (TRANS ("RESET"));
     reset_button->addListener (this);
+    reset_button->setColour (juce::TextButton::buttonColourId, juce::Colours::black);
 
     reset_button->setBounds (24, 824, 150, 24);
 
@@ -736,6 +737,8 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e10_active->setLookAndFeel(&theme);
     e11_active->setLookAndFeel(&theme);
     e12_active->setLookAndFeel(&theme);
+    
+    reset_button->setLookAndFeel(&theme);
     //[/UserPreSize]
 
     setSize (1500, 900);
@@ -844,78 +847,12 @@ void PluginEditor::paint (juce::Graphics& g)
     g.fillAll (juce::Colours::black);
 
     {
-        float x = 526.0f, y = 11.0f, width = 91.0f, height = 765.0f;
+        float x = 984.0f, y = 405.0f, width = 504.0f, height = 345.0f;
         juce::Colour strokeColour = juce::Colour (0x34ffffff);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 1.000f);
-    }
-
-    {
-        float x = 420.0f, y = 11.0f, width = 106.0f, height = 765.0f;
-        juce::Colour strokeColour = juce::Colour (0x34ffffff);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 1.000f);
-    }
-
-    {
-        float x = 281.0f, y = 11.0f, width = 139.0f, height = 765.0f;
-        juce::Colour strokeColour = juce::Colour (0x34ffffff);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 1.000f);
-    }
-
-    {
-        float x = 142.0f, y = 12.0f, width = 139.0f, height = 765.0f;
-        juce::Colour strokeColour = juce::Colour (0x34ffffff);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 1.000f);
-    }
-
-    {
-        float x = 10.0f, y = 11.0f, width = 132.0f, height = 765.0f;
-        juce::Colour strokeColour = juce::Colour (0x34ffffff);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 1.000f);
-    }
-
-    {
-        int x = 40, y = 824, width = 96, height = 30;
-        juce::String text (TRANS ("RESET"));
-        juce::Colour fillColour = juce::Colour (0xfffefefe);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.setFont (juce::Font ("Poppins", 19.00f, juce::Font::plain).withTypefaceStyle ("Regular").withExtraKerningFactor (0.020f));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centred, true);
-    }
-
-    {
-        float x = 9.0f, y = 795.0f, width = 1479.0f, height = 93.0f;
-        juce::Colour strokeColour = juce::Colour (0x34ffffff);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 1.000f);
-    }
-
-    {
-        float x = 638.0f, y = 11.0f, width = 346.0f, height = 345.0f;
-        juce::Colour strokeColour = juce::Colour (0x34ffffff);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 1.000f);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
     }
 
     {
@@ -924,16 +861,70 @@ void PluginEditor::paint (juce::Graphics& g)
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 1.000f);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
     }
 
     {
-        float x = 984.0f, y = 405.0f, width = 504.0f, height = 345.0f;
+        float x = 638.0f, y = 11.0f, width = 346.0f, height = 345.0f;
         juce::Colour strokeColour = juce::Colour (0x34ffffff);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 1.000f);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
+        float x = 526.0f, y = 11.0f, width = 91.0f, height = 765.0f;
+        juce::Colour strokeColour = juce::Colour (0x34ffffff);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
+        float x = 420.0f, y = 11.0f, width = 106.0f, height = 765.0f;
+        juce::Colour strokeColour = juce::Colour (0x34ffffff);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
+        float x = 281.0f, y = 11.0f, width = 139.0f, height = 765.0f;
+        juce::Colour strokeColour = juce::Colour (0x34ffffff);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
+        float x = 142.0f, y = 12.0f, width = 139.0f, height = 765.0f;
+        juce::Colour strokeColour = juce::Colour (0x34ffffff);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
+        float x = 10.0f, y = 11.0f, width = 132.0f, height = 765.0f;
+        juce::Colour strokeColour = juce::Colour (0x34ffffff);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
+        float x = 9.0f, y = 795.0f, width = 1479.0f, height = 93.0f;
+        juce::Colour strokeColour = juce::Colour (0x34ffffff);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
     }
 
     //[UserPaint] Add your own custom painting code here..
@@ -986,31 +977,28 @@ BEGIN_JUCER_METADATA
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1500" initialHeight="900">
   <BACKGROUND backgroundColour="ff000000">
-    <ROUNDRECT pos="526 11 91 765" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: 34ffffff"/>
-    <ROUNDRECT pos="420 11 106 765" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: 34ffffff"/>
-    <ROUNDRECT pos="281 11 139 765" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: 34ffffff"/>
-    <ROUNDRECT pos="142 12 139 765" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: 34ffffff"/>
-    <ROUNDRECT pos="10 11 132 765" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: 34ffffff"/>
-    <TEXT pos="40 824 96 30" fill="solid: fffefefe" hasStroke="0" text="RESET"
-          fontname="Poppins" fontsize="19.0" kerning="0.02" bold="0" italic="0"
-          justification="36"/>
-    <ROUNDRECT pos="9 795 1479 93" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: 34ffffff"/>
-    <ROUNDRECT pos="638 11 346 345" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: 34ffffff"/>
-    <ROUNDRECT pos="984 11 504 345" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: 34ffffff"/>
     <ROUNDRECT pos="984 405 504 345" cornerSize="14.5" fill="solid: 4ea52a"
-               hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: 34ffffff"/>
+               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: 34ffffff"/>
+    <ROUNDRECT pos="984 11 504 345" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
+               stroke="2, mitered, butt" strokeColour="solid: 34ffffff"/>
+    <ROUNDRECT pos="638 11 346 345" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
+               stroke="2, mitered, butt" strokeColour="solid: 34ffffff"/>
+    <ROUNDRECT pos="526 11 91 765" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
+               stroke="2, mitered, butt" strokeColour="solid: 34ffffff"/>
+    <ROUNDRECT pos="420 11 106 765" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
+               stroke="2, mitered, butt" strokeColour="solid: 34ffffff"/>
+    <ROUNDRECT pos="281 11 139 765" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
+               stroke="2, mitered, butt" strokeColour="solid: 34ffffff"/>
+    <ROUNDRECT pos="142 12 139 765" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
+               stroke="2, mitered, butt" strokeColour="solid: 34ffffff"/>
+    <ROUNDRECT pos="10 11 132 765" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
+               stroke="2, mitered, butt" strokeColour="solid: 34ffffff"/>
+    <ROUNDRECT pos="9 795 1479 93" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
+               stroke="2, mitered, butt" strokeColour="solid: 34ffffff"/>
   </BACKGROUND>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
-              virtualName="" explicitFocusOrder="0" pos="24 824 150 24" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="24 824 150 24" bgColOff="ff000000"
+              buttonText="RESET" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
                     virtualName="" explicitFocusOrder="0" pos="996 20 480 325" class="FrequencyResponse"
                     params="processor.getFilterSpectrum()"/>
