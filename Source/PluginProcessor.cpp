@@ -104,6 +104,11 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
     {
         filter.setType(elementNr, newValue > 0.5);
     }
+    
+    if (editorCallback)
+    {
+        editorCallback();
+    }
 }
 
 std::vector<std::complex<double>> PolesAndZerosEQAudioProcessor::getFilterSpectrum ()
@@ -114,6 +119,17 @@ std::vector<std::complex<double>> PolesAndZerosEQAudioProcessor::getFilterSpectr
 std::vector<std::shared_ptr<FilterElement>> PolesAndZerosEQAudioProcessor::getFilterElementsChain ()
 {
     return filter.getElementsChain();
+}
+
+void PolesAndZerosEQAudioProcessor::resetFilter ()
+{
+    for (int i = 1; i <= NUMBER_OF_ELEMENTS; ++ i)
+    {
+        parameters.getParameter(MAGNITUDE_NAME + std::to_string(i))->setValueNotifyingHost(MAGNITUDE_DEFAULT);
+        parameters.getParameter(PHASE_NAME + std::to_string(i))->setValueNotifyingHost(PHASE_DEFAULT);
+        parameters.getParameter(TYPE_NAME + std::to_string(i))->setValueNotifyingHost(TYPE_DEFAULT ? 1.0f : 0.0f);
+        parameters.getParameter(ACTIVE_NAME + std::to_string(i))->setValueNotifyingHost(ACTIVE_DEFAULT ? 1.0f : 0.0f);
+    }
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()

@@ -23,6 +23,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "Graphs.h"
+#include "MyTheme.h"
 
 typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
@@ -39,7 +40,8 @@ typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class PluginEditor  : public juce::AudioProcessorEditor
+class PluginEditor  : public juce::AudioProcessorEditor,
+                      public juce::Button::Listener
 {
 public:
     //==============================================================================
@@ -52,6 +54,7 @@ public:
 
     void paint (juce::Graphics& g) override;
     void resized() override;
+    void buttonClicked (juce::Button* buttonThatWasClicked) override;
 
 
 
@@ -64,9 +67,12 @@ private:
     std::vector<std::unique_ptr<SliderAttachment>> phasesAttachments;
     std::vector<std::unique_ptr<ButtonAttachment>> typesAttachments;
     std::vector<std::unique_ptr<ButtonAttachment>> activeAttachments;
+
+    Theme theme;
     //[/UserVariables]
 
     //==============================================================================
+    std::unique_ptr<juce::TextButton> reset_button;
     std::unique_ptr<FrequencyResponse> frequency_response;
     std::unique_ptr<juce::Label> freq_response_label;
     std::unique_ptr<PhaseResponse> phase_response;
@@ -86,7 +92,6 @@ private:
     std::unique_ptr<juce::Label> element2_label;
     std::unique_ptr<juce::Slider> p2_slider;
     std::unique_ptr<juce::Label> active_label;
-    std::unique_ptr<juce::Label> juce__label8;
     std::unique_ptr<juce::Label> element3_label;
     std::unique_ptr<juce::Label> element4_label;
     std::unique_ptr<juce::Label> element5_label;

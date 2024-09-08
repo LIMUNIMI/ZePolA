@@ -36,6 +36,13 @@ public:
     
     std::vector<std::complex<double>> getFilterSpectrum ();
     std::vector<std::shared_ptr<FilterElement>> getFilterElementsChain ();
+    
+    void setEditorCallback(std::function<void()> callback)
+    {
+        editorCallback = callback;
+    }
+    
+    void resetFilter ();
 
 private:
     void parameterChanged(const String& parameterID, float newValue) override;
@@ -48,6 +55,8 @@ private:
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> smoothedGain;
     
     bool active = true;
+    
+    std::function<void()> editorCallback;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PolesAndZerosEQAudioProcessor);
 };

@@ -1,6 +1,8 @@
 #pragma once
 #include <JuceHeader.h>
 
+#define GRAPHS_BACKGROUND       0xff2a2a2a
+
 class FrequencyResponse : public juce::Component
 {
 public:
@@ -12,42 +14,59 @@ public:
     
     void paint(juce::Graphics& g) override
     {
-        g.fillAll(juce::Colours::black);
+        g.fillAll(juce::Colour (GRAPHS_BACKGROUND));
         g.setColour(juce::Colours::white);
-        drawSpectrum(g);
+        drawFrequencyResponse(g);
     }
     
     void updateMagnitudes (const std::vector<std::complex<double>>& spectrum)
     {
-        magnitudes.resize(spectrum.size());
-        for (int i = 0; i < spectrum.size(); ++ i)
+        bool shouldRepaint = false;
+        
+        if (magnitudes.size() != spectrum.size())
         {
-            magnitudes[i] = std::abs(spectrum[i]);
+            shouldRepaint = true;
+            magnitudes.resize(spectrum.size());
         }
-        repaint();
+        
+        long int spectrumSize = spectrum.size();
+        for (int i = 0; i < spectrumSize; ++ i)
+        {
+            double magnitude = std::abs(spectrum[i]);
+            if (magnitudes[i] != magnitude)
+            {
+                magnitudes[i] = magnitude;
+                shouldRepaint = true;
+            }
+        }
+
+        if (shouldRepaint)
+            repaint();
     }
     
 private:
     std::vector<double> magnitudes;
     
-    void drawSpectrum(juce::Graphics& g)
+    void drawFrequencyResponse(juce::Graphics& g)
     {
         if (magnitudes.empty())
             return;
         
         auto width = getWidth();
         auto height = getHeight();
-    
-        for (int i = 1; i < magnitudes.size(); ++ i)
+        
+        juce::Path responsePath;
+        responsePath.startNewSubPath(0, height - static_cast<float>(magnitudes[0]) * height);
+        
+        long int magnitudesSize = magnitudes.size();
+        for (int i = 1; i < magnitudesSize; ++ i)
         {
-            float x1 = static_cast<float>(i - 1) / magnitudes.size() * width;
-            float y1 = height - static_cast<float>(magnitudes[i - 1]) * height;
-            
-            float x2 = static_cast<float>(i) / magnitudes.size() * width;
-            float y2 = height - static_cast<float>(magnitudes[i]) * height;
-            
-            g.drawLine(x1, y1, x2, y2, 1.0f);
+            float x = static_cast<float>(i) / magnitudes.size() * width;
+            float y = height - static_cast<float>(magnitudes[i]) * height;
+            responsePath.lineTo(x, y);
         }
+        
+        g.strokePath(responsePath, juce::PathStrokeType(1.0f));
     }
 };
 
@@ -63,42 +82,59 @@ public:
     
     void paint(juce::Graphics& g) override
     {
-        g.fillAll(juce::Colours::black);
+        g.fillAll(juce::Colour (GRAPHS_BACKGROUND));
         g.setColour(juce::Colours::white);
-        drawSpectrum(g);
+        drawPhaseResponse(g);
     }
     
-    void updatePhases (const std::vector<std::complex<double>>& spectrum)
+    void updatePhases(const std::vector<std::complex<double>>& spectrum)
     {
-        phases.resize(spectrum.size());
-        for (int i = 0; i < spectrum.size(); ++ i)
+        bool shouldRepaint = false;
+        
+        if (phases.size() != spectrum.size())
         {
-            phases[i] = std::arg(spectrum[i]);
+            shouldRepaint = true;
+            phases.resize(spectrum.size());
         }
-        repaint();
+        
+        long int spectrumSize = spectrum.size();
+        for (int i = 0; i < spectrumSize; ++ i)
+        {
+            double phase = std::arg(spectrum[i]);
+            if (phases[i] != phase)
+            {
+                phases[i] = phase;
+                shouldRepaint = true;
+            }
+        }
+        
+        if (shouldRepaint)
+            repaint();
     }
     
 private:
     std::vector<double> phases;
     
-    void drawSpectrum(juce::Graphics& g)
+    void drawPhaseResponse(juce::Graphics& g)
     {
         if (phases.empty())
             return;
         
         auto width = getWidth();
         auto height = getHeight();
+        
+        juce::Path responsePath;
+        responsePath.startNewSubPath(0, height - static_cast<float>(phases[0]) * height);
     
-        for (int i = 1; i < phases.size(); ++ i)
+        long int phasesSize = phases.size();
+        for (int i = 1; i < phasesSize; ++ i)
         {
-            float x1 = static_cast<float>(i - 1) / phases.size() * width;
-            float y1 = height - static_cast<float>(phases[i - 1]) * height;
-            
-            float x2 = static_cast<float>(i) / phases.size() * width;
-            float y2 = height - static_cast<float>(phases[i]) * height;
-            
-            g.drawLine(x1, y1, x2, y2, 1.0f);
+            float x = static_cast<float>(i) / phases.size() * width;
+            float y = height - static_cast<float>(phases[i]) * height;
+            responsePath.lineTo(x, y);
         }
+        
+        g.strokePath(responsePath, juce::PathStrokeType(1.0f));
     }
 };
 
@@ -113,7 +149,7 @@ public:
     
     void paint(juce::Graphics& g) override
     {
-        g.fillAll(juce::Colours::white);
+        g.fillAll(juce::Colour (GRAPHS_BACKGROUND));
         drawPlane(g);
         drawPolesAndZeros(g);
     }
@@ -125,7 +161,7 @@ public:
         
         for (auto& element : elements)
         {
-            if (element->getType())
+            if (element->getType() and element->isActive())
                 poles.push_back(std::polar(element->getMagnitude(), element->getPhase()));
             else
                 zeros.push_back(std::polar(element->getMagnitude(), element->getPhase()));
@@ -143,14 +179,14 @@ private:
         auto height = getHeight();
         
         // Axis paint
-        g.setColour(juce::Colours::black);
-        g.drawLine(0, height / 2, width, height / 2, 1.0f);
-        g.drawLine(width / 2, 0, width / 2, height, 1.0f);
+        g.setColour(juce::Colours::white);
+        g.drawLine(0, height / 2, width, height / 2, 0.7f);
+        g.drawLine(width / 2, 0, width / 2, height, 0.7f);
         
         // Circumference paint
-        g.setColour(juce::Colours::grey);
+        g.setColour(juce::Colours::white);
         float radius = std::min(width, height) / 2.0f;
-        g.drawEllipse((width / 2) - radius, (height / 2) - radius, radius * 2, radius * 2, 1.5f);
+        g.drawEllipse((width / 2) - radius, (height / 2) - radius, radius * 2, radius * 2, 1.2f);
     }
     
     void drawPolesAndZeros(juce::Graphics& g)
@@ -160,7 +196,7 @@ private:
         float radius = 5.0f;
         
         // Zeros are "O"
-        g.setColour(juce::Colours::blue);
+        g.setColour(juce::Colour (0xff3498db));
         for (const auto& zero : zeros)
         {
             float x = (std::real(zero) * (width / 2)) + (width / 2);
@@ -170,7 +206,7 @@ private:
         }
         
         // Poles are "X"
-        g.setColour(juce::Colours::red);
+        g.setColour(juce::Colour (0xfff1c40f));
         for (const auto& pole : poles)
         {
             float x = (std::real(pole) * (width / 2)) + (width / 2);
