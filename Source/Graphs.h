@@ -1,9 +1,9 @@
 #pragma once
 #include <JuceHeader.h>
 
-#define GRAPHS_BACKGROUND                   0xff2a2a2a
-#define ZEROS_COLOUR                        0xff2980b9
-#define POLES_COLOUR                        0xffc0392b
+#define GRAPHS_BACKGROUND                   0xff979a9a
+#define ZEROS_COLOUR                        0xffbb8fce
+#define POLES_COLOUR                        0xfff1c40f
 
 class FrequencyResponse : public juce::Component
 {

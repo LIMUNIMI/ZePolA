@@ -62,7 +62,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     freq_response_label.reset (new juce::Label ("Frequency response",
                                                 TRANS ("FREQUENCY RESPONSE")));
     addAndMakeVisible (freq_response_label.get());
-    freq_response_label->setFont (juce::Font ("Gill Sans", 16.00f, juce::Font::plain).withTypefaceStyle ("SemiBold").withExtraKerningFactor (0.000f));
+    freq_response_label->setFont (juce::Font ("Gill Sans", 16.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
     freq_response_label->setJustificationType (juce::Justification::centred);
     freq_response_label->setEditable (false, false, false);
     freq_response_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
@@ -80,7 +80,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     ph_response_label.reset (new juce::Label ("Phase response",
                                               TRANS ("PHASE RESPONSE")));
     addAndMakeVisible (ph_response_label.get());
-    ph_response_label->setFont (juce::Font ("Gill Sans", 16.00f, juce::Font::plain).withTypefaceStyle ("SemiBold").withExtraKerningFactor (0.000f));
+    ph_response_label->setFont (juce::Font ("Gill Sans", 16.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
     ph_response_label->setJustificationType (juce::Justification::centred);
     ph_response_label->setEditable (false, false, false);
     ph_response_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
@@ -173,7 +173,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     element1_label->setBounds (38, 66, 70, 24);
 
     magnitudes_label.reset (new juce::Label ("Magnitudes",
-                                             TRANS ("MAGNITUDES")));
+                                             TRANS ("MAGNITUDE\n")));
     addAndMakeVisible (magnitudes_label.get());
     magnitudes_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
     magnitudes_label->setJustificationType (juce::Justification::centred);
@@ -185,7 +185,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     magnitudes_label->setBounds (166, 20, 90, 24);
 
     phases_label.reset (new juce::Label ("Phases",
-                                         TRANS ("PHASES")));
+                                         TRANS ("PHASE\n")));
     addAndMakeVisible (phases_label.get());
     phases_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
     phases_label->setJustificationType (juce::Justification::centred);
@@ -194,7 +194,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     phases_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     phases_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    phases_label->setBounds (319, 20, 62, 24);
+    phases_label->setBounds (318, 20, 62, 24);
 
     zero_pole_label.reset (new juce::Label ("Zero / Pole",
                                             TRANS ("ZERO  /  POLE")));
@@ -500,150 +500,150 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (e1_type.get());
     e1_type->setButtonText (juce::String());
 
-    e1_type->setBounds (443, 53, 60, 45);
+    e1_type->setBounds (445, 64, 56, 23);
 
     e2_type.reset (new juce::ToggleButton ("Element 2 type"));
     addAndMakeVisible (e2_type.get());
     e2_type->setButtonText (juce::String());
 
-    e2_type->setBounds (443, 109, 60, 45);
+    e2_type->setBounds (445, 120, 56, 23);
 
     e3_type.reset (new juce::ToggleButton ("Element 3 type"));
     addAndMakeVisible (e3_type.get());
     e3_type->setButtonText (juce::String());
 
-    e3_type->setBounds (443, 165, 60, 45);
+    e3_type->setBounds (445, 176, 56, 23);
 
     e4_type.reset (new juce::ToggleButton ("Element 4 type"));
     addAndMakeVisible (e4_type.get());
     e4_type->setButtonText (juce::String());
 
-    e4_type->setBounds (443, 221, 60, 45);
+    e4_type->setBounds (445, 232, 56, 23);
 
     e5_type.reset (new juce::ToggleButton ("Element 5 type"));
     addAndMakeVisible (e5_type.get());
     e5_type->setButtonText (juce::String());
 
-    e5_type->setBounds (443, 277, 60, 45);
+    e5_type->setBounds (445, 288, 56, 23);
 
     e6_type.reset (new juce::ToggleButton ("Element 6 type"));
     addAndMakeVisible (e6_type.get());
     e6_type->setButtonText (juce::String());
 
-    e6_type->setBounds (443, 333, 60, 45);
+    e6_type->setBounds (445, 344, 56, 23);
 
     e7_type.reset (new juce::ToggleButton ("Element 7 type"));
     addAndMakeVisible (e7_type.get());
     e7_type->setButtonText (juce::String());
 
-    e7_type->setBounds (443, 389, 60, 45);
+    e7_type->setBounds (445, 400, 56, 23);
 
     e8_type.reset (new juce::ToggleButton ("Element 8 type"));
     addAndMakeVisible (e8_type.get());
     e8_type->setButtonText (juce::String());
 
-    e8_type->setBounds (443, 445, 60, 45);
+    e8_type->setBounds (445, 456, 56, 23);
 
     e9_type.reset (new juce::ToggleButton ("Element 9 type"));
     addAndMakeVisible (e9_type.get());
     e9_type->setButtonText (juce::String());
 
-    e9_type->setBounds (443, 501, 60, 45);
+    e9_type->setBounds (445, 512, 56, 23);
 
     e10_type.reset (new juce::ToggleButton ("Element 10 type"));
     addAndMakeVisible (e10_type.get());
     e10_type->setButtonText (juce::String());
 
-    e10_type->setBounds (443, 557, 60, 45);
+    e10_type->setBounds (445, 568, 56, 23);
 
     e11_type.reset (new juce::ToggleButton ("Element 11 type"));
     addAndMakeVisible (e11_type.get());
     e11_type->setButtonText (juce::String());
 
-    e11_type->setBounds (443, 613, 60, 45);
+    e11_type->setBounds (445, 624, 56, 23);
 
     e12_type.reset (new juce::ToggleButton ("Element 12 type"));
     addAndMakeVisible (e12_type.get());
     e12_type->setButtonText (juce::String());
 
-    e12_type->setBounds (443, 669, 60, 45);
+    e12_type->setBounds (445, 680, 56, 23);
 
     e1_active.reset (new juce::ToggleButton ("Element 1 active"));
     addAndMakeVisible (e1_active.get());
     e1_active->setButtonText (juce::String());
 
-    e1_active->setBounds (542, 53, 60, 45);
+    e1_active->setBounds (542, 65, 39, 23);
 
     e2_active.reset (new juce::ToggleButton ("Element 2 active"));
     addAndMakeVisible (e2_active.get());
     e2_active->setButtonText (juce::String());
 
-    e2_active->setBounds (542, 109, 60, 45);
+    e2_active->setBounds (542, 121, 39, 23);
 
     e3_active.reset (new juce::ToggleButton ("Element 3 active"));
     addAndMakeVisible (e3_active.get());
     e3_active->setButtonText (juce::String());
 
-    e3_active->setBounds (542, 165, 60, 45);
+    e3_active->setBounds (542, 177, 39, 23);
 
     e4_active.reset (new juce::ToggleButton ("Element 4 active"));
     addAndMakeVisible (e4_active.get());
     e4_active->setButtonText (juce::String());
 
-    e4_active->setBounds (542, 221, 60, 45);
+    e4_active->setBounds (542, 233, 39, 23);
 
     e5_active.reset (new juce::ToggleButton ("Element 5 active"));
     addAndMakeVisible (e5_active.get());
     e5_active->setButtonText (juce::String());
 
-    e5_active->setBounds (542, 277, 60, 45);
+    e5_active->setBounds (542, 289, 39, 23);
 
     e6_active.reset (new juce::ToggleButton ("Element 6 active"));
     addAndMakeVisible (e6_active.get());
     e6_active->setButtonText (juce::String());
 
-    e6_active->setBounds (542, 333, 60, 45);
+    e6_active->setBounds (542, 345, 39, 23);
 
     e7_active.reset (new juce::ToggleButton ("Element 7 active"));
     addAndMakeVisible (e7_active.get());
     e7_active->setButtonText (juce::String());
 
-    e7_active->setBounds (542, 389, 60, 45);
+    e7_active->setBounds (542, 401, 39, 23);
 
     e8_active.reset (new juce::ToggleButton ("Element 8 active"));
     addAndMakeVisible (e8_active.get());
     e8_active->setButtonText (juce::String());
 
-    e8_active->setBounds (542, 445, 60, 45);
+    e8_active->setBounds (542, 457, 39, 23);
 
     e9_active.reset (new juce::ToggleButton ("Element 9 active"));
     addAndMakeVisible (e9_active.get());
     e9_active->setButtonText (juce::String());
 
-    e9_active->setBounds (542, 501, 60, 45);
+    e9_active->setBounds (542, 513, 39, 23);
 
     e10_active.reset (new juce::ToggleButton ("Element 10 active"));
     addAndMakeVisible (e10_active.get());
     e10_active->setButtonText (juce::String());
 
-    e10_active->setBounds (542, 557, 60, 45);
+    e10_active->setBounds (542, 569, 39, 23);
 
     e11_active.reset (new juce::ToggleButton ("Element 11 active"));
     addAndMakeVisible (e11_active.get());
     e11_active->setButtonText (juce::String());
 
-    e11_active->setBounds (542, 613, 60, 45);
+    e11_active->setBounds (542, 625, 39, 23);
 
     e12_active.reset (new juce::ToggleButton ("Element 12 active"));
     addAndMakeVisible (e12_active.get());
     e12_active->setButtonText (juce::String());
 
-    e12_active->setBounds (542, 669, 60, 45);
+    e12_active->setBounds (542, 681, 39, 23);
 
     gaussian_plane_label.reset (new juce::Label ("Gaussian plane",
                                                  TRANS ("GAUSSIAN PLANE")));
     addAndMakeVisible (gaussian_plane_label.get());
-    gaussian_plane_label->setFont (juce::Font ("Gill Sans", 16.00f, juce::Font::plain).withTypefaceStyle ("SemiBold").withExtraKerningFactor (0.000f));
+    gaussian_plane_label->setFont (juce::Font ("Gill Sans", 16.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
     gaussian_plane_label->setJustificationType (juce::Justification::centred);
     gaussian_plane_label->setEditable (false, false, false);
     gaussian_plane_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
@@ -732,9 +732,33 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p11_slider->setLookAndFeel(&phaseSlidersTheme);
     p12_slider->setLookAndFeel(&phaseSlidersTheme);
 
-    e1_type->setLookAndFeel(&switchesTheme);
+    e1_type->setLookAndFeel(&typeSwitchesTheme);
+    e2_type->setLookAndFeel(&typeSwitchesTheme);
+    e3_type->setLookAndFeel(&typeSwitchesTheme);
+    e4_type->setLookAndFeel(&typeSwitchesTheme);
+    e5_type->setLookAndFeel(&typeSwitchesTheme);
+    e6_type->setLookAndFeel(&typeSwitchesTheme);
+    e7_type->setLookAndFeel(&typeSwitchesTheme);
+    e8_type->setLookAndFeel(&typeSwitchesTheme);
+    e9_type->setLookAndFeel(&typeSwitchesTheme);
+    e10_type->setLookAndFeel(&typeSwitchesTheme);
+    e11_type->setLookAndFeel(&typeSwitchesTheme);
+    e12_type->setLookAndFeel(&typeSwitchesTheme);
 
-    reset_button->setLookAndFeel(&buttonTheme);
+    e1_active->setLookAndFeel(&activeSwitchesTheme);
+    e2_active->setLookAndFeel(&activeSwitchesTheme);
+    e3_active->setLookAndFeel(&activeSwitchesTheme);
+    e4_active->setLookAndFeel(&activeSwitchesTheme);
+    e5_active->setLookAndFeel(&activeSwitchesTheme);
+    e6_active->setLookAndFeel(&activeSwitchesTheme);
+    e7_active->setLookAndFeel(&activeSwitchesTheme);
+    e8_active->setLookAndFeel(&activeSwitchesTheme);
+    e9_active->setLookAndFeel(&activeSwitchesTheme);
+    e10_active->setLookAndFeel(&activeSwitchesTheme);
+    e11_active->setLookAndFeel(&activeSwitchesTheme);
+    e12_active->setLookAndFeel(&activeSwitchesTheme);
+
+    reset_button->setLookAndFeel(&resetButtonTheme);
     //[/UserPreSize]
 
     setSize (1500, 900);
@@ -843,6 +867,78 @@ void PluginEditor::paint (juce::Graphics& g)
     g.fillAll (juce::Colour (0xffecf0f1));
 
     {
+        float x = 526.0f, y = 12.0f, width = 91.0f, height = 752.0f;
+        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
+        juce::Colour strokeColour = juce::Colour (0xff383838);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 14.500f);
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
+        float x = 420.0f, y = 12.0f, width = 106.0f, height = 752.0f;
+        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
+        juce::Colour strokeColour = juce::Colour (0xff383838);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 14.500f);
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
+        float x = 281.0f, y = 12.0f, width = 139.0f, height = 752.0f;
+        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
+        juce::Colour strokeColour = juce::Colour (0xff383838);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 14.500f);
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
+        float x = 142.0f, y = 12.0f, width = 139.0f, height = 753.0f;
+        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
+        juce::Colour strokeColour = juce::Colour (0xff383838);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 14.500f);
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
+        float x = 10.0f, y = 12.0f, width = 132.0f, height = 753.0f;
+        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
+        juce::Colour strokeColour = juce::Colour (0xff383838);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 14.500f);
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
+        float x = 984.0f, y = 12.0f, width = 504.0f, height = 752.0f;
+        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
+        juce::Colour strokeColour = juce::Colour (0xff383838);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 14.500f);
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
+    }
+
+    {
         int x = 1406, y = 856, width = 85, height = 30;
         juce::String text (TRANS ("TOOLS"));
         juce::Colour fillColour = juce::Colour (0xff333333);
@@ -867,46 +963,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 10.0f, y = 12.0f, width = 132.0f, height = 710.0f;
-        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
-        juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRoundedRectangle (x, y, width, height, 14.500f);
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
-    }
-
-    {
-        int x = 10, y = 48, width = 607, height = 1;
-        juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        float x = 1408.0f, y = 854.0f, width = 80.0f, height = 34.0f;
-        juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
-    }
-
-    {
-        float x = 1326.0f, y = 721.0f, width = 161.0f, height = 34.0f;
-        juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 12.000f, 2.000f);
-    }
-
-    {
-        int x = 1337, y = 722, width = 142, height = 30;
+        int x = 1337, y = 730, width = 142, height = 30;
         juce::String text (TRANS ("FILTER RESPONSE"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -918,19 +975,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 10.0f, y = 722.0f, width = 132.0f, height = 34.0f;
-        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
-        juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRoundedRectangle (x, y, width, height, 12.000f);
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 12.000f, 2.000f);
-    }
-
-    {
-        int x = 13, y = 724, width = 125, height = 30;
+        int x = 10, y = 730, width = 125, height = 30;
         juce::String text (TRANS ("FILTER SETUP"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -942,64 +987,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 984.0f, y = 11.0f, width = 504.0f, height = 710.0f;
-        juce::Colour fillColour = juce::Colour (0x33f2dbb3);
-        juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRoundedRectangle (x, y, width, height, 14.500f);
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
-    }
-
-    {
-        float x = 638.0f, y = 11.0f, width = 346.0f, height = 356.0f;
-        juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
-    }
-
-    {
-        float x = 526.0f, y = 11.0f, width = 91.0f, height = 710.0f;
-        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
-        juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRoundedRectangle (x, y, width, height, 14.500f);
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
-    }
-
-    {
-        float x = 420.0f, y = 11.0f, width = 106.0f, height = 710.0f;
-        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
-        juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRoundedRectangle (x, y, width, height, 14.500f);
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
-    }
-
-    {
-        float x = 281.0f, y = 11.0f, width = 139.0f, height = 710.0f;
-        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
-        juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRoundedRectangle (x, y, width, height, 14.500f);
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
-    }
-
-    {
-        float x = 142.0f, y = 12.0f, width = 139.0f, height = 710.0f;
+        float x = 638.0f, y = 12.0f, width = 346.0f, height = 356.0f;
         juce::Colour fillColour = juce::Colour (0x17b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1159,37 +1147,30 @@ BEGIN_JUCER_METADATA
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1500" initialHeight="900">
   <BACKGROUND backgroundColour="ffecf0f1">
+    <ROUNDRECT pos="526 12 91 752" cornerSize="14.5" fill="solid: 17b1b1b1"
+               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
+    <ROUNDRECT pos="420 12 106 752" cornerSize="14.5" fill="solid: 17b1b1b1"
+               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
+    <ROUNDRECT pos="281 12 139 752" cornerSize="14.5" fill="solid: 17b1b1b1"
+               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
+    <ROUNDRECT pos="142 12 139 753" cornerSize="14.5" fill="solid: 17b1b1b1"
+               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
+    <ROUNDRECT pos="10 12 132 753" cornerSize="14.5" fill="solid: 17b1b1b1"
+               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
+    <ROUNDRECT pos="984 12 504 752" cornerSize="14.5" fill="solid: 17b1b1b1"
+               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
     <TEXT pos="1406 856 85 30" fill="solid: ff333333" hasStroke="0" text="TOOLS"
           fontname="Gill Sans" fontsize="18.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
     <ROUNDRECT pos="9 795 1479 93" cornerSize="14.5" fill="solid: 30b1b1b1"
                hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
-    <ROUNDRECT pos="10 12 132 710" cornerSize="14.5" fill="solid: 17b1b1b1"
-               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
-    <RECT pos="10 48 607 1" fill="solid: 25909497" hasStroke="0"/>
-    <ROUNDRECT pos="1408 854 80 34" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
-               stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
-    <ROUNDRECT pos="1326 721 161 34" cornerSize="12.0" fill="solid: 4ea52a"
-               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
-    <TEXT pos="1337 722 142 30" fill="solid: ff333333" hasStroke="0" text="FILTER RESPONSE"
+    <TEXT pos="1337 730 142 30" fill="solid: ff333333" hasStroke="0" text="FILTER RESPONSE"
           fontname="Gill Sans" fontsize="18.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <ROUNDRECT pos="10 722 132 34" cornerSize="12.0" fill="solid: 17b1b1b1"
-               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
-    <TEXT pos="13 724 125 30" fill="solid: ff333333" hasStroke="0" text="FILTER SETUP"
+    <TEXT pos="10 730 125 30" fill="solid: ff333333" hasStroke="0" text="FILTER SETUP"
           fontname="Gill Sans" fontsize="18.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <ROUNDRECT pos="984 11 504 710" cornerSize="14.5" fill="solid: 33f2dbb3"
-               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
-    <ROUNDRECT pos="638 11 346 356" cornerSize="14.5" fill="solid: 4ea52a" hasStroke="1"
-               stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
-    <ROUNDRECT pos="526 11 91 710" cornerSize="14.5" fill="solid: 17b1b1b1"
-               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
-    <ROUNDRECT pos="420 11 106 710" cornerSize="14.5" fill="solid: 17b1b1b1"
-               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
-    <ROUNDRECT pos="281 11 139 710" cornerSize="14.5" fill="solid: 17b1b1b1"
-               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
-    <ROUNDRECT pos="142 12 139 710" cornerSize="14.5" fill="solid: 17b1b1b1"
+    <ROUNDRECT pos="638 12 346 356" cornerSize="14.5" fill="solid: 17b1b1b1"
                hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
     <RECT pos="10 104 607 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="10 160 607 1" fill="solid: 25909497" hasStroke="0"/>
@@ -1270,13 +1251,13 @@ BEGIN_JUCER_METADATA
          fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
   <LABEL name="Magnitudes" id="f2206057c7f672c6" memberName="magnitudes_label"
          virtualName="" explicitFocusOrder="0" pos="166 20 90 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="MAGNITUDES" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="36"
-         typefaceStyle="SemiBold"/>
+         edTextCol="ff000000" edBkgCol="0" labelText="MAGNITUDE&#10;"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
+         justification="36" typefaceStyle="SemiBold"/>
   <LABEL name="Phases" id="e0e34f187bbbdcdc" memberName="phases_label"
-         virtualName="" explicitFocusOrder="0" pos="319 20 62 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="PHASES" editableSingleClick="0"
+         virtualName="" explicitFocusOrder="0" pos="318 20 62 24" textCol="ff333333"
+         edTextCol="ff000000" edBkgCol="0" labelText="PHASE&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="36"
          typefaceStyle="SemiBold"/>
@@ -1438,76 +1419,76 @@ BEGIN_JUCER_METADATA
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="0"/>
   <TOGGLEBUTTON name="Element 1 type" id="cb026ef1068db639" memberName="e1_type"
-                virtualName="" explicitFocusOrder="0" pos="443 53 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 64 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 2 type" id="56addf679899dfb" memberName="e2_type"
-                virtualName="" explicitFocusOrder="0" pos="443 109 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 120 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 3 type" id="5abda647a887dc8e" memberName="e3_type"
-                virtualName="" explicitFocusOrder="0" pos="443 165 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 176 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 4 type" id="3136ab6a98246edb" memberName="e4_type"
-                virtualName="" explicitFocusOrder="0" pos="443 221 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 232 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 5 type" id="4d6d7aa8e46a31c6" memberName="e5_type"
-                virtualName="" explicitFocusOrder="0" pos="443 277 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 288 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 6 type" id="6a190298ad04abf" memberName="e6_type"
-                virtualName="" explicitFocusOrder="0" pos="443 333 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 344 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 7 type" id="57fd1da9881e7a6a" memberName="e7_type"
-                virtualName="" explicitFocusOrder="0" pos="443 389 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 400 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 8 type" id="a0b1086b7f717581" memberName="e8_type"
-                virtualName="" explicitFocusOrder="0" pos="443 445 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 456 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 9 type" id="dafe526db1b167f9" memberName="e9_type"
-                virtualName="" explicitFocusOrder="0" pos="443 501 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 512 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 10 type" id="2d062dcad4b0663" memberName="e10_type"
-                virtualName="" explicitFocusOrder="0" pos="443 557 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 568 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 11 type" id="86cee1ca201dd195" memberName="e11_type"
-                virtualName="" explicitFocusOrder="0" pos="443 613 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 624 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 12 type" id="da051b1d0f987089" memberName="e12_type"
-                virtualName="" explicitFocusOrder="0" pos="443 669 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="445 680 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 1 active" id="84bb86bdbd9ccede" memberName="e1_active"
-                virtualName="" explicitFocusOrder="0" pos="542 53 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 65 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 2 active" id="176e3fb309f12ef5" memberName="e2_active"
-                virtualName="" explicitFocusOrder="0" pos="542 109 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 121 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 3 active" id="d6d9c0542e41b9c3" memberName="e3_active"
-                virtualName="" explicitFocusOrder="0" pos="542 165 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 177 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 4 active" id="72d6ebba0023e28e" memberName="e4_active"
-                virtualName="" explicitFocusOrder="0" pos="542 221 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 233 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 5 active" id="d8c38a2ce324a73d" memberName="e5_active"
-                virtualName="" explicitFocusOrder="0" pos="542 277 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 289 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 6 active" id="1b42bda33e1c947c" memberName="e6_active"
-                virtualName="" explicitFocusOrder="0" pos="542 333 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 345 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 7 active" id="3405e0694e2b063d" memberName="e7_active"
-                virtualName="" explicitFocusOrder="0" pos="542 389 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 401 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 8 active" id="b60e0b9c2104a2bd" memberName="e8_active"
-                virtualName="" explicitFocusOrder="0" pos="542 445 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 457 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 9 active" id="d1d96ca0950dde6a" memberName="e9_active"
-                virtualName="" explicitFocusOrder="0" pos="542 501 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 513 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 10 active" id="663dbbc6ddde4163" memberName="e10_active"
-                virtualName="" explicitFocusOrder="0" pos="542 557 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 569 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 11 active" id="bf7163acf9aabb69" memberName="e11_active"
-                virtualName="" explicitFocusOrder="0" pos="542 613 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 625 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 12 active" id="c502882a7d65a176" memberName="e12_active"
-                virtualName="" explicitFocusOrder="0" pos="542 669 60 45" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="542 681 39 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <LABEL name="Gaussian plane" id="32980deccea32218" memberName="gaussian_plane_label"
          virtualName="" explicitFocusOrder="0" pos="728 333 141 24" textCol="ff333333"

@@ -68,10 +68,11 @@ private:
     std::vector<std::unique_ptr<ButtonAttachment>> typesAttachments;
     std::vector<std::unique_ptr<ButtonAttachment>> activeAttachments;
 
-    ButtonTheme buttonTheme;
     MagnitudeSlidersTheme magnitudeSlidersTheme;
     PhaseSlidersTheme phaseSlidersTheme;
-    LA2AStyleLookAndFeel switchesTheme;
+    TypeSwitchTheme typeSwitchesTheme;
+    ActiveSwitchTheme activeSwitchesTheme;
+    ResetButtonTheme resetButtonTheme;
     //[/UserVariables]
 
     //==============================================================================

@@ -7,6 +7,8 @@
   <MAINGROUP id="ZGYPR9" name="Poles and Zeros - EQ">
     <GROUP id="{7D61AFCF-4618-4DA8-96D3-B0DC7D2A26DB}" name="Source">
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
+        <FILE id="vDSJyS" name="GUImiscellaneous.h" compile="0" resource="0"
+              file="Source/GUImiscellaneous.h"/>
         <FILE id="uMM33l" name="MyTheme.h" compile="0" resource="0" file="Source/MyTheme.h"/>
         <FILE id="HNvN2h" name="PluginEditor.cpp" compile="1" resource="0"
               file="Source/PluginEditor.cpp"/>
