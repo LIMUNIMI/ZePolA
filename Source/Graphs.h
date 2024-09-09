@@ -1,7 +1,9 @@
 #pragma once
 #include <JuceHeader.h>
 
-#define GRAPHS_BACKGROUND       0xff2a2a2a
+#define GRAPHS_BACKGROUND                   0xff2a2a2a
+#define ZEROS_COLOUR                        0xff2980b9
+#define POLES_COLOUR                        0xffc0392b
 
 class FrequencyResponse : public juce::Component
 {
@@ -196,7 +198,7 @@ private:
         float radius = 5.0f;
         
         // Zeros are "O"
-        g.setColour(juce::Colour (0xff3498db));
+        g.setColour(juce::Colour (ZEROS_COLOUR));
         for (const auto& zero : zeros)
         {
             float x = (std::real(zero) * (width / 2)) + (width / 2);
@@ -206,7 +208,7 @@ private:
         }
         
         // Poles are "X"
-        g.setColour(juce::Colour (0xfff1c40f));
+        g.setColour(juce::Colour (POLES_COLOUR));
         for (const auto& pole : poles)
         {
             float x = (std::real(pole) * (width / 2)) + (width / 2);
