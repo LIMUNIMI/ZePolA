@@ -54,32 +54,26 @@ public:
     void drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
                                bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
         {
-            // Imposta le dimensioni fisse per il ToggleButton
             const int buttonWidth = 52;
             const int buttonHeight = 19;
 
             auto bounds = button.getLocalBounds().withSizeKeepingCentre(buttonWidth, buttonHeight);
 
-            // Colori per ON e OFF
-            auto buttonOnColor = juce::Colour(ZEROS_COLOUR);
-            auto buttonOffColor = juce::Colour(POLES_COLOUR);
+            auto zeroColor = juce::Colour(ZEROS_COLOUR);
+            auto poleColor = juce::Colour(POLES_COLOUR);
             auto borderColor = juce::Colours::black;
             auto indicatorColor = juce::Colours::white;
 
-            // Disegno dello sfondo del toggle
-            g.setColour(button.getToggleState() ? buttonOnColor : buttonOffColor);
-            g.fillRoundedRectangle(bounds.toFloat(), 9.5f);  // Arrotondamento dei bordi
+            g.setColour(button.getToggleState() ? zeroColor : poleColor);
+            g.fillRoundedRectangle(bounds.toFloat(), 9.5f);
 
-            // Disegno del bordo
             g.setColour(borderColor);
-            g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 1.5f);  // Spessore del bordo di 2.0 pixel
+            g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 1.5f);
 
-            // Calcolo delle dimensioni e posizione dell'indicatore di stato (cerchio)
-            const int indicatorDiameter = 15;  // Diametro dell'indicatore
+            const int indicatorDiameter = 15;
             auto indicatorX = button.getToggleState() ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
             auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2);
 
-            // Disegno dell'indicatore (cerchio)
             g.setColour(indicatorColor);
             g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
             
