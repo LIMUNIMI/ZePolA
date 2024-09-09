@@ -3,7 +3,9 @@
 
 #define GRAPHS_BACKGROUND                   0xffb3b6b7
 #define ZEROS_COLOUR                        0xffbb8fce
+#define CONJ_ZEROS_COLOUR                   0x70bb8fce
 #define POLES_COLOUR                        0xfff1c40f
+#define CONJ_POLES_COLOUR                   0x70f1c40f
 
 class FrequencyResponse : public juce::Component
 {
@@ -174,10 +176,12 @@ public:
         
         for (auto& element : elements)
         {
-            if (element->getType() and element->isActive())
-                poles.push_back(std::polar(element->getMagnitude(), element->getPhase()));
+            if (!element->isActive())
+                continue;
+            if (element->getType())
+                poles.push_back(std::polar(element->getMagnitude(), MathConstants<double>::pi * element->getPhase()));
             else
-                zeros.push_back(std::polar(element->getMagnitude(), element->getPhase()));
+                zeros.push_back(std::polar(element->getMagnitude(), MathConstants<double>::pi * element->getPhase()));
         }
         repaint();
     }
@@ -216,6 +220,11 @@ private:
             float y = (-(std::imag(zero)) * (height / 2)) + (height / 2);
             
             g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
+            
+//          DRAW CONJUGATE
+//            y = ((std::imag(zero)) * (height / 2)) + (height / 2);
+//            g.setColour(juce::Colour (CONJ_ZEROS_COLOUR));
+//            g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
         }
         
         // Poles are "X"
@@ -227,6 +236,11 @@ private:
             
             g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
             g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
+//            DRAW CONJUGATE
+//            g.setColour(juce::Colour (CONJ_POLES_COLOUR));
+//            y = ((std::imag(pole)) * (height / 2)) + (height / 2);
+//            g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
+//            g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
         }
     }
 };
