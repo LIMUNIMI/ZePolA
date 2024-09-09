@@ -159,14 +159,16 @@ public:
     
     void paint(juce::Graphics& g) override
     {
-        
         g.setColour(juce::Colour(GRAPHS_BACKGROUND));
         float cornerSize = 8.0f;
         auto bounds = getLocalBounds().toFloat();
         g.fillRoundedRectangle(bounds, cornerSize);
+        
+        auto margin = bounds.reduced(bounds.getWidth() * 0.025f, bounds.getHeight() * 0.025f);
+    
         g.setColour(juce::Colours::white);
-        drawPlane(g);
-        drawPolesAndZeros(g);
+        drawPlane(g, margin);
+        drawPolesAndZeros(g, margin);
     }
     
     void updateElements(const std::vector<std::shared_ptr<FilterElement>>& elements)
@@ -190,39 +192,43 @@ private:
     std::vector<std::complex<double>> zeros;
     std::vector<std::complex<double>> poles;
     
-    void drawPlane(juce::Graphics& g)
+    void drawPlane(juce::Graphics& g, juce::Rectangle<float> bounds)
     {
-        auto width = getWidth();
-        auto height = getHeight();
+        auto width = bounds.getWidth();
+        auto height = bounds.getHeight();
+        auto centerX = bounds.getCentreX();
+        auto centerY = bounds.getCentreY();
         
         // Axis paint
         g.setColour(juce::Colours::white);
-        g.drawLine(0, height / 2, width, height / 2, 0.7f);
-        g.drawLine(width / 2, 0, width / 2, height, 0.7f);
+        g.drawLine(bounds.getX(), centerY, bounds.getRight(), centerY, 0.7f);
+        g.drawLine(centerX, bounds.getY(), centerX, bounds.getBottom(), 0.7f);
         
         // Circumference paint
         g.setColour(juce::Colours::white);
         float radius = std::min(width, height) / 2.0f;
-        g.drawEllipse((width / 2) - radius, (height / 2) - radius, radius * 2, radius * 2, 1.2f);
+        g.drawEllipse(centerX - radius, centerY - radius, radius * 2, radius * 2, 1.2f);
     }
     
-    void drawPolesAndZeros(juce::Graphics& g)
+    void drawPolesAndZeros(juce::Graphics& g, juce::Rectangle<float> bounds)
     {
-        auto width = getWidth();
-        auto height = getHeight();
+        auto width = bounds.getWidth();
+        auto height = bounds.getHeight();
+        auto centerX = bounds.getCentreX();
+        auto centerY = bounds.getCentreY();
         float radius = 5.0f;
         
         // Zeros are "O"
         g.setColour(juce::Colour (ZEROS_COLOUR));
         for (const auto& zero : zeros)
         {
-            float x = (std::real(zero) * (width / 2)) + (width / 2);
-            float y = (-(std::imag(zero)) * (height / 2)) + (height / 2);
+            float x = (std::real(zero) * (width / 2)) + centerX;
+            float y = (-(std::imag(zero)) * (height / 2)) + centerY;
             
             g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
             
 //          DRAW CONJUGATE
-//            y = ((std::imag(zero)) * (height / 2)) + (height / 2);
+//            y = (-(std::imag(zero)) * (height / 2)) + centerY;
 //            g.setColour(juce::Colour (CONJ_ZEROS_COLOUR));
 //            g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
         }
@@ -231,14 +237,14 @@ private:
         g.setColour(juce::Colour (POLES_COLOUR));
         for (const auto& pole : poles)
         {
-            float x = (std::real(pole) * (width / 2)) + (width / 2);
-            float y = (-(std::imag(pole)) * (height / 2)) + (height / 2);
+            float x = (std::real(pole) * (width / 2)) + centerX;
+            float y = (-(std::imag(pole)) * (height / 2)) + centerY;
             
             g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
             g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
 //            DRAW CONJUGATE
 //            g.setColour(juce::Colour (CONJ_POLES_COLOUR));
-//            y = ((std::imag(pole)) * (height / 2)) + (height / 2);
+//            y = (-(std::imag(pole)) * (height / 2)) + centerY;
 //            g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
 //            g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
         }

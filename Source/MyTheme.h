@@ -68,7 +68,7 @@ public:
             g.fillRoundedRectangle(bounds.toFloat(), 9.5f);
 
             g.setColour(borderColor);
-            g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 2.0f);
+            g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 1.5f);
 
             const int indicatorDiameter = 15;
             auto indicatorX = button.getToggleState() ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
