@@ -571,72 +571,84 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e1_active.reset (new juce::ToggleButton ("Element 1 active"));
     addAndMakeVisible (e1_active.get());
     e1_active->setButtonText (juce::String());
+    e1_active->addListener (this);
 
     e1_active->setBounds (542, 65, 39, 23);
 
     e2_active.reset (new juce::ToggleButton ("Element 2 active"));
     addAndMakeVisible (e2_active.get());
     e2_active->setButtonText (juce::String());
+    e2_active->addListener (this);
 
     e2_active->setBounds (542, 121, 39, 23);
 
     e3_active.reset (new juce::ToggleButton ("Element 3 active"));
     addAndMakeVisible (e3_active.get());
     e3_active->setButtonText (juce::String());
+    e3_active->addListener (this);
 
     e3_active->setBounds (542, 177, 39, 23);
 
     e4_active.reset (new juce::ToggleButton ("Element 4 active"));
     addAndMakeVisible (e4_active.get());
     e4_active->setButtonText (juce::String());
+    e4_active->addListener (this);
 
     e4_active->setBounds (542, 233, 39, 23);
 
     e5_active.reset (new juce::ToggleButton ("Element 5 active"));
     addAndMakeVisible (e5_active.get());
     e5_active->setButtonText (juce::String());
+    e5_active->addListener (this);
 
     e5_active->setBounds (542, 289, 39, 23);
 
     e6_active.reset (new juce::ToggleButton ("Element 6 active"));
     addAndMakeVisible (e6_active.get());
     e6_active->setButtonText (juce::String());
+    e6_active->addListener (this);
 
     e6_active->setBounds (542, 345, 39, 23);
 
     e7_active.reset (new juce::ToggleButton ("Element 7 active"));
     addAndMakeVisible (e7_active.get());
     e7_active->setButtonText (juce::String());
+    e7_active->addListener (this);
 
     e7_active->setBounds (542, 401, 39, 23);
 
     e8_active.reset (new juce::ToggleButton ("Element 8 active"));
     addAndMakeVisible (e8_active.get());
     e8_active->setButtonText (juce::String());
+    e8_active->addListener (this);
 
     e8_active->setBounds (542, 457, 39, 23);
 
     e9_active.reset (new juce::ToggleButton ("Element 9 active"));
     addAndMakeVisible (e9_active.get());
     e9_active->setButtonText (juce::String());
+    e9_active->addListener (this);
 
     e9_active->setBounds (542, 513, 39, 23);
 
     e10_active.reset (new juce::ToggleButton ("Element 10 active"));
     addAndMakeVisible (e10_active.get());
     e10_active->setButtonText (juce::String());
+    e10_active->addListener (this);
 
     e10_active->setBounds (542, 569, 39, 23);
 
     e11_active.reset (new juce::ToggleButton ("Element 11 active"));
     addAndMakeVisible (e11_active.get());
     e11_active->setButtonText (juce::String());
+    e11_active->addListener (this);
 
     e11_active->setBounds (542, 625, 39, 23);
 
     e12_active.reset (new juce::ToggleButton ("Element 12 active"));
     addAndMakeVisible (e12_active.get());
     e12_active->setButtonText (juce::String());
+    e12_active->addListener (this);
 
     e12_active->setBounds (542, 681, 39, 23);
 
@@ -651,6 +663,79 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gaussian_plane_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
     gaussian_plane_label->setBounds (728, 333, 141, 24);
+
+    e1_led.reset (new LEDComponent (*e1_active));
+    addAndMakeVisible (e1_led.get());
+    e1_led->setName ("Led 1");
+
+    e1_led->setBounds (589, 67, 19, 19);
+
+    e2_led.reset (new LEDComponent (*e2_active));
+    addAndMakeVisible (e2_led.get());
+    e2_led->setName ("Led 2");
+
+    e2_led->setBounds (589, 123, 19, 19);
+
+    e3_led.reset (new LEDComponent (*e3_active));
+    addAndMakeVisible (e3_led.get());
+    e3_led->setName ("Led 3");
+
+    e3_led->setBounds (589, 179, 19, 19);
+
+    e4_led.reset (new LEDComponent (*e4_active));
+    addAndMakeVisible (e4_led.get());
+    e4_led->setName ("Led 4");
+
+    e4_led->setBounds (589, 235, 19, 19);
+
+    e5_led.reset (new LEDComponent (*e5_active));
+    addAndMakeVisible (e5_led.get());
+    e5_led->setName ("Led 5");
+
+    e5_led->setBounds (589, 291, 19, 19);
+
+    e6_led.reset (new LEDComponent (*e6_active
+                                    ));
+    addAndMakeVisible (e6_led.get());
+    e6_led->setName ("Led 6");
+
+    e6_led->setBounds (589, 347, 19, 19);
+
+    e7_led.reset (new LEDComponent (*e7_active));
+    addAndMakeVisible (e7_led.get());
+    e7_led->setName ("Led 7");
+
+    e7_led->setBounds (589, 403, 19, 19);
+
+    e8_led.reset (new LEDComponent (*e8_active));
+    addAndMakeVisible (e8_led.get());
+    e8_led->setName ("Led 8");
+
+    e8_led->setBounds (589, 459, 19, 19);
+
+    e9_led.reset (new LEDComponent (*e9_active));
+    addAndMakeVisible (e9_led.get());
+    e9_led->setName ("Led 9");
+
+    e9_led->setBounds (589, 515, 19, 19);
+
+    e10_led.reset (new LEDComponent (*e10_active));
+    addAndMakeVisible (e10_led.get());
+    e10_led->setName ("Led 10");
+
+    e10_led->setBounds (589, 571, 19, 19);
+
+    e11_led.reset (new LEDComponent (*e11_active));
+    addAndMakeVisible (e11_led.get());
+    e11_led->setName ("Led 11");
+
+    e11_led->setBounds (589, 627, 19, 19);
+
+    e12_led.reset (new LEDComponent (*e12_active));
+    addAndMakeVisible (e12_led.get());
+    e12_led->setName ("Led 12");
+
+    e12_led->setBounds (589, 683, 19, 19);
 
 
     //[UserPreSize]
@@ -852,6 +937,18 @@ PluginEditor::~PluginEditor()
     e11_active = nullptr;
     e12_active = nullptr;
     gaussian_plane_label = nullptr;
+    e1_led = nullptr;
+    e2_led = nullptr;
+    e3_led = nullptr;
+    e4_led = nullptr;
+    e5_led = nullptr;
+    e6_led = nullptr;
+    e7_led = nullptr;
+    e8_led = nullptr;
+    e9_led = nullptr;
+    e10_led = nullptr;
+    e11_led = nullptr;
+    e12_led = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1120,6 +1217,78 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         //[UserButtonCode_reset_button] -- add your button handler code here..
         processor.resetFilter();
         //[/UserButtonCode_reset_button]
+    }
+    else if (buttonThatWasClicked == e1_active.get())
+    {
+        //[UserButtonCode_e1_active] -- add your button handler code here..
+        e1_led->repaint();
+        //[/UserButtonCode_e1_active]
+    }
+    else if (buttonThatWasClicked == e2_active.get())
+    {
+        //[UserButtonCode_e2_active] -- add your button handler code here..
+        e2_led->repaint();
+        //[/UserButtonCode_e2_active]
+    }
+    else if (buttonThatWasClicked == e3_active.get())
+    {
+        //[UserButtonCode_e3_active] -- add your button handler code here..
+        e3_led->repaint();
+        //[/UserButtonCode_e3_active]
+    }
+    else if (buttonThatWasClicked == e4_active.get())
+    {
+        //[UserButtonCode_e4_active] -- add your button handler code here..
+        e4_led->repaint();
+        //[/UserButtonCode_e4_active]
+    }
+    else if (buttonThatWasClicked == e5_active.get())
+    {
+        //[UserButtonCode_e5_active] -- add your button handler code here..
+        e5_led->repaint();
+        //[/UserButtonCode_e5_active]
+    }
+    else if (buttonThatWasClicked == e6_active.get())
+    {
+        //[UserButtonCode_e6_active] -- add your button handler code here..
+        e6_led->repaint();
+        //[/UserButtonCode_e6_active]
+    }
+    else if (buttonThatWasClicked == e7_active.get())
+    {
+        //[UserButtonCode_e7_active] -- add your button handler code here..
+        e7_led->repaint();
+        //[/UserButtonCode_e7_active]
+    }
+    else if (buttonThatWasClicked == e8_active.get())
+    {
+        //[UserButtonCode_e8_active] -- add your button handler code here..
+        e8_led->repaint();
+        //[/UserButtonCode_e8_active]
+    }
+    else if (buttonThatWasClicked == e9_active.get())
+    {
+        //[UserButtonCode_e9_active] -- add your button handler code here..
+        e9_led->repaint();
+        //[/UserButtonCode_e9_active]
+    }
+    else if (buttonThatWasClicked == e10_active.get())
+    {
+        //[UserButtonCode_e10_active] -- add your button handler code here..
+        e10_led->repaint();
+        //[/UserButtonCode_e10_active]
+    }
+    else if (buttonThatWasClicked == e11_active.get())
+    {
+        //[UserButtonCode_e11_active] -- add your button handler code here..
+        e11_led->repaint();
+        //[/UserButtonCode_e11_active]
+    }
+    else if (buttonThatWasClicked == e12_active.get())
+    {
+        //[UserButtonCode_e12_active] -- add your button handler code here..
+        e12_led->repaint();
+        //[/UserButtonCode_e12_active]
     }
 
     //[UserbuttonClicked_Post]
@@ -1456,46 +1625,82 @@ BEGIN_JUCER_METADATA
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 1 active" id="84bb86bdbd9ccede" memberName="e1_active"
                 virtualName="" explicitFocusOrder="0" pos="542 65 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 2 active" id="176e3fb309f12ef5" memberName="e2_active"
                 virtualName="" explicitFocusOrder="0" pos="542 121 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 3 active" id="d6d9c0542e41b9c3" memberName="e3_active"
                 virtualName="" explicitFocusOrder="0" pos="542 177 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 4 active" id="72d6ebba0023e28e" memberName="e4_active"
                 virtualName="" explicitFocusOrder="0" pos="542 233 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 5 active" id="d8c38a2ce324a73d" memberName="e5_active"
                 virtualName="" explicitFocusOrder="0" pos="542 289 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 6 active" id="1b42bda33e1c947c" memberName="e6_active"
                 virtualName="" explicitFocusOrder="0" pos="542 345 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 7 active" id="3405e0694e2b063d" memberName="e7_active"
                 virtualName="" explicitFocusOrder="0" pos="542 401 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 8 active" id="b60e0b9c2104a2bd" memberName="e8_active"
                 virtualName="" explicitFocusOrder="0" pos="542 457 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 9 active" id="d1d96ca0950dde6a" memberName="e9_active"
                 virtualName="" explicitFocusOrder="0" pos="542 513 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 10 active" id="663dbbc6ddde4163" memberName="e10_active"
                 virtualName="" explicitFocusOrder="0" pos="542 569 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 11 active" id="bf7163acf9aabb69" memberName="e11_active"
                 virtualName="" explicitFocusOrder="0" pos="542 625 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 12 active" id="c502882a7d65a176" memberName="e12_active"
                 virtualName="" explicitFocusOrder="0" pos="542 681 39 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <LABEL name="Gaussian plane" id="32980deccea32218" memberName="gaussian_plane_label"
          virtualName="" explicitFocusOrder="0" pos="728 333 141 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="GAUSSIAN PLANE"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="16.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
+  <GENERICCOMPONENT name="Led 1" id="33ac2e372b117cf2" memberName="e1_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 67 19 19" class="LEDComponent"
+                    params="*e1_active"/>
+  <GENERICCOMPONENT name="Led 2" id="dcdf09a978cf18a" memberName="e2_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 123 19 19" class="LEDComponent"
+                    params="*e2_active"/>
+  <GENERICCOMPONENT name="Led 3" id="18dec958a156d78e" memberName="e3_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 179 19 19" class="LEDComponent"
+                    params="*e3_active"/>
+  <GENERICCOMPONENT name="Led 4" id="7d8ac1c3c871f7f2" memberName="e4_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 235 19 19" class="LEDComponent"
+                    params="*e4_active"/>
+  <GENERICCOMPONENT name="Led 5" id="3755e40ecb2571a4" memberName="e5_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 291 19 19" class="LEDComponent"
+                    params="*e5_active"/>
+  <GENERICCOMPONENT name="Led 6" id="90777192516955ee" memberName="e6_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 347 19 19" class="LEDComponent"
+                    params="*e6_active&#10;"/>
+  <GENERICCOMPONENT name="Led 7" id="19ab27e27b8109fa" memberName="e7_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 403 19 19" class="LEDComponent"
+                    params="*e7_active"/>
+  <GENERICCOMPONENT name="Led 8" id="f329431bc31bbc97" memberName="e8_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 459 19 19" class="LEDComponent"
+                    params="*e8_active"/>
+  <GENERICCOMPONENT name="Led 9" id="206bd17f53dff43d" memberName="e9_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 515 19 19" class="LEDComponent"
+                    params="*e9_active"/>
+  <GENERICCOMPONENT name="Led 10" id="7bbd2c45fb13794e" memberName="e10_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 571 19 19" class="LEDComponent"
+                    params="*e10_active"/>
+  <GENERICCOMPONENT name="Led 11" id="11f4a9aa4161209e" memberName="e11_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 627 19 19" class="LEDComponent"
+                    params="*e11_active"/>
+  <GENERICCOMPONENT name="Led 12" id="2783dc4bb1d23a35" memberName="e12_led" virtualName=""
+                    explicitFocusOrder="0" pos="589 683 19 19" class="LEDComponent"
+                    params="*e12_active"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

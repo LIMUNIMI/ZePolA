@@ -68,7 +68,7 @@ public:
             g.fillRoundedRectangle(bounds.toFloat(), 9.5f);
 
             g.setColour(borderColor);
-            g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 1.5f);
+            g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 2.0f);
 
             const int indicatorDiameter = 15;
             auto indicatorX = button.getToggleState() ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
@@ -104,8 +104,9 @@ public:
 
         juce::Rectangle<float> switchRect(2, 2, switchWidth, switchHeight);
 
+        auto switchMargin = button.getToggleState() ? 2.0f : 3.5f;
         g.setColour(juce::Colours::black);
-        g.drawRoundedRectangle(switchRect, 5.0f, 3.0f);
+        g.drawRoundedRectangle(switchRect, 5.0f, switchMargin);
 
         g.setColour(button.getToggleState() ? juce::Colour (ON_SWITCH_COLOUR) : juce::Colour (OFF_SWITCH_COLOUR));
         g.fillRoundedRectangle(switchRect, 5.0f);

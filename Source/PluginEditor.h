@@ -24,6 +24,7 @@
 #include "PluginProcessor.h"
 #include "Graphs.h"
 #include "MyTheme.h"
+#include "GUImiscellaneous.h"
 
 typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
@@ -148,6 +149,18 @@ private:
     std::unique_ptr<juce::ToggleButton> e11_active;
     std::unique_ptr<juce::ToggleButton> e12_active;
     std::unique_ptr<juce::Label> gaussian_plane_label;
+    std::unique_ptr<LEDComponent> e1_led;
+    std::unique_ptr<LEDComponent> e2_led;
+    std::unique_ptr<LEDComponent> e3_led;
+    std::unique_ptr<LEDComponent> e4_led;
+    std::unique_ptr<LEDComponent> e5_led;
+    std::unique_ptr<LEDComponent> e6_led;
+    std::unique_ptr<LEDComponent> e7_led;
+    std::unique_ptr<LEDComponent> e8_led;
+    std::unique_ptr<LEDComponent> e9_led;
+    std::unique_ptr<LEDComponent> e10_led;
+    std::unique_ptr<LEDComponent> e11_led;
+    std::unique_ptr<LEDComponent> e12_led;
 
 
     //==============================================================================

@@ -1,7 +1,7 @@
 #pragma once
 #include <JuceHeader.h>
 
-#define GRAPHS_BACKGROUND                   0xff979a9a
+#define GRAPHS_BACKGROUND                   0xffb3b6b7
 #define ZEROS_COLOUR                        0xffbb8fce
 #define POLES_COLOUR                        0xfff1c40f
 
@@ -16,7 +16,10 @@ public:
     
     void paint(juce::Graphics& g) override
     {
-        g.fillAll(juce::Colour (GRAPHS_BACKGROUND));
+        g.setColour(juce::Colour(GRAPHS_BACKGROUND));
+        float cornerSize = 8.0f;
+        auto bounds = getLocalBounds().toFloat();
+        g.fillRoundedRectangle(bounds, cornerSize);
         g.setColour(juce::Colours::white);
         drawFrequencyResponse(g);
     }
@@ -84,7 +87,10 @@ public:
     
     void paint(juce::Graphics& g) override
     {
-        g.fillAll(juce::Colour (GRAPHS_BACKGROUND));
+        g.setColour(juce::Colour(GRAPHS_BACKGROUND));
+        float cornerSize = 8.0f;
+        auto bounds = getLocalBounds().toFloat();
+        g.fillRoundedRectangle(bounds, cornerSize);
         g.setColour(juce::Colours::white);
         drawPhaseResponse(g);
     }
@@ -151,7 +157,12 @@ public:
     
     void paint(juce::Graphics& g) override
     {
-        g.fillAll(juce::Colour (GRAPHS_BACKGROUND));
+        
+        g.setColour(juce::Colour(GRAPHS_BACKGROUND));
+        float cornerSize = 8.0f;
+        auto bounds = getLocalBounds().toFloat();
+        g.fillRoundedRectangle(bounds, cornerSize);
+        g.setColour(juce::Colours::white);
         drawPlane(g);
         drawPolesAndZeros(g);
     }
