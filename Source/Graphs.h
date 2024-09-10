@@ -164,7 +164,7 @@ public:
         auto bounds = getLocalBounds().toFloat();
         g.fillRoundedRectangle(bounds, cornerSize);
         
-        auto margin = bounds.reduced(bounds.getWidth() * 0.025f, bounds.getHeight() * 0.025f);
+        auto margin = bounds.reduced(bounds.getWidth() * 0.07f, bounds.getHeight() * 0.07f);
     
         g.setColour(juce::Colours::white);
         drawPlane(g, margin);
@@ -198,16 +198,21 @@ private:
         auto height = bounds.getHeight();
         auto centerX = bounds.getCentreX();
         auto centerY = bounds.getCentreY();
-        
-        // Axis paint
+    
         g.setColour(juce::Colours::white);
-        g.drawLine(bounds.getX(), centerY, bounds.getRight(), centerY, 0.7f);
-        g.drawLine(centerX, bounds.getY(), centerX, bounds.getBottom(), 0.7f);
+        g.drawLine(bounds.getX(), centerY, bounds.getRight(), centerY, 1.0f); // Asse reale
+        g.drawLine(centerX, bounds.getY(), centerX, bounds.getBottom(), 1.0f); // Asse immaginario
         
-        // Circumference paint
         g.setColour(juce::Colours::white);
         float radius = std::min(width, height) / 2.0f;
-        g.drawEllipse(centerX - radius, centerY - radius, radius * 2, radius * 2, 1.2f);
+        g.drawEllipse(centerX - radius, centerY - radius, radius * 2, radius * 2, 1.5f);
+
+        g.setFont(12.0f);
+        g.setColour(juce::Colour(0xff383838));
+        
+        g.setFont(juce::Font("Gill Sans", 12.0f, juce::Font::plain));
+        g.drawText("Re", centerX + radius + 2, centerY - 10, 20, 20, juce::Justification::centred);
+        g.drawText("Im", centerX - 8, centerY - radius - 20, 20, 20, juce::Justification::centred);
     }
     
     void drawPolesAndZeros(juce::Graphics& g, juce::Rectangle<float> bounds)
