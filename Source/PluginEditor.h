@@ -68,12 +68,16 @@ private:
     std::vector<std::unique_ptr<SliderAttachment>> phasesAttachments;
     std::vector<std::unique_ptr<ButtonAttachment>> typesAttachments;
     std::vector<std::unique_ptr<ButtonAttachment>> activeAttachments;
+    std::unique_ptr<SliderAttachment> gainAttachment;
+    std::unique_ptr<ButtonAttachment> bypassAttachment;
 
-    MagnitudeSlidersTheme magnitudeSlidersTheme;
-    PhaseSlidersTheme phaseSlidersTheme;
+    MagnitudeSliderTheme magnitudeSlidersTheme;
+    PhaseSliderTheme phaseSlidersTheme;
     TypeSwitchTheme typeSwitchesTheme;
     ActiveSwitchTheme activeSwitchesTheme;
     ResetButtonTheme resetButtonTheme;
+    GainSliderTheme gainSliderTheme;
+    BypassSwitchTheme bypassSwitchTheme;
     //[/UserVariables]
 
     //==============================================================================
@@ -161,6 +165,8 @@ private:
     std::unique_ptr<LEDComponent> e10_led;
     std::unique_ptr<LEDComponent> e11_led;
     std::unique_ptr<LEDComponent> e12_led;
+    std::unique_ptr<juce::ToggleButton> bypass;
+    std::unique_ptr<juce::Slider> gain_slider;
 
 
     //==============================================================================

@@ -130,6 +130,10 @@ void PolesAndZerosEQAudioProcessor::resetFilter ()
         parameters.getParameter(TYPE_NAME + std::to_string(i))->setValueNotifyingHost(TYPE_DEFAULT ? 1.0f : 0.0f);
         parameters.getParameter(ACTIVE_NAME + std::to_string(i))->setValueNotifyingHost(ACTIVE_DEFAULT ? 1.0f : 0.0f);
     }
+    parameters.getParameter(GAIN_NAME)->setValueNotifyingHost(0.0f);
+    parameters.getParameter(FILTER_BYPASS_NAME)->setValueNotifyingHost(BYPASS_DEFAULT);
+    
+    filter.memoryReset();
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()

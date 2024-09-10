@@ -27,9 +27,9 @@
 #define ACTIVE_DEFAULT                          false
 
 #define GAIN_NAME                               "GAIN"
-#define GAIN_FLOOR                              -24.0f
-#define GAIN_CEILING                            24.0f
-#define GAIN_INTERVAL                           0.01f
+#define GAIN_FLOOR                              -48.0f
+#define GAIN_CEILING                            12.0f
+#define GAIN_INTERVAL                           0.1f
 #define GAIN_DEFAULT                            0.0f
 #define SMOOTHING_TIME                          0.01f
 
@@ -51,8 +51,10 @@ namespace Parameters
             params.push_back(std::make_unique<AudioParameterBool>(TYPE_NAME + number, "Type" + number, TYPE_DEFAULT));
         }
         
+        juce::NormalisableRange<float> gainRange(GAIN_FLOOR, GAIN_CEILING, GAIN_INTERVAL);
+        
         params.push_back(std::make_unique<AudioParameterBool>(FILTER_BYPASS_NAME, "EQ bypass", BYPASS_DEFAULT));
-        params.push_back(std::make_unique<AudioParameterFloat>(GAIN_NAME, "Gain (dB)", NormalisableRange<float>(GAIN_FLOOR, GAIN_CEILING, GAIN_INTERVAL), GAIN_DEFAULT));
+        params.push_back(std::make_unique<AudioParameterFloat>(GAIN_NAME, "Gain (dB)", gainRange, GAIN_DEFAULT));
         
         
         return {params.begin(), params.end()};

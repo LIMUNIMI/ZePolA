@@ -47,11 +47,11 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     reset_button.reset (new juce::TextButton ("Reset"));
     addAndMakeVisible (reset_button.get());
-    reset_button->setButtonText (TRANS ("RESET"));
+    reset_button->setButtonText (juce::String());
     reset_button->addListener (this);
-    reset_button->setColour (juce::TextButton::buttonColourId, juce::Colours::black);
+    reset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff383838));
 
-    reset_button->setBounds (24, 825, 94, 24);
+    reset_button->setBounds (31, 829, 88, 30);
 
     frequency_response.reset (new FrequencyResponse (processor.getFilterSpectrum()));
     addAndMakeVisible (frequency_response.get());
@@ -737,6 +737,21 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     e12_led->setBounds (589, 683, 19, 19);
 
+    bypass.reset (new juce::ToggleButton ("Bypass"));
+    addAndMakeVisible (bypass.get());
+    bypass->setButtonText (juce::String());
+    bypass->addListener (this);
+
+    bypass->setBounds (509, 829, 88, 30);
+
+    gain_slider.reset (new juce::Slider ("Gain"));
+    addAndMakeVisible (gain_slider.get());
+    gain_slider->setRange (0, 10, 0);
+    gain_slider->setSliderStyle (juce::Slider::LinearHorizontal);
+    gain_slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
+
+    gain_slider->setBounds (170, 819, 234, 50);
+
 
     //[UserPreSize]
     magnitudesAttachments[0].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
@@ -791,6 +806,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     activeAttachments[10].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(11), *e11_active));
     activeAttachments[11].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(12), *e12_active));
 
+    gainAttachment.reset(new SliderAttachment(valueTreeState, GAIN_NAME, *gain_slider));
+    bypassAttachment.reset(new ButtonAttachment(valueTreeState, FILTER_BYPASS_NAME, *bypass));
+
     m1_slider->setLookAndFeel(&magnitudeSlidersTheme);
     m2_slider->setLookAndFeel(&magnitudeSlidersTheme);
     m3_slider->setLookAndFeel(&magnitudeSlidersTheme);
@@ -844,6 +862,8 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e12_active->setLookAndFeel(&activeSwitchesTheme);
 
     reset_button->setLookAndFeel(&resetButtonTheme);
+    gain_slider->setLookAndFeel(&gainSliderTheme);
+    bypass->setLookAndFeel(&bypassSwitchTheme);
     //[/UserPreSize]
 
     setSize (1500, 900);
@@ -863,6 +883,8 @@ PluginEditor::~PluginEditor()
         typesAttachments[i].reset();
         activeAttachments[i].reset();
     }
+    gainAttachment.reset();
+    bypassAttachment.reset();
     //[/Destructor_pre]
 
     reset_button = nullptr;
@@ -949,6 +971,8 @@ PluginEditor::~PluginEditor()
     e10_led = nullptr;
     e11_led = nullptr;
     e12_led = nullptr;
+    bypass = nullptr;
+    gain_slider = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1048,7 +1072,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 9.0f, y = 795.0f, width = 1479.0f, height = 93.0f;
+        float x = 9.0f, y = 788.0f, width = 1479.0f, height = 100.0f;
         juce::Colour fillColour = juce::Colour (0x30b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1194,6 +1218,51 @@ void PluginEditor::paint (juce::Graphics& g)
         g.fillRect (x, y, width, height);
     }
 
+    {
+        int x = 292, y = 788, width = 74, height = 30;
+        juce::String text (TRANS ("CONTROLS"));
+        juce::Colour fillColour = juce::Colour (0xff333333);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+        g.drawText (text, x, y, width, height,
+                    juce::Justification::centred, true);
+    }
+
+    {
+        int x = 712, y = 788, width = 142, height = 30;
+        juce::String text (TRANS ("FILTER DESIGN"));
+        juce::Colour fillColour = juce::Colour (0xff333333);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+        g.drawText (text, x, y, width, height,
+                    juce::Justification::centred, true);
+    }
+
+    {
+        int x = 624, y = 788, width = 1, height = 100;
+        juce::Colour fillColour = juce::Colour (0x40909497);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRect (x, y, width, height);
+    }
+
+    {
+        int x = 399, y = 828, width = 58, height = 30;
+        juce::String text (TRANS ("GAIN"));
+        juce::Colour fillColour = juce::Colour (0xff333333);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+        g.drawText (text, x, y, width, height,
+                    juce::Justification::centred, true);
+    }
+
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
@@ -1290,6 +1359,11 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         e12_led->repaint();
         //[/UserButtonCode_e12_active]
     }
+    else if (buttonThatWasClicked == bypass.get())
+    {
+        //[UserButtonCode_bypass] -- add your button handler code here..
+        //[/UserButtonCode_bypass]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -1331,7 +1405,7 @@ BEGIN_JUCER_METADATA
     <TEXT pos="1406 856 85 30" fill="solid: ff333333" hasStroke="0" text="TOOLS"
           fontname="Gill Sans" fontsize="18.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <ROUNDRECT pos="9 795 1479 93" cornerSize="14.5" fill="solid: 30b1b1b1"
+    <ROUNDRECT pos="9 788 1479 100" cornerSize="14.5" fill="solid: 30b1b1b1"
                hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
     <TEXT pos="1337 730 142 30" fill="solid: ff333333" hasStroke="0" text="FILTER RESPONSE"
           fontname="Gill Sans" fontsize="18.0" kerning="0.0" bold="0" italic="0"
@@ -1352,10 +1426,20 @@ BEGIN_JUCER_METADATA
     <RECT pos="10 552 607 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="10 608 607 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="10 664 607 1" fill="solid: 25909497" hasStroke="0"/>
+    <TEXT pos="292 788 74 30" fill="solid: ff333333" hasStroke="0" text="CONTROLS"
+          fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
+          justification="36" typefaceStyle="SemiBold"/>
+    <TEXT pos="712 788 142 30" fill="solid: ff333333" hasStroke="0" text="FILTER DESIGN"
+          fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
+          justification="36" typefaceStyle="SemiBold"/>
+    <RECT pos="624 788 1 100" fill="solid: 40909497" hasStroke="0"/>
+    <TEXT pos="399 828 58 30" fill="solid: ff333333" hasStroke="0" text="GAIN"
+          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
+          justification="36" typefaceStyle="SemiBold"/>
   </BACKGROUND>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
-              virtualName="" explicitFocusOrder="0" pos="24 825 94 24" bgColOff="ff000000"
-              buttonText="RESET" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="31 829 88 30" bgColOff="ff383838"
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
                     virtualName="" explicitFocusOrder="0" pos="1014 30 450 295" class="FrequencyResponse"
                     params="processor.getFilterSpectrum()"/>
@@ -1701,6 +1785,13 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="Led 12" id="2783dc4bb1d23a35" memberName="e12_led" virtualName=""
                     explicitFocusOrder="0" pos="589 683 19 19" class="LEDComponent"
                     params="*e12_active"/>
+  <TOGGLEBUTTON name="Bypass" id="4daf2a36bc47407c" memberName="bypass" virtualName=""
+                explicitFocusOrder="0" pos="509 829 88 30" buttonText="" connectedEdges="0"
+                needsCallback="1" radioGroupId="0" state="0"/>
+  <SLIDER name="Gain" id="7e880f1fc774c2af" memberName="gain_slider" virtualName=""
+          explicitFocusOrder="0" pos="170 819 234 50" min="0.0" max="10.0"
+          int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
