@@ -27,7 +27,7 @@
 #define ACTIVE_DEFAULT                          false
 
 #define GAIN_NAME                               "GAIN"
-#define GAIN_FLOOR                              -48.0f
+#define GAIN_FLOOR                              -36.0f
 #define GAIN_CEILING                            12.0f
 #define GAIN_INTERVAL                           0.1f
 #define GAIN_DEFAULT                            0.0f

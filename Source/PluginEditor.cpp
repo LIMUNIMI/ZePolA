@@ -1073,7 +1073,7 @@ void PluginEditor::paint (juce::Graphics& g)
 
     {
         float x = 9.0f, y = 788.0f, width = 1479.0f, height = 100.0f;
-        juce::Colour fillColour = juce::Colour (0x30b1b1b1);
+        juce::Colour fillColour = juce::Colour (0x1d656565);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1231,7 +1231,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 712, y = 788, width = 142, height = 30;
+        int x = 970, y = 788, width = 142, height = 30;
         juce::String text (TRANS ("FILTER DESIGN"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1244,7 +1244,7 @@ void PluginEditor::paint (juce::Graphics& g)
 
     {
         int x = 624, y = 788, width = 1, height = 100;
-        juce::Colour fillColour = juce::Colour (0x40909497);
+        juce::Colour fillColour = juce::Colour (0x4a909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
@@ -1405,7 +1405,7 @@ BEGIN_JUCER_METADATA
     <TEXT pos="1406 856 85 30" fill="solid: ff333333" hasStroke="0" text="TOOLS"
           fontname="Gill Sans" fontsize="18.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <ROUNDRECT pos="9 788 1479 100" cornerSize="14.5" fill="solid: 30b1b1b1"
+    <ROUNDRECT pos="9 788 1479 100" cornerSize="14.5" fill="solid: 1d656565"
                hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
     <TEXT pos="1337 730 142 30" fill="solid: ff333333" hasStroke="0" text="FILTER RESPONSE"
           fontname="Gill Sans" fontsize="18.0" kerning="0.0" bold="0" italic="0"
@@ -1429,10 +1429,10 @@ BEGIN_JUCER_METADATA
     <TEXT pos="292 788 74 30" fill="solid: ff333333" hasStroke="0" text="CONTROLS"
           fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <TEXT pos="712 788 142 30" fill="solid: ff333333" hasStroke="0" text="FILTER DESIGN"
+    <TEXT pos="970 788 142 30" fill="solid: ff333333" hasStroke="0" text="FILTER DESIGN"
           fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <RECT pos="624 788 1 100" fill="solid: 40909497" hasStroke="0"/>
+    <RECT pos="624 788 1 100" fill="solid: 4a909497" hasStroke="0"/>
     <TEXT pos="399 828 58 30" fill="solid: ff333333" hasStroke="0" text="GAIN"
           fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>

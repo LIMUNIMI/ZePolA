@@ -1,6 +1,6 @@
 #pragma once
 
-#define LED_ON_COLOUR           0xffeb685c
+#define LED_ON_COLOUR           0xffff5f58
 #define LED_OFF_COLOUR          0xff781a13
 
 class LEDComponent : public juce::Component

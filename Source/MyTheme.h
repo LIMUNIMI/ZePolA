@@ -8,9 +8,9 @@
 #define SWITCH_BACKGROUND                   0xffe7eaeb
 #define OFF_SWITCH_COLOUR                   0xffcacfd2
 #define ON_SWITCH_COLOUR                    0xff909497
-#define ZEROS_COLOUR                        0xffbb8fce
-#define POLES_COLOUR                        0xfff7dc6f
-#define BYPASS_ON_COLOUR                    0xffeb685c
+#define ZEROS_COLOUR                        0xff9b59b6
+#define POLES_COLOUR                        0xffffbc2e
+#define BYPASS_ON_COLOUR                    0xffff5f58
 #define BYPASS_OFF_COLOUR                   0xff781a13
 #define GAIN_SLIDER_COLOUR                  0xff2e86c1
 
@@ -153,7 +153,8 @@ public:
         g.fillRoundedRectangle(buttonRect, 5.0f);
 
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(12.0f, juce::Font::bold));
+        float fontSize = button.getToggleState() ? 11.5f : 12.0f;
+        g.setFont(juce::Font(fontSize, juce::Font::bold));
         juce::String text = button.getToggleState() ? "ON" : "OFF";
         g.drawText(text, switchRect, juce::Justification::centred);
     }
@@ -186,7 +187,7 @@ public:
         g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
         
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(12.0f, juce::Font::bold));
+        g.setFont(juce::Font(13.0f, juce::Font::bold));
         juce::String text = "RESET";
         g.drawText(text, bounds, juce::Justification::centred);
     }
@@ -224,7 +225,8 @@ public:
         g.fillRoundedRectangle(buttonRect, 5.0f);
 
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(12.0f, juce::Font::bold));
+        float fontSize = button.getToggleState() ? 12.5f : 13.0f;
+        g.setFont(juce::Font(fontSize, juce::Font::bold));
         juce::String text = "BYPASS";
         g.drawText(text, switchRect, juce::Justification::centred);
     }

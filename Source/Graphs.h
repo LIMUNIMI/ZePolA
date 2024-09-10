@@ -2,10 +2,10 @@
 #include <JuceHeader.h>
 
 #define GRAPHS_BACKGROUND                   0xffb3b6b7
-#define ZEROS_COLOUR                        0xffbb8fce
-#define CONJ_ZEROS_COLOUR                   0x70bb8fce
-#define POLES_COLOUR                        0xfff1c40f
-#define CONJ_POLES_COLOUR                   0x70f1c40f
+#define ZEROS_COLOUR                        0xff9b59b6
+#define CONJ_ZEROS_COLOUR                   0x709b59b6
+#define POLES_COLOUR                        0xffffbc2e
+#define CONJ_POLES_COLOUR                   0x70ffbc2e
 
 class FrequencyResponse : public juce::Component
 {
