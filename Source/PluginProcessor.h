@@ -43,6 +43,8 @@ public:
     }
     
     void resetFilter ();
+    
+    float getCurrentGain ();
 
 private:
     void parameterChanged(const String& parameterID, float newValue) override;

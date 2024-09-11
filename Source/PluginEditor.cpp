@@ -35,11 +35,11 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p.setEditorCallback([this]()
                         {
         getSpectrum();
-        frequency_response->updateMagnitudes(spectrum);
+        frequency_response->updateMagnitudes(spectrum, processor.getCurrentGain());
         phase_response->updatePhases(spectrum);
         gaussian_plane->updateElements(processor.getFilterElementsChain());
     });
-    
+
     getSpectrum();
 
     magnitudesAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
@@ -56,7 +56,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     reset_button->setBounds (31, 829, 88, 30);
 
-    frequency_response.reset (new FrequencyResponse (spectrum));
+    frequency_response.reset (new FrequencyResponse (spectrum, processor.getCurrentGain()));
     addAndMakeVisible (frequency_response.get());
     frequency_response->setName ("frequencyResponse");
 
@@ -1244,7 +1244,7 @@ BEGIN_JUCER_METADATA
               buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
                     virtualName="" explicitFocusOrder="0" pos="1014 30 450 295" class="FrequencyResponse"
-                    params="spectrum"/>
+                    params="spectrum, processor.getCurrentGain()"/>
   <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
          virtualName="" explicitFocusOrder="0" pos="1151 333 181 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="FREQUENCY RESPONSE"

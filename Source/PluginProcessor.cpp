@@ -21,7 +21,6 @@ void PolesAndZerosEQAudioProcessor::prepareToPlay (double sampleRate, int sample
     spec.numChannels = 1;
     
     gainProcessor.prepare(spec);
-    gainProcessor.setGainDecibels(GAIN_DEFAULT);
     
     filter.memoryReset();
 }
@@ -80,7 +79,6 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
     if (parameterID == "GAIN")
     {
         gainProcessor.setGainDecibels(newValue);
-        return;
     }
     
     juce::String parameter = parameterID.substring(0, 1);
@@ -134,6 +132,11 @@ void PolesAndZerosEQAudioProcessor::resetFilter ()
     parameters.getParameter(FILTER_BYPASS_NAME)->setValueNotifyingHost(BYPASS_DEFAULT);
     
     filter.memoryReset();
+}
+
+float PolesAndZerosEQAudioProcessor::getCurrentGain ()
+{
+    return gainProcessor.getGainLinear();
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()

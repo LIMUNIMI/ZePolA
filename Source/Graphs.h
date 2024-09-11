@@ -10,9 +10,9 @@
 class FrequencyResponse : public juce::Component
 {
 public:
-    FrequencyResponse (const std::vector<std::complex<double>>& spectrum)
+    FrequencyResponse (const std::vector<std::complex<double>>& spectrum, const float currentGain)
     {
-        updateMagnitudes(spectrum);
+        updateMagnitudes(spectrum, currentGain);
     }
     ~FrequencyResponse () {}
     
@@ -26,7 +26,7 @@ public:
         drawFrequencyResponse(g);
     }
     
-    void updateMagnitudes (const std::vector<std::complex<double>>& spectrum)
+    void updateMagnitudes (const std::vector<std::complex<double>>& spectrum, const float currentGain)
     {
         bool shouldRepaint = false;
         
@@ -39,7 +39,7 @@ public:
         long int spectrumSize = spectrum.size();
         for (int i = 0; i < spectrumSize; ++ i)
         {
-            double magnitude = 0.5*std::abs(spectrum[i]);
+            double magnitude = currentGain * std::abs(spectrum[i]);
             if (magnitudes[i] != magnitude)
             {
                 magnitudes[i] = magnitude;
