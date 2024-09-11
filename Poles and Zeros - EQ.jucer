@@ -9,7 +9,7 @@
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
         <FILE id="vDSJyS" name="GUImiscellaneous.h" compile="0" resource="0"
               file="Source/GUImiscellaneous.h"/>
-        <FILE id="uMM33l" name="MyTheme.h" compile="0" resource="0" file="Source/MyTheme.h"/>
+        <FILE id="uMM33l" name="GraphicTheme.h" compile="0" resource="0" file="Source/GraphicTheme.h"/>
         <FILE id="HNvN2h" name="PluginEditor.cpp" compile="1" resource="0"
               file="Source/PluginEditor.cpp"/>
         <FILE id="KJdboJ" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
