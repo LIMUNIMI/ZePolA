@@ -32,7 +32,7 @@ public:
      element type (ZERO or POLE), while magnitude and phase have default values:
      0.0 for both.
     */
-    FilterElement (Type t, double mg = 0.0, double ph = 0.0) : type(t), magnitude(mg), phase(ph)
+    FilterElement (Type t, double mg = MAGNITUDE_DEFAULT, double ph = PHASE_DEFAULT) : type(t), magnitude(mg), phase(ph)
     {
         calculateCoefficients();
     }
@@ -81,6 +81,10 @@ public:
     */
     void setMagnitude (double newValue)
     {
+        if (type)
+        {
+            newValue = jmin(newValue, POLE_MAX_MAGNITUDE);
+        }
         magnitude = newValue;
         calculateCoefficients();
     }
@@ -212,10 +216,10 @@ public:
         switch (type)
         {
             case ZERO:
-                return (1.0 + coeff1 * std::polar(1.0, -2 * MathConstants<double>::pi * phi) + coeff2 * std::polar(1.0, 4 * MathConstants<double>::pi * phi));
+                return (1.0 + coeff1 * std::polar(1.0, -2 * MathConstants<double>::pi * phi) + coeff2 * std::polar(1.0, -4 * MathConstants<double>::pi * phi));
                 
             case POLE:
-                return (1.0 / (1.0 + coeff1 * std::polar(1.0, -2 * MathConstants<double>::pi * phi) + coeff2 * std::polar(1.0, 4 * MathConstants<double>::pi * phi)));
+                return (1.0 / (1.0 + coeff1 * std::polar(1.0, -2 * MathConstants<double>::pi * phi) + coeff2 * std::polar(1.0, -4 * MathConstants<double>::pi * phi)));
         }
     }
     
@@ -254,43 +258,38 @@ class PolesAndZerosCascade
 public:
 
     /* The constructor of PolesAndZerosCascade has default values for the number
-     of zeros and poles that the filter should have at the time of creation.
+     of elements of the filter at the time of creation. All elements are initially
+     zeros.
     */
-    PolesAndZerosCascade (int nZeros = 12, int nPoles = 0)
+    PolesAndZerosCascade (int nElements = NUMBER_OF_FILTER_ELEMENTS)
     {
-        for (int i = 0; i < nZeros; ++ i)
+        for (int i = 0; i < nElements; ++ i)
             addElement(FilterElement::ZERO);
-        
-        for (int i = 0; i < nPoles; ++ i)
-            addElement(FilterElement::POLE);
     }
     
     ~PolesAndZerosCascade () {}
     
-    /* The method getSpectrum returns a std::vector of std::complex<double>
-     values of the spectrum calculated as the product between the spectra of
-     each element (zero or pole) of the filter chain.
+    /* The getSpectrum method returns a std::complex<double> value that corresponds
+     to the value of the spectrum at a given value of the normalized frequency phi.
+     The spectrum value is calculated as the product of the spectra of the individual
+     filter elements.
     */
-    std::vector<std::complex<double>> getSpectrum (const double sampleRate)
+    std::complex<double> getSpectrum (const double phi)
     {
-        std::vector<std::complex<double>> spectrum(static_cast<int>(sampleRate), std::complex<double>(1.0, 0.0));
+        std::complex<double> spectrum(1.0, 0.0);
         
-        double phi;
-        int frequency;
-        
-        for (frequency = 0; frequency < sampleRate; ++ frequency)
+        for (auto& element : elements)
         {
-            phi = static_cast<double>(frequency) / sampleRate;
-            for (auto& element : elements)
-            {
-                if (element->isActive())
-                    spectrum[frequency] *= element->getElementSpectrum(phi);
-            }
+            if (element->isActive())
+                spectrum *= element->getElementSpectrum(phi);
         }
         
         return spectrum;
     }
     
+    /* The getElementsChain method returns a std::vector of std::share_ptr to
+     the elements of the filter chain
+    */
     std::vector<std::shared_ptr<FilterElement>> getElementsChain ()
     {
         return elements;
@@ -404,8 +403,8 @@ public:
      */
     void memoryReset ()
     {
-        for (auto& node : elements)
-            node->memoryReset();
+        for (auto& element : elements)
+            element->memoryReset();
     }
     
     /* The addElement method adds an element of the specified type to the

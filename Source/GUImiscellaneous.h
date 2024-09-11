@@ -23,7 +23,7 @@ public:
         g.fillEllipse(bounds.withSizeKeepingCentre(ledRadius * 2.0f, ledRadius * 2.0f));
 
         g.setColour(juce::Colours::black);
-        g.drawEllipse(bounds.withSizeKeepingCentre(ledRadius * 2.0f, ledRadius * 2.0f), 2.0f); // Bordo di 2 pixel
+        g.drawEllipse(bounds.withSizeKeepingCentre(ledRadius * 2.0f, ledRadius * 2.0f), 2.0f);
     }
 
 private:

@@ -1,7 +1,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "Parameters.h"
-#include "PluginEditor.h"
+#include "PluginEditor.h" 
 
 PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor()
 : parameters(*this, nullptr, "PolesAndZero-EQ", Parameters::createParameterLayout())
@@ -111,9 +111,9 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
     }
 }
 
-std::vector<std::complex<double>> PolesAndZerosEQAudioProcessor::getFilterSpectrum ()
+std::complex<double> PolesAndZerosEQAudioProcessor::getFilterSpectrum (const double phi)
 {
-    return filter.getSpectrum(getSampleRate());
+    return filter.getSpectrum(phi);
 }
 
 std::vector<std::shared_ptr<FilterElement>> PolesAndZerosEQAudioProcessor::getFilterElementsChain ()
@@ -123,14 +123,14 @@ std::vector<std::shared_ptr<FilterElement>> PolesAndZerosEQAudioProcessor::getFi
 
 void PolesAndZerosEQAudioProcessor::resetFilter ()
 {
-    for (int i = 1; i <= NUMBER_OF_ELEMENTS; ++ i)
+    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++ i)
     {
         parameters.getParameter(MAGNITUDE_NAME + std::to_string(i))->setValueNotifyingHost(MAGNITUDE_DEFAULT);
         parameters.getParameter(PHASE_NAME + std::to_string(i))->setValueNotifyingHost(PHASE_DEFAULT);
         parameters.getParameter(TYPE_NAME + std::to_string(i))->setValueNotifyingHost(TYPE_DEFAULT ? 1.0f : 0.0f);
         parameters.getParameter(ACTIVE_NAME + std::to_string(i))->setValueNotifyingHost(ACTIVE_DEFAULT ? 1.0f : 0.0f);
     }
-    parameters.getParameter(GAIN_NAME)->setValueNotifyingHost(GAIN_DEFAULT);
+    parameters.getParameter(GAIN_NAME)->setValueNotifyingHost(jmap(GAIN_DEFAULT, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
     parameters.getParameter(FILTER_BYPASS_NAME)->setValueNotifyingHost(BYPASS_DEFAULT);
     
     filter.memoryReset();

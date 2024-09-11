@@ -34,15 +34,18 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     //[Constructor_pre] You can add your own custom stuff here..
     p.setEditorCallback([this]()
                         {
-        frequency_response->updateMagnitudes(processor.getFilterSpectrum());
-        phase_response->updatePhases(processor.getFilterSpectrum());
+        getSpectrum();
+        frequency_response->updateMagnitudes(spectrum);
+        phase_response->updatePhases(spectrum);
         gaussian_plane->updateElements(processor.getFilterElementsChain());
     });
+    
+    getSpectrum();
 
-    magnitudesAttachments.reserve(NUMBER_OF_ELEMENTS);
-    phasesAttachments.reserve(NUMBER_OF_ELEMENTS);
-    typesAttachments.reserve(NUMBER_OF_ELEMENTS);
-    activeAttachments.reserve(NUMBER_OF_ELEMENTS);
+    magnitudesAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
+    phasesAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
+    typesAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
+    activeAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
     //[/Constructor_pre]
 
     reset_button.reset (new juce::TextButton ("Reset"));
@@ -53,7 +56,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     reset_button->setBounds (31, 829, 88, 30);
 
-    frequency_response.reset (new FrequencyResponse (processor.getFilterSpectrum()));
+    frequency_response.reset (new FrequencyResponse (spectrum));
     addAndMakeVisible (frequency_response.get());
     frequency_response->setName ("frequencyResponse");
 
@@ -71,7 +74,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     freq_response_label->setBounds (1151, 333, 181, 24);
 
-    phase_response.reset (new PhaseResponse (processor.getFilterSpectrum()));
+    phase_response.reset (new PhaseResponse (spectrum));
     addAndMakeVisible (phase_response.get());
     phase_response->setName ("phaseResponse");
 
@@ -384,38 +387,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     m8_slider->setBounds (150, 449, 120, 40);
 
-    m9_slider.reset (new juce::Slider ("Element 9 magnitude"));
-    addAndMakeVisible (m9_slider.get());
-    m9_slider->setRange (0, 10, 0);
-    m9_slider->setSliderStyle (juce::Slider::LinearHorizontal);
-    m9_slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
-
-    m9_slider->setBounds (150, 505, 120, 40);
-
-    m10_slider.reset (new juce::Slider ("Element 10 magnitude"));
-    addAndMakeVisible (m10_slider.get());
-    m10_slider->setRange (0, 10, 0);
-    m10_slider->setSliderStyle (juce::Slider::LinearHorizontal);
-    m10_slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
-
-    m10_slider->setBounds (150, 561, 120, 40);
-
-    m11_slider.reset (new juce::Slider ("Element 11 magnitude"));
-    addAndMakeVisible (m11_slider.get());
-    m11_slider->setRange (0, 10, 0);
-    m11_slider->setSliderStyle (juce::Slider::LinearHorizontal);
-    m11_slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
-
-    m11_slider->setBounds (150, 617, 120, 40);
-
-    m12_slider.reset (new juce::Slider ("Element 12 magnitude"));
-    addAndMakeVisible (m12_slider.get());
-    m12_slider->setRange (0, 10, 0);
-    m12_slider->setSliderStyle (juce::Slider::LinearHorizontal);
-    m12_slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
-
-    m12_slider->setBounds (150, 673, 120, 40);
-
     p3_slider.reset (new juce::Slider ("Element 3 phase"));
     addAndMakeVisible (p3_slider.get());
     p3_slider->setRange (0, 10, 0);
@@ -464,38 +435,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     p8_slider->setBounds (291, 449, 118, 40);
 
-    p9_slider.reset (new juce::Slider ("Element 9 phase"));
-    addAndMakeVisible (p9_slider.get());
-    p9_slider->setRange (0, 10, 0);
-    p9_slider->setSliderStyle (juce::Slider::LinearHorizontal);
-    p9_slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
-
-    p9_slider->setBounds (291, 505, 118, 40);
-
-    p10_slider.reset (new juce::Slider ("Element 10 phase"));
-    addAndMakeVisible (p10_slider.get());
-    p10_slider->setRange (0, 10, 0);
-    p10_slider->setSliderStyle (juce::Slider::LinearHorizontal);
-    p10_slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
-
-    p10_slider->setBounds (291, 561, 118, 40);
-
-    p11_slider.reset (new juce::Slider ("Element 11 phase"));
-    addAndMakeVisible (p11_slider.get());
-    p11_slider->setRange (0, 10, 0);
-    p11_slider->setSliderStyle (juce::Slider::LinearHorizontal);
-    p11_slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
-
-    p11_slider->setBounds (291, 617, 118, 40);
-
-    p12_slider.reset (new juce::Slider ("Element 12 phase"));
-    addAndMakeVisible (p12_slider.get());
-    p12_slider->setRange (0, 10, 0);
-    p12_slider->setSliderStyle (juce::Slider::LinearHorizontal);
-    p12_slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
-
-    p12_slider->setBounds (291, 673, 118, 40);
-
     e1_type.reset (new juce::ToggleButton ("Element 1 type"));
     addAndMakeVisible (e1_type.get());
     e1_type->setButtonText (juce::String());
@@ -543,30 +482,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e8_type->setButtonText (juce::String());
 
     e8_type->setBounds (445, 456, 56, 23);
-
-    e9_type.reset (new juce::ToggleButton ("Element 9 type"));
-    addAndMakeVisible (e9_type.get());
-    e9_type->setButtonText (juce::String());
-
-    e9_type->setBounds (445, 512, 56, 23);
-
-    e10_type.reset (new juce::ToggleButton ("Element 10 type"));
-    addAndMakeVisible (e10_type.get());
-    e10_type->setButtonText (juce::String());
-
-    e10_type->setBounds (445, 568, 56, 23);
-
-    e11_type.reset (new juce::ToggleButton ("Element 11 type"));
-    addAndMakeVisible (e11_type.get());
-    e11_type->setButtonText (juce::String());
-
-    e11_type->setBounds (445, 624, 56, 23);
-
-    e12_type.reset (new juce::ToggleButton ("Element 12 type"));
-    addAndMakeVisible (e12_type.get());
-    e12_type->setButtonText (juce::String());
-
-    e12_type->setBounds (445, 680, 56, 23);
 
     e1_active.reset (new juce::ToggleButton ("Element 1 active"));
     addAndMakeVisible (e1_active.get());
@@ -624,34 +539,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     e8_active->setBounds (542, 457, 39, 23);
 
-    e9_active.reset (new juce::ToggleButton ("Element 9 active"));
-    addAndMakeVisible (e9_active.get());
-    e9_active->setButtonText (juce::String());
-    e9_active->addListener (this);
-
-    e9_active->setBounds (542, 513, 39, 23);
-
-    e10_active.reset (new juce::ToggleButton ("Element 10 active"));
-    addAndMakeVisible (e10_active.get());
-    e10_active->setButtonText (juce::String());
-    e10_active->addListener (this);
-
-    e10_active->setBounds (542, 569, 39, 23);
-
-    e11_active.reset (new juce::ToggleButton ("Element 11 active"));
-    addAndMakeVisible (e11_active.get());
-    e11_active->setButtonText (juce::String());
-    e11_active->addListener (this);
-
-    e11_active->setBounds (542, 625, 39, 23);
-
-    e12_active.reset (new juce::ToggleButton ("Element 12 active"));
-    addAndMakeVisible (e12_active.get());
-    e12_active->setButtonText (juce::String());
-    e12_active->addListener (this);
-
-    e12_active->setBounds (542, 681, 39, 23);
-
     gaussian_plane_label.reset (new juce::Label ("Gaussian plane",
                                                  TRANS ("GAUSSIAN PLANE")));
     addAndMakeVisible (gaussian_plane_label.get());
@@ -668,7 +555,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (e1_led.get());
     e1_led->setName ("Led 1");
 
-    e1_led->setBounds (589, 67, 19, 19);
+    e1_led->setBounds (588, 67, 19, 19);
 
     e2_led.reset (new LEDComponent (*e2_active));
     addAndMakeVisible (e2_led.get());
@@ -713,30 +600,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     e8_led->setBounds (589, 459, 19, 19);
 
-    e9_led.reset (new LEDComponent (*e9_active));
-    addAndMakeVisible (e9_led.get());
-    e9_led->setName ("Led 9");
-
-    e9_led->setBounds (589, 515, 19, 19);
-
-    e10_led.reset (new LEDComponent (*e10_active));
-    addAndMakeVisible (e10_led.get());
-    e10_led->setName ("Led 10");
-
-    e10_led->setBounds (589, 571, 19, 19);
-
-    e11_led.reset (new LEDComponent (*e11_active));
-    addAndMakeVisible (e11_led.get());
-    e11_led->setName ("Led 11");
-
-    e11_led->setBounds (589, 627, 19, 19);
-
-    e12_led.reset (new LEDComponent (*e12_active));
-    addAndMakeVisible (e12_led.get());
-    e12_led->setName ("Led 12");
-
-    e12_led->setBounds (589, 683, 19, 19);
-
     bypass.reset (new juce::ToggleButton ("Bypass"));
     addAndMakeVisible (bypass.get());
     bypass->setButtonText (juce::String());
@@ -762,10 +625,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     magnitudesAttachments[5].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(6), *m6_slider));
     magnitudesAttachments[6].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(7), *m7_slider));
     magnitudesAttachments[7].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(8), *m8_slider));
-    magnitudesAttachments[8].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(9), *m9_slider));
-    magnitudesAttachments[9].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(10), *m10_slider));
-    magnitudesAttachments[10].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(11), *m11_slider));
-    magnitudesAttachments[11].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(12), *m12_slider));
 
     phasesAttachments[0].reset(new SliderAttachment(valueTreeState, PHASE_NAME + std::to_string(1), *p1_slider));
     phasesAttachments[1].reset(new SliderAttachment(valueTreeState, PHASE_NAME + std::to_string(2), *p2_slider));
@@ -775,10 +634,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     phasesAttachments[5].reset(new SliderAttachment(valueTreeState, PHASE_NAME + std::to_string(6), *p6_slider));
     phasesAttachments[6].reset(new SliderAttachment(valueTreeState, PHASE_NAME + std::to_string(7), *p7_slider));
     phasesAttachments[7].reset(new SliderAttachment(valueTreeState, PHASE_NAME + std::to_string(8), *p8_slider));
-    phasesAttachments[8].reset(new SliderAttachment(valueTreeState, PHASE_NAME + std::to_string(9), *p9_slider));
-    phasesAttachments[9].reset(new SliderAttachment(valueTreeState, PHASE_NAME + std::to_string(10), *p10_slider));
-    phasesAttachments[10].reset(new SliderAttachment(valueTreeState, PHASE_NAME + std::to_string(11), *p11_slider));
-    phasesAttachments[11].reset(new SliderAttachment(valueTreeState, PHASE_NAME + std::to_string(12), *p12_slider));
 
     typesAttachments[0].reset(new ButtonAttachment(valueTreeState, TYPE_NAME + std::to_string(1), *e1_type));
     typesAttachments[1].reset(new ButtonAttachment(valueTreeState, TYPE_NAME + std::to_string(2), *e2_type));
@@ -788,10 +643,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     typesAttachments[5].reset(new ButtonAttachment(valueTreeState, TYPE_NAME + std::to_string(6), *e6_type));
     typesAttachments[6].reset(new ButtonAttachment(valueTreeState, TYPE_NAME + std::to_string(7), *e7_type));
     typesAttachments[7].reset(new ButtonAttachment(valueTreeState, TYPE_NAME + std::to_string(8), *e8_type));
-    typesAttachments[8].reset(new ButtonAttachment(valueTreeState, TYPE_NAME + std::to_string(9), *e9_type));
-    typesAttachments[9].reset(new ButtonAttachment(valueTreeState, TYPE_NAME + std::to_string(10), *e10_type));
-    typesAttachments[10].reset(new ButtonAttachment(valueTreeState, TYPE_NAME + std::to_string(11), *e11_type));
-    typesAttachments[11].reset(new ButtonAttachment(valueTreeState, TYPE_NAME + std::to_string(12), *e12_type));
 
     activeAttachments[0].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(1), *e1_active));
     activeAttachments[1].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(2), *e2_active));
@@ -801,10 +652,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     activeAttachments[5].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(6), *e6_active));
     activeAttachments[6].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(7), *e7_active));
     activeAttachments[7].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(8), *e8_active));
-    activeAttachments[8].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(9), *e9_active));
-    activeAttachments[9].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(10), *e10_active));
-    activeAttachments[10].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(11), *e11_active));
-    activeAttachments[11].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(12), *e12_active));
 
     gainAttachment.reset(new SliderAttachment(valueTreeState, GAIN_NAME, *gain_slider));
     bypassAttachment.reset(new ButtonAttachment(valueTreeState, FILTER_BYPASS_NAME, *bypass));
@@ -817,10 +664,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m6_slider->setLookAndFeel(&magnitudeSlidersTheme);
     m7_slider->setLookAndFeel(&magnitudeSlidersTheme);
     m8_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    m9_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    m10_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    m11_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    m12_slider->setLookAndFeel(&magnitudeSlidersTheme);
 
     p1_slider->setLookAndFeel(&phaseSlidersTheme);
     p2_slider->setLookAndFeel(&phaseSlidersTheme);
@@ -830,10 +673,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p6_slider->setLookAndFeel(&phaseSlidersTheme);
     p7_slider->setLookAndFeel(&phaseSlidersTheme);
     p8_slider->setLookAndFeel(&phaseSlidersTheme);
-    p9_slider->setLookAndFeel(&phaseSlidersTheme);
-    p10_slider->setLookAndFeel(&phaseSlidersTheme);
-    p11_slider->setLookAndFeel(&phaseSlidersTheme);
-    p12_slider->setLookAndFeel(&phaseSlidersTheme);
 
     e1_type->setLookAndFeel(&typeSwitchesTheme);
     e2_type->setLookAndFeel(&typeSwitchesTheme);
@@ -843,10 +682,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e6_type->setLookAndFeel(&typeSwitchesTheme);
     e7_type->setLookAndFeel(&typeSwitchesTheme);
     e8_type->setLookAndFeel(&typeSwitchesTheme);
-    e9_type->setLookAndFeel(&typeSwitchesTheme);
-    e10_type->setLookAndFeel(&typeSwitchesTheme);
-    e11_type->setLookAndFeel(&typeSwitchesTheme);
-    e12_type->setLookAndFeel(&typeSwitchesTheme);
 
     e1_active->setLookAndFeel(&activeSwitchesTheme);
     e2_active->setLookAndFeel(&activeSwitchesTheme);
@@ -856,10 +691,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e6_active->setLookAndFeel(&activeSwitchesTheme);
     e7_active->setLookAndFeel(&activeSwitchesTheme);
     e8_active->setLookAndFeel(&activeSwitchesTheme);
-    e9_active->setLookAndFeel(&activeSwitchesTheme);
-    e10_active->setLookAndFeel(&activeSwitchesTheme);
-    e11_active->setLookAndFeel(&activeSwitchesTheme);
-    e12_active->setLookAndFeel(&activeSwitchesTheme);
 
     reset_button->setLookAndFeel(&resetButtonTheme);
     gain_slider->setLookAndFeel(&gainSliderTheme);
@@ -876,7 +707,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 PluginEditor::~PluginEditor()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
-    for (int i = 0; i < NUMBER_OF_ELEMENTS; ++ i)
+    for (int i = 0; i < NUMBER_OF_FILTER_ELEMENTS; ++ i)
     {
         magnitudesAttachments[i].reset();
         phasesAttachments[i].reset();
@@ -920,20 +751,12 @@ PluginEditor::~PluginEditor()
     m6_slider = nullptr;
     m7_slider = nullptr;
     m8_slider = nullptr;
-    m9_slider = nullptr;
-    m10_slider = nullptr;
-    m11_slider = nullptr;
-    m12_slider = nullptr;
     p3_slider = nullptr;
     p4_slider = nullptr;
     p5_slider = nullptr;
     p6_slider = nullptr;
     p7_slider = nullptr;
     p8_slider = nullptr;
-    p9_slider = nullptr;
-    p10_slider = nullptr;
-    p11_slider = nullptr;
-    p12_slider = nullptr;
     e1_type = nullptr;
     e2_type = nullptr;
     e3_type = nullptr;
@@ -942,10 +765,6 @@ PluginEditor::~PluginEditor()
     e6_type = nullptr;
     e7_type = nullptr;
     e8_type = nullptr;
-    e9_type = nullptr;
-    e10_type = nullptr;
-    e11_type = nullptr;
-    e12_type = nullptr;
     e1_active = nullptr;
     e2_active = nullptr;
     e3_active = nullptr;
@@ -954,10 +773,6 @@ PluginEditor::~PluginEditor()
     e6_active = nullptr;
     e7_active = nullptr;
     e8_active = nullptr;
-    e9_active = nullptr;
-    e10_active = nullptr;
-    e11_active = nullptr;
-    e12_active = nullptr;
     gaussian_plane_label = nullptr;
     e1_led = nullptr;
     e2_led = nullptr;
@@ -967,10 +782,6 @@ PluginEditor::~PluginEditor()
     e6_led = nullptr;
     e7_led = nullptr;
     e8_led = nullptr;
-    e9_led = nullptr;
-    e10_led = nullptr;
-    e11_led = nullptr;
-    e12_led = nullptr;
     bypass = nullptr;
     gain_slider = nullptr;
 
@@ -1335,30 +1146,6 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         e8_led->repaint();
         //[/UserButtonCode_e8_active]
     }
-    else if (buttonThatWasClicked == e9_active.get())
-    {
-        //[UserButtonCode_e9_active] -- add your button handler code here..
-        e9_led->repaint();
-        //[/UserButtonCode_e9_active]
-    }
-    else if (buttonThatWasClicked == e10_active.get())
-    {
-        //[UserButtonCode_e10_active] -- add your button handler code here..
-        e10_led->repaint();
-        //[/UserButtonCode_e10_active]
-    }
-    else if (buttonThatWasClicked == e11_active.get())
-    {
-        //[UserButtonCode_e11_active] -- add your button handler code here..
-        e11_led->repaint();
-        //[/UserButtonCode_e11_active]
-    }
-    else if (buttonThatWasClicked == e12_active.get())
-    {
-        //[UserButtonCode_e12_active] -- add your button handler code here..
-        e12_led->repaint();
-        //[/UserButtonCode_e12_active]
-    }
     else if (buttonThatWasClicked == bypass.get())
     {
         //[UserButtonCode_bypass] -- add your button handler code here..
@@ -1372,6 +1159,21 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void PluginEditor::getSpectrum()
+{
+    auto sampleRate = processor.getSampleRate();
+    auto nyquistFreq = sampleRate / 2;
+    spectrum.resize(static_cast<int>(nyquistFreq));
+    std::fill(spectrum.begin(), spectrum.end(), std::complex<double>(1.0, 0.0));
+    double phi;
+    int frequency;
+
+    for (frequency = 0; frequency < nyquistFreq; ++ frequency)
+    {
+        phi = static_cast<double>(frequency) / sampleRate;
+        spectrum[frequency] *= processor.getFilterSpectrum(phi);
+    }
+}
 //[/MiscUserCode]
 
 
@@ -1442,7 +1244,7 @@ BEGIN_JUCER_METADATA
               buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
                     virtualName="" explicitFocusOrder="0" pos="1014 30 450 295" class="FrequencyResponse"
-                    params="processor.getFilterSpectrum()"/>
+                    params="spectrum"/>
   <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
          virtualName="" explicitFocusOrder="0" pos="1151 333 181 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="FREQUENCY RESPONSE"
@@ -1451,7 +1253,7 @@ BEGIN_JUCER_METADATA
          justification="36" typefaceStyle="SemiBold"/>
   <GENERICCOMPONENT name="phaseResponse" id="c9a48273dec25832" memberName="phase_response"
                     virtualName="" explicitFocusOrder="0" pos="1036 384 412 270"
-                    class="PhaseResponse" params="processor.getFilterSpectrum()"/>
+                    class="PhaseResponse" params="spectrum"/>
   <LABEL name="Phase response" id="6d08c4e421703ed5" memberName="ph_response_label"
          virtualName="" explicitFocusOrder="0" pos="1176 661 142 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="PHASE RESPONSE"
@@ -1601,26 +1403,6 @@ BEGIN_JUCER_METADATA
           max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="0"/>
-  <SLIDER name="Element 9 magnitude" id="7d6e778c5b16f466" memberName="m9_slider"
-          virtualName="" explicitFocusOrder="0" pos="150 505 120 40" min="0.0"
-          max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="0"/>
-  <SLIDER name="Element 10 magnitude" id="cf241975fd79a900" memberName="m10_slider"
-          virtualName="" explicitFocusOrder="0" pos="150 561 120 40" min="0.0"
-          max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="0"/>
-  <SLIDER name="Element 11 magnitude" id="2f47546b6d97c414" memberName="m11_slider"
-          virtualName="" explicitFocusOrder="0" pos="150 617 120 40" min="0.0"
-          max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="0"/>
-  <SLIDER name="Element 12 magnitude" id="66d9a904240d550e" memberName="m12_slider"
-          virtualName="" explicitFocusOrder="0" pos="150 673 120 40" min="0.0"
-          max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="0"/>
   <SLIDER name="Element 3 phase" id="f51ba826593a2a4e" memberName="p3_slider"
           virtualName="" explicitFocusOrder="0" pos="291 169 118 40" min="0.0"
           max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
@@ -1651,26 +1433,6 @@ BEGIN_JUCER_METADATA
           max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="0"/>
-  <SLIDER name="Element 9 phase" id="7304c296874cbca3" memberName="p9_slider"
-          virtualName="" explicitFocusOrder="0" pos="291 505 118 40" min="0.0"
-          max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="0"/>
-  <SLIDER name="Element 10 phase" id="bb13454c1eb2ebc8" memberName="p10_slider"
-          virtualName="" explicitFocusOrder="0" pos="291 561 118 40" min="0.0"
-          max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="0"/>
-  <SLIDER name="Element 11 phase" id="aab61a5f91de8fa1" memberName="p11_slider"
-          virtualName="" explicitFocusOrder="0" pos="291 617 118 40" min="0.0"
-          max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="0"/>
-  <SLIDER name="Element 12 phase" id="ca0f3879f176f26" memberName="p12_slider"
-          virtualName="" explicitFocusOrder="0" pos="291 673 118 40" min="0.0"
-          max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="0"/>
   <TOGGLEBUTTON name="Element 1 type" id="cb026ef1068db639" memberName="e1_type"
                 virtualName="" explicitFocusOrder="0" pos="445 64 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
@@ -1694,18 +1456,6 @@ BEGIN_JUCER_METADATA
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 8 type" id="a0b1086b7f717581" memberName="e8_type"
                 virtualName="" explicitFocusOrder="0" pos="445 456 56 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
-  <TOGGLEBUTTON name="Element 9 type" id="dafe526db1b167f9" memberName="e9_type"
-                virtualName="" explicitFocusOrder="0" pos="445 512 56 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
-  <TOGGLEBUTTON name="Element 10 type" id="2d062dcad4b0663" memberName="e10_type"
-                virtualName="" explicitFocusOrder="0" pos="445 568 56 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
-  <TOGGLEBUTTON name="Element 11 type" id="86cee1ca201dd195" memberName="e11_type"
-                virtualName="" explicitFocusOrder="0" pos="445 624 56 23" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
-  <TOGGLEBUTTON name="Element 12 type" id="da051b1d0f987089" memberName="e12_type"
-                virtualName="" explicitFocusOrder="0" pos="445 680 56 23" buttonText=""
                 connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 1 active" id="84bb86bdbd9ccede" memberName="e1_active"
                 virtualName="" explicitFocusOrder="0" pos="542 65 39 23" buttonText=""
@@ -1731,18 +1481,6 @@ BEGIN_JUCER_METADATA
   <TOGGLEBUTTON name="Element 8 active" id="b60e0b9c2104a2bd" memberName="e8_active"
                 virtualName="" explicitFocusOrder="0" pos="542 457 39 23" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
-  <TOGGLEBUTTON name="Element 9 active" id="d1d96ca0950dde6a" memberName="e9_active"
-                virtualName="" explicitFocusOrder="0" pos="542 513 39 23" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
-  <TOGGLEBUTTON name="Element 10 active" id="663dbbc6ddde4163" memberName="e10_active"
-                virtualName="" explicitFocusOrder="0" pos="542 569 39 23" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
-  <TOGGLEBUTTON name="Element 11 active" id="bf7163acf9aabb69" memberName="e11_active"
-                virtualName="" explicitFocusOrder="0" pos="542 625 39 23" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
-  <TOGGLEBUTTON name="Element 12 active" id="c502882a7d65a176" memberName="e12_active"
-                virtualName="" explicitFocusOrder="0" pos="542 681 39 23" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <LABEL name="Gaussian plane" id="32980deccea32218" memberName="gaussian_plane_label"
          virtualName="" explicitFocusOrder="0" pos="728 333 141 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="GAUSSIAN PLANE"
@@ -1750,7 +1488,7 @@ BEGIN_JUCER_METADATA
          fontname="Gill Sans" fontsize="16.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <GENERICCOMPONENT name="Led 1" id="33ac2e372b117cf2" memberName="e1_led" virtualName=""
-                    explicitFocusOrder="0" pos="589 67 19 19" class="LEDComponent"
+                    explicitFocusOrder="0" pos="588 67 19 19" class="LEDComponent"
                     params="*e1_active"/>
   <GENERICCOMPONENT name="Led 2" id="dcdf09a978cf18a" memberName="e2_led" virtualName=""
                     explicitFocusOrder="0" pos="589 123 19 19" class="LEDComponent"
@@ -1773,18 +1511,6 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="Led 8" id="f329431bc31bbc97" memberName="e8_led" virtualName=""
                     explicitFocusOrder="0" pos="589 459 19 19" class="LEDComponent"
                     params="*e8_active"/>
-  <GENERICCOMPONENT name="Led 9" id="206bd17f53dff43d" memberName="e9_led" virtualName=""
-                    explicitFocusOrder="0" pos="589 515 19 19" class="LEDComponent"
-                    params="*e9_active"/>
-  <GENERICCOMPONENT name="Led 10" id="7bbd2c45fb13794e" memberName="e10_led" virtualName=""
-                    explicitFocusOrder="0" pos="589 571 19 19" class="LEDComponent"
-                    params="*e10_active"/>
-  <GENERICCOMPONENT name="Led 11" id="11f4a9aa4161209e" memberName="e11_led" virtualName=""
-                    explicitFocusOrder="0" pos="589 627 19 19" class="LEDComponent"
-                    params="*e11_active"/>
-  <GENERICCOMPONENT name="Led 12" id="2783dc4bb1d23a35" memberName="e12_led" virtualName=""
-                    explicitFocusOrder="0" pos="589 683 19 19" class="LEDComponent"
-                    params="*e12_active"/>
   <TOGGLEBUTTON name="Bypass" id="4daf2a36bc47407c" memberName="bypass" virtualName=""
                 explicitFocusOrder="0" pos="509 829 88 30" buttonText="" connectedEdges="0"
                 needsCallback="1" radioGroupId="0" state="0"/>

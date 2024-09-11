@@ -39,7 +39,7 @@ public:
         long int spectrumSize = spectrum.size();
         for (int i = 0; i < spectrumSize; ++ i)
         {
-            double magnitude = std::abs(spectrum[i]);
+            double magnitude = 0.5*std::abs(spectrum[i]);
             if (magnitudes[i] != magnitude)
             {
                 magnitudes[i] = magnitude;
@@ -110,7 +110,7 @@ public:
         long int spectrumSize = spectrum.size();
         for (int i = 0; i < spectrumSize; ++ i)
         {
-            double phase = std::arg(spectrum[i]);
+            double phase = (MathConstants<double>::pi + std::arg(spectrum[i])) / (MathConstants<double>::twoPi);
             if (phases[i] != phase)
             {
                 phases[i] = phase;
@@ -224,34 +224,34 @@ private:
         float radius = 5.0f;
         
         // Zeros are "O"
-        g.setColour(juce::Colour (ZEROS_COLOUR));
         for (const auto& zero : zeros)
         {
+            g.setColour(juce::Colour (ZEROS_COLOUR));
             float x = (std::real(zero) * (width / 2)) + centerX;
             float y = (-(std::imag(zero)) * (height / 2)) + centerY;
             
             g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
             
 //          DRAW CONJUGATE
-//            y = (-(std::imag(zero)) * (height / 2)) + centerY;
-//            g.setColour(juce::Colour (CONJ_ZEROS_COLOUR));
-//            g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
+            y = ((std::imag(zero)) * (height / 2)) + centerY;
+            g.setColour(juce::Colour (CONJ_ZEROS_COLOUR));
+            g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
         }
         
         // Poles are "X"
-        g.setColour(juce::Colour (POLES_COLOUR));
         for (const auto& pole : poles)
         {
+            g.setColour(juce::Colour (POLES_COLOUR));
             float x = (std::real(pole) * (width / 2)) + centerX;
             float y = (-(std::imag(pole)) * (height / 2)) + centerY;
             
             g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
             g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
 //            DRAW CONJUGATE
-//            g.setColour(juce::Colour (CONJ_POLES_COLOUR));
-//            y = (-(std::imag(pole)) * (height / 2)) + centerY;
-//            g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
-//            g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
+            g.setColour(juce::Colour (CONJ_POLES_COLOUR));
+            y = ((std::imag(pole)) * (height / 2)) + centerY;
+            g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
+            g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
         }
     }
 };

@@ -73,7 +73,7 @@ public:
         
         g.setColour(juce::Colour (SLIDER_LABEL_COLOUR));
         g.setFont(juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular").withExtraKerningFactor (0.0f));
-        g.drawText(juce::String(slider.getValue()), x, y + 2.0f, width, height, juce::Justification::centredBottom);
+        g.drawText(juce::String(slider.getValue(), 2), x, y + 2.0f, width, height, juce::Justification::centredBottom);
     }
 };
 

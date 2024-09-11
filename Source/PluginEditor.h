@@ -23,12 +23,12 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "Graphs.h"
-#include "MyTheme.h"
+#include "GraphicTheme.h"
 #include "GUImiscellaneous.h"
+#include "Parameters.h"
 
 typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
-#define NUMBER_OF_ELEMENTS          12
 //[/Headers]
 
 
@@ -78,6 +78,10 @@ private:
     ResetButtonTheme resetButtonTheme;
     GainSliderTheme gainSliderTheme;
     BypassSwitchTheme bypassSwitchTheme;
+
+    std::vector<std::complex<double>> spectrum;
+
+    void getSpectrum ();
     //[/UserVariables]
 
     //==============================================================================
@@ -114,20 +118,12 @@ private:
     std::unique_ptr<juce::Slider> m6_slider;
     std::unique_ptr<juce::Slider> m7_slider;
     std::unique_ptr<juce::Slider> m8_slider;
-    std::unique_ptr<juce::Slider> m9_slider;
-    std::unique_ptr<juce::Slider> m10_slider;
-    std::unique_ptr<juce::Slider> m11_slider;
-    std::unique_ptr<juce::Slider> m12_slider;
     std::unique_ptr<juce::Slider> p3_slider;
     std::unique_ptr<juce::Slider> p4_slider;
     std::unique_ptr<juce::Slider> p5_slider;
     std::unique_ptr<juce::Slider> p6_slider;
     std::unique_ptr<juce::Slider> p7_slider;
     std::unique_ptr<juce::Slider> p8_slider;
-    std::unique_ptr<juce::Slider> p9_slider;
-    std::unique_ptr<juce::Slider> p10_slider;
-    std::unique_ptr<juce::Slider> p11_slider;
-    std::unique_ptr<juce::Slider> p12_slider;
     std::unique_ptr<juce::ToggleButton> e1_type;
     std::unique_ptr<juce::ToggleButton> e2_type;
     std::unique_ptr<juce::ToggleButton> e3_type;
@@ -136,10 +132,6 @@ private:
     std::unique_ptr<juce::ToggleButton> e6_type;
     std::unique_ptr<juce::ToggleButton> e7_type;
     std::unique_ptr<juce::ToggleButton> e8_type;
-    std::unique_ptr<juce::ToggleButton> e9_type;
-    std::unique_ptr<juce::ToggleButton> e10_type;
-    std::unique_ptr<juce::ToggleButton> e11_type;
-    std::unique_ptr<juce::ToggleButton> e12_type;
     std::unique_ptr<juce::ToggleButton> e1_active;
     std::unique_ptr<juce::ToggleButton> e2_active;
     std::unique_ptr<juce::ToggleButton> e3_active;
@@ -148,10 +140,6 @@ private:
     std::unique_ptr<juce::ToggleButton> e6_active;
     std::unique_ptr<juce::ToggleButton> e7_active;
     std::unique_ptr<juce::ToggleButton> e8_active;
-    std::unique_ptr<juce::ToggleButton> e9_active;
-    std::unique_ptr<juce::ToggleButton> e10_active;
-    std::unique_ptr<juce::ToggleButton> e11_active;
-    std::unique_ptr<juce::ToggleButton> e12_active;
     std::unique_ptr<juce::Label> gaussian_plane_label;
     std::unique_ptr<LEDComponent> e1_led;
     std::unique_ptr<LEDComponent> e2_led;
@@ -161,10 +149,6 @@ private:
     std::unique_ptr<LEDComponent> e6_led;
     std::unique_ptr<LEDComponent> e7_led;
     std::unique_ptr<LEDComponent> e8_led;
-    std::unique_ptr<LEDComponent> e9_led;
-    std::unique_ptr<LEDComponent> e10_led;
-    std::unique_ptr<LEDComponent> e11_led;
-    std::unique_ptr<LEDComponent> e12_led;
     std::unique_ptr<juce::ToggleButton> bypass;
     std::unique_ptr<juce::Slider> gain_slider;
 

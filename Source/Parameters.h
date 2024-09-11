@@ -2,15 +2,15 @@
 #include <JuceHeader.h>
 
 // Generic constants
-#define MAX_ORDER                               6
-
-#define FILTER_BYPASS_NAME                      "BYPASS"
-#define BYPASS_DEFAULT                          false
+#define NUMBER_OF_FILTER_ELEMENTS               8
+#define SLIDERS_FLOOR                           0.0f
+#define SLIDERS_CEILING                         1.0f
 
 // FilterElement constants & ids
 #define MAGNITUDE_NAME                          "M"
 #define MAGNITUDE_FLOOR                         0.0f
-#define MAGNITUDE_CEILING                       0.9999f
+#define MAGNITUDE_CEILING                       1.0f
+#define POLE_MAX_MAGNITUDE                      0.99999
 
 #define PHASE_NAME                              "P"
 #define PHASE_FLOOR                             0.0f
@@ -18,7 +18,7 @@
 
 #define MAGNITUDE_DEFAULT                       0.0f
 #define PHASE_DEFAULT                           0.0f
-#define INTERVAL                                0.0001f
+#define INTERVAL                                0.00001f
 
 #define TYPE_NAME                               "T"
 #define TYPE_DEFAULT                            true
@@ -26,12 +26,17 @@
 #define ACTIVE_NAME                             "A"
 #define ACTIVE_DEFAULT                          false
 
+// Plugin constants & ids
+
 #define GAIN_NAME                               "GAIN"
-#define GAIN_FLOOR                              -36.0f
-#define GAIN_CEILING                            12.0f
-#define GAIN_INTERVAL                           0.1f
+#define GAIN_FLOOR                              -32.0f
+#define GAIN_CEILING                            32.0f
+#define GAIN_INTERVAL                           0.01f
 #define GAIN_DEFAULT                            0.0f
 #define SMOOTHING_TIME                          0.01f
+
+#define FILTER_BYPASS_NAME                      "BYPASS"
+#define BYPASS_DEFAULT                          false
 
 
 namespace Parameters
@@ -41,7 +46,7 @@ namespace Parameters
 {
         std::vector<std::unique_ptr<RangedAudioParameter>> params;
         
-        for (int i = 0; i < 2 * MAX_ORDER; ++ i)
+        for (int i = 0; i < NUMBER_OF_FILTER_ELEMENTS; ++ i)
         {
             std::string number = std::to_string(i + 1);
             
