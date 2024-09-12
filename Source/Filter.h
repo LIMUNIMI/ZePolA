@@ -1,8 +1,6 @@
 #pragma once
 #include <JuceHeader.h>
 #include "Parameters.h"
-#include <vector>
-#include <memory>
 
 // -----------------------------------------------------------------------------
 /* The class "FilterElement" represents a complex number in magnitude-phase
