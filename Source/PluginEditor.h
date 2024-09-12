@@ -83,7 +83,6 @@ private:
     BypassSwitchTheme bypassSwitchTheme;
     LinLogSwitchTheme linLogTheme;
 
-    std::vector<std::complex<double>> spectrum;
     std::vector<double> magnitudes;
     std::vector<double> phases;
 
@@ -103,24 +102,11 @@ private:
     std::unique_ptr<juce::Slider> m3_slider;
     std::unique_ptr<juce::Slider> m4_slider;
     std::unique_ptr<juce::Slider> m5_slider;
-    std::unique_ptr<juce::Label> elements_chain_label;
-    std::unique_ptr<juce::Label> element1_label;
     std::unique_ptr<juce::Label> magnitudes_label;
     std::unique_ptr<juce::Label> phases_label;
     std::unique_ptr<juce::Label> zero_pole_label;
-    std::unique_ptr<juce::Label> element2_label;
     std::unique_ptr<juce::Slider> p2_slider;
     std::unique_ptr<juce::Label> active_label;
-    std::unique_ptr<juce::Label> element3_label;
-    std::unique_ptr<juce::Label> element4_label;
-    std::unique_ptr<juce::Label> element5_label;
-    std::unique_ptr<juce::Label> element6_label;
-    std::unique_ptr<juce::Label> element7_label;
-    std::unique_ptr<juce::Label> element8_label;
-    std::unique_ptr<juce::Label> element9_label;
-    std::unique_ptr<juce::Label> element10_label;
-    std::unique_ptr<juce::Label> element11_label;
-    std::unique_ptr<juce::Label> element12_label;
     std::unique_ptr<juce::Slider> m6_slider;
     std::unique_ptr<juce::Slider> m7_slider;
     std::unique_ptr<juce::Slider> m8_slider;

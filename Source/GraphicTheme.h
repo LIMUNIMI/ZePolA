@@ -8,7 +8,7 @@
 #define SWITCH_BACKGROUND                   0xffe7eaeb
 #define OFF_SWITCH_COLOUR                   0xffcacfd2
 #define ON_SWITCH_COLOUR                    0xff909497
-#define ZEROS_COLOUR                        0xff9b59b6
+#define ZEROS_COLOUR                        0xd79b59b6
 #define POLES_COLOUR                        0xffffbc2e
 #define BYPASS_ON_COLOUR                    0xffff5f58
 #define BYPASS_OFF_COLOUR                   0xff781a13

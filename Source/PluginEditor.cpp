@@ -22,7 +22,7 @@
 #include <cmath>
 
 #define GRAPHS_QUALITY                  2048
-#define FREQUENCY_FLOOR                 10
+#define FREQUENCY_FLOOR                 10.0
 //[/Headers]
 
 #include "PluginEditor.h"
@@ -154,31 +154,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     m5_slider->setBounds (150, 281, 120, 40);
 
-    elements_chain_label.reset (new juce::Label ("Elements chain",
-                                                 TRANS ("\n"
-                                                 "ELEMENTS CHAIN")));
-    addAndMakeVisible (elements_chain_label.get());
-    elements_chain_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    elements_chain_label->setJustificationType (juce::Justification::centred);
-    elements_chain_label->setEditable (false, false, false);
-    elements_chain_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    elements_chain_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    elements_chain_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    elements_chain_label->setBounds (14, 20, 123, 24);
-
-    element1_label.reset (new juce::Label ("Element 1",
-                                           TRANS ("ELEMENT 1")));
-    addAndMakeVisible (element1_label.get());
-    element1_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element1_label->setJustificationType (juce::Justification::centred);
-    element1_label->setEditable (false, false, false);
-    element1_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element1_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element1_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element1_label->setBounds (38, 66, 70, 24);
-
     magnitudes_label.reset (new juce::Label ("Magnitudes",
                                              TRANS ("MAGNITUDE\n")));
     addAndMakeVisible (magnitudes_label.get());
@@ -215,18 +190,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     zero_pole_label->setBounds (428, 20, 91, 24);
 
-    element2_label.reset (new juce::Label ("Element 2",
-                                           TRANS ("ELEMENT 2")));
-    addAndMakeVisible (element2_label.get());
-    element2_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element2_label->setJustificationType (juce::Justification::centred);
-    element2_label->setEditable (false, false, false);
-    element2_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element2_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element2_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element2_label->setBounds (38, 122, 70, 24);
-
     p2_slider.reset (new juce::Slider ("Element 2 phase"));
     addAndMakeVisible (p2_slider.get());
     p2_slider->setRange (0, 10, 0);
@@ -246,126 +209,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     active_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
     active_label->setBounds (544, 20, 55, 24);
-
-    element3_label.reset (new juce::Label ("Element 3",
-                                           TRANS ("ELEMENT 3")));
-    addAndMakeVisible (element3_label.get());
-    element3_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element3_label->setJustificationType (juce::Justification::centred);
-    element3_label->setEditable (false, false, false);
-    element3_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element3_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element3_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element3_label->setBounds (38, 178, 70, 24);
-
-    element4_label.reset (new juce::Label ("Element 4",
-                                           TRANS ("ELEMENT 4")));
-    addAndMakeVisible (element4_label.get());
-    element4_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element4_label->setJustificationType (juce::Justification::centred);
-    element4_label->setEditable (false, false, false);
-    element4_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element4_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element4_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element4_label->setBounds (38, 234, 70, 24);
-
-    element5_label.reset (new juce::Label ("Element 5",
-                                           TRANS ("ELEMENT 5")));
-    addAndMakeVisible (element5_label.get());
-    element5_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element5_label->setJustificationType (juce::Justification::centred);
-    element5_label->setEditable (false, false, false);
-    element5_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element5_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element5_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element5_label->setBounds (38, 290, 70, 24);
-
-    element6_label.reset (new juce::Label ("Element 6",
-                                           TRANS ("ELEMENT 6")));
-    addAndMakeVisible (element6_label.get());
-    element6_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element6_label->setJustificationType (juce::Justification::centred);
-    element6_label->setEditable (false, false, false);
-    element6_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element6_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element6_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element6_label->setBounds (38, 346, 70, 24);
-
-    element7_label.reset (new juce::Label ("Element 7",
-                                           TRANS ("ELEMENT 7")));
-    addAndMakeVisible (element7_label.get());
-    element7_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element7_label->setJustificationType (juce::Justification::centred);
-    element7_label->setEditable (false, false, false);
-    element7_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element7_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element7_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element7_label->setBounds (38, 402, 70, 24);
-
-    element8_label.reset (new juce::Label ("Element 8",
-                                           TRANS ("ELEMENT 8")));
-    addAndMakeVisible (element8_label.get());
-    element8_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element8_label->setJustificationType (juce::Justification::centred);
-    element8_label->setEditable (false, false, false);
-    element8_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element8_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element8_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element8_label->setBounds (38, 458, 70, 24);
-
-    element9_label.reset (new juce::Label ("Element 9",
-                                           TRANS ("ELEMENT 9")));
-    addAndMakeVisible (element9_label.get());
-    element9_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element9_label->setJustificationType (juce::Justification::centred);
-    element9_label->setEditable (false, false, false);
-    element9_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element9_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element9_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element9_label->setBounds (38, 514, 70, 24);
-
-    element10_label.reset (new juce::Label ("Element 10",
-                                            TRANS ("ELEMENT 10")));
-    addAndMakeVisible (element10_label.get());
-    element10_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element10_label->setJustificationType (juce::Justification::centred);
-    element10_label->setEditable (false, false, false);
-    element10_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element10_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element10_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element10_label->setBounds (38, 570, 70, 24);
-
-    element11_label.reset (new juce::Label ("Element 11",
-                                            TRANS ("ELEMENT 11")));
-    addAndMakeVisible (element11_label.get());
-    element11_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element11_label->setJustificationType (juce::Justification::centred);
-    element11_label->setEditable (false, false, false);
-    element11_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element11_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element11_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element11_label->setBounds (38, 626, 70, 24);
-
-    element12_label.reset (new juce::Label ("Element 12",
-                                            TRANS ("ELEMENT 12")));
-    addAndMakeVisible (element12_label.get());
-    element12_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    element12_label->setJustificationType (juce::Justification::centred);
-    element12_label->setEditable (false, false, false);
-    element12_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    element12_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    element12_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    element12_label->setBounds (38, 682, 70, 24);
 
     m6_slider.reset (new juce::Slider ("Element 6 magnitude"));
     addAndMakeVisible (m6_slider.get());
@@ -741,24 +584,11 @@ PluginEditor::~PluginEditor()
     m3_slider = nullptr;
     m4_slider = nullptr;
     m5_slider = nullptr;
-    elements_chain_label = nullptr;
-    element1_label = nullptr;
     magnitudes_label = nullptr;
     phases_label = nullptr;
     zero_pole_label = nullptr;
-    element2_label = nullptr;
     p2_slider = nullptr;
     active_label = nullptr;
-    element3_label = nullptr;
-    element4_label = nullptr;
-    element5_label = nullptr;
-    element6_label = nullptr;
-    element7_label = nullptr;
-    element8_label = nullptr;
-    element9_label = nullptr;
-    element10_label = nullptr;
-    element11_label = nullptr;
-    element12_label = nullptr;
     m6_slider = nullptr;
     m7_slider = nullptr;
     m8_slider = nullptr;
@@ -859,18 +689,6 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 10.0f, y = 12.0f, width = 132.0f, height = 753.0f;
-        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
-        juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRoundedRectangle (x, y, width, height, 14.500f);
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 14.500f, 2.000f);
-    }
-
-    {
         float x = 984.0f, y = 12.0f, width = 504.0f, height = 752.0f;
         juce::Colour fillColour = juce::Colour (0x17b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
@@ -919,7 +737,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 10, y = 730, width = 125, height = 30;
+        int x = 152, y = 502, width = 125, height = 30;
         juce::String text (TRANS ("FILTER SETUP"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -998,42 +816,6 @@ void PluginEditor::paint (juce::Graphics& g)
 
     {
         int x = 10, y = 440, width = 607, height = 1;
-        juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 10, y = 496, width = 607, height = 1;
-        juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 10, y = 552, width = 607, height = 1;
-        juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 10, y = 608, width = 607, height = 1;
-        juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 10, y = 664, width = 607, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1178,36 +960,28 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
 void PluginEditor::getSpectrum()
 {
     double phi;
-
-    spectrum.resize(GRAPHS_QUALITY);
+    const auto sampleRate = processor.getSampleRate();
+    
     magnitudes.resize(GRAPHS_QUALITY);
     phases.resize(GRAPHS_QUALITY);
 
     const double pi = MathConstants<double>::pi;
     const double twoPi = MathConstants<double>::twoPi;
-
-    // Linear Spectrum
-    if (linLog)
+    
+    auto n1 = log(FREQUENCY_FLOOR / sampleRate);
+    auto n2 = log(0.5) - log(FREQUENCY_FLOOR / sampleRate);
+    std::complex<double> spectrum;
+    
+    for (int i = 0; i < GRAPHS_QUALITY; ++ i)
     {
-        for (int i = 0; i < GRAPHS_QUALITY; ++i)
-        {
-            spectrum[i] = std::complex<double>(1.0, 0.0);
-            phi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1));
-            spectrum[i] *= processor.getFilterSpectrum(phi);
-            magnitudes[i] = processor.getCurrentGain() * std::abs(spectrum[i]);
-            phases[i] = (pi + std::arg(spectrum[i])) / twoPi;
-        }
-    }
-    else // LOG spectrum
-    {
-        for (int i = 0; i < GRAPHS_QUALITY; ++i)
-        {
-            spectrum[i] = std::complex<double>(1.0, 0.0);
-            phi = exp(log(FREQUENCY_FLOOR) + (log(1.0 / 2.0) - log(FREQUENCY_FLOOR)) * (static_cast<double>(i) / (static_cast<double>(GRAPHS_QUALITY - 1))));
-            spectrum[i] *= processor.getFilterSpectrum(phi);
-            magnitudes[i] = processor.getCurrentGain() * std::abs(spectrum[i]);
-            phases[i] = (pi + std::arg(spectrum[i])) / twoPi;
-        }
+        if (linLog)
+            phi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1)); // Linear spectrum
+        else
+            phi = exp(n1 + (n2 * (static_cast<double>(i) / (static_cast<double>(GRAPHS_QUALITY - 1))))); // Log spectrum
+        
+        spectrum = processor.getFilterSpectrum(phi);
+        magnitudes[i] = processor.getCurrentGain() * std::abs(spectrum);
+        phases[i] = (pi + std::arg(spectrum)) / twoPi;
     }
 }
 //[/MiscUserCode]
@@ -1236,8 +1010,6 @@ BEGIN_JUCER_METADATA
                hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
     <ROUNDRECT pos="142 12 139 753" cornerSize="14.5" fill="solid: 17b1b1b1"
                hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
-    <ROUNDRECT pos="10 12 132 753" cornerSize="14.5" fill="solid: 17b1b1b1"
-               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
     <ROUNDRECT pos="984 12 504 752" cornerSize="14.5" fill="solid: 17b1b1b1"
                hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff383838"/>
     <TEXT pos="1406 856 85 30" fill="solid: ff333333" hasStroke="0" text="TOOLS"
@@ -1248,7 +1020,7 @@ BEGIN_JUCER_METADATA
     <TEXT pos="1337 730 142 30" fill="solid: ff333333" hasStroke="0" text="FILTER RESPONSE"
           fontname="Gill Sans" fontsize="18.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <TEXT pos="10 730 125 30" fill="solid: ff333333" hasStroke="0" text="FILTER SETUP"
+    <TEXT pos="152 502 125 30" fill="solid: ff333333" hasStroke="0" text="FILTER SETUP"
           fontname="Gill Sans" fontsize="18.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
     <ROUNDRECT pos="638 12 346 356" cornerSize="14.5" fill="solid: 17b1b1b1"
@@ -1260,10 +1032,6 @@ BEGIN_JUCER_METADATA
     <RECT pos="10 328 607 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="10 384 607 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="10 440 607 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="10 496 607 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="10 552 607 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="10 608 607 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="10 664 607 1" fill="solid: 25909497" hasStroke="0"/>
     <TEXT pos="292 788 74 30" fill="solid: ff333333" hasStroke="0" text="CONTROLS"
           fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
@@ -1329,17 +1097,6 @@ BEGIN_JUCER_METADATA
           max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="0"/>
-  <LABEL name="Elements chain" id="b1d4cbae9aac5aab" memberName="elements_chain_label"
-         virtualName="" explicitFocusOrder="0" pos="14 20 123 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="&#10;ELEMENTS CHAIN"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
-         justification="36" typefaceStyle="SemiBold"/>
-  <LABEL name="Element 1" id="3628ed1851767efb" memberName="element1_label"
-         virtualName="" explicitFocusOrder="0" pos="38 66 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 1" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
   <LABEL name="Magnitudes" id="f2206057c7f672c6" memberName="magnitudes_label"
          virtualName="" explicitFocusOrder="0" pos="166 20 90 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="MAGNITUDE&#10;"
@@ -1358,11 +1115,6 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="36"
          typefaceStyle="SemiBold"/>
-  <LABEL name="Element 2" id="af8d6de4fc4b6a11" memberName="element2_label"
-         virtualName="" explicitFocusOrder="0" pos="38 122 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 2" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
   <SLIDER name="Element 2 phase" id="8cb0982862bc37e4" memberName="p2_slider"
           virtualName="" explicitFocusOrder="0" pos="291 113 118 40" min="0.0"
           max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
@@ -1374,56 +1126,6 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="36"
          typefaceStyle="SemiBold"/>
-  <LABEL name="Element 3" id="906ed592f45dce2f" memberName="element3_label"
-         virtualName="" explicitFocusOrder="0" pos="38 178 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 3" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="Element 4" id="f147064a90a33be8" memberName="element4_label"
-         virtualName="" explicitFocusOrder="0" pos="38 234 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 4" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="Element 5" id="886ad072eb80f56c" memberName="element5_label"
-         virtualName="" explicitFocusOrder="0" pos="38 290 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 5" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="Element 6" id="80f5db5f40a49d28" memberName="element6_label"
-         virtualName="" explicitFocusOrder="0" pos="38 346 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 6" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="Element 7" id="8bd43117312e4da7" memberName="element7_label"
-         virtualName="" explicitFocusOrder="0" pos="38 402 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 7" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="Element 8" id="be4672030a5e5534" memberName="element8_label"
-         virtualName="" explicitFocusOrder="0" pos="38 458 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 8" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="Element 9" id="f6c90fe26bf087c3" memberName="element9_label"
-         virtualName="" explicitFocusOrder="0" pos="38 514 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 9" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="Element 10" id="ed3fc40146c04b10" memberName="element10_label"
-         virtualName="" explicitFocusOrder="0" pos="38 570 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 10" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="Element 11" id="e3a5b4a8785ec108" memberName="element11_label"
-         virtualName="" explicitFocusOrder="0" pos="38 626 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 11" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="Element 12" id="1b95fdd79ef6b468" memberName="element12_label"
-         virtualName="" explicitFocusOrder="0" pos="38 682 70 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="ELEMENT 12" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"/>
   <SLIDER name="Element 6 magnitude" id="7a079132a8702ba4" memberName="m6_slider"
           virtualName="" explicitFocusOrder="0" pos="150 337 120 40" min="0.0"
           max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox"
