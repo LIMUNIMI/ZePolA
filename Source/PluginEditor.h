@@ -98,24 +98,10 @@ private:
     std::unique_ptr<GaussianPlane> gaussian_plane;
     std::unique_ptr<juce::Slider> m1_slider;
     std::unique_ptr<juce::Slider> p1_slider;
-    std::unique_ptr<juce::Slider> m2_slider;
-    std::unique_ptr<juce::Slider> m3_slider;
-    std::unique_ptr<juce::Slider> m4_slider;
-    std::unique_ptr<juce::Slider> m5_slider;
     std::unique_ptr<juce::Label> magnitudes_label;
     std::unique_ptr<juce::Label> phases_label;
     std::unique_ptr<juce::Label> zero_pole_label;
-    std::unique_ptr<juce::Slider> p2_slider;
     std::unique_ptr<juce::Label> active_label;
-    std::unique_ptr<juce::Slider> m6_slider;
-    std::unique_ptr<juce::Slider> m7_slider;
-    std::unique_ptr<juce::Slider> m8_slider;
-    std::unique_ptr<juce::Slider> p3_slider;
-    std::unique_ptr<juce::Slider> p4_slider;
-    std::unique_ptr<juce::Slider> p5_slider;
-    std::unique_ptr<juce::Slider> p6_slider;
-    std::unique_ptr<juce::Slider> p7_slider;
-    std::unique_ptr<juce::Slider> p8_slider;
     std::unique_ptr<juce::ToggleButton> e1_type;
     std::unique_ptr<juce::ToggleButton> e2_type;
     std::unique_ptr<juce::ToggleButton> e3_type;
@@ -144,6 +130,20 @@ private:
     std::unique_ptr<juce::ToggleButton> bypass;
     std::unique_ptr<juce::Slider> gain_slider;
     std::unique_ptr<juce::ToggleButton> linLog_switch;
+    std::unique_ptr<juce::Slider> m2_slider;
+    std::unique_ptr<juce::Slider> m3_slider;
+    std::unique_ptr<juce::Slider> m4_slider;
+    std::unique_ptr<juce::Slider> m5_slider;
+    std::unique_ptr<juce::Slider> m6_slider;
+    std::unique_ptr<juce::Slider> m7_slider;
+    std::unique_ptr<juce::Slider> m8_slider;
+    std::unique_ptr<juce::Slider> p2_slider;
+    std::unique_ptr<juce::Slider> p3_slider;
+    std::unique_ptr<juce::Slider> p4_slider;
+    std::unique_ptr<juce::Slider> p5_slider;
+    std::unique_ptr<juce::Slider> p6_slider;
+    std::unique_ptr<juce::Slider> p7_slider;
+    std::unique_ptr<juce::Slider> p8_slider;
 
 
     //==============================================================================

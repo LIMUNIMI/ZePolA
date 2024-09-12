@@ -13,6 +13,7 @@
 #define BYPASS_ON_COLOUR                    0xffff5f58
 #define BYPASS_OFF_COLOUR                   0xff781a13
 #define GAIN_SLIDER_COLOUR                  0xff2e86c1
+#define GAIN_SLIDER_BORDER_COLOUR           0xff626567
 #define LIN_COLOUR                          0xcd3498d8
 #define LOG_COLOUR                          0xcde74c3c
 
@@ -23,17 +24,13 @@ public:
     void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider& slider) override
     {
         g.setColour(juce::Colour(SLIDER_BAR_COLOUR));
-        g.fillRoundedRectangle(x, y + height / 2 - 2, width, 2.5f, 0.08f);
+        g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.5f, 0.08f);
         
         g.setColour(juce::Colour(MAGNITUDE_SLIDERS_COLOUR));
-        g.fillEllipse(sliderPos - 8.5f, y + height / 2 - 8.5f, 17, 17);
+        g.fillEllipse(sliderPos - 6.0f, y + height / 2 - 6.0f, 12, 12);
         
-        g.setColour(juce::Colour(0xff626567));
-        g.drawEllipse(sliderPos - 8.5f, y + height / 2 - 8.5f, 17, 17, 2.0f);
-        
-        g.setColour(juce::Colour(SLIDER_LABEL_COLOUR));
-        g.setFont(juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular").withExtraKerningFactor (0.0f));
-        g.drawText(juce::String(slider.getValue()), x, y + 2.5f, width, height, juce::Justification::centredBottom);
+        g.setColour(juce::Colours::white);
+        g.drawEllipse(sliderPos - 6.0f, y + height / 2 - 6.0f, 12, 12, 1.0f);
     }
 };
 
@@ -44,17 +41,13 @@ public:
     void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider& slider) override
     {
         g.setColour(juce::Colour(SLIDER_BAR_COLOUR));
-        g.fillRoundedRectangle(x, y + height / 2 - 2, width, 2.5f, 0.08f);
+        g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.5f, 0.08f);
         
         g.setColour(juce::Colour(PHASE_SLIDERS_COLOUR));
-        g.fillEllipse(sliderPos - 8.5f, y + height / 2 - 8.5f, 17, 17);
+        g.fillEllipse(sliderPos - 6.0f, y + height / 2 - 6.0f, 12, 12);
         
-        g.setColour(juce::Colour(0xff979a9a));
-        g.drawEllipse(sliderPos - 8.5f, y + height / 2 - 8.5f, 17, 17, 2.0f);
-        
-        g.setColour(juce::Colour(SLIDER_LABEL_COLOUR));
-        g.setFont(juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular").withExtraKerningFactor (0.0f));
-        g.drawText(juce::String(slider.getValue()), x, y + 2.5f, width, height, juce::Justification::centredBottom);
+        g.setColour(juce::Colours::white);
+        g.drawEllipse(sliderPos - 6.0f, y + height / 2 - 6.0f, 12, 12, 1.0f);
     }
 };
 
@@ -68,10 +61,10 @@ public:
         g.fillRoundedRectangle(x, y + height / 2 - 2, width, 2.5f, 0.08f);
         
         g.setColour(juce::Colour(GAIN_SLIDER_COLOUR));
-        g.fillEllipse(sliderPos - 8.5f, y + height / 2 - 8.5f, 17, 17);
+        g.fillEllipse(sliderPos - 9.0f, y + height / 2 - 9.0f, 18, 18);
         
-        g.setColour(juce::Colour(0xff626567));
-        g.drawEllipse(sliderPos - 8.5f, y + height / 2 - 8.5f, 17, 17, 2.0f);
+        g.setColour(juce::Colour(GAIN_SLIDER_BORDER_COLOUR));
+        g.drawEllipse(sliderPos - 9.0f, y + height / 2 - 9.0f, 18, 18, 1.5f);
         
         g.setColour(juce::Colour (SLIDER_LABEL_COLOUR));
         g.setFont(juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular").withExtraKerningFactor (0.0f));
@@ -86,7 +79,7 @@ public:
     void drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
                                bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
         {
-            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 4.0f, button.getHeight() - 4.0f);
+            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f);
 
             auto zeroColor = juce::Colour(ZEROS_COLOUR);
             auto poleColor = juce::Colour(POLES_COLOUR);
@@ -99,15 +92,15 @@ public:
             g.setColour(borderColor);
             g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 1.5f);
 
-            const int indicatorDiameter = 15;
+            const int indicatorDiameter = 14;
             auto indicatorX = button.getToggleState() ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
-            auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2);
+            auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2) + 0.5;
 
             g.setColour(indicatorColor);
             g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
             
             g.setColour(juce::Colours::black);
-            g.setFont(juce::Font(12.0f, juce::Font::bold));
+            g.setFont(juce::Font(11.0f, juce::Font::bold));
             juce::String text = button.getToggleState() ? "ZERO" : "POLE";
             juce::Rectangle<float> switchRect(bounds.toFloat());
             if (text == "ZERO")
@@ -143,16 +136,16 @@ public:
         
         if (button.getToggleState())
         {
-            switchWidth -= 2.0f;
-            switchHeight -= 2.0f;
-            xOffset += 1.0f;
-            yOffset += 1.0f;
+            switchWidth -= 1.5f;
+            switchHeight -= 1.5f;
+            xOffset += .75f;
+            yOffset += .75f;
         }
         juce::Rectangle<float> buttonRect(xOffset, yOffset, switchWidth, switchHeight);
         g.fillRoundedRectangle(buttonRect, 5.0f);
 
         g.setColour(juce::Colours::white);
-        float fontSize = button.getToggleState() ? 11.5f : 12.0f;
+        float fontSize = button.getToggleState() ? 10.5f : 11.0f;
         g.setFont(juce::Font(fontSize, juce::Font::bold));
         juce::String text = button.getToggleState() ? "ON" : "OFF";
         g.drawText(text, switchRect, juce::Justification::centred);
