@@ -72,6 +72,7 @@ private:
     std::vector<std::unique_ptr<ButtonAttachment>> activeAttachments;
     std::unique_ptr<SliderAttachment> gainAttachment;
     std::unique_ptr<ButtonAttachment> bypassAttachment;
+    std::unique_ptr<ButtonAttachment> linLogAttachment;
 
     MagnitudeSliderTheme magnitudeSlidersTheme;
     PhaseSliderTheme phaseSlidersTheme;
@@ -80,12 +81,13 @@ private:
     ResetButtonTheme resetButtonTheme;
     GainSliderTheme gainSliderTheme;
     BypassSwitchTheme bypassSwitchTheme;
+    LinLogSwitchTheme linLogTheme;
 
     std::vector<std::complex<double>> spectrum;
     std::vector<double> magnitudes;
     std::vector<double> phases;
 
-    bool linLog = false;
+    bool linLog = true;
     //[/UserVariables]
 
     //==============================================================================
@@ -155,6 +157,7 @@ private:
     std::unique_ptr<LEDComponent> e8_led;
     std::unique_ptr<juce::ToggleButton> bypass;
     std::unique_ptr<juce::Slider> gain_slider;
+    std::unique_ptr<juce::ToggleButton> linLog_switch;
 
 
     //==============================================================================

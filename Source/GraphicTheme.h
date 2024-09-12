@@ -13,6 +13,8 @@
 #define BYPASS_ON_COLOUR                    0xffff5f58
 #define BYPASS_OFF_COLOUR                   0xff781a13
 #define GAIN_SLIDER_COLOUR                  0xff2e86c1
+#define LIN_COLOUR                          0xcd3498d8
+#define LOG_COLOUR                          0xcde74c3c
 
 class MagnitudeSliderTheme : public LookAndFeel_V4
 {
@@ -84,10 +86,7 @@ public:
     void drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
                                bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
         {
-            const float buttonWidth = 52;
-            const float buttonHeight = 19;
-
-            auto bounds = button.getLocalBounds().withSizeKeepingCentre(buttonWidth, buttonHeight);
+            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 4.0f, button.getHeight() - 4.0f);
 
             auto zeroColor = juce::Colour(ZEROS_COLOUR);
             auto poleColor = juce::Colour(POLES_COLOUR);
@@ -127,8 +126,8 @@ public:
     
     void drawToggleButton(Graphics& g, ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
-        float switchWidth = 34;
-        float switchHeight = 19;
+        float switchWidth = button.getWidth() - 4.0f;
+        float switchHeight = button.getHeight() - 4.0f;
         float xOffset = 2.0f;
         float yOffset = 2.0f;
         
@@ -167,10 +166,7 @@ public:
     void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
-        const float buttonWidth = 84;
-        const float buttonHeight = 26;
-
-        auto bounds = button.getLocalBounds().withSizeKeepingCentre(buttonWidth, buttonHeight).toFloat();
+        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 4.0f, button.getHeight() - 4.0f).toFloat();
         auto cornerSize = 8.0f;
         
         juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
@@ -199,8 +195,8 @@ public:
     
     void drawToggleButton(Graphics& g, ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
-        float switchWidth = 84;
-        float switchHeight = 26;
+        float switchWidth = button.getWidth() - 4.0f;
+        float switchHeight = button.getHeight() - 4.0f;
         float xOffset = 2.0f;
         float yOffset = 2.0f;
         
@@ -230,4 +226,43 @@ public:
         juce::String text = "BYPASS";
         g.drawText(text, switchRect, juce::Justification::centred);
     }
+};
+
+class LinLogSwitchTheme : public juce::LookAndFeel_V4
+{
+public:
+    
+    void drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
+                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+        {
+            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 4.0f, button.getHeight() - 4.0f);
+
+            auto zeroColor = juce::Colour(LIN_COLOUR);
+            auto poleColor = juce::Colour(LOG_COLOUR);
+            auto borderColor = juce::Colours::black;
+            auto indicatorColor = juce::Colours::white;
+
+            g.setColour(button.getToggleState() ? zeroColor : poleColor);
+            g.fillRoundedRectangle(bounds.toFloat(), 9.5f);
+
+            g.setColour(borderColor);
+            g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 1.5f);
+
+            const int indicatorDiameter = 15;
+            auto indicatorX = button.getToggleState() ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
+            auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2);
+
+            g.setColour(indicatorColor);
+            g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
+            
+            g.setColour(juce::Colours::black);
+            g.setFont(juce::Font(12.0f, juce::Font::bold));
+            juce::String text = button.getToggleState() ? "LIN" : "LOG";
+            juce::Rectangle<float> switchRect(bounds.toFloat());
+            if (text == "LIN")
+                switchRect.translate(-7.0f, 0.0f);
+            else
+                switchRect.translate(+7.0f, 0.0f);
+            g.drawText(text, switchRect, juce::Justification::centred);
+        }
 };

@@ -618,6 +618,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     gain_slider->setBounds (170, 819, 234, 50);
 
+    linLog_switch.reset (new juce::ToggleButton ("Linear / Logarithmic"));
+    addAndMakeVisible (linLog_switch.get());
+    linLog_switch->setButtonText (juce::String());
+    linLog_switch->addListener (this);
+
+    linLog_switch->setBounds (1408, 333, 56, 23);
+
 
     //[UserPreSize]
     magnitudesAttachments[0].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
@@ -698,6 +705,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     reset_button->setLookAndFeel(&resetButtonTheme);
     gain_slider->setLookAndFeel(&gainSliderTheme);
     bypass->setLookAndFeel(&bypassSwitchTheme);
+    linLog_switch->setLookAndFeel(&linLogTheme);
     //[/UserPreSize]
 
     setSize (1500, 900);
@@ -787,6 +795,7 @@ PluginEditor::~PluginEditor()
     e8_led = nullptr;
     bypass = nullptr;
     gain_slider = nullptr;
+    linLog_switch = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1148,6 +1157,15 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         //[UserButtonCode_e8_active] -- add your button handler code here..
         e8_led->repaint();
         //[/UserButtonCode_e8_active]
+    }
+    else if (buttonThatWasClicked == linLog_switch.get())
+    {
+        //[UserButtonCode_linLog_switch] -- add your button handler code here..
+        linLog = linLog_switch->getToggleState();
+        getSpectrum();
+        frequency_response->updateValues(magnitudes);
+        phase_response->updateValues(phases);
+        //[/UserButtonCode_linLog_switch]
     }
 
     //[UserbuttonClicked_Post]
@@ -1536,6 +1554,9 @@ BEGIN_JUCER_METADATA
           explicitFocusOrder="0" pos="170 819 234 50" min="0.0" max="10.0"
           int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
+  <TOGGLEBUTTON name="Linear / Logarithmic" id="269b07022e58d862" memberName="linLog_switch"
+                virtualName="" explicitFocusOrder="0" pos="1408 333 56 23" buttonText=""
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
