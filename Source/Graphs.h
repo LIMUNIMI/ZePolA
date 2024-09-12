@@ -7,140 +7,46 @@
 #define POLES_COLOUR                        0xffffbc2e
 #define CONJ_POLES_COLOUR                   0x70ffbc2e
 
-class FrequencyResponse : public juce::Component
+class GraphicResponse : public juce::Component
 {
 public:
-    FrequencyResponse (const std::vector<std::complex<double>>& spectrum, const float currentGain)
+    GraphicResponse (const std::vector<double>& vls)
     {
-        updateMagnitudes(spectrum, currentGain);
+        updateValues(vls);
     }
-    ~FrequencyResponse () {}
     
-    void paint(juce::Graphics& g) override
+    void paint (juce::Graphics& g) override
     {
         g.setColour(juce::Colour(GRAPHS_BACKGROUND));
         float cornerSize = 8.0f;
         auto bounds = getLocalBounds().toFloat();
         g.fillRoundedRectangle(bounds, cornerSize);
         g.setColour(juce::Colours::white);
-        drawFrequencyResponse(g);
+        drawResponse(g);
     }
     
-    void updateMagnitudes (const std::vector<std::complex<double>>& spectrum, const float currentGain)
+    void updateValues (const std::vector<double>& vls)
     {
-        bool shouldRepaint = false;
-        
-        if (magnitudes.size() != spectrum.size())
-        {
-            shouldRepaint = true;
-            magnitudes.resize(spectrum.size());
-        }
-        
-        long int spectrumSize = spectrum.size();
-        for (int i = 0; i < spectrumSize; ++ i)
-        {
-            double magnitude = currentGain * std::abs(spectrum[i]);
-            if (magnitudes[i] != magnitude)
-            {
-                magnitudes[i] = magnitude;
-                shouldRepaint = true;
-            }
-        }
-
-        if (shouldRepaint)
-            repaint();
+        values = vls;
+        repaint();
     }
     
 private:
-    std::vector<double> magnitudes;
+    std::vector<double> values;
     
-    void drawFrequencyResponse(juce::Graphics& g)
+    void drawResponse (juce::Graphics& g)
     {
-        if (magnitudes.empty())
-            return;
-        
         auto width = getWidth();
         auto height = getHeight();
         
         juce::Path responsePath;
-        responsePath.startNewSubPath(0, height - static_cast<float>(magnitudes[0]) * height);
+        responsePath.startNewSubPath(0, height - static_cast<float>(values[0]) * height);
         
-        long int magnitudesSize = magnitudes.size();
-        for (int i = 1; i < magnitudesSize; ++ i)
+        long int valuesSize = values.size();
+        for (int i = 1; i < valuesSize; ++ i)
         {
-            float x = static_cast<float>(i) / magnitudes.size() * width;
-            float y = height - static_cast<float>(magnitudes[i]) * height;
-            responsePath.lineTo(x, y);
-        }
-        
-        g.strokePath(responsePath, juce::PathStrokeType(1.0f));
-    }
-};
-
-class PhaseResponse : public juce::Component
-{
-public:
-    PhaseResponse (const std::vector<std::complex<double>>& spectrum)
-    {
-        updatePhases(spectrum);
-    }
-    
-    ~PhaseResponse () {}
-    
-    void paint(juce::Graphics& g) override
-    {
-        g.setColour(juce::Colour(GRAPHS_BACKGROUND));
-        float cornerSize = 8.0f;
-        auto bounds = getLocalBounds().toFloat();
-        g.fillRoundedRectangle(bounds, cornerSize);
-        g.setColour(juce::Colours::white);
-        drawPhaseResponse(g);
-    }
-    
-    void updatePhases(const std::vector<std::complex<double>>& spectrum)
-    {
-        bool shouldRepaint = false;
-        
-        if (phases.size() != spectrum.size())
-        {
-            shouldRepaint = true;
-            phases.resize(spectrum.size());
-        }
-        
-        long int spectrumSize = spectrum.size();
-        for (int i = 0; i < spectrumSize; ++ i)
-        {
-            double phase = (MathConstants<double>::pi + std::arg(spectrum[i])) / (MathConstants<double>::twoPi);
-            if (phases[i] != phase)
-            {
-                phases[i] = phase;
-                shouldRepaint = true;
-            }
-        }
-        
-        if (shouldRepaint)
-            repaint();
-    }
-    
-private:
-    std::vector<double> phases;
-    
-    void drawPhaseResponse(juce::Graphics& g)
-    {
-        if (phases.empty())
-            return;
-        
-        auto width = getWidth();
-        auto height = getHeight();
-        
-        juce::Path responsePath;
-        responsePath.startNewSubPath(0, height - static_cast<float>(phases[0]) * height);
-    
-        long int phasesSize = phases.size();
-        for (int i = 1; i < phasesSize; ++ i)
-        {
-            float x = static_cast<float>(i) / phases.size() * width;
-            float y = height - static_cast<float>(phases[i]) * height;
+            float x = static_cast<float>(i) / valuesSize * width;
+            float y = height - static_cast<float>(values[i]) * height;
             responsePath.lineTo(x, y);
         }
         

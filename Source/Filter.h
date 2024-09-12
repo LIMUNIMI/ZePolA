@@ -187,7 +187,7 @@ public:
     /* The updateMemory method updates the filter's memory. memory1 stores the
      previous sample, which is an input sample if it is a ZERO or an output
      sample if it is a POLE. memory2 stores the sample from two instances ago,
-     which is an input sample if it is a ZERO or an output sample if it is a 
+     which is an input sample if it is a ZERO or an output sample if it is a
      POLE.
     */
     void updateMemory (double inputSample, double outputSample)
@@ -239,7 +239,7 @@ private:
 };
 
 // -----------------------------------------------------------------------------
-/* The "PolesAndZerosCascade" class represents a digital filter as a chain of 
+/* The "PolesAndZerosCascade" class represents a digital filter as a chain of
  poles and zeros (simple filters). The approach of the class is to conceive an
  IIR digital filter as a chain of simple digital filters, each composed of
  either a single zero (FIR filter) or a single pole (IIR filter).
@@ -250,7 +250,7 @@ private:
  bypass. The list of FilterElement pointers follows a LIFO (last in - first out)
  logic. The most recently added element to the filter is the first to be removed
  upon the user's request.
- The private method countElementsOfType counts the elements of the specified 
+ The private method countElementsOfType counts the elements of the specified
  type (POLE or ZERO) in the call.
  */
 class PolesAndZerosCascade
@@ -446,7 +446,7 @@ public:
      output volumes.
     */
     void processBlock (juce::AudioBuffer<float>& buffer)
-    {        
+    {
         const auto numSamples = buffer.getNumSamples();
         
         AudioBuffer<double> doubleBuffer(1, numSamples);

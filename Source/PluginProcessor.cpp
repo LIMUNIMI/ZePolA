@@ -1,7 +1,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "Parameters.h"
-#include "PluginEditor.h" 
+#include "PluginEditor.h"
 
 PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor()
 : parameters(*this, nullptr, "PolesAndZero-EQ", Parameters::createParameterLayout())
@@ -143,3 +143,4 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()
 {
     return new PolesAndZerosEQAudioProcessor();
 }
+

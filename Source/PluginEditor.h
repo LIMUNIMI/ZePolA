@@ -80,15 +80,17 @@ private:
     BypassSwitchTheme bypassSwitchTheme;
 
     std::vector<std::complex<double>> spectrum;
+    std::vector<double> magnitudes;
+    std::vector<double> phases;
 
     void getSpectrum ();
     //[/UserVariables]
 
     //==============================================================================
     std::unique_ptr<juce::TextButton> reset_button;
-    std::unique_ptr<FrequencyResponse> frequency_response;
+    std::unique_ptr<GraphicResponse> frequency_response;
     std::unique_ptr<juce::Label> freq_response_label;
-    std::unique_ptr<PhaseResponse> phase_response;
+    std::unique_ptr<GraphicResponse> phase_response;
     std::unique_ptr<juce::Label> ph_response_label;
     std::unique_ptr<GaussianPlane> gaussian_plane;
     std::unique_ptr<juce::Slider> m1_slider;

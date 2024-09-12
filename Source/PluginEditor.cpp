@@ -35,8 +35,8 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p.setEditorCallback([this]()
                         {
         getSpectrum();
-        frequency_response->updateMagnitudes(spectrum, processor.getCurrentGain());
-        phase_response->updatePhases(spectrum);
+        frequency_response->updateValues(magnitudes);
+        phase_response->updateValues(phases);
         gaussian_plane->updateElements(processor.getFilterElementsChain());
     });
 
@@ -56,7 +56,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     reset_button->setBounds (31, 829, 88, 30);
 
-    frequency_response.reset (new FrequencyResponse (spectrum, processor.getCurrentGain()));
+    frequency_response.reset (new GraphicResponse (magnitudes));
     addAndMakeVisible (frequency_response.get());
     frequency_response->setName ("frequencyResponse");
 
@@ -74,7 +74,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     freq_response_label->setBounds (1151, 333, 181, 24);
 
-    phase_response.reset (new PhaseResponse (spectrum));
+    phase_response.reset (new GraphicResponse (phases));
     addAndMakeVisible (phase_response.get());
     phase_response->setName ("phaseResponse");
 
@@ -1163,15 +1163,21 @@ void PluginEditor::getSpectrum()
 {
     auto sampleRate = processor.getSampleRate();
     auto nyquistFreq = sampleRate / 2;
-    spectrum.resize(static_cast<int>(nyquistFreq));
-    std::fill(spectrum.begin(), spectrum.end(), std::complex<double>(1.0, 0.0));
     double phi;
     int frequency;
+
+    spectrum.resize(static_cast<int>(nyquistFreq));
+    magnitudes.resize(static_cast<int>(nyquistFreq));
+    phases.resize(static_cast<int>(nyquistFreq));
+
+    std::fill(spectrum.begin(), spectrum.end(), std::complex<double>(1.0, 0.0));
 
     for (frequency = 0; frequency < nyquistFreq; ++ frequency)
     {
         phi = static_cast<double>(frequency) / sampleRate;
         spectrum[frequency] *= processor.getFilterSpectrum(phi);
+        magnitudes[frequency] = processor.getCurrentGain() * std::abs(spectrum[frequency]);
+        phases[frequency] = (MathConstants<double>::pi + std::arg(spectrum[frequency])) / (MathConstants<double>::twoPi);
     }
 }
 //[/MiscUserCode]
@@ -1243,8 +1249,8 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="31 829 88 30" bgColOff="ff383838"
               buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
-                    virtualName="" explicitFocusOrder="0" pos="1014 30 450 295" class="FrequencyResponse"
-                    params="spectrum, processor.getCurrentGain()"/>
+                    virtualName="" explicitFocusOrder="0" pos="1014 30 450 295" class="GraphicResponse"
+                    params="magnitudes"/>
   <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
          virtualName="" explicitFocusOrder="0" pos="1151 333 181 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="FREQUENCY RESPONSE"
@@ -1253,7 +1259,7 @@ BEGIN_JUCER_METADATA
          justification="36" typefaceStyle="SemiBold"/>
   <GENERICCOMPONENT name="phaseResponse" id="c9a48273dec25832" memberName="phase_response"
                     virtualName="" explicitFocusOrder="0" pos="1036 384 412 270"
-                    class="PhaseResponse" params="spectrum"/>
+                    class="GraphicResponse" params="phases"/>
   <LABEL name="Phase response" id="6d08c4e421703ed5" memberName="ph_response_label"
          virtualName="" explicitFocusOrder="0" pos="1176 661 142 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="PHASE RESPONSE"
