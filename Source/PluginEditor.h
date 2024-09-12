@@ -61,6 +61,8 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+    void getSpectrum ();
+
     PolesAndZerosEQAudioProcessor& processor;
     AudioProcessorValueTreeState& valueTreeState;
 
@@ -83,7 +85,7 @@ private:
     std::vector<double> magnitudes;
     std::vector<double> phases;
 
-    void getSpectrum ();
+    bool linLog = false;
     //[/UserVariables]
 
     //==============================================================================

@@ -19,6 +19,10 @@
 
 //[Headers] You can add your own extra header files here...
 #include "Parameters.h"
+#include <cmath>
+
+#define GRAPHS_QUALITY                  2048
+#define FREQUENCY_FLOOR                 10
 //[/Headers]
 
 #include "PluginEditor.h"
@@ -603,7 +607,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     bypass.reset (new juce::ToggleButton ("Bypass"));
     addAndMakeVisible (bypass.get());
     bypass->setButtonText (juce::String());
-    bypass->addListener (this);
 
     bypass->setBounds (509, 829, 88, 30);
 
@@ -1146,11 +1149,6 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         e8_led->repaint();
         //[/UserButtonCode_e8_active]
     }
-    else if (buttonThatWasClicked == bypass.get())
-    {
-        //[UserButtonCode_bypass] -- add your button handler code here..
-        //[/UserButtonCode_bypass]
-    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -1161,23 +1159,37 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void PluginEditor::getSpectrum()
 {
-    auto sampleRate = processor.getSampleRate();
-    auto nyquistFreq = sampleRate / 2;
     double phi;
-    int frequency;
 
-    spectrum.resize(static_cast<int>(nyquistFreq));
-    magnitudes.resize(static_cast<int>(nyquistFreq));
-    phases.resize(static_cast<int>(nyquistFreq));
+    spectrum.resize(GRAPHS_QUALITY);
+    magnitudes.resize(GRAPHS_QUALITY);
+    phases.resize(GRAPHS_QUALITY);
 
-    std::fill(spectrum.begin(), spectrum.end(), std::complex<double>(1.0, 0.0));
+    const double pi = MathConstants<double>::pi;
+    const double twoPi = MathConstants<double>::twoPi;
 
-    for (frequency = 0; frequency < nyquistFreq; ++ frequency)
+    // Linear Spectrum
+    if (linLog)
     {
-        phi = static_cast<double>(frequency) / sampleRate;
-        spectrum[frequency] *= processor.getFilterSpectrum(phi);
-        magnitudes[frequency] = processor.getCurrentGain() * std::abs(spectrum[frequency]);
-        phases[frequency] = (MathConstants<double>::pi + std::arg(spectrum[frequency])) / (MathConstants<double>::twoPi);
+        for (int i = 0; i < GRAPHS_QUALITY; ++i)
+        {
+            spectrum[i] = std::complex<double>(1.0, 0.0);
+            phi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1));
+            spectrum[i] *= processor.getFilterSpectrum(phi);
+            magnitudes[i] = processor.getCurrentGain() * std::abs(spectrum[i]);
+            phases[i] = (pi + std::arg(spectrum[i])) / twoPi;
+        }
+    }
+    else // LOG spectrum
+    {
+        for (int i = 0; i < GRAPHS_QUALITY; ++i)
+        {
+            spectrum[i] = std::complex<double>(1.0, 0.0);
+            phi = exp(log(FREQUENCY_FLOOR) + (log(1.0 / 2.0) - log(FREQUENCY_FLOOR)) * (static_cast<double>(i) / (static_cast<double>(GRAPHS_QUALITY - 1))));
+            spectrum[i] *= processor.getFilterSpectrum(phi);
+            magnitudes[i] = processor.getCurrentGain() * std::abs(spectrum[i]);
+            phases[i] = (pi + std::arg(spectrum[i])) / twoPi;
+        }
     }
 }
 //[/MiscUserCode]
@@ -1519,7 +1531,7 @@ BEGIN_JUCER_METADATA
                     params="*e8_active"/>
   <TOGGLEBUTTON name="Bypass" id="4daf2a36bc47407c" memberName="bypass" virtualName=""
                 explicitFocusOrder="0" pos="509 829 88 30" buttonText="" connectedEdges="0"
-                needsCallback="1" radioGroupId="0" state="0"/>
+                needsCallback="0" radioGroupId="0" state="0"/>
   <SLIDER name="Gain" id="7e880f1fc774c2af" memberName="gain_slider" virtualName=""
           explicitFocusOrder="0" pos="170 819 234 50" min="0.0" max="10.0"
           int="0.0" style="LinearHorizontal" textBoxPos="NoTextBox" textBoxEditable="1"
