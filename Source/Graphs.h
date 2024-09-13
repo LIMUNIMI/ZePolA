@@ -1,11 +1,12 @@
 #pragma once
 #include <JuceHeader.h>
 
-#define GRAPHS_BACKGROUND                   0xffb3b6b7
+#define GRAPHS_BACKGROUND                   0xfffdfefe
 #define ZEROS_COLOUR                        0xff9b59b6
 #define CONJ_ZEROS_COLOUR                   0x709b59b6
 #define POLES_COLOUR                        0xffffbc2e
 #define CONJ_POLES_COLOUR                   0x70ffbc2e
+#define LINE_COLOUR                         0xff000000
 
 class GraphicResponse : public juce::Component
 {
@@ -21,7 +22,7 @@ public:
         float cornerSize = 8.0f;
         auto bounds = getLocalBounds().toFloat();
         g.fillRoundedRectangle(bounds, cornerSize);
-        g.setColour(juce::Colours::white);
+        g.setColour(juce::Colour(LINE_COLOUR));
         drawResponse(g);
     }
     
@@ -72,7 +73,7 @@ public:
         
         auto margin = bounds.reduced(bounds.getWidth() * 0.07f, bounds.getHeight() * 0.07f);
     
-        g.setColour(juce::Colours::white);
+        g.setColour(juce::Colour(LINE_COLOUR));
         drawPlane(g, margin);
         drawPolesAndZeros(g, margin);
     }
@@ -105,11 +106,10 @@ private:
         auto centerX = bounds.getCentreX();
         auto centerY = bounds.getCentreY();
     
-        g.setColour(juce::Colours::white);
-        g.drawLine(bounds.getX(), centerY, bounds.getRight(), centerY, 1.0f); // Asse reale
-        g.drawLine(centerX, bounds.getY(), centerX, bounds.getBottom(), 1.0f); // Asse immaginario
+        g.setColour(juce::Colour(LINE_COLOUR));
+        g.drawLine(bounds.getX(), centerY, bounds.getRight(), centerY, 1.0f);
+        g.drawLine(centerX, bounds.getY(), centerX, bounds.getBottom(), 1.0f);
         
-        g.setColour(juce::Colours::white);
         float radius = std::min(width, height) / 2.0f;
         g.drawEllipse(centerX - radius, centerY - radius, radius * 2, radius * 2, 1.5f);
 

@@ -33,7 +33,7 @@
 
 //==============================================================================
 PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValueTreeState& vts)
-    : AudioProcessorEditor(&p), processor (p), valueTreeState (vts)
+    : AudioProcessorEditor(&p), processor (p), valueTreeState (vts), phaseSlidersTheme(processor.getSampleRate())
 {
     //[Constructor_pre] You can add your own custom stuff here..
     p.setEditorCallback([this]()
@@ -1030,7 +1030,7 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="PluginEditor" componentName=""
                  parentClasses="public juce::AudioProcessorEditor" constructorParams="PolesAndZerosEQAudioProcessor&amp; p, AudioProcessorValueTreeState&amp; vts"
-                 variableInitialisers="AudioProcessorEditor(&amp;p), processor (p), valueTreeState (vts)"
+                 variableInitialisers="AudioProcessorEditor(&amp;p), processor (p), valueTreeState (vts), phaseSlidersTheme(processor.getSampleRate())"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1200" initialHeight="750">
   <BACKGROUND backgroundColour="ffecf0f1">

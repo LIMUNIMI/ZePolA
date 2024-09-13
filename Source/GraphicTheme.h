@@ -32,11 +32,21 @@ public:
         g.setColour(juce::Colours::white);
         g.drawEllipse(sliderPos - 6.0f, y + height / 2 - 6.0f, 12, 12, 1.0f);
     }
+    
+    juce::Font getLabelFont(juce::Label& label) override
+    {
+        return juce::Font("Gill Sans", 15.0f, juce::Font::plain);
+    }
 };
 
 class PhaseSliderTheme : public LookAndFeel_V4
 {
 public:
+    
+    PhaseSliderTheme (const double sampleRate)
+    {
+        nyquistFreq = sampleRate / 2.0;
+    }
     
     void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider& slider) override
     {
@@ -49,6 +59,16 @@ public:
         g.setColour(juce::Colours::white);
         g.drawEllipse(sliderPos - 6.0f, y + height / 2 - 6.0f, 12, 12, 1.0f);
     }
+    
+    juce::Font getLabelFont(juce::Label& label) override
+    {
+        return juce::Font("Gill Sans", 15.0f, juce::Font::plain);
+    }
+
+    
+    
+private:
+    double nyquistFreq;
 };
 
 class GainSliderTheme : public LookAndFeel_V4
@@ -65,6 +85,11 @@ public:
         
         g.setColour(juce::Colour(GAIN_SLIDER_BORDER_COLOUR));
         g.drawEllipse(x + width / 2 - 9.5f, sliderPos - 9.5f, 19, 19, 2.0f);
+    }
+    
+    juce::Font getLabelFont(juce::Label& label) override
+    {
+        return juce::Font("Gill Sans", 17.0f, juce::Font::plain);
     }
 };
 
