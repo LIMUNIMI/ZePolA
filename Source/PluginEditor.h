@@ -42,8 +42,7 @@ typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
                                                                     //[/Comments]
 */
 class PluginEditor  : public juce::AudioProcessorEditor,
-                      public juce::Button::Listener,
-                      public juce::Slider::Listener
+                      public juce::Button::Listener
 {
 public:
     //==============================================================================
@@ -57,7 +56,6 @@ public:
     void paint (juce::Graphics& g) override;
     void resized() override;
     void buttonClicked (juce::Button* buttonThatWasClicked) override;
-    void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
 
 
 

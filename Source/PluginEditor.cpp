@@ -125,7 +125,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p1_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     p1_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     p1_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
-    p1_slider->addListener (this);
 
     p1_slider->setBounds (170, 55, 135, 25);
 
@@ -987,21 +986,6 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
-{
-    //[UsersliderValueChanged_Pre]
-    //[/UsersliderValueChanged_Pre]
-
-    if (sliderThatWasMoved == p1_slider.get())
-    {
-        //[UserSliderCode_p1_slider] -- add your slider handling code here..
-        //[/UserSliderCode_p1_slider]
-    }
-
-    //[UsersliderValueChanged_Post]
-    //[/UsersliderValueChanged_Post]
-}
-
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
@@ -1118,7 +1102,7 @@ BEGIN_JUCER_METADATA
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+          textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
   <LABEL name="Magnitudes" id="f2206057c7f672c6" memberName="magnitudes_label"
          virtualName="" explicitFocusOrder="0" pos="46 20 90 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="MAGNITUDE&#10;"
