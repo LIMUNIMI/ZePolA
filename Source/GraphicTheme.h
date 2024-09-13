@@ -58,17 +58,13 @@ public:
     void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider& slider) override
     {
         g.setColour(juce::Colour(SLIDER_BAR_COLOUR));
-        g.fillRoundedRectangle(x, y + height / 2 - 2, width, 2.5f, 0.08f);
+        g.fillRoundedRectangle(x + width / 2 - 1.25f, y, 2.5f, height, 0.08f);
         
         g.setColour(juce::Colour(GAIN_SLIDER_COLOUR));
-        g.fillEllipse(sliderPos - 9.0f, y + height / 2 - 9.0f, 18, 18);
+        g.fillEllipse(x + width / 2 - 9.5f, sliderPos - 9.5f, 19, 19);
         
         g.setColour(juce::Colour(GAIN_SLIDER_BORDER_COLOUR));
-        g.drawEllipse(sliderPos - 9.0f, y + height / 2 - 9.0f, 18, 18, 1.5f);
-        
-        g.setColour(juce::Colour (SLIDER_LABEL_COLOUR));
-        g.setFont(juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular").withExtraKerningFactor (0.0f));
-        g.drawText(juce::String(slider.getValue(), 2), x, y + 2.0f, width, height, juce::Justification::centredBottom);
+        g.drawEllipse(x + width / 2 - 9.5f, sliderPos - 9.5f, 19, 19, 2.0f);
     }
 };
 
@@ -79,7 +75,7 @@ public:
     void drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
                                bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
         {
-            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f);
+            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 8.0f, button.getHeight() - 2.0f);
 
             auto zeroColor = juce::Colour(ZEROS_COLOUR);
             auto poleColor = juce::Colour(POLES_COLOUR);
@@ -100,7 +96,7 @@ public:
             g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
             
             g.setColour(juce::Colours::black);
-            g.setFont(juce::Font(11.0f, juce::Font::bold));
+            g.setFont(juce::Font(10.0f, juce::Font::bold));
             juce::String text = button.getToggleState() ? "ZERO" : "POLE";
             juce::Rectangle<float> switchRect(bounds.toFloat());
             if (text == "ZERO")
@@ -145,7 +141,7 @@ public:
         g.fillRoundedRectangle(buttonRect, 5.0f);
 
         g.setColour(juce::Colours::white);
-        float fontSize = button.getToggleState() ? 10.5f : 11.0f;
+        float fontSize = button.getToggleState() ? 10.0f : 10.5f;
         g.setFont(juce::Font(fontSize, juce::Font::bold));
         juce::String text = button.getToggleState() ? "ON" : "OFF";
         g.drawText(text, switchRect, juce::Justification::centred);
@@ -159,7 +155,7 @@ public:
     void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
-        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 4.0f, button.getHeight() - 4.0f).toFloat();
+        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
         auto cornerSize = 8.0f;
         
         juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
@@ -176,7 +172,7 @@ public:
         g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
         
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(13.0f, juce::Font::bold));
+        g.setFont(juce::Font(11.0f, juce::Font::bold));
         juce::String text = "RESET";
         g.drawText(text, bounds, juce::Justification::centred);
     }
@@ -214,7 +210,7 @@ public:
         g.fillRoundedRectangle(buttonRect, 5.0f);
 
         g.setColour(juce::Colours::white);
-        float fontSize = button.getToggleState() ? 12.5f : 13.0f;
+        float fontSize = button.getToggleState() ? 10.5f : 11.0f;
         g.setFont(juce::Font(fontSize, juce::Font::bold));
         juce::String text = "BYPASS";
         g.drawText(text, switchRect, juce::Justification::centred);
@@ -228,28 +224,28 @@ public:
     void drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
                                bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
         {
-            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 4.0f, button.getHeight() - 4.0f);
+            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 8.0f, button.getHeight() - 2.0f);
 
-            auto zeroColor = juce::Colour(LIN_COLOUR);
-            auto poleColor = juce::Colour(LOG_COLOUR);
+            auto linColor = juce::Colour(LIN_COLOUR);
+            auto logColor = juce::Colour(LOG_COLOUR);
             auto borderColor = juce::Colours::black;
             auto indicatorColor = juce::Colours::white;
 
-            g.setColour(button.getToggleState() ? zeroColor : poleColor);
+            g.setColour(button.getToggleState() ? linColor : logColor);
             g.fillRoundedRectangle(bounds.toFloat(), 9.5f);
 
             g.setColour(borderColor);
             g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 1.5f);
 
-            const int indicatorDiameter = 15;
+            const int indicatorDiameter = 14;
             auto indicatorX = button.getToggleState() ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
-            auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2);
+            auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2) + 0.5;
 
             g.setColour(indicatorColor);
             g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
             
             g.setColour(juce::Colours::black);
-            g.setFont(juce::Font(12.0f, juce::Font::bold));
+            g.setFont(juce::Font(10.0f, juce::Font::bold));
             juce::String text = button.getToggleState() ? "LIN" : "LOG";
             juce::Rectangle<float> switchRect(bounds.toFloat());
             if (text == "LIN")
