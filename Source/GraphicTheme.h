@@ -45,7 +45,7 @@ public:
     
     PhaseSliderTheme (const double sampleRate)
     {
-        nyquistFreq = sampleRate / 2.0;
+//        nyquistFreq = sampleRate / 2.0;
     }
     
     void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider& slider) override
@@ -58,17 +58,30 @@ public:
         
         g.setColour(juce::Colours::white);
         g.drawEllipse(sliderPos - 6.0f, y + height / 2 - 6.0f, 12, 12, 1.0f);
+        
+//        sliderValue = slider.getValue();
     }
     
     juce::Font getLabelFont(juce::Label& label) override
     {
         return juce::Font("Gill Sans", 15.0f, juce::Font::plain);
     }
-
-    
+//    
+//    void drawLabel (juce::Graphics& g, juce::Label& label) override
+//    {
+//        juce::LookAndFeel_V4::drawLabel(g, label);
+//        updateLabel(label);
+//    }
+//    
+//    void updateLabel (juce::Label& label)
+//    {
+//        double frequency = sliderValue * nyquistFreq;
+//        label.setText(juce::String(frequency) + " Hz", juce::dontSendNotification);
+//    }
     
 private:
-    double nyquistFreq;
+//    double nyquistFreq;
+//    double sliderValue;
 };
 
 class GainSliderTheme : public LookAndFeel_V4
