@@ -1286,7 +1286,7 @@ void PluginEditor::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* 
 void PluginEditor::updateSliderFromFrequency(double frequency, juce::Slider* slider, double sampleRate)
 {
     double phaseValue = (frequency * 2.0) / sampleRate;
-    slider->setValue(phaseValue, juce::dontSendNotification);
+    slider->setValue(phaseValue, juce::sendNotificationSync);
 }
 //[/MiscUserCode]
 
