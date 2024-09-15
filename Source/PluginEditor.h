@@ -42,7 +42,9 @@ typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
                                                                     //[/Comments]
 */
 class PluginEditor  : public juce::AudioProcessorEditor,
-                      public juce::Button::Listener
+                      public juce::Button::Listener,
+                      public juce::Slider::Listener,
+                      public juce::Label::Listener
 {
 public:
     //==============================================================================
@@ -51,17 +53,22 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    void getSpectrum ();
+    void updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
+    void updateSliderFromFrequency(double frequency, juce::Slider* slider, double sampleRate);
     //[/UserMethods]
 
     void paint (juce::Graphics& g) override;
     void resized() override;
     void buttonClicked (juce::Button* buttonThatWasClicked) override;
+    void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
+    void labelTextChanged (juce::Label* labelThatHasChanged) override;
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    void getSpectrum ();
+
 
     PolesAndZerosEQAudioProcessor& processor;
     AudioProcessorValueTreeState& valueTreeState;
@@ -144,6 +151,14 @@ private:
     std::unique_ptr<juce::Slider> p6_slider;
     std::unique_ptr<juce::Slider> p7_slider;
     std::unique_ptr<juce::Slider> p8_slider;
+    std::unique_ptr<juce::Label> p1_freq;
+    std::unique_ptr<juce::Label> p2_freq;
+    std::unique_ptr<juce::Label> p3_freq;
+    std::unique_ptr<juce::Label> p4_freq;
+    std::unique_ptr<juce::Label> p5_freq;
+    std::unique_ptr<juce::Label> p6_freq;
+    std::unique_ptr<juce::Label> p7_freq;
+    std::unique_ptr<juce::Label> p8_freq;
 
 
     //==============================================================================
