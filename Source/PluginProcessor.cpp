@@ -21,6 +21,7 @@ void PolesAndZerosEQAudioProcessor::prepareToPlay (double sampleRate, int sample
     spec.numChannels = 1;
     
     gainProcessor.prepare(spec);
+    gainProcessor.setGainDecibels(GAIN_DEFAULT);
     
     filter.memoryReset();
 }
