@@ -399,7 +399,7 @@ public:
                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
         auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
-        auto cornerSize = 8.0f;
+        auto cornerSize = 5.0f;
         
         juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
         
@@ -411,12 +411,12 @@ public:
         g.setColour(baseColour);
         g.fillRoundedRectangle(bounds, cornerSize);
         
-        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
-        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
+        g.setColour(juce::Colours::black);
+        g.drawRoundedRectangle(bounds, cornerSize, 1.5f);
         
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(6.0f, juce::Font::bold));
-        juce::String text = "TURN ALL ON";
+        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        juce::String text = "ALL ON";
         g.drawText(text, bounds, juce::Justification::centred);
     }
 };
@@ -429,7 +429,7 @@ public:
                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
         auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
-        auto cornerSize = 8.0f;
+        auto cornerSize = 5.0f;
         
         juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
         
@@ -441,12 +441,12 @@ public:
         g.setColour(baseColour);
         g.fillRoundedRectangle(bounds, cornerSize);
         
-        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
-        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
+        g.setColour(juce::Colours::black);
+        g.drawRoundedRectangle(bounds, cornerSize, 1.5f);
         
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(6.0f, juce::Font::bold));
-        juce::String text = "TURN ALL OFF";
+        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        juce::String text = "ALL OFF";
         g.drawText(text, bounds, juce::Justification::centred);
     }
 };

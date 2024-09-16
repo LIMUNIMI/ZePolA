@@ -107,7 +107,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (gaussian_plane.get());
     gaussian_plane->setName ("gaussianPlane");
 
-    gaussian_plane->setBounds (35, 415, 260, 260);
+    gaussian_plane->setBounds (30, 415, 260, 260);
 
     m1_slider.reset (new juce::Slider ("Element 1 magnitude"));
     addAndMakeVisible (m1_slider.get());
@@ -756,16 +756,16 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
     multiply_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    multiply_phases_button->setBounds (355, 462, 90, 30);
+    multiply_phases_button->setBounds (360, 490, 90, 30);
 
     divide_phases_button.reset (new juce::TextButton ("Divide phases"));
     addAndMakeVisible (divide_phases_button.get());
     divide_phases_button->setButtonText (juce::String());
     divide_phases_button->addListener (this);
-    divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
-    divide_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+    divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff727272));
+    divide_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff727272));
 
-    divide_phases_button->setBounds (355, 532, 90, 30);
+    divide_phases_button->setBounds (360, 540, 90, 30);
 
     swap_button.reset (new juce::TextButton ("Swap poles/zeros"));
     addAndMakeVisible (swap_button.get());
@@ -774,25 +774,25 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     swap_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
     swap_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    swap_button->setBounds (355, 602, 90, 30);
+    swap_button->setBounds (360, 610, 90, 30);
 
     turn_on_button.reset (new juce::TextButton ("Turn on all the elements"));
     addAndMakeVisible (turn_on_button.get());
     turn_on_button->setButtonText (juce::String());
     turn_on_button->addListener (this);
-    turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff03c03c));
     turn_on_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_on_button->setBounds (360, 408, 60, 19);
+    turn_on_button->setBounds (331, 435, 60, 20);
 
     turn_off_button.reset (new juce::TextButton ("Turn off all the elements"));
     addAndMakeVisible (turn_off_button.get());
     turn_off_button->setButtonText (juce::String());
     turn_off_button->addListener (this);
-    turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xffe86b5c));
     turn_off_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_off_button->setBounds (424, 408, 60, 19);
+    turn_off_button->setBounds (415, 435, 60, 20);
 
 
     //[UserPreSize]
@@ -1139,7 +1139,7 @@ void PluginEditor::paint (juce::Graphics& g)
 
     {
         int x = 975, y = 415, width = 210, height = 1;
-        juce::Colour fillColour = juce::Colour (0x39909497);
+        juce::Colour fillColour = juce::Colour (0x4a909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
@@ -1216,6 +1216,18 @@ void PluginEditor::paint (juce::Graphics& g)
         g.setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
                     juce::Justification::centredLeft, true);
+    }
+
+    {
+        float x = 310.0f, y = 415.0f, width = 185.0f, height = 260.0f;
+        juce::Colour fillColour = juce::Colour (0x11b1b1b1);
+        juce::Colour strokeColour = juce::Colour (0xff383838);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 14.500f);
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 14.500f, 0.500f);
     }
 
     //[UserPaint] Add your own custom painting code here..
@@ -1664,7 +1676,7 @@ BEGIN_JUCER_METADATA
     <RECT pos="15 270 480 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="15 360 480 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="15 315 480 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="975 415 210 1" fill="solid: 39909497" hasStroke="0"/>
+    <RECT pos="975 415 210 1" fill="solid: 4a909497" hasStroke="0"/>
     <TEXT pos="1035 420 90 24" fill="solid: ff333333" hasStroke="0" text="CONTROLS"
           fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
@@ -1683,6 +1695,8 @@ BEGIN_JUCER_METADATA
     <TEXT pos="1085 278 81 20" fill="solid: ff333333" hasStroke="0" text="GAIN"
           fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
           justification="33" typefaceStyle="SemiBold"/>
+    <ROUNDRECT pos="310 415 185 260" cornerSize="14.5" fill="solid: 11b1b1b1"
+               hasStroke="1" stroke="0.5, mitered, butt" strokeColour="solid: ff383838"/>
   </BACKGROUND>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
               virtualName="" explicitFocusOrder="0" pos="1010 520 70 30" bgColOff="ff505050"
@@ -1707,7 +1721,7 @@ BEGIN_JUCER_METADATA
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <GENERICCOMPONENT name="gaussianPlane" id="f84485816497c4e3" memberName="gaussian_plane"
-                    virtualName="" explicitFocusOrder="0" pos="35 415 260 260" class="GaussianPlane"
+                    virtualName="" explicitFocusOrder="0" pos="30 415 260 260" class="GaussianPlane"
                     params="processor.getFilterElementsChain()"/>
   <SLIDER name="Element 1 magnitude" id="9107cda7959bc0ad" memberName="m1_slider"
           virtualName="" explicitFocusOrder="0" pos="20 55 120 25" thumbcol="ffffffff"
@@ -1990,23 +2004,23 @@ BEGIN_JUCER_METADATA
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Multiply phases" id="fd9508a1dc4c09ae" memberName="multiply_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="355 462 90 30" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="360 490 90 30" bgColOff="ff505050"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Divide phases" id="a62537b9345044f3" memberName="divide_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="355 532 90 30" bgColOff="ff505050"
-              bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
+              virtualName="" explicitFocusOrder="0" pos="360 540 90 30" bgColOff="ff727272"
+              bgColOn="ff727272" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Swap poles/zeros" id="938b23da9ff326b0" memberName="swap_button"
-              virtualName="" explicitFocusOrder="0" pos="355 602 90 30" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="360 610 90 30" bgColOff="ff505050"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn on all the elements" id="e4b8377926241c51" memberName="turn_on_button"
-              virtualName="" explicitFocusOrder="0" pos="360 408 60 19" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="331 435 60 20" bgColOff="ff03c03c"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn off all the elements" id="f6c36c1c53a4a06d" memberName="turn_off_button"
-              virtualName="" explicitFocusOrder="0" pos="424 408 60 19" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="415 435 60 20" bgColOff="ffe86b5c"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
 </JUCER_COMPONENT>
