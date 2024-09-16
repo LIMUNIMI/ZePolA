@@ -126,8 +126,8 @@ void PolesAndZerosEQAudioProcessor::resetFilter ()
     {
         parameters.getParameter(MAGNITUDE_NAME + std::to_string(i))->setValueNotifyingHost(MAGNITUDE_DEFAULT);
         parameters.getParameter(PHASE_NAME + std::to_string(i))->setValueNotifyingHost(PHASE_DEFAULT);
-        parameters.getParameter(TYPE_NAME + std::to_string(i))->setValueNotifyingHost(TYPE_DEFAULT ? 1.0f : 0.0f);
-        parameters.getParameter(ACTIVE_NAME + std::to_string(i))->setValueNotifyingHost(ACTIVE_DEFAULT ? 1.0f : 0.0f);
+        parameters.getParameter(TYPE_NAME + std::to_string(i))->setValueNotifyingHost(TYPE_DEFAULT);
+        parameters.getParameter(ACTIVE_NAME + std::to_string(i))->setValueNotifyingHost(ACTIVE_DEFAULT);
     }
     parameters.getParameter(GAIN_NAME)->setValueNotifyingHost(jmap(GAIN_DEFAULT, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
     parameters.getParameter(FILTER_BYPASS_NAME)->setValueNotifyingHost(BYPASS_DEFAULT);
@@ -138,6 +138,51 @@ void PolesAndZerosEQAudioProcessor::resetFilter ()
 float PolesAndZerosEQAudioProcessor::getCurrentGain ()
 {
     return gainProcessor.getGainLinear();
+}
+
+void PolesAndZerosEQAudioProcessor::multiplyPhases()
+{
+    auto elements = getFilterElementsChain();
+    double currentPhase;
+    double newPhase;
+    
+    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++ i)
+    {
+        currentPhase = elements[i - 1]->getPhase();
+        if (currentPhase > (PHASE_CEILING / 2))
+            newPhase = 1.0;
+        else
+            newPhase = currentPhase * 2.0;
+        parameters.getParameter(PHASE_NAME + std::to_string(i))->setValueNotifyingHost(newPhase);
+    }
+}
+
+void PolesAndZerosEQAudioProcessor::dividePhases()
+{
+    auto elements = getFilterElementsChain();
+    double currentPhase;
+    
+    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++ i)
+    {
+        currentPhase = elements[i - 1]->getPhase();
+        parameters.getParameter(PHASE_NAME + std::to_string(i))->setValueNotifyingHost(currentPhase * 0.5);
+    }
+}
+
+void PolesAndZerosEQAudioProcessor::swapElements()
+{
+    auto elements = getFilterElementsChain();
+    bool newType;
+    
+    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++ i)
+    {
+        newType = true;
+        auto currentType = elements[i - 1]->getType();
+        if (currentType == FilterElement::ZERO)
+            newType = false;
+        
+        parameters.getParameter(TYPE_NAME + std::to_string(i))->setValueNotifyingHost(newType);
+    }
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()

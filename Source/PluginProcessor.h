@@ -45,6 +45,10 @@ public:
     void resetFilter ();
     
     float getCurrentGain ();
+    
+    void multiplyPhases ();
+    void dividePhases ();
+    void swapElements ();
 
 private:
     void parameterChanged(const String& parameterID, float newValue) override;

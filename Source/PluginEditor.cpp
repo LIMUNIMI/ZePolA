@@ -749,6 +749,33 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     calculate_button->setBounds (1070, 352, 90, 30);
 
+    multiply_phases_button.reset (new juce::TextButton ("Multiply phases"));
+    addAndMakeVisible (multiply_phases_button.get());
+    multiply_phases_button->setButtonText (juce::String());
+    multiply_phases_button->addListener (this);
+    multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    multiply_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    multiply_phases_button->setBounds (355, 462, 90, 30);
+
+    divide_phases_button.reset (new juce::TextButton ("Divide phases"));
+    addAndMakeVisible (divide_phases_button.get());
+    divide_phases_button->setButtonText (juce::String());
+    divide_phases_button->addListener (this);
+    divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    divide_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    divide_phases_button->setBounds (355, 532, 90, 30);
+
+    swap_button.reset (new juce::TextButton ("Swap poles/zeros"));
+    addAndMakeVisible (swap_button.get());
+    swap_button->setButtonText (juce::String());
+    swap_button->addListener (this);
+    swap_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    swap_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    swap_button->setBounds (355, 602, 90, 30);
+
 
     //[UserPreSize]
     magnitudesAttachments[0].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
@@ -831,6 +858,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     bypass->setLookAndFeel(&bypassSwitchTheme);
     linLog_switch->setLookAndFeel(&linLogTheme);
     calculate_button->setLookAndFeel(&calculateButtonTheme);
+    multiply_phases_button->setLookAndFeel(&multiplyButtonTheme);
+    divide_phases_button->setLookAndFeel(&divideButtonTheme);
+    swap_button->setLookAndFeel(&swapButtonTheme);
 
     double sampleRate = processor.getSampleRate();
 
@@ -933,6 +963,9 @@ PluginEditor::~PluginEditor()
     quality_label = nullptr;
     gain_label = nullptr;
     calculate_button = nullptr;
+    multiply_phases_button = nullptr;
+    divide_phases_button = nullptr;
+    swap_button = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1251,6 +1284,24 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         filterDesignCalculation();
         //[/UserButtonCode_calculate_button]
     }
+    else if (buttonThatWasClicked == multiply_phases_button.get())
+    {
+        //[UserButtonCode_multiply_phases_button] -- add your button handler code here..
+        processor.multiplyPhases();
+        //[/UserButtonCode_multiply_phases_button]
+    }
+    else if (buttonThatWasClicked == divide_phases_button.get())
+    {
+        //[UserButtonCode_divide_phases_button] -- add your button handler code here..
+        processor.dividePhases();
+        //[/UserButtonCode_divide_phases_button]
+    }
+    else if (buttonThatWasClicked == swap_button.get())
+    {
+        //[UserButtonCode_swap_button] -- add your button handler code here..
+        processor.swapElements();
+        //[/UserButtonCode_swap_button]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -1473,9 +1524,6 @@ void PluginEditor::updateReferenceFrequencies()
         if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
             referenceFrequencies.push_back(phi);
     }
-    
-    for (int i = 0; i < NUMBER_OF_REFERENCE_FREQUENCIES; ++ i)
-        DBG(referenceFrequencies[i] * sampleRate * 0.5);
 }
 
 void PluginEditor::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
@@ -1905,6 +1953,18 @@ BEGIN_JUCER_METADATA
          justification="33"/>
   <TEXTBUTTON name="Calculate" id="6b0929d790004858" memberName="calculate_button"
               virtualName="" explicitFocusOrder="0" pos="1070 352 90 30" bgColOff="ff505050"
+              bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
+  <TEXTBUTTON name="Multiply phases" id="fd9508a1dc4c09ae" memberName="multiply_phases_button"
+              virtualName="" explicitFocusOrder="0" pos="355 462 90 30" bgColOff="ff505050"
+              bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
+  <TEXTBUTTON name="Divide phases" id="a62537b9345044f3" memberName="divide_phases_button"
+              virtualName="" explicitFocusOrder="0" pos="355 532 90 30" bgColOff="ff505050"
+              bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
+  <TEXTBUTTON name="Swap poles/zeros" id="938b23da9ff326b0" memberName="swap_button"
+              virtualName="" explicitFocusOrder="0" pos="355 602 90 30" bgColOff="ff505050"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
 </JUCER_COMPONENT>

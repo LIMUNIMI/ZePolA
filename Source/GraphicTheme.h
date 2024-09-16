@@ -300,3 +300,93 @@ public:
         g.drawText(text, bounds, juce::Justification::centred);
     }
 };
+
+class MultiplyPhasesButtonTheme : public LookAndFeel_V4
+{
+public:
+    
+    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
+                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    {
+        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
+        auto cornerSize = 8.0f;
+        
+        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
+        
+        if (shouldDrawButtonAsDown)
+            baseColour = baseColour.darker(0.4f);
+        else if (shouldDrawButtonAsHighlighted)
+            baseColour = baseColour.brighter(0.4f);
+        
+        g.setColour(baseColour);
+        g.fillRoundedRectangle(bounds, cornerSize);
+        
+        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
+        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
+        
+        g.setColour(juce::Colours::white);
+        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        juce::String text = "MULTIPLY PHASES";
+        g.drawText(text, bounds, juce::Justification::centred);
+    }
+};
+
+class DividePhasesButtonTheme : public LookAndFeel_V4
+{
+public:
+    
+    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
+                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    {
+        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
+        auto cornerSize = 8.0f;
+        
+        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
+        
+        if (shouldDrawButtonAsDown)
+            baseColour = baseColour.darker(0.4f);
+        else if (shouldDrawButtonAsHighlighted)
+            baseColour = baseColour.brighter(0.4f);
+        
+        g.setColour(baseColour);
+        g.fillRoundedRectangle(bounds, cornerSize);
+        
+        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
+        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
+        
+        g.setColour(juce::Colours::white);
+        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        juce::String text = "DIVIDE PHASES";
+        g.drawText(text, bounds, juce::Justification::centred);
+    }
+};
+
+class SwapElementsButtonTheme : public LookAndFeel_V4
+{
+public:
+    
+    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
+                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    {
+        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
+        auto cornerSize = 8.0f;
+        
+        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
+        
+        if (shouldDrawButtonAsDown)
+            baseColour = baseColour.darker(0.4f);
+        else if (shouldDrawButtonAsHighlighted)
+            baseColour = baseColour.brighter(0.4f);
+        
+        g.setColour(baseColour);
+        g.fillRoundedRectangle(bounds, cornerSize);
+        
+        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
+        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
+        
+        g.setColour(juce::Colours::white);
+        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        juce::String text = "SWAP POLES/ZEROS";
+        g.drawText(text, bounds, juce::Justification::centred);
+    }
+};

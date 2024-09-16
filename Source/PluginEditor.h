@@ -107,6 +107,9 @@ private:
     BypassSwitchTheme bypassSwitchTheme;
     LinLogSwitchTheme linLogTheme;
     CalculateButtonTheme calculateButtonTheme;
+    MultiplyPhasesButtonTheme multiplyButtonTheme;
+    DividePhasesButtonTheme divideButtonTheme;
+    SwapElementsButtonTheme swapButtonTheme;
     //[/UserVariables]
 
     //==============================================================================
@@ -178,6 +181,9 @@ private:
     std::unique_ptr<juce::Label> quality_label;
     std::unique_ptr<juce::Label> gain_label;
     std::unique_ptr<juce::TextButton> calculate_button;
+    std::unique_ptr<juce::TextButton> multiply_phases_button;
+    std::unique_ptr<juce::TextButton> divide_phases_button;
+    std::unique_ptr<juce::TextButton> swap_button;
 
 
     //==============================================================================
