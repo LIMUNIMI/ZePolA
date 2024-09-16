@@ -559,7 +559,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p1_freq.reset (new juce::Label ("Element 1 frequency",
                                     juce::String()));
     addAndMakeVisible (p1_freq.get());
-    p1_freq->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    p1_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
     p1_freq->setJustificationType (juce::Justification::centredLeft);
     p1_freq->setEditable (true, true, false);
     p1_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
@@ -572,7 +572,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p2_freq.reset (new juce::Label ("Element 2 frequency",
                                     juce::String()));
     addAndMakeVisible (p2_freq.get());
-    p2_freq->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    p2_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
     p2_freq->setJustificationType (juce::Justification::centredLeft);
     p2_freq->setEditable (true, true, false);
     p2_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
@@ -585,7 +585,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p3_freq.reset (new juce::Label ("Element 3 frequency",
                                     juce::String()));
     addAndMakeVisible (p3_freq.get());
-    p3_freq->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    p3_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
     p3_freq->setJustificationType (juce::Justification::centredLeft);
     p3_freq->setEditable (true, true, false);
     p3_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
@@ -598,7 +598,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p4_freq.reset (new juce::Label ("Element 4 frequency",
                                     juce::String()));
     addAndMakeVisible (p4_freq.get());
-    p4_freq->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    p4_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
     p4_freq->setJustificationType (juce::Justification::centredLeft);
     p4_freq->setEditable (true, true, false);
     p4_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
@@ -611,7 +611,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p5_freq.reset (new juce::Label ("Element 5 frequency",
                                     juce::String()));
     addAndMakeVisible (p5_freq.get());
-    p5_freq->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    p5_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
     p5_freq->setJustificationType (juce::Justification::centredLeft);
     p5_freq->setEditable (true, true, false);
     p5_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
@@ -624,7 +624,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p6_freq.reset (new juce::Label ("Element 6 frequency",
                                     juce::String()));
     addAndMakeVisible (p6_freq.get());
-    p6_freq->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    p6_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
     p6_freq->setJustificationType (juce::Justification::centredLeft);
     p6_freq->setEditable (true, true, false);
     p6_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
@@ -637,7 +637,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p7_freq.reset (new juce::Label ("Element 7 frequency",
                                     juce::String()));
     addAndMakeVisible (p7_freq.get());
-    p7_freq->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    p7_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
     p7_freq->setJustificationType (juce::Justification::centredLeft);
     p7_freq->setEditable (true, true, false);
     p7_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
@@ -650,7 +650,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p8_freq.reset (new juce::Label ("Element 8 frequency",
                                     juce::String()));
     addAndMakeVisible (p8_freq.get());
-    p8_freq->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    p8_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
     p8_freq->setJustificationType (juce::Justification::centredLeft);
     p8_freq->setEditable (true, true, false);
     p8_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
@@ -853,7 +853,7 @@ void PluginEditor::paint (juce::Graphics& g)
 
     {
         float x = 955.0f, y = 15.0f, width = 230.0f, height = 720.0f;
-        juce::Colour fillColour = juce::Colour (0x1d656565);
+        juce::Colour fillColour = juce::Colour (0x19656565);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1306,7 +1306,7 @@ BEGIN_JUCER_METADATA
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1200" initialHeight="750">
   <BACKGROUND backgroundColour="ffecf0f1">
-    <ROUNDRECT pos="955 15 230 720" cornerSize="14.5" fill="solid: 1d656565"
+    <ROUNDRECT pos="955 15 230 720" cornerSize="14.5" fill="solid: 19656565"
                hasStroke="1" stroke="1.5, mitered, butt" strokeColour="solid: ff383838"/>
     <ROUNDRECT pos="15 15 470 720" cornerSize="14.5" fill="solid: 17b1b1b1"
                hasStroke="1" stroke="1.5, mitered, butt" strokeColour="solid: ff383838"/>
@@ -1577,42 +1577,42 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="264 57 50 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff263238" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 2 frequency" id="5b5fee371d8a9052" memberName="p2_freq"
          virtualName="" explicitFocusOrder="0" pos="264 102 50 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 3 frequency" id="a15e9da2c1f0e36b" memberName="p3_freq"
          virtualName="" explicitFocusOrder="0" pos="264 147 50 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 4 frequency" id="d6a7e59b3d26f91e" memberName="p4_freq"
          virtualName="" explicitFocusOrder="0" pos="264 192 50 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 5 frequency" id="f0a2b500cc7bc03" memberName="p5_freq"
          virtualName="" explicitFocusOrder="0" pos="264 237 50 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 6 frequency" id="5dfdb03e7a654b13" memberName="p6_freq"
          virtualName="" explicitFocusOrder="0" pos="264 282 50 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 7 frequency" id="600a01c1726873b3" memberName="p7_freq"
          virtualName="" explicitFocusOrder="0" pos="264 327 50 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 8 frequency" id="f85a4dea8bdf47f1" memberName="p8_freq"
          virtualName="" explicitFocusOrder="0" pos="264 372 50 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

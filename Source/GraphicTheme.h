@@ -24,13 +24,13 @@ public:
     void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider& slider) override
     {
         g.setColour(juce::Colour(SLIDER_BAR_COLOUR));
-        g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.5f, 0.08f);
+        g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.0f, 0.08f);
         
         g.setColour(juce::Colour(MAGNITUDE_SLIDERS_COLOUR));
-        g.fillEllipse(sliderPos - 6.0f, y + height / 2 - 6.0f, 12, 12);
+        g.fillEllipse(sliderPos - 6.0f, y + height / 2 - 5.5f, 12, 12);
         
         g.setColour(juce::Colours::white);
-        g.drawEllipse(sliderPos - 6.0f, y + height / 2 - 6.0f, 12, 12, 1.0f);
+        g.drawEllipse(sliderPos - 6.0f, y + height / 2 - 5.5f, 12, 12, 1.0f);
     }
     
     juce::Font getLabelFont(juce::Label& label) override
@@ -46,13 +46,13 @@ public:
     void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider& slider) override
     {
         g.setColour(juce::Colour(SLIDER_BAR_COLOUR));
-        g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.5f, 0.08f);
+        g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.0f, 0.08f);
         
         g.setColour(juce::Colour(PHASE_SLIDERS_COLOUR));
-        g.fillEllipse(sliderPos - 6.0f, y + height / 2 - 6.0f, 12, 12);
+        g.fillEllipse(sliderPos - 6.0f, y + height / 2 - 5.5f, 12, 12);
         
         g.setColour(juce::Colours::white);
-        g.drawEllipse(sliderPos - 6.0f, y + height / 2 - 6.0f, 12, 12, 1.0f);
+        g.drawEllipse(sliderPos - 6.0f, y + height / 2 - 5.5f, 12, 12, 1.0f);
     }
     
     juce::Font getLabelFont(juce::Label& label) override
