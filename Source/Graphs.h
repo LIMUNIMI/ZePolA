@@ -2,18 +2,22 @@
 #include <JuceHeader.h>
 
 #define GRAPHS_BACKGROUND                   0xfffdfefe
+#define GRID_COLOUR                         0xff252525
 #define ZEROS_COLOUR                        0xff9b59b6
 #define CONJ_ZEROS_COLOUR                   0x709b59b6
 #define POLES_COLOUR                        0xffffbc2e
 #define CONJ_POLES_COLOUR                   0x70ffbc2e
 #define LINE_COLOUR                         0xff000000
 
+#define GRAPHS_QUALITY                      2048
+#define NUMBER_OF_REFERENCE_FREQUENCIES     8
+
 class GraphicResponse : public juce::Component
 {
 public:
-    GraphicResponse (const std::vector<double>& vls)
+    GraphicResponse (const std::vector<double>& vls, const std::vector<double>& rf, const double sr)
     {
-        updateValues(vls);
+        updateValues(vls, rf, sr);
     }
     
     void paint (juce::Graphics& g) override
@@ -22,33 +26,53 @@ public:
         float cornerSize = 8.0f;
         auto bounds = getLocalBounds().toFloat();
         g.fillRoundedRectangle(bounds, cornerSize);
-        g.setColour(juce::Colour(LINE_COLOUR));
         drawResponse(g);
     }
     
-    void updateValues (const std::vector<double>& vls)
+    void updateValues (const std::vector<double>& vls, const std::vector<double>& rf, const double sr)
     {
         values = vls;
+        referenceFrequencies = rf;
+        sampleRate = sr;
         repaint();
     }
     
 private:
     std::vector<double> values;
+    std::vector<double> referenceFrequencies;
+    
+    double sampleRate;
+    
+    
     
     void drawResponse (juce::Graphics& g)
     {
         auto width = getWidth();
         auto height = getHeight();
+    
         
         juce::Path responsePath;
         responsePath.startNewSubPath(0, height - static_cast<float>(values[0]) * height);
+        g.drawVerticalLine(0, 0, height);
         
         long int valuesSize = values.size();
+        float x;
+        float y;
+        int k = 1;
+        
         for (int i = 1; i < valuesSize; ++ i)
         {
-            float x = static_cast<float>(i) / valuesSize * width;
-            float y = height - static_cast<float>(values[i]) * height;
+            g.setColour(juce::Colour(LINE_COLOUR));
+            x = static_cast<float>(i) / valuesSize * width;
+            y = height - static_cast<float>(values[i]) * height;
             responsePath.lineTo(x, y);
+            
+            if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
+            {
+                g.setColour(juce::Colour(GRID_COLOUR));
+                g.drawVerticalLine((int)x, 0, (float)height);
+                k ++;
+            }
         }
         
         g.strokePath(responsePath, juce::PathStrokeType(1.0f));
@@ -161,3 +185,4 @@ private:
         }
     }
 };
+

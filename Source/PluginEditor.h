@@ -55,6 +55,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     void getSpectrum ();
+    void updateReferenceFrequencies();
     void updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
     void updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
     void formatFrequencyInput(int frequency, juce::Label* label, double sampleRate);
@@ -77,6 +78,18 @@ private:
     PolesAndZerosEQAudioProcessor& processor;
     AudioProcessorValueTreeState& valueTreeState;
 
+    std::vector<double> magnitudes;
+    std::vector<double> phases;
+    std::vector<double> referenceFrequencies;
+
+    bool linLog = true;
+
+    int design_type;
+    int design_shape;
+    int design_frequency;
+    double design_quality;
+    double design_gain;
+
     std::vector<std::unique_ptr<SliderAttachment>> magnitudesAttachments;
     std::vector<std::unique_ptr<SliderAttachment>> phasesAttachments;
     std::vector<std::unique_ptr<ButtonAttachment>> typesAttachments;
@@ -94,17 +107,6 @@ private:
     BypassSwitchTheme bypassSwitchTheme;
     LinLogSwitchTheme linLogTheme;
     CalculateButtonTheme calculateButtonTheme;
-
-    std::vector<double> magnitudes;
-    std::vector<double> phases;
-
-    bool linLog = true;
-    
-    int design_type;
-    int design_shape;
-    int design_frequency;
-    double design_quality;
-    double design_gain;
     //[/UserVariables]
 
     //==============================================================================

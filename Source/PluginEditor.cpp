@@ -21,12 +21,13 @@
 #include "Parameters.h"
 #include <cmath>
 
-#define GRAPHS_QUALITY                  2048
-#define FREQUENCY_FLOOR                 10.0
-#define QUALITY_FLOOR                   0.1
-#define QUALITY_CEILING                 100.0
-#define DESIGN_GAIN_FLOOR               -24.0
-#define DESIGN_GAIN_CEILING             24.0
+#define GRAPHS_QUALITY                          2048
+#define FREQUENCY_FLOOR                         10.0
+#define QUALITY_FLOOR                           0.1
+#define QUALITY_CEILING                         100.0
+#define DESIGN_GAIN_FLOOR                       -24.0
+#define DESIGN_GAIN_CEILING                     24.0
+#define NUMBER_OF_REFERENCE_FREQUENCIES         8
 //[/Headers]
 
 #include "PluginEditor.h"
@@ -43,12 +44,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p.setEditorCallback([this]()
                         {
         getSpectrum();
-        frequency_response->updateValues(magnitudes);
-        phase_response->updateValues(phases);
+        frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate());
+        phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate());
         gaussian_plane->updateElements(processor.getFilterElementsChain());
     });
 
     getSpectrum();
+    updateReferenceFrequencies();
 
     magnitudesAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
     phasesAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
@@ -65,7 +67,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     reset_button->setBounds (1010, 520, 70, 30);
 
-    frequency_response.reset (new GraphicResponse (magnitudes));
+    frequency_response.reset (new GraphicResponse (magnitudes, referenceFrequencies, processor.getSampleRate()));
     addAndMakeVisible (frequency_response.get());
     frequency_response->setName ("frequencyResponse");
 
@@ -83,7 +85,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     freq_response_label->setBounds (665, 310, 140, 24);
 
-    phase_response.reset (new GraphicResponse (phases));
+    phase_response.reset (new GraphicResponse (phases, referenceFrequencies, processor.getSampleRate()));
     addAndMakeVisible (phase_response.get());
     phase_response->setName ("phaseResponse");
 
@@ -125,6 +127,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p1_slider->setRange (0, 10, 0);
     p1_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     p1_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
+    p1_slider->setColour (juce::Slider::backgroundColourId, juce::Colour (0xff383838));
     p1_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
     p1_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
     p1_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
@@ -569,7 +572,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p1_freq->setEditable (true, true, false);
     p1_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
     p1_freq->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    p1_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
+    p1_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p1_freq->addListener (this);
 
     p1_freq->setBounds (270, 55, 60, 25);
@@ -582,7 +585,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p2_freq->setEditable (true, true, false);
     p2_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
     p2_freq->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    p2_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    p2_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p2_freq->addListener (this);
 
     p2_freq->setBounds (270, 100, 60, 25);
@@ -595,7 +598,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p3_freq->setEditable (true, true, false);
     p3_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
     p3_freq->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    p3_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    p3_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p3_freq->addListener (this);
 
     p3_freq->setBounds (270, 145, 60, 25);
@@ -608,7 +611,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p4_freq->setEditable (true, true, false);
     p4_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
     p4_freq->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    p4_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    p4_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p4_freq->addListener (this);
 
     p4_freq->setBounds (270, 190, 60, 25);
@@ -621,7 +624,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p5_freq->setEditable (true, true, false);
     p5_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
     p5_freq->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    p5_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    p5_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p5_freq->addListener (this);
 
     p5_freq->setBounds (270, 235, 60, 25);
@@ -634,7 +637,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p6_freq->setEditable (true, true, false);
     p6_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
     p6_freq->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    p6_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    p6_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p6_freq->addListener (this);
 
     p6_freq->setBounds (270, 280, 60, 25);
@@ -647,7 +650,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p7_freq->setEditable (true, true, false);
     p7_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
     p7_freq->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    p7_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    p7_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p7_freq->addListener (this);
 
     p7_freq->setBounds (270, 325, 60, 25);
@@ -660,7 +663,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p8_freq->setEditable (true, true, false);
     p8_freq->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
     p8_freq->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    p8_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    p8_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p8_freq->addListener (this);
 
     p8_freq->setBounds (270, 370, 60, 25);
@@ -993,7 +996,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 90, width = 470, height = 1;
+        int x = 15, y = 90, width = 480, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1026,7 +1029,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 135, width = 470, height = 1;
+        int x = 15, y = 135, width = 480, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1035,7 +1038,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 180, width = 470, height = 1;
+        int x = 15, y = 180, width = 480, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1044,7 +1047,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 225, width = 470, height = 1;
+        int x = 15, y = 225, width = 480, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1053,7 +1056,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 270, width = 470, height = 1;
+        int x = 15, y = 270, width = 480, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1062,7 +1065,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 360, width = 470, height = 1;
+        int x = 15, y = 360, width = 480, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1071,7 +1074,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 315, width = 470, height = 1;
+        int x = 15, y = 315, width = 480, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1080,7 +1083,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 955, y = 415, width = 230, height = 1;
+        int x = 975, y = 415, width = 210, height = 1;
         juce::Colour fillColour = juce::Colour (0x39909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1237,8 +1240,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         //[UserButtonCode_linLog_switch] -- add your button handler code here..
         linLog = linLog_switch->getToggleState();
         getSpectrum();
-        frequency_response->updateValues(magnitudes);
-        phase_response->updateValues(phases);
+        updateReferenceFrequencies();
+        frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate());
+        phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate());
         //[/UserButtonCode_linLog_switch]
     }
     else if (buttonThatWasClicked == calculate_button.get())
@@ -1450,6 +1454,30 @@ void PluginEditor::getSpectrum()
     }
 }
 
+void PluginEditor::updateReferenceFrequencies()
+{
+    double phi;
+    const auto sampleRate = processor.getSampleRate();
+    referenceFrequencies.resize(0);
+
+    auto n1 = log(FREQUENCY_FLOOR / sampleRate);
+    auto n2 = log(0.5) - log(FREQUENCY_FLOOR / sampleRate);
+
+    for (int i = 0; i < GRAPHS_QUALITY; ++ i)
+    {
+        if (linLog)
+            phi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1)); // Linear spectrum
+        else
+            phi = exp(n1 + (n2 * (static_cast<double>(i) / (static_cast<double>(GRAPHS_QUALITY - 1))))); // Log spectrum
+
+        if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
+            referenceFrequencies.push_back(phi);
+    }
+    
+    for (int i = 0; i < NUMBER_OF_REFERENCE_FREQUENCIES; ++ i)
+        DBG(referenceFrequencies[i] * sampleRate * 0.5);
+}
+
 void PluginEditor::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
 {
     double phaseValue = slider->getValue();
@@ -1467,7 +1495,7 @@ void PluginEditor::updateSliderFromFrequency(int frequency, juce::Slider* slider
 void PluginEditor::formatFrequencyInput(int frequency, juce::Label *label, double sampleRate)
 {
     double maxFrequency = sampleRate / 2.0;
-    
+
     if (frequency < FREQUENCY_FLOOR)
     {
         frequency = FREQUENCY_FLOOR;
@@ -1512,7 +1540,7 @@ void PluginEditor::formatGainInput(double gain, juce::Label *label)
 
 void PluginEditor::filterDesignCalculation()
 {
-    
+
 }
 //[/MiscUserCode]
 
@@ -1541,20 +1569,20 @@ BEGIN_JUCER_METADATA
     <TEXT pos="1092 708 90 30" fill="solid: ff333333" hasStroke="0" text="TOOLS"
           fontname="Gill Sans" fontsize="16.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <RECT pos="15 90 470 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="15 90 480 1" fill="solid: 25909497" hasStroke="0"/>
     <TEXT pos="365 708 116 30" fill="solid: ff333333" hasStroke="0" text="FILTER SETUP"
           fontname="Gill Sans" fontsize="16.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
     <TEXT pos="800 708 186 30" fill="solid: ff333333" hasStroke="0" text="FILTER RESPONSE"
           fontname="Gill Sans" fontsize="16.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <RECT pos="15 135 470 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="15 180 470 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="15 225 470 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="15 270 470 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="15 360 470 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="15 315 470 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="955 415 230 1" fill="solid: 39909497" hasStroke="0"/>
+    <RECT pos="15 135 480 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="15 180 480 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="15 225 480 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="15 270 480 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="15 360 480 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="15 315 480 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="975 415 210 1" fill="solid: 39909497" hasStroke="0"/>
     <TEXT pos="1035 420 90 24" fill="solid: ff333333" hasStroke="0" text="CONTROLS"
           fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
@@ -1580,7 +1608,7 @@ BEGIN_JUCER_METADATA
               radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
                     virtualName="" explicitFocusOrder="0" pos="520 35 430 270" class="GraphicResponse"
-                    params="magnitudes"/>
+                    params="magnitudes, referenceFrequencies, processor.getSampleRate()"/>
   <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
          virtualName="" explicitFocusOrder="0" pos="665 310 140 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="SPECTRUM MAGNITUDE&#10;"
@@ -1589,7 +1617,7 @@ BEGIN_JUCER_METADATA
          justification="36" typefaceStyle="SemiBold"/>
   <GENERICCOMPONENT name="phaseResponse" id="c9a48273dec25832" memberName="phase_response"
                     virtualName="" explicitFocusOrder="0" pos="540 415 390 260" class="GraphicResponse"
-                    params="phases"/>
+                    params="phases, referenceFrequencies, processor.getSampleRate()"/>
   <LABEL name="Phase response" id="6d08c4e421703ed5" memberName="ph_response_label"
          virtualName="" explicitFocusOrder="0" pos="675 680 110 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="SPECTRUM PHASE"
@@ -1606,8 +1634,8 @@ BEGIN_JUCER_METADATA
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
   <SLIDER name="Element 1 phase" id="b9f95ed5c32caef9" memberName="p1_slider"
-          virtualName="" explicitFocusOrder="0" pos="144 55 120 25" thumbcol="ffffffff"
-          textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
+          virtualName="" explicitFocusOrder="0" pos="144 55 120 25" bkgcol="ff383838"
+          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
@@ -1811,42 +1839,42 @@ BEGIN_JUCER_METADATA
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="Element 1 frequency" id="79f5387b07d9c483" memberName="p1_freq"
          virtualName="" explicitFocusOrder="0" pos="270 55 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff263238" labelText="" editableSingleClick="1"
+         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 2 frequency" id="5b5fee371d8a9052" memberName="p2_freq"
          virtualName="" explicitFocusOrder="0" pos="270 100 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
+         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 3 frequency" id="a15e9da2c1f0e36b" memberName="p3_freq"
          virtualName="" explicitFocusOrder="0" pos="270 145 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
+         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 4 frequency" id="d6a7e59b3d26f91e" memberName="p4_freq"
          virtualName="" explicitFocusOrder="0" pos="270 190 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
+         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 5 frequency" id="f0a2b500cc7bc03" memberName="p5_freq"
          virtualName="" explicitFocusOrder="0" pos="270 235 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
+         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 6 frequency" id="5dfdb03e7a654b13" memberName="p6_freq"
          virtualName="" explicitFocusOrder="0" pos="270 280 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
+         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 7 frequency" id="600a01c1726873b3" memberName="p7_freq"
          virtualName="" explicitFocusOrder="0" pos="270 325 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
+         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 8 frequency" id="f85a4dea8bdf47f1" memberName="p8_freq"
          virtualName="" explicitFocusOrder="0" pos="270 370 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="1"
+         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="Type" id="5a16af79e3a09d2b" memberName="type_box" virtualName=""
