@@ -44,7 +44,8 @@ typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 class PluginEditor  : public juce::AudioProcessorEditor,
                       public juce::Button::Listener,
                       public juce::Slider::Listener,
-                      public juce::Label::Listener
+                      public juce::Label::Listener,
+                      public juce::ComboBox::Listener
 {
 public:
     //==============================================================================
@@ -55,7 +56,11 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     void getSpectrum ();
     void updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
-    void updateSliderFromFrequency(double frequency, juce::Slider* slider, double sampleRate);
+    void updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
+    void formatFrequencyInput(int frequency, juce::Label* label, double sampleRate);
+    void formatQualityInput(double quality, juce::Label* label);
+    void formatGainInput(double gain, juce::Label* label);
+    void filterDesignCalculation();
     //[/UserMethods]
 
     void paint (juce::Graphics& g) override;
@@ -63,13 +68,12 @@ public:
     void buttonClicked (juce::Button* buttonThatWasClicked) override;
     void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
     void labelTextChanged (juce::Label* labelThatHasChanged) override;
+    void comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged) override;
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-
-
     PolesAndZerosEQAudioProcessor& processor;
     AudioProcessorValueTreeState& valueTreeState;
 
@@ -89,11 +93,18 @@ private:
     GainSliderTheme gainSliderTheme;
     BypassSwitchTheme bypassSwitchTheme;
     LinLogSwitchTheme linLogTheme;
+    CalculateButtonTheme calculateButtonTheme;
 
     std::vector<double> magnitudes;
     std::vector<double> phases;
 
     bool linLog = true;
+    
+    int design_type;
+    int design_shape;
+    int design_frequency;
+    double design_quality;
+    double design_gain;
     //[/UserVariables]
 
     //==============================================================================
@@ -159,6 +170,12 @@ private:
     std::unique_ptr<juce::Label> p6_freq;
     std::unique_ptr<juce::Label> p7_freq;
     std::unique_ptr<juce::Label> p8_freq;
+    std::unique_ptr<juce::ComboBox> type_box;
+    std::unique_ptr<juce::ComboBox> shape_box;
+    std::unique_ptr<juce::Label> frequency_label;
+    std::unique_ptr<juce::Label> quality_label;
+    std::unique_ptr<juce::Label> gain_label;
+    std::unique_ptr<juce::TextButton> calculate_button;
 
 
     //==============================================================================
