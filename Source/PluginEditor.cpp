@@ -776,6 +776,24 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     swap_button->setBounds (355, 602, 90, 30);
 
+    turn_on_button.reset (new juce::TextButton ("Turn on all the elements"));
+    addAndMakeVisible (turn_on_button.get());
+    turn_on_button->setButtonText (juce::String());
+    turn_on_button->addListener (this);
+    turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    turn_on_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    turn_on_button->setBounds (360, 408, 60, 19);
+
+    turn_off_button.reset (new juce::TextButton ("Turn off all the elements"));
+    addAndMakeVisible (turn_off_button.get());
+    turn_off_button->setButtonText (juce::String());
+    turn_off_button->addListener (this);
+    turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    turn_off_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    turn_off_button->setBounds (424, 408, 60, 19);
+
 
     //[UserPreSize]
     magnitudesAttachments[0].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
@@ -861,6 +879,8 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     multiply_phases_button->setLookAndFeel(&multiplyButtonTheme);
     divide_phases_button->setLookAndFeel(&divideButtonTheme);
     swap_button->setLookAndFeel(&swapButtonTheme);
+    turn_on_button->setLookAndFeel(&turnOnAllElementsButtonTheme);
+    turn_off_button->setLookAndFeel(&turnOffAllElementsButtonTheme);
 
     double sampleRate = processor.getSampleRate();
 
@@ -966,6 +986,8 @@ PluginEditor::~PluginEditor()
     multiply_phases_button = nullptr;
     divide_phases_button = nullptr;
     swap_button = nullptr;
+    turn_on_button = nullptr;
+    turn_off_button = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1301,6 +1323,18 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         //[UserButtonCode_swap_button] -- add your button handler code here..
         processor.swapElements();
         //[/UserButtonCode_swap_button]
+    }
+    else if (buttonThatWasClicked == turn_on_button.get())
+    {
+        //[UserButtonCode_turn_on_button] -- add your button handler code here..
+        processor.turnOnOffAllElements(1);
+        //[/UserButtonCode_turn_on_button]
+    }
+    else if (buttonThatWasClicked == turn_off_button.get())
+    {
+        //[UserButtonCode_turn_off_button] -- add your button handler code here..
+        processor.turnOnOffAllElements(0);
+        //[/UserButtonCode_turn_off_button]
     }
 
     //[UserbuttonClicked_Post]
@@ -1965,6 +1999,14 @@ BEGIN_JUCER_METADATA
               radioGroupId="0"/>
   <TEXTBUTTON name="Swap poles/zeros" id="938b23da9ff326b0" memberName="swap_button"
               virtualName="" explicitFocusOrder="0" pos="355 602 90 30" bgColOff="ff505050"
+              bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
+  <TEXTBUTTON name="Turn on all the elements" id="e4b8377926241c51" memberName="turn_on_button"
+              virtualName="" explicitFocusOrder="0" pos="360 408 60 19" bgColOff="ff505050"
+              bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
+  <TEXTBUTTON name="Turn off all the elements" id="f6c36c1c53a4a06d" memberName="turn_off_button"
+              virtualName="" explicitFocusOrder="0" pos="424 408 60 19" bgColOff="ff505050"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
 </JUCER_COMPONENT>

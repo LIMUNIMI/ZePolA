@@ -110,6 +110,8 @@ private:
     MultiplyPhasesButtonTheme multiplyButtonTheme;
     DividePhasesButtonTheme divideButtonTheme;
     SwapElementsButtonTheme swapButtonTheme;
+    TurnOnAllElementsButtonTheme turnOnAllElementsButtonTheme;
+    TurnOffAllElementsButtonTheme turnOffAllElementsButtonTheme;
     //[/UserVariables]
 
     //==============================================================================
@@ -184,6 +186,8 @@ private:
     std::unique_ptr<juce::TextButton> multiply_phases_button;
     std::unique_ptr<juce::TextButton> divide_phases_button;
     std::unique_ptr<juce::TextButton> swap_button;
+    std::unique_ptr<juce::TextButton> turn_on_button;
+    std::unique_ptr<juce::TextButton> turn_off_button;
 
 
     //==============================================================================

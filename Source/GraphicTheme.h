@@ -390,3 +390,63 @@ public:
         g.drawText(text, bounds, juce::Justification::centred);
     }
 };
+
+class TurnOnAllElementsButtonTheme : public LookAndFeel_V4
+{
+public:
+    
+    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
+                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    {
+        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
+        auto cornerSize = 8.0f;
+        
+        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
+        
+        if (shouldDrawButtonAsDown)
+            baseColour = baseColour.darker(0.4f);
+        else if (shouldDrawButtonAsHighlighted)
+            baseColour = baseColour.brighter(0.4f);
+        
+        g.setColour(baseColour);
+        g.fillRoundedRectangle(bounds, cornerSize);
+        
+        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
+        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
+        
+        g.setColour(juce::Colours::white);
+        g.setFont(juce::Font(6.0f, juce::Font::bold));
+        juce::String text = "TURN ALL ON";
+        g.drawText(text, bounds, juce::Justification::centred);
+    }
+};
+
+class TurnOffAllElementsButtonTheme : public LookAndFeel_V4
+{
+public:
+    
+    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
+                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    {
+        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
+        auto cornerSize = 8.0f;
+        
+        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
+        
+        if (shouldDrawButtonAsDown)
+            baseColour = baseColour.darker(0.4f);
+        else if (shouldDrawButtonAsHighlighted)
+            baseColour = baseColour.brighter(0.4f);
+        
+        g.setColour(baseColour);
+        g.fillRoundedRectangle(bounds, cornerSize);
+        
+        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
+        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
+        
+        g.setColour(juce::Colours::white);
+        g.setFont(juce::Font(6.0f, juce::Font::bold));
+        juce::String text = "TURN ALL OFF";
+        g.drawText(text, bounds, juce::Justification::centred);
+    }
+};

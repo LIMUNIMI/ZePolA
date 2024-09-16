@@ -49,6 +49,8 @@ public:
     void multiplyPhases ();
     void dividePhases ();
     void swapElements ();
+    
+    void turnOnOffAllElements(bool option);
 
 private:
     void parameterChanged(const String& parameterID, float newValue) override;
