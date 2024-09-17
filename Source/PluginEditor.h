@@ -56,11 +56,19 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     void getSpectrum ();
     void updateReferenceFrequencies();
+
     void updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
     void updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
+
     void formatFrequencyInput(int frequency, juce::Label* label, double sampleRate);
     void formatQualityInput(double quality, juce::Label* label);
-    void formatGainInput(double gain, juce::Label* label);
+    void formatRippleInput(double ripple, juce::Label* label);
+    void formatAttenuationInput(double attenuation, juce::Label* label);
+
+    void updateGUIButterworth();
+    void updateGUIChebyshevI();
+    void updateGUIChebyshevII();
+
     void filterDesignCalculation();
     //[/UserMethods]
 
@@ -86,9 +94,11 @@ private:
 
     int design_type;
     int design_shape;
+    int design_filters_to_activate;
     int design_frequency;
     double design_quality;
-    double design_gain;
+    double design_ripple;
+    double design_attenuation;
 
     std::vector<std::unique_ptr<SliderAttachment>> magnitudesAttachments;
     std::vector<std::unique_ptr<SliderAttachment>> phasesAttachments;
@@ -100,18 +110,25 @@ private:
 
     MagnitudeSliderTheme magnitudeSlidersTheme;
     PhaseSliderTheme phaseSlidersTheme;
+
     TypeSwitchTheme typeSwitchesTheme;
     ActiveSwitchTheme activeSwitchesTheme;
+
     ResetButtonTheme resetButtonTheme;
     GainSliderTheme gainSliderTheme;
     BypassSwitchTheme bypassSwitchTheme;
+
     LinLogSwitchTheme linLogTheme;
+
     CalculateButtonTheme calculateButtonTheme;
+
     MultiplyPhasesButtonTheme multiplyButtonTheme;
     DividePhasesButtonTheme divideButtonTheme;
     SwapElementsButtonTheme swapButtonTheme;
     TurnOnAllElementsButtonTheme turnOnAllElementsButtonTheme;
     TurnOffAllElementsButtonTheme turnOffAllElementsButtonTheme;
+
+    ComboBoxTheme comboBoxTheme;
     //[/UserVariables]
 
     //==============================================================================
@@ -181,13 +198,17 @@ private:
     std::unique_ptr<juce::ComboBox> shape_box;
     std::unique_ptr<juce::Label> frequency_label;
     std::unique_ptr<juce::Label> quality_label;
-    std::unique_ptr<juce::Label> gain_label;
     std::unique_ptr<juce::TextButton> calculate_button;
     std::unique_ptr<juce::TextButton> multiply_phases_button;
     std::unique_ptr<juce::TextButton> divide_phases_button;
     std::unique_ptr<juce::TextButton> swap_button;
     std::unique_ptr<juce::TextButton> turn_on_button;
     std::unique_ptr<juce::TextButton> turn_off_button;
+    std::unique_ptr<juce::ComboBox> order_box;
+    std::unique_ptr<juce::Label> design_frequency_label;
+    std::unique_ptr<juce::Label> text_label;
+    std::unique_ptr<juce::Label> ripple_label;
+    std::unique_ptr<juce::Label> attenuation_label;
 
 
     //==============================================================================

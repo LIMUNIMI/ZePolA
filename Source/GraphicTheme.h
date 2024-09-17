@@ -450,3 +450,85 @@ public:
         g.drawText(text, bounds, juce::Justification::centred);
     }
 };
+
+class ComboBoxTheme : public juce::LookAndFeel_V4
+{
+public:
+    ComboBoxTheme()
+    {
+        setColour(juce::ComboBox::backgroundColourId, juce::Colours::black);
+        setColour(juce::ComboBox::textColourId, juce::Colours::white);
+        setColour(juce::ComboBox::outlineColourId, juce::Colours::grey);
+        setColour(juce::ComboBox::arrowColourId, juce::Colours::white);
+        setColour(juce::PopupMenu::backgroundColourId, juce::Colours::darkgrey);
+        setColour(juce::PopupMenu::textColourId, juce::Colours::white);
+        setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colour(0xff2e86c1));
+        setColour(juce::PopupMenu::highlightedTextColourId, juce::Colours::black);
+    }
+
+    juce::Font getComboBoxFont(juce::ComboBox& box) override
+    {
+        // Imposta il font per il testo della ComboBox
+        return juce::Font("Gill Sans", 12.0f, juce::Font::plain);
+    }
+
+    void drawComboBox(juce::Graphics& g, int width, int height, bool isButtonDown,
+                      int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox& box) override
+    {
+        auto cornerSize = 5.0f;
+        juce::Rectangle<int> boxBounds(0, 0, width, height);
+
+        // Riempimento del background della ComboBox
+        g.setColour(findColour(juce::ComboBox::backgroundColourId));
+        g.fillRoundedRectangle(boxBounds.toFloat(), cornerSize);
+
+        // Disegno dei bordi della ComboBox
+        g.setColour(findColour(juce::ComboBox::outlineColourId));
+        g.drawRoundedRectangle(boxBounds.toFloat().reduced(0.5f), cornerSize, 1.0f);
+
+        // Disegno della freccia (dropdown) senza ridisegnare il testo (che sarà già disegnato dalla ComboBox stessa)
+        juce::Path arrowPath;
+        arrowPath.addTriangle(0.0f, 0.0f, 10.0f, 0.0f, 5.0f, 7.0f);
+        auto arrowX = (float)buttonX + (float)buttonW * 0.5f - 5.0f;
+        auto arrowY = (float)buttonY + (float)buttonH * 0.5f - 3.5f;
+
+        g.setColour(findColour(juce::ComboBox::arrowColourId));
+        g.fillPath(arrowPath, juce::AffineTransform::translation(arrowX, arrowY));
+    }
+
+    void drawPopupMenuBackground(juce::Graphics& g, int width, int height) override
+    {
+        g.fillAll(findColour(juce::PopupMenu::backgroundColourId));
+    }
+
+    void drawPopupMenuItem(juce::Graphics& g, const juce::Rectangle<int>& area, const bool isSeparator, const bool isActive,
+                           const bool isHighlighted, const bool isTicked, const bool hasSubMenu, const juce::String& text,
+                           const juce::String& shortcutKeyText, const juce::Drawable* icon, const juce::Colour* textColour) override
+    {
+        if (isSeparator)
+        {
+            juce::Rectangle<int> r(area.reduced(5, 0));
+            g.setColour(findColour(juce::PopupMenu::textColourId).withAlpha(0.3f));
+            g.fillRect(r.removeFromTop(1));
+        }
+        else
+        {
+            auto textColourToUse = findColour(juce::PopupMenu::textColourId);
+
+            if (textColour != nullptr)
+                textColourToUse = *textColour;
+
+            if (isHighlighted)
+            {
+                g.setColour(findColour(juce::PopupMenu::highlightedBackgroundColourId));
+                g.fillRect(area);
+
+                textColourToUse = findColour(juce::PopupMenu::highlightedTextColourId);
+            }
+
+            g.setColour(textColourToUse);
+            g.setFont(juce::Font("Gill Sans", 12.0f, juce::Font::plain));
+            g.drawFittedText(text, area.reduced(10, 0), juce::Justification::centredLeft, 1);
+        }
+    }
+};

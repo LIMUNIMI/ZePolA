@@ -22,12 +22,18 @@
 #include <cmath>
 
 #define GRAPHS_QUALITY                          2048
+#define NUMBER_OF_REFERENCE_FREQUENCIES         8
 #define FREQUENCY_FLOOR                         10.0
+
 #define QUALITY_FLOOR                           0.1
 #define QUALITY_CEILING                         100.0
-#define DESIGN_GAIN_FLOOR                       -24.0
-#define DESIGN_GAIN_CEILING                     24.0
-#define NUMBER_OF_REFERENCE_FREQUENCIES         8
+
+#define RIPPLE_FLOOR                            0.1
+#define RIPPLE_CEILING                          3.0
+
+#define ATTENUATION_FLOOR                       20.0
+#define ATTENUATION_CEILING                     100.0
+
 //[/Headers]
 
 #include "PluginEditor.h"
@@ -667,35 +673,30 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     p8_freq->setBounds (270, 370, 60, 25);
 
-    type_box.reset (new juce::ComboBox ("Type"));
+    type_box.reset (new juce::ComboBox ("Design type"));
     addAndMakeVisible (type_box.get());
     type_box->setEditableText (false);
     type_box->setJustificationType (juce::Justification::centredLeft);
-    type_box->setTextWhenNothingSelected (TRANS ("-"));
+    type_box->setTextWhenNothingSelected (TRANS ("TYPE"));
     type_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
-    type_box->addItem (TRANS ("butterworth"), 1);
-    type_box->addItem (TRANS ("chebyshev"), 2);
-    type_box->addItem (TRANS ("elliptic"), 3);
-    type_box->addItem (TRANS ("bessel"), 4);
-    type_box->addItem (TRANS ("biquad"), 5);
-    type_box->addItem (TRANS ("comb"), 6);
+    type_box->addItem (TRANS ("BUTTERWORTH"), 1);
+    type_box->addItem (TRANS ("CHEBYSHEV I"), 2);
+    type_box->addItem (TRANS ("CHEBYSHEV II"), 3);
     type_box->addListener (this);
 
     type_box->setBounds (1010, 65, 140, 25);
 
-    shape_box.reset (new juce::ComboBox ("Shape"));
+    shape_box.reset (new juce::ComboBox ("Design shape"));
     addAndMakeVisible (shape_box.get());
     shape_box->setEditableText (false);
     shape_box->setJustificationType (juce::Justification::centredLeft);
-    shape_box->setTextWhenNothingSelected (TRANS ("-"));
+    shape_box->setTextWhenNothingSelected (TRANS ("SHAPE"));
     shape_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
-    shape_box->addItem (TRANS ("lowpass"), 1);
-    shape_box->addItem (TRANS ("highpass"), 2);
-    shape_box->addItem (TRANS ("bandpass"), 3);
-    shape_box->addItem (TRANS ("bandstop"), 4);
+    shape_box->addItem (TRANS ("LOWPASS"), 1);
+    shape_box->addItem (TRANS ("HIGHPASS"), 2);
     shape_box->addListener (this);
 
-    shape_box->setBounds (1010, 120, 140, 25);
+    shape_box->setBounds (1010, 175, 140, 25);
 
     frequency_label.reset (new juce::Label ("Frequency",
                                             juce::String()));
@@ -709,7 +710,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     frequency_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
     frequency_label->addListener (this);
 
-    frequency_label->setBounds (1010, 175, 60, 25);
+    frequency_label->setBounds (1010, 230, 60, 25);
 
     quality_label.reset (new juce::Label ("Quality",
                                           juce::String()));
@@ -723,21 +724,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     quality_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
     quality_label->addListener (this);
 
-    quality_label->setBounds (1010, 225, 60, 25);
-
-    gain_label.reset (new juce::Label ("Gain",
-                                       juce::String()));
-    addAndMakeVisible (gain_label.get());
-    gain_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    gain_label->setJustificationType (juce::Justification::centredLeft);
-    gain_label->setEditable (true, true, false);
-    gain_label->setColour (juce::Label::backgroundColourId, juce::Colour (0xffa6acaf));
-    gain_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    gain_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    gain_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
-    gain_label->addListener (this);
-
-    gain_label->setBounds (1010, 275, 60, 25);
+    quality_label->setBounds (1010, 280, 60, 25);
 
     calculate_button.reset (new juce::TextButton ("Calculate"));
     addAndMakeVisible (calculate_button.get());
@@ -755,7 +742,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
     multiply_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    multiply_phases_button->setBounds (360, 490, 90, 30);
+    multiply_phases_button->setBounds (360, 505, 90, 30);
 
     divide_phases_button.reset (new juce::TextButton ("Divide phases"));
     addAndMakeVisible (divide_phases_button.get());
@@ -764,7 +751,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff727272));
     divide_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff727272));
 
-    divide_phases_button->setBounds (360, 540, 90, 30);
+    divide_phases_button->setBounds (360, 555, 90, 30);
 
     swap_button.reset (new juce::TextButton ("Swap poles/zeros"));
     addAndMakeVisible (swap_button.get());
@@ -782,7 +769,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff03c03c));
     turn_on_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_on_button->setBounds (331, 435, 60, 20);
+    turn_on_button->setBounds (331, 450, 60, 20);
 
     turn_off_button.reset (new juce::TextButton ("Turn off all the elements"));
     addAndMakeVisible (turn_off_button.get());
@@ -791,7 +778,77 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xffe86b5c));
     turn_off_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_off_button->setBounds (415, 435, 60, 20);
+    turn_off_button->setBounds (415, 450, 60, 20);
+
+    order_box.reset (new juce::ComboBox ("Design order"));
+    addAndMakeVisible (order_box.get());
+    order_box->setEditableText (false);
+    order_box->setJustificationType (juce::Justification::centredLeft);
+    order_box->setTextWhenNothingSelected (TRANS ("ORDER"));
+    order_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
+    order_box->addItem (TRANS ("2"), 1);
+    order_box->addItem (TRANS ("4"), 2);
+    order_box->addItem (TRANS ("6"), 3);
+    order_box->addItem (TRANS ("8"), 4);
+    order_box->addItem (TRANS ("10"), 5);
+    order_box->addItem (TRANS ("12"), 6);
+    order_box->addItem (TRANS ("14"), 7);
+    order_box->addItem (TRANS ("16"), 8);
+    order_box->addListener (this);
+
+    order_box->setBounds (1010, 120, 140, 25);
+
+    design_frequency_label.reset (new juce::Label ("Design frequency",
+                                                   TRANS ("FREQUENCY\n")));
+    addAndMakeVisible (design_frequency_label.get());
+    design_frequency_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    design_frequency_label->setJustificationType (juce::Justification::centredLeft);
+    design_frequency_label->setEditable (false, false, false);
+    design_frequency_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    design_frequency_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    design_frequency_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+
+    design_frequency_label->setBounds (1078, 234, 81, 20);
+
+    text_label.reset (new juce::Label ("Parameter",
+                                       juce::String()));
+    addAndMakeVisible (text_label.get());
+    text_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    text_label->setJustificationType (juce::Justification::centredLeft);
+    text_label->setEditable (false, false, false);
+    text_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    text_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    text_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+
+    text_label->setBounds (1078, 285, 81, 20);
+
+    ripple_label.reset (new juce::Label ("Ripple",
+                                         juce::String()));
+    addAndMakeVisible (ripple_label.get());
+    ripple_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    ripple_label->setJustificationType (juce::Justification::centredLeft);
+    ripple_label->setEditable (true, true, false);
+    ripple_label->setColour (juce::Label::backgroundColourId, juce::Colour (0xffa6acaf));
+    ripple_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    ripple_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    ripple_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
+    ripple_label->addListener (this);
+
+    ripple_label->setBounds (1010, 280, 60, 25);
+
+    attenuation_label.reset (new juce::Label ("Attenuation",
+                                              juce::String()));
+    addAndMakeVisible (attenuation_label.get());
+    attenuation_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    attenuation_label->setJustificationType (juce::Justification::centredLeft);
+    attenuation_label->setEditable (true, true, false);
+    attenuation_label->setColour (juce::Label::backgroundColourId, juce::Colour (0xffa6acaf));
+    attenuation_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    attenuation_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    attenuation_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
+    attenuation_label->addListener (this);
+
+    attenuation_label->setBounds (1010, 280, 60, 25);
 
 
     //[UserPreSize]
@@ -881,6 +938,10 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_on_button->setLookAndFeel(&turnOnAllElementsButtonTheme);
     turn_off_button->setLookAndFeel(&turnOffAllElementsButtonTheme);
 
+    type_box->setLookAndFeel(&comboBoxTheme);
+    order_box->setLookAndFeel(&comboBoxTheme);
+    shape_box->setLookAndFeel(&comboBoxTheme);
+
     double sampleRate = processor.getSampleRate();
 
     updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
@@ -891,9 +952,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
     updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
     updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
-    
+
     linLog = false;
     linLog_switch->setToggleState(false, juce::dontSendNotification);
+
+    quality_label->setVisible(false);
+    ripple_label->setVisible(false);
+    attenuation_label->setVisible(false);
     //[/UserPreSize]
 
     setSize (1200, 750);
@@ -983,13 +1048,17 @@ PluginEditor::~PluginEditor()
     shape_box = nullptr;
     frequency_label = nullptr;
     quality_label = nullptr;
-    gain_label = nullptr;
     calculate_button = nullptr;
     multiply_phases_button = nullptr;
     divide_phases_button = nullptr;
     swap_button = nullptr;
     turn_on_button = nullptr;
     turn_off_button = nullptr;
+    order_box = nullptr;
+    design_frequency_label = nullptr;
+    text_label = nullptr;
+    ripple_label = nullptr;
+    attenuation_label = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1185,42 +1254,6 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1085, y = 178, width = 81, height = 20;
-        juce::String text (TRANS ("FREQUENCY"));
-        juce::Colour fillColour = juce::Colour (0xff333333);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centredLeft, true);
-    }
-
-    {
-        int x = 1085, y = 228, width = 81, height = 20;
-        juce::String text (TRANS ("QUALITY"));
-        juce::Colour fillColour = juce::Colour (0xff333333);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centredLeft, true);
-    }
-
-    {
-        int x = 1085, y = 278, width = 81, height = 20;
-        juce::String text (TRANS ("GAIN"));
-        juce::Colour fillColour = juce::Colour (0xff333333);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centredLeft, true);
-    }
-
-    {
         float x = 310.0f, y = 415.0f, width = 185.0f, height = 260.0f;
         juce::Colour fillColour = juce::Colour (0x11b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
@@ -1230,6 +1263,18 @@ void PluginEditor::paint (juce::Graphics& g)
         g.fillRoundedRectangle (x, y, width, height, 14.500f);
         g.setColour (strokeColour);
         g.drawRoundedRectangle (x, y, width, height, 14.500f, 0.500f);
+    }
+
+    {
+        int x = 360, y = 419, width = 90, height = 20;
+        juce::String text (TRANS ("SETUP SHORTCUTS"));
+        juce::Colour fillColour = juce::Colour (0xff333333);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (juce::Font ("Gill Sans", 10.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+        g.drawText (text, x, y, width, height,
+                    juce::Justification::centred, true);
     }
 
     //[UserPaint] Add your own custom painting code here..
@@ -1317,6 +1362,7 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == calculate_button.get())
     {
         //[UserButtonCode_calculate_button] -- add your button handler code here..
+        processor.resetFilter();
         filterDesignCalculation();
         //[/UserButtonCode_calculate_button]
     }
@@ -1489,11 +1535,17 @@ void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
         formatQualityInput(labelThatHasChanged->getText().getDoubleValue(), quality_label.get());
         //[/UserLabelCode_quality_label]
     }
-    else if (labelThatHasChanged == gain_label.get())
+    else if (labelThatHasChanged == ripple_label.get())
     {
-        //[UserLabelCode_gain_label] -- add your label text handling code here..
-        formatGainInput(labelThatHasChanged->getText().getDoubleValue(), gain_label.get());
-        //[/UserLabelCode_gain_label]
+        //[UserLabelCode_ripple_label] -- add your label text handling code here..
+        formatRippleInput(labelThatHasChanged->getText().getDoubleValue(), ripple_label.get());
+        //[/UserLabelCode_ripple_label]
+    }
+    else if (labelThatHasChanged == attenuation_label.get())
+    {
+        //[UserLabelCode_attenuation_label] -- add your label text handling code here..
+        formatAttenuationInput(labelThatHasChanged->getText().getDoubleValue(), attenuation_label.get());
+        //[/UserLabelCode_attenuation_label]
     }
 
     //[UserlabelTextChanged_Post]
@@ -1509,6 +1561,22 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_type_box] -- add your combo box handling code here..
         design_type = comboBoxThatHasChanged->getSelectedId();
+        switch (design_type)
+        {
+            case 1:
+            {
+                updateGUIButterworth();
+            } break;
+            case 2:
+            {
+                updateGUIChebyshevI();
+            } break;
+
+            case 3:
+            {
+                updateGUIChebyshevII();
+            } break;
+        }
         //[/UserComboBoxCode_type_box]
     }
     else if (comboBoxThatHasChanged == shape_box.get())
@@ -1516,6 +1584,12 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
         //[UserComboBoxCode_shape_box] -- add your combo box handling code here..
         design_shape = comboBoxThatHasChanged->getSelectedId();
         //[/UserComboBoxCode_shape_box]
+    }
+    else if (comboBoxThatHasChanged == order_box.get())
+    {
+        //[UserComboBoxCode_order_box] -- add your combo box handling code here..
+        design_filters_to_activate = comboBoxThatHasChanged->getSelectedId();
+        //[/UserComboBoxCode_order_box]
     }
 
     //[UsercomboBoxChanged_Post]
@@ -1568,7 +1642,7 @@ void PluginEditor::updateReferenceFrequencies()
             phi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1)); // Linear spectrum
         else
             phi = exp(n1 + (n2 * (static_cast<double>(i) / (static_cast<double>(GRAPHS_QUALITY - 1))))); // Log spectrum
-        
+
         if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
             referenceFrequencies.push_back(phi);
     }
@@ -1619,24 +1693,135 @@ void PluginEditor::formatQualityInput(double quality, juce::Label *label)
     design_quality = quality;
 }
 
-void PluginEditor::formatGainInput(double gain, juce::Label *label)
+void PluginEditor::formatRippleInput(double ripple, juce::Label *label)
 {
-    if (gain < DESIGN_GAIN_FLOOR)
+    if (ripple < RIPPLE_FLOOR)
     {
-        gain = DESIGN_GAIN_FLOOR;
+        ripple = RIPPLE_FLOOR;
     }
-    else if (gain > DESIGN_GAIN_CEILING)
+    else if (ripple > RIPPLE_CEILING)
     {
-        gain = DESIGN_GAIN_CEILING;
+        ripple = RIPPLE_CEILING;
     }
-    gain = std::round(gain * 10) / 10;
-    label->setText(juce::String(gain) + " dB", juce::dontSendNotification);
-    design_gain = gain;
+    ripple = std::round(ripple * 10) / 10;
+    label->setText(juce::String(ripple) + " dB", juce::dontSendNotification);
+    design_ripple = ripple;
+}
+
+void PluginEditor::formatAttenuationInput(double attenuation, juce::Label *label)
+{
+    if (attenuation < ATTENUATION_FLOOR)
+    {
+        attenuation = ATTENUATION_FLOOR;
+    }
+    else if (attenuation > ATTENUATION_CEILING)
+    {
+        attenuation = ATTENUATION_CEILING;
+    }
+    attenuation = std::round(attenuation * 10) / 10;
+    label->setText(juce::String(attenuation) + " dB", juce::dontSendNotification);
+    design_attenuation = attenuation;
+}
+
+void PluginEditor::updateGUIButterworth()
+{
+    quality_label->setVisible(true);
+    ripple_label->setVisible(false);
+    attenuation_label->setVisible(false);
+
+    text_label->setText("QUALITY", juce::dontSendNotification);
+}
+
+void PluginEditor::updateGUIChebyshevI()
+{
+    quality_label->setVisible(false);
+    ripple_label->setVisible(true);
+    attenuation_label->setVisible(false);
+
+    text_label->setText("RIPPLE", juce::dontSendNotification);
+}
+
+void PluginEditor::updateGUIChebyshevII()
+{
+    quality_label->setVisible(false);
+    ripple_label->setVisible(false);
+    attenuation_label->setVisible(true);
+
+    text_label->setText("ATTENUATION", juce::dontSendNotification);
 }
 
 void PluginEditor::filterDesignCalculation()
 {
+    processor.setFilterOrder(design_filters_to_activate);
 
+    const double twoPi = MathConstants<double>::twoPi;
+    const double Pi = MathConstants<double>::twoPi * 0.5;
+    const double sampleRate = processor.getSampleRate();
+    const double order = design_filters_to_activate * 2;
+
+    switch (design_type)
+    {
+        case 1:
+        { // Butterworth
+            switch (design_shape)
+            {
+                case 1: // Butterworth LOWPASS
+                {
+//                    double omega = twoPi * (design_frequency / sampleRate);
+//                    double T = 1.0 / sampleRate;
+//                    std::vector<std::complex<double>> digitalPoles;
+//
+//                    for (int i = 0; i < design_filters_to_activate; ++i)
+//                    {
+//                        double angle = ((2.0 * i + 1.0) * Pi) / (2.0 * order);
+//                        std::complex<double> analogPole = omega * std::polar(1.0, angle);
+//                        std::complex<double> digitalPole = (1.0 + analogPole * (T * 0.5)) / (1.0 - analogPole * (T * 0.5));
+//                        digitalPoles.push_back(digitalPole);
+//
+//                        DBG(std::abs(analogPole));
+//                        DBG(std::arg(analogPole));
+//                    }
+                } break;
+
+                case 2: // Butterworth HIGHPASS
+                {
+
+                } break;
+            }
+        } break;
+
+        case 2:
+        { // Chebyshev I
+            switch (design_shape)
+            {
+                case 1: // Chebyshev I LOWPASS
+                {
+
+                } break;
+
+                case 2: // Chebyshev I HIGHPASS
+                {
+
+                } break;
+            }
+        } break;
+
+        case 3:
+        { // Chebyshev II
+            switch (design_shape)
+            {
+                case 1: // Chebyshev II LOWPASS
+                {
+
+                } break;
+
+                case 2: // Chebyshev II HIGHPASS
+                {
+
+                } break;
+            }
+        } break;
+    }
 }
 //[/MiscUserCode]
 
@@ -1688,17 +1873,11 @@ BEGIN_JUCER_METADATA
     <TEXT pos="1116 475 40 20" fill="solid: ff333333" hasStroke="0" text="GAIN"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <TEXT pos="1085 178 81 20" fill="solid: ff333333" hasStroke="0" text="FREQUENCY"
-          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
-          justification="33" typefaceStyle="SemiBold"/>
-    <TEXT pos="1085 228 81 20" fill="solid: ff333333" hasStroke="0" text="QUALITY"
-          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
-          justification="33" typefaceStyle="SemiBold"/>
-    <TEXT pos="1085 278 81 20" fill="solid: ff333333" hasStroke="0" text="GAIN"
-          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
-          justification="33" typefaceStyle="SemiBold"/>
     <ROUNDRECT pos="310 415 185 260" cornerSize="14.5" fill="solid: 11b1b1b1"
                hasStroke="1" stroke="0.5, mitered, butt" strokeColour="solid: ff383838"/>
+    <TEXT pos="360 419 90 20" fill="solid: ff333333" hasStroke="0" text="SETUP SHORTCUTS"
+          fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
+          justification="36" typefaceStyle="SemiBold"/>
   </BACKGROUND>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
               virtualName="" explicitFocusOrder="0" pos="1010 520 70 30" bgColOff="ff505050"
@@ -1975,28 +2154,22 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="Type" id="5a16af79e3a09d2b" memberName="type_box" virtualName=""
-            explicitFocusOrder="0" pos="1010 65 140 25" editable="0" layout="33"
-            items="butterworth&#10;chebyshev&#10;elliptic&#10;bessel&#10;biquad&#10;comb"
-            textWhenNonSelected="-" textWhenNoItems="(no choices)"/>
-  <COMBOBOX name="Shape" id="fab26cb579c24549" memberName="shape_box" virtualName=""
-            explicitFocusOrder="0" pos="1010 120 140 25" editable="0" layout="33"
-            items="lowpass&#10;highpass&#10;bandpass&#10;bandstop" textWhenNonSelected="-"
+  <COMBOBOX name="Design type" id="5a16af79e3a09d2b" memberName="type_box"
+            virtualName="" explicitFocusOrder="0" pos="1010 65 140 25" editable="0"
+            layout="33" items="BUTTERWORTH&#10;CHEBYSHEV I&#10;CHEBYSHEV II"
+            textWhenNonSelected="TYPE" textWhenNoItems="(no choices)"/>
+  <COMBOBOX name="Design shape" id="fab26cb579c24549" memberName="shape_box"
+            virtualName="" explicitFocusOrder="0" pos="1010 175 140 25" editable="0"
+            layout="33" items="LOWPASS&#10;HIGHPASS" textWhenNonSelected="SHAPE"
             textWhenNoItems="(no choices)"/>
   <LABEL name="Frequency" id="ddaa2a20ba2e76a5" memberName="frequency_label"
-         virtualName="" explicitFocusOrder="0" pos="1010 175 60 25" bkgCol="ffa6acaf"
+         virtualName="" explicitFocusOrder="0" pos="1010 230 60 25" bkgCol="ffa6acaf"
          textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
          editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
          justification="33"/>
   <LABEL name="Quality" id="c37d7b01efb8bd68" memberName="quality_label"
-         virtualName="" explicitFocusOrder="0" pos="1010 225 60 25" bkgCol="ffa6acaf"
-         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
-         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
-         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
-         justification="33"/>
-  <LABEL name="Gain" id="b9d8ae0f9bd417f8" memberName="gain_label" virtualName=""
-         explicitFocusOrder="0" pos="1010 275 60 25" bkgCol="ffa6acaf"
+         virtualName="" explicitFocusOrder="0" pos="1010 280 60 25" bkgCol="ffa6acaf"
          textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
          editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
@@ -2006,11 +2179,11 @@ BEGIN_JUCER_METADATA
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Multiply phases" id="fd9508a1dc4c09ae" memberName="multiply_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="360 490 90 30" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="360 505 90 30" bgColOff="ff505050"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Divide phases" id="a62537b9345044f3" memberName="divide_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="360 540 90 30" bgColOff="ff727272"
+              virtualName="" explicitFocusOrder="0" pos="360 555 90 30" bgColOff="ff727272"
               bgColOn="ff727272" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Swap poles/zeros" id="938b23da9ff326b0" memberName="swap_button"
@@ -2018,13 +2191,41 @@ BEGIN_JUCER_METADATA
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn on all the elements" id="e4b8377926241c51" memberName="turn_on_button"
-              virtualName="" explicitFocusOrder="0" pos="331 435 60 20" bgColOff="ff03c03c"
+              virtualName="" explicitFocusOrder="0" pos="331 450 60 20" bgColOff="ff03c03c"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn off all the elements" id="f6c36c1c53a4a06d" memberName="turn_off_button"
-              virtualName="" explicitFocusOrder="0" pos="415 435 60 20" bgColOff="ffe86b5c"
+              virtualName="" explicitFocusOrder="0" pos="415 450 60 20" bgColOff="ffe86b5c"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
+  <COMBOBOX name="Design order" id="a7c23e76d01914d5" memberName="order_box"
+            virtualName="" explicitFocusOrder="0" pos="1010 120 140 25" editable="0"
+            layout="33" items="2&#10;4&#10;6&#10;8&#10;10&#10;12&#10;14&#10;16"
+            textWhenNonSelected="ORDER" textWhenNoItems="(no choices)"/>
+  <LABEL name="Design frequency" id="bc37557b2c8cc2ce" memberName="design_frequency_label"
+         virtualName="" explicitFocusOrder="0" pos="1078 234 81 20" textCol="ff333333"
+         edTextCol="ff000000" edBkgCol="0" labelText="FREQUENCY&#10;"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33" typefaceStyle="SemiBold"/>
+  <LABEL name="Parameter" id="989d864d4447b618" memberName="text_label"
+         virtualName="" explicitFocusOrder="0" pos="1078 285 81 20" textCol="ff333333"
+         edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"
+         typefaceStyle="SemiBold"/>
+  <LABEL name="Ripple" id="64b55e9d3286538b" memberName="ripple_label"
+         virtualName="" explicitFocusOrder="0" pos="1010 280 60 25" bkgCol="ffa6acaf"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
+  <LABEL name="Attenuation" id="c27e7a446ca2a270" memberName="attenuation_label"
+         virtualName="" explicitFocusOrder="0" pos="1010 280 60 25" bkgCol="ffa6acaf"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

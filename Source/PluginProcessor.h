@@ -51,6 +51,8 @@ public:
     void swapElements ();
     
     void turnOnOffAllElements(bool option);
+    
+    void setFilterOrder(int order);
 
 private:
     void parameterChanged(const String& parameterID, float newValue) override;
