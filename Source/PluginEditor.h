@@ -42,9 +42,9 @@ typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
                                                                     //[/Comments]
 */
 class PluginEditor  : public juce::AudioProcessorEditor,
+                      public juce::Label::Listener,
                       public juce::Button::Listener,
                       public juce::Slider::Listener,
-                      public juce::Label::Listener,
                       public juce::ComboBox::Listener
 {
 public:
@@ -74,9 +74,9 @@ public:
 
     void paint (juce::Graphics& g) override;
     void resized() override;
+    void labelTextChanged (juce::Label* labelThatHasChanged) override;
     void buttonClicked (juce::Button* buttonThatWasClicked) override;
     void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
-    void labelTextChanged (juce::Label* labelThatHasChanged) override;
     void comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged) override;
 
 
@@ -132,10 +132,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    std::unique_ptr<juce::Label> ripple_label;
+    std::unique_ptr<juce::Label> attenuation_label;
     std::unique_ptr<juce::TextButton> reset_button;
-    std::unique_ptr<GraphicResponse> frequency_response;
+    std::unique_ptr<FrequencyResponse> frequency_response;
     std::unique_ptr<juce::Label> freq_response_label;
-    std::unique_ptr<GraphicResponse> phase_response;
+    std::unique_ptr<PhaseResponse> phase_response;
     std::unique_ptr<juce::Label> ph_response_label;
     std::unique_ptr<GaussianPlane> gaussian_plane;
     std::unique_ptr<juce::Slider> m1_slider;
@@ -207,8 +209,6 @@ private:
     std::unique_ptr<juce::ComboBox> order_box;
     std::unique_ptr<juce::Label> design_frequency_label;
     std::unique_ptr<juce::Label> text_label;
-    std::unique_ptr<juce::Label> ripple_label;
-    std::unique_ptr<juce::Label> attenuation_label;
 
 
     //==============================================================================

@@ -63,6 +63,34 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     activeAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
     //[/Constructor_pre]
 
+    ripple_label.reset (new juce::Label ("Ripple",
+                                         juce::String()));
+    addAndMakeVisible (ripple_label.get());
+    ripple_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    ripple_label->setJustificationType (juce::Justification::centredLeft);
+    ripple_label->setEditable (true, true, false);
+    ripple_label->setColour (juce::Label::backgroundColourId, juce::Colour (0xffa6acaf));
+    ripple_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    ripple_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    ripple_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
+    ripple_label->addListener (this);
+
+    ripple_label->setBounds (1010, 280, 60, 25);
+
+    attenuation_label.reset (new juce::Label ("Attenuation",
+                                              juce::String()));
+    addAndMakeVisible (attenuation_label.get());
+    attenuation_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    attenuation_label->setJustificationType (juce::Justification::centredLeft);
+    attenuation_label->setEditable (true, true, false);
+    attenuation_label->setColour (juce::Label::backgroundColourId, juce::Colour (0xffa6acaf));
+    attenuation_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    attenuation_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    attenuation_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
+    attenuation_label->addListener (this);
+
+    attenuation_label->setBounds (1010, 280, 60, 25);
+
     reset_button.reset (new juce::TextButton ("Reset"));
     addAndMakeVisible (reset_button.get());
     reset_button->setButtonText (juce::String());
@@ -72,7 +100,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     reset_button->setBounds (1010, 520, 70, 30);
 
-    frequency_response.reset (new GraphicResponse (magnitudes, referenceFrequencies, processor.getSampleRate()));
+    frequency_response.reset (new FrequencyResponse (magnitudes, referenceFrequencies, processor.getSampleRate()));
     addAndMakeVisible (frequency_response.get());
     frequency_response->setName ("frequencyResponse");
 
@@ -90,7 +118,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     freq_response_label->setBounds (665, 310, 140, 24);
 
-    phase_response.reset (new GraphicResponse (phases, referenceFrequencies, processor.getSampleRate()));
+    phase_response.reset (new PhaseResponse (phases, referenceFrequencies, processor.getSampleRate()));
     addAndMakeVisible (phase_response.get());
     phase_response->setName ("phaseResponse");
 
@@ -822,34 +850,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     text_label->setBounds (1078, 285, 81, 20);
 
-    ripple_label.reset (new juce::Label ("Ripple",
-                                         juce::String()));
-    addAndMakeVisible (ripple_label.get());
-    ripple_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    ripple_label->setJustificationType (juce::Justification::centredLeft);
-    ripple_label->setEditable (true, true, false);
-    ripple_label->setColour (juce::Label::backgroundColourId, juce::Colour (0xffa6acaf));
-    ripple_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    ripple_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    ripple_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
-    ripple_label->addListener (this);
-
-    ripple_label->setBounds (1010, 280, 60, 25);
-
-    attenuation_label.reset (new juce::Label ("Attenuation",
-                                              juce::String()));
-    addAndMakeVisible (attenuation_label.get());
-    attenuation_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    attenuation_label->setJustificationType (juce::Justification::centredLeft);
-    attenuation_label->setEditable (true, true, false);
-    attenuation_label->setColour (juce::Label::backgroundColourId, juce::Colour (0xffa6acaf));
-    attenuation_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    attenuation_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    attenuation_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
-    attenuation_label->addListener (this);
-
-    attenuation_label->setBounds (1010, 280, 60, 25);
-
 
     //[UserPreSize]
     magnitudesAttachments[0].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
@@ -982,6 +982,8 @@ PluginEditor::~PluginEditor()
     bypassAttachment.reset();
     //[/Destructor_pre]
 
+    ripple_label = nullptr;
+    attenuation_label = nullptr;
     reset_button = nullptr;
     frequency_response = nullptr;
     freq_response_label = nullptr;
@@ -1057,8 +1059,6 @@ PluginEditor::~PluginEditor()
     order_box = nullptr;
     design_frequency_label = nullptr;
     text_label = nullptr;
-    ripple_label = nullptr;
-    attenuation_label = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1290,6 +1290,98 @@ void PluginEditor::resized()
     //[/UserResized]
 }
 
+void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
+{
+    //[UserlabelTextChanged_Pre]
+    const double sampleRate = processor.getSampleRate();
+    int newFrequency = labelThatHasChanged->getText().getIntValue();
+    //[/UserlabelTextChanged_Pre]
+
+    if (labelThatHasChanged == ripple_label.get())
+    {
+        //[UserLabelCode_ripple_label] -- add your label text handling code here..
+        formatRippleInput(labelThatHasChanged->getText().getDoubleValue(), ripple_label.get());
+        //[/UserLabelCode_ripple_label]
+    }
+    else if (labelThatHasChanged == attenuation_label.get())
+    {
+        //[UserLabelCode_attenuation_label] -- add your label text handling code here..
+        formatAttenuationInput(labelThatHasChanged->getText().getDoubleValue(), attenuation_label.get());
+        //[/UserLabelCode_attenuation_label]
+    }
+    else if (labelThatHasChanged == p1_freq.get())
+    {
+        //[UserLabelCode_p1_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p1_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
+        //[/UserLabelCode_p1_freq]
+    }
+    else if (labelThatHasChanged == p2_freq.get())
+    {
+        //[UserLabelCode_p2_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p2_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p2_slider.get(), p2_freq.get(), sampleRate);
+        //[/UserLabelCode_p2_freq]
+    }
+    else if (labelThatHasChanged == p3_freq.get())
+    {
+        //[UserLabelCode_p3_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p3_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p3_slider.get(), p3_freq.get(), sampleRate);
+        //[/UserLabelCode_p3_freq]
+    }
+    else if (labelThatHasChanged == p4_freq.get())
+    {
+        //[UserLabelCode_p4_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p4_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p4_slider.get(), p4_freq.get(), sampleRate);
+        //[/UserLabelCode_p4_freq]
+    }
+    else if (labelThatHasChanged == p5_freq.get())
+    {
+        //[UserLabelCode_p5_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p5_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p5_slider.get(), p5_freq.get(), sampleRate);
+        //[/UserLabelCode_p5_freq]
+    }
+    else if (labelThatHasChanged == p6_freq.get())
+    {
+        //[UserLabelCode_p6_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p6_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
+        //[/UserLabelCode_p6_freq]
+    }
+    else if (labelThatHasChanged == p7_freq.get())
+    {
+        //[UserLabelCode_p7_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p7_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
+        //[/UserLabelCode_p7_freq]
+    }
+    else if (labelThatHasChanged == p8_freq.get())
+    {
+        //[UserLabelCode_p8_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p8_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
+        //[/UserLabelCode_p8_freq]
+    }
+    else if (labelThatHasChanged == frequency_label.get())
+    {
+        //[UserLabelCode_frequency_label] -- add your label text handling code here..
+        formatFrequencyInput(newFrequency, frequency_label.get(), sampleRate);
+        //[/UserLabelCode_frequency_label]
+    }
+    else if (labelThatHasChanged == quality_label.get())
+    {
+        //[UserLabelCode_quality_label] -- add your label text handling code here..
+        formatQualityInput(labelThatHasChanged->getText().getDoubleValue(), quality_label.get());
+        //[/UserLabelCode_quality_label]
+    }
+
+    //[UserlabelTextChanged_Post]
+    //[/UserlabelTextChanged_Post]
+}
+
 void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
@@ -1458,98 +1550,6 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
 
     //[UsersliderValueChanged_Post]
     //[/UsersliderValueChanged_Post]
-}
-
-void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
-{
-    //[UserlabelTextChanged_Pre]
-    const double sampleRate = processor.getSampleRate();
-    int newFrequency = labelThatHasChanged->getText().getIntValue();
-    //[/UserlabelTextChanged_Pre]
-
-    if (labelThatHasChanged == p1_freq.get())
-    {
-        //[UserLabelCode_p1_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p1_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
-        //[/UserLabelCode_p1_freq]
-    }
-    else if (labelThatHasChanged == p2_freq.get())
-    {
-        //[UserLabelCode_p2_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p2_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p2_slider.get(), p2_freq.get(), sampleRate);
-        //[/UserLabelCode_p2_freq]
-    }
-    else if (labelThatHasChanged == p3_freq.get())
-    {
-        //[UserLabelCode_p3_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p3_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p3_slider.get(), p3_freq.get(), sampleRate);
-        //[/UserLabelCode_p3_freq]
-    }
-    else if (labelThatHasChanged == p4_freq.get())
-    {
-        //[UserLabelCode_p4_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p4_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p4_slider.get(), p4_freq.get(), sampleRate);
-        //[/UserLabelCode_p4_freq]
-    }
-    else if (labelThatHasChanged == p5_freq.get())
-    {
-        //[UserLabelCode_p5_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p5_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p5_slider.get(), p5_freq.get(), sampleRate);
-        //[/UserLabelCode_p5_freq]
-    }
-    else if (labelThatHasChanged == p6_freq.get())
-    {
-        //[UserLabelCode_p6_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p6_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
-        //[/UserLabelCode_p6_freq]
-    }
-    else if (labelThatHasChanged == p7_freq.get())
-    {
-        //[UserLabelCode_p7_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p7_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
-        //[/UserLabelCode_p7_freq]
-    }
-    else if (labelThatHasChanged == p8_freq.get())
-    {
-        //[UserLabelCode_p8_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p8_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
-        //[/UserLabelCode_p8_freq]
-    }
-    else if (labelThatHasChanged == frequency_label.get())
-    {
-        //[UserLabelCode_frequency_label] -- add your label text handling code here..
-        formatFrequencyInput(newFrequency, frequency_label.get(), sampleRate);
-        //[/UserLabelCode_frequency_label]
-    }
-    else if (labelThatHasChanged == quality_label.get())
-    {
-        //[UserLabelCode_quality_label] -- add your label text handling code here..
-        formatQualityInput(labelThatHasChanged->getText().getDoubleValue(), quality_label.get());
-        //[/UserLabelCode_quality_label]
-    }
-    else if (labelThatHasChanged == ripple_label.get())
-    {
-        //[UserLabelCode_ripple_label] -- add your label text handling code here..
-        formatRippleInput(labelThatHasChanged->getText().getDoubleValue(), ripple_label.get());
-        //[/UserLabelCode_ripple_label]
-    }
-    else if (labelThatHasChanged == attenuation_label.get())
-    {
-        //[UserLabelCode_attenuation_label] -- add your label text handling code here..
-        formatAttenuationInput(labelThatHasChanged->getText().getDoubleValue(), attenuation_label.get());
-        //[/UserLabelCode_attenuation_label]
-    }
-
-    //[UserlabelTextChanged_Post]
-    //[/UserlabelTextChanged_Post]
 }
 
 void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
@@ -1879,12 +1879,24 @@ BEGIN_JUCER_METADATA
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
   </BACKGROUND>
+  <LABEL name="Ripple" id="64b55e9d3286538b" memberName="ripple_label"
+         virtualName="" explicitFocusOrder="0" pos="1010 280 60 25" bkgCol="ffa6acaf"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
+  <LABEL name="Attenuation" id="c27e7a446ca2a270" memberName="attenuation_label"
+         virtualName="" explicitFocusOrder="0" pos="1010 280 60 25" bkgCol="ffa6acaf"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
               virtualName="" explicitFocusOrder="0" pos="1010 520 70 30" bgColOff="ff505050"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
-                    virtualName="" explicitFocusOrder="0" pos="520 35 430 270" class="GraphicResponse"
+                    virtualName="" explicitFocusOrder="0" pos="520 35 430 270" class="FrequencyResponse"
                     params="magnitudes, referenceFrequencies, processor.getSampleRate()"/>
   <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
          virtualName="" explicitFocusOrder="0" pos="665 310 140 24" textCol="ff333333"
@@ -1893,7 +1905,7 @@ BEGIN_JUCER_METADATA
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <GENERICCOMPONENT name="phaseResponse" id="c9a48273dec25832" memberName="phase_response"
-                    virtualName="" explicitFocusOrder="0" pos="540 415 390 260" class="GraphicResponse"
+                    virtualName="" explicitFocusOrder="0" pos="540 415 390 260" class="PhaseResponse"
                     params="phases, referenceFrequencies, processor.getSampleRate()"/>
   <LABEL name="Phase response" id="6d08c4e421703ed5" memberName="ph_response_label"
          virtualName="" explicitFocusOrder="0" pos="675 680 110 24" textCol="ff333333"
@@ -2214,18 +2226,6 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"
          typefaceStyle="SemiBold"/>
-  <LABEL name="Ripple" id="64b55e9d3286538b" memberName="ripple_label"
-         virtualName="" explicitFocusOrder="0" pos="1010 280 60 25" bkgCol="ffa6acaf"
-         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
-         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
-         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
-         justification="33"/>
-  <LABEL name="Attenuation" id="c27e7a446ca2a270" memberName="attenuation_label"
-         virtualName="" explicitFocusOrder="0" pos="1010 280 60 25" bkgCol="ffa6acaf"
-         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
-         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
-         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
-         justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
