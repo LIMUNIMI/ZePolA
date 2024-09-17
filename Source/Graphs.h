@@ -1,8 +1,9 @@
 #pragma once
 #include <JuceHeader.h>
 
-#define GRAPHS_BACKGROUND                   0xfffdfefe
-#define GRID_COLOUR                         0xff252525
+#define GRAPHS_BACKGROUND                   0x45979a9a
+#define GRID_COLOUR                         0x28979a9a
+#define FREQUENCIES_COLOUR                  0xff797d7f
 #define ZEROS_COLOUR                        0xff9b59b6
 #define CONJ_ZEROS_COLOUR                   0x709b59b6
 #define POLES_COLOUR                        0xffffbc2e
@@ -23,7 +24,7 @@ public:
     void paint (juce::Graphics& g) override
     {
         g.setColour(juce::Colour(GRAPHS_BACKGROUND));
-        float cornerSize = 8.0f;
+        float cornerSize = 6.0f;
         auto bounds = getLocalBounds().toFloat();
         g.fillRoundedRectangle(bounds, cornerSize);
         drawResponse(g);
@@ -43,23 +44,26 @@ private:
     
     double sampleRate;
     
-    
-    
     void drawResponse (juce::Graphics& g)
     {
         auto width = getWidth();
         auto height = getHeight();
     
-        
         juce::Path responsePath;
         responsePath.startNewSubPath(0, height - static_cast<float>(values[0]) * height);
-        g.drawVerticalLine(0, 0, height);
+        
+        g.setColour(juce::Colour(GRID_COLOUR));
+        g.drawVerticalLine(0, 0, height); // linea degli 0 Hz in lin e 10 hz in log
+        
+        g.setFont(juce::Font("Gill Sans", 10.0f, juce::Font::plain));
+        g.setColour(juce::Colour(FREQUENCIES_COLOUR));
+        g.drawText(formatFrequency(referenceFrequencies[0] * sampleRate), 0, height * 0.5, 20, 20, juce::Justification::centred);
         
         long int valuesSize = values.size();
         float x;
         float y;
         int k = 1;
-        
+    
         for (int i = 1; i < valuesSize; ++ i)
         {
             g.setColour(juce::Colour(LINE_COLOUR));
@@ -70,12 +74,27 @@ private:
             if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
             {
                 g.setColour(juce::Colour(GRID_COLOUR));
-                g.drawVerticalLine((int)x, 0, (float)height);
-                k ++;
+                g.drawVerticalLine(x, 0, height);
+                g.setColour(juce::Colour(FREQUENCIES_COLOUR));
+                g.drawText(formatFrequency(referenceFrequencies[k] * sampleRate), x - 10, height * 0.5, 20, 20, juce::Justification::centred);
+                ++ k;
             }
         }
+        g.strokePath(responsePath, juce::PathStrokeType(1.5f));
         
-        g.strokePath(responsePath, juce::PathStrokeType(1.0f));
+        g.setColour(juce::Colour(GRID_COLOUR));
+        g.drawVerticalLine(x, 0, height); // linea di nyquist
+        g.setColour(juce::Colour(FREQUENCIES_COLOUR));
+        g.drawText(formatFrequency(sampleRate * 0.5), x - 20, height * 0.5, 20, 20, juce::Justification::centred);
+    }
+    
+    juce::String formatFrequency (const double frequency)
+    {
+        if (frequency >= 10000)
+        {
+            return juce::String(juce::roundToInt(frequency / 1000)) + "k";
+        }
+        return juce::String(juce::roundToInt(frequency));
     }
 };
 
@@ -91,7 +110,7 @@ public:
     void paint(juce::Graphics& g) override
     {
         g.setColour(juce::Colour(GRAPHS_BACKGROUND));
-        float cornerSize = 8.0f;
+        float cornerSize = 6.0f;
         auto bounds = getLocalBounds().toFloat();
         g.fillRoundedRectangle(bounds, cornerSize);
         

@@ -82,7 +82,7 @@ private:
     std::vector<double> phases;
     std::vector<double> referenceFrequencies;
 
-    bool linLog = true;
+    bool linLog = false;
 
     int design_type;
     int design_shape;

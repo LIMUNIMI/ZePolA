@@ -48,7 +48,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate());
         gaussian_plane->updateElements(processor.getFilterElementsChain());
     });
-
     getSpectrum();
     updateReferenceFrequencies();
 
@@ -892,6 +891,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
     updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
     updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
+    
+    linLog = false;
+    linLog_switch->setToggleState(false, juce::dontSendNotification);
     //[/UserPreSize]
 
     setSize (1200, 750);
@@ -1566,7 +1568,7 @@ void PluginEditor::updateReferenceFrequencies()
             phi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1)); // Linear spectrum
         else
             phi = exp(n1 + (n2 * (static_cast<double>(i) / (static_cast<double>(GRAPHS_QUALITY - 1))))); // Log spectrum
-
+        
         if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
             referenceFrequencies.push_back(phi);
     }
