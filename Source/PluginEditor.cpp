@@ -20,6 +20,7 @@
 //[Headers] You can add your own extra header files here...
 #include "Parameters.h"
 #include <cmath>
+#include <JuceHeader.h>
 
 #define GRAPHS_QUALITY                          2048
 #define NUMBER_OF_REFERENCE_FREQUENCIES         8
@@ -33,6 +34,9 @@
 
 #define ATTENUATION_FLOOR                       20.0
 #define ATTENUATION_CEILING                     100.0
+
+#define MINIMUM_BUTTERWORTH_ORDER               2
+#define MAXIMUM_BUTTERWORTH_ORDER               8
 
 //[/Headers]
 
@@ -814,14 +818,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     order_box->setJustificationType (juce::Justification::centredLeft);
     order_box->setTextWhenNothingSelected (TRANS ("ORDER"));
     order_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
-    order_box->addItem (TRANS ("2"), 1);
-    order_box->addItem (TRANS ("4"), 2);
-    order_box->addItem (TRANS ("6"), 3);
-    order_box->addItem (TRANS ("8"), 4);
-    order_box->addItem (TRANS ("10"), 5);
-    order_box->addItem (TRANS ("12"), 6);
-    order_box->addItem (TRANS ("14"), 7);
-    order_box->addItem (TRANS ("16"), 8);
     order_box->addListener (this);
 
     order_box->setBounds (1010, 120, 140, 25);
@@ -1725,11 +1721,17 @@ void PluginEditor::formatAttenuationInput(double attenuation, juce::Label *label
 
 void PluginEditor::updateGUIButterworth()
 {
-    quality_label->setVisible(true);
+    quality_label->setVisible(false);
     ripple_label->setVisible(false);
     attenuation_label->setVisible(false);
 
-    text_label->setText("QUALITY", juce::dontSendNotification);
+    order_box->clear();
+    for (int i = MINIMUM_BUTTERWORTH_ORDER; i <= MAXIMUM_BUTTERWORTH_ORDER; i += 2)
+    {
+        int attenuation = 6 * i;
+        juce::String stringToVisualize = juce::String(i) + "  (-" + juce::String(attenuation) + " dB / octave)";
+        order_box->addItem(stringToVisualize, i);
+    }
 }
 
 void PluginEditor::updateGUIChebyshevI()
@@ -1737,6 +1739,8 @@ void PluginEditor::updateGUIChebyshevI()
     quality_label->setVisible(false);
     ripple_label->setVisible(true);
     attenuation_label->setVisible(false);
+
+    order_box->clear();
 
     text_label->setText("RIPPLE", juce::dontSendNotification);
 }
@@ -1747,17 +1751,31 @@ void PluginEditor::updateGUIChebyshevII()
     ripple_label->setVisible(false);
     attenuation_label->setVisible(true);
 
+    order_box->clear();
+
     text_label->setText("ATTENUATION", juce::dontSendNotification);
+}
+
+void PluginEditor::coefficientsNormalization (double& c0, double& c1, double& c2)
+{
+    c1 /= c0;
+    c2 /= c0;
+    c0 = 1.0;
+}
+
+void PluginEditor::fromCoefficientsToMagnitudeAndPhase (double& mg, double& ph, double c1, double c2)
+{
+    mg = sqrt(c2);
+    ph = (1 / MathConstants<double>::pi) * acos(-c1 / (2 * mg));
 }
 
 void PluginEditor::filterDesignCalculation()
 {
-    processor.setFilterOrder(design_filters_to_activate);
-
-    const double twoPi = MathConstants<double>::twoPi;
-    const double Pi = MathConstants<double>::twoPi * 0.5;
     const double sampleRate = processor.getSampleRate();
-    const double order = design_filters_to_activate * 2;
+    const double order = design_filters_to_activate;
+
+    // Reset della catena di filtri
+    processor.resetFilter();
 
     switch (design_type)
     {
@@ -1767,20 +1785,40 @@ void PluginEditor::filterDesignCalculation()
             {
                 case 1: // Butterworth LOWPASS
                 {
-//                    double omega = twoPi * (design_frequency / sampleRate);
-//                    double T = 1.0 / sampleRate;
-//                    std::vector<std::complex<double>> digitalPoles;
-//
-//                    for (int i = 0; i < design_filters_to_activate; ++i)
-//                    {
-//                        double angle = ((2.0 * i + 1.0) * Pi) / (2.0 * order);
-//                        std::complex<double> analogPole = omega * std::polar(1.0, angle);
-//                        std::complex<double> digitalPole = (1.0 + analogPole * (T * 0.5)) / (1.0 - analogPole * (T * 0.5));
-//                        digitalPoles.push_back(digitalPole);
-//
-//                        DBG(std::abs(analogPole));
-//                        DBG(std::arg(analogPole));
-//                    }
+                    auto iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
+                    double b0, b1, b2, a0, a1, a2;
+                    double magnitude, phase;
+                    int elementNr = 1;
+                    for (int i = 0; i < iirCoefficients.size(); ++i)
+                    {
+                        const auto& coeffs = iirCoefficients[i];
+
+                        // Coefficienti per FIR
+                        b0 = coeffs->coefficients[0];
+                        b1 = coeffs->coefficients[1];
+                        b2 = coeffs->coefficients[2];
+
+                        // Coefficienti per IIR
+                        a1 = coeffs->coefficients[3];
+                        a2 = coeffs->coefficients[4];
+
+                        coefficientsNormalization(b0, b1, b2); // Normalizzazione della parte FIR
+
+                        // I coefficienti IIR sono ritornati già normalizzati
+
+                        // Setup del filtro FIR
+                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
+                        processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
+
+                        ++ elementNr;
+
+                        // Set del filtro IIR
+                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
+                        processor.setFilter(magnitude, phase, FilterElement::POLE, elementNr);
+
+                        ++ elementNr;
+                    }
+
                 } break;
 
                 case 2: // Butterworth HIGHPASS
@@ -2212,8 +2250,7 @@ BEGIN_JUCER_METADATA
               radioGroupId="0"/>
   <COMBOBOX name="Design order" id="a7c23e76d01914d5" memberName="order_box"
             virtualName="" explicitFocusOrder="0" pos="1010 120 140 25" editable="0"
-            layout="33" items="2&#10;4&#10;6&#10;8&#10;10&#10;12&#10;14&#10;16"
-            textWhenNonSelected="ORDER" textWhenNoItems="(no choices)"/>
+            layout="33" items="" textWhenNonSelected="ORDER" textWhenNoItems="(no choices)"/>
   <LABEL name="Design frequency" id="bc37557b2c8cc2ce" memberName="design_frequency_label"
          virtualName="" explicitFocusOrder="0" pos="1078 234 81 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="FREQUENCY&#10;"

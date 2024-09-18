@@ -69,6 +69,9 @@ public:
     void updateGUIChebyshevI();
     void updateGUIChebyshevII();
 
+    void coefficientsNormalization(double& c0, double& c1, double& c2);
+    void fromCoefficientsToMagnitudeAndPhase(double& mg, double& ph, double c1, double c2);
+
     void filterDesignCalculation();
     //[/UserMethods]
 

@@ -99,6 +99,10 @@ public:
         for (int i = 1; i < valuesSize; ++i)
         {
             x = static_cast<float>(i) / valuesSize * width;
+            if (isnan(x))
+            {
+                x = 0.0;
+            }
             y = juce::jmap<float>(
                 20.0f * std::log10(juce::jmax(values[i], minValue)),
                 minDB, maxDB, height, 0.0f);

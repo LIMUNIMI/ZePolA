@@ -195,12 +195,12 @@ void PolesAndZerosEQAudioProcessor::turnOnOffAllElements(bool option)
         parameters.getParameter(ACTIVE_NAME + std::to_string(i))->setValueNotifyingHost(active);
 }
 
-void PolesAndZerosEQAudioProcessor::setFilterOrder(int filtersToActivate)
+void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr)
 {
-    for (int i = 1; i <= filtersToActivate; ++ i)
-    {
-        parameters.getParameter(ACTIVE_NAME + std::to_string(i))->setValueNotifyingHost(true);
-    }
+    parameters.getParameter(MAGNITUDE_NAME + std::to_string(elementNr))->setValueNotifyingHost(magnitude);
+    parameters.getParameter(PHASE_NAME + std::to_string(elementNr))->setValueNotifyingHost(phase);
+    parameters.getParameter(TYPE_NAME + std::to_string(elementNr))->setValueNotifyingHost(!type);
+    parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr))->setValueNotifyingHost(true);
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()

@@ -52,7 +52,7 @@ public:
     
     void turnOnOffAllElements(bool option);
     
-    void setFilterOrder(int order);
+    void setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr);
 
 private:
     void parameterChanged(const String& parameterID, float newValue) override;
