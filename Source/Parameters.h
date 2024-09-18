@@ -29,8 +29,8 @@
 // Plugin constants & ids
 
 #define GAIN_NAME                               "GAIN"
-#define GAIN_FLOOR                              -32.0f
-#define GAIN_CEILING                            32.0f
+#define GAIN_FLOOR                              -48.0f
+#define GAIN_CEILING                            48.0f
 #define GAIN_INTERVAL                           0.01f
 #define GAIN_DEFAULT                            0.0f
 #define SMOOTHING_TIME                          0.01f
