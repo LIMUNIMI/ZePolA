@@ -57,10 +57,10 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     getSpectrum();
     updateReferenceFrequencies();
 
-    magnitudesAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
-    phasesAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
-    typesAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
-    activeAttachments.reserve(NUMBER_OF_FILTER_ELEMENTS);
+    magnitudesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
+    phasesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
+    typesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
+    activeAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     //[/Constructor_pre]
 
     ripple_label.reset (new juce::Label ("Ripple",
@@ -104,7 +104,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (frequency_response.get());
     frequency_response->setName ("frequencyResponse");
 
-    frequency_response->setBounds (520, 35, 430, 270);
+    frequency_response->setBounds (520, 35, 430, 285);
 
     freq_response_label.reset (new juce::Label ("Frequency response",
                                                 TRANS ("SPECTRUM MAGNITUDE\n")));
@@ -116,7 +116,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     freq_response_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     freq_response_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    freq_response_label->setBounds (665, 310, 140, 24);
+    freq_response_label->setBounds (665, 325, 140, 24);
 
     phase_response.reset (new PhaseResponse (phases, referenceFrequencies, processor.getSampleRate()));
     addAndMakeVisible (phase_response.get());
@@ -406,7 +406,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     linLog_switch->setButtonText (juce::String());
     linLog_switch->addListener (this);
 
-    linLog_switch->setBounds (901, 312, 52, 21);
+    linLog_switch->setBounds (901, 327, 52, 21);
 
     m2_slider.reset (new juce::Slider ("Element 2 magnitude"));
     addAndMakeVisible (m2_slider.get());
@@ -1896,10 +1896,10 @@ BEGIN_JUCER_METADATA
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
-                    virtualName="" explicitFocusOrder="0" pos="520 35 430 270" class="FrequencyResponse"
+                    virtualName="" explicitFocusOrder="0" pos="520 35 430 285" class="FrequencyResponse"
                     params="magnitudes, referenceFrequencies, processor.getSampleRate()"/>
   <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
-         virtualName="" explicitFocusOrder="0" pos="665 310 140 24" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="665 325 140 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="SPECTRUM MAGNITUDE&#10;"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
@@ -2040,7 +2040,7 @@ BEGIN_JUCER_METADATA
           textBoxEditable="1" textBoxWidth="100" textBoxHeight="20" skewFactor="1.0"
           needsCallback="0"/>
   <TOGGLEBUTTON name="Linear / Logarithmic" id="269b07022e58d862" memberName="linLog_switch"
-                virtualName="" explicitFocusOrder="0" pos="901 312 52 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="901 327 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <SLIDER name="Element 2 magnitude" id="e1a6d1b02cc8ab80" memberName="m2_slider"
           virtualName="" explicitFocusOrder="0" pos="20 100 120 25" thumbcol="ffffffff"

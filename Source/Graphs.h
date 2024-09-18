@@ -3,7 +3,7 @@
 
 #define GRAPHS_BACKGROUND                   0x45979a9a
 #define GRID_COLOUR                         0x28979a9a
-#define FREQUENCIES_COLOUR                  0xff797d7f
+#define TEXT_COLOUR                         0xff797d7f
 #define ZEROS_COLOUR                        0xff9b59b6
 #define CONJ_ZEROS_COLOUR                   0x709b59b6
 #define POLES_COLOUR                        0xffffbc2e
@@ -61,53 +61,68 @@ class FrequencyResponse : public GraphicResponse
 public:
     using GraphicResponse::GraphicResponse;
     
-    void drawResponse (juce::Graphics& g) override
+    void drawResponse(juce::Graphics& g) override
     {
         auto width = getWidth();
         auto height = getHeight();
-        auto centreY = height * 0.5;
         const auto minValue = 1e-12;
-        
-        juce::Path responsePath;
-        responsePath.startNewSubPath(0, juce::jmap<float>(20.0 * std::log10(juce::jmax(values[0], minValue)), -60.0, 0.0, height, centreY));
-        
-        g.setColour(juce::Colour(GRID_COLOUR));
-        g.drawVerticalLine(0, 0, height); // linea degli 0 Hz in lin e 10 hz in log
+
+        const float minDB = -60.0f;
+        const float maxDB = 60.0f;
         
         g.setFont(juce::Font("Gill Sans", 10.0f, juce::Font::plain));
-        g.setColour(juce::Colour(FREQUENCIES_COLOUR));
-        g.drawText(formatFrequency(referenceFrequencies[0] * sampleRate), 0, height * 0.5, 20, 20, juce::Justification::centred);
-        
+
+        juce::Path responsePath;
+        g.setColour(juce::Colour(LINE_COLOUR));
+        responsePath.startNewSubPath(0, juce::jmap<float>(
+            20.0f * std::log10(juce::jmax(values[0], minValue)),
+            minDB, maxDB, height, 0.0f));
+
+        std::vector<float> dbLevels = { -50.0f, -30.0f, -20.0f, -10.0f, -5.0f, 0.0f, 5.0f, 10.0f, 20.0f, 30.0f, 50.0f };
+        g.setColour(juce::Colour(GRID_COLOUR));
+
+        for (float dbLevel : dbLevels)
+        {
+            float yPos = juce::jmap<float>(dbLevel, minDB, maxDB, height, 0.0f);
+            g.drawHorizontalLine(static_cast<int>(yPos), 0, width);
+
+            g.setColour(juce::Colour(TEXT_COLOUR));
+            g.drawText(juce::String(dbLevel) + " dB", 5, yPos - 10, 40, 20, juce::Justification::left);
+            g.setColour(juce::Colour(GRID_COLOUR));
+        }
+
         long int valuesSize = values.size();
         float x;
         float y;
         int k = 1;
-        
-        for (int i = 1; i < valuesSize; ++ i)
+
+        for (int i = 1; i < valuesSize; ++i)
         {
-            g.setColour(juce::Colour(LINE_COLOUR));
             x = static_cast<float>(i) / valuesSize * width;
-            
-            y = juce::jmap<float>(20.0 * std::log10(juce::jmax(values[i], minValue)), -60.0, 0.0, height, centreY);
-            
+            y = juce::jmap<float>(
+                20.0f * std::log10(juce::jmax(values[i], minValue)),
+                minDB, maxDB, height, 0.0f);
+
             responsePath.lineTo(x, y);
-            
+
             if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
             {
                 g.setColour(juce::Colour(GRID_COLOUR));
-                g.drawVerticalLine(x, 0, height);
-                g.setColour(juce::Colour(FREQUENCIES_COLOUR));
-                g.drawText(formatFrequency(referenceFrequencies[k] * sampleRate), x - 10, height * 0.5, 20, 20, juce::Justification::centred);
-                ++ k;
+                g.drawVerticalLine(static_cast<int>(x), 0, height);
+
+                g.setColour(juce::Colour(TEXT_COLOUR));
+                g.drawText(formatFrequency(referenceFrequencies[k] * sampleRate), x - 10, height * 0.5f, 20, 20, juce::Justification::centred);
+                ++k;
             }
         }
-        g.strokePath(responsePath, juce::PathStrokeType(1.5f));
         
-        g.setColour(juce::Colour(GRID_COLOUR));
-        g.drawVerticalLine(x, 0, height); // linea di nyquist
-        g.setColour(juce::Colour(FREQUENCIES_COLOUR));
-        g.drawText(formatFrequency(sampleRate * 0.5), x - 20, height * 0.5, 20, 20, juce::Justification::centred);
+        g.setColour(juce::Colour(LINE_COLOUR));
+        g.strokePath(responsePath, juce::PathStrokeType(1.5f));
+
+        g.setColour(juce::Colour(TEXT_COLOUR));
+        g.drawText(formatFrequency(sampleRate * 0.5), width - 20, height * 0.5f, 20, 20, juce::Justification::centred);
     }
+
 };
 
 class PhaseResponse : public GraphicResponse
@@ -121,18 +136,46 @@ public:
         auto height = getHeight();
         
         juce::Path responsePath;
+        g.setColour(juce::Colour(LINE_COLOUR));
         responsePath.startNewSubPath(0, height - static_cast<float>(values[0]) * height);
         
-        g.setColour(juce::Colour(GRID_COLOUR));
-        g.drawVerticalLine(0, 0, height); // linea degli 0 Hz in lin e 10 hz in log
+        juce::String piString(CharPointer_UTF8("π"));
+        std::vector<juce::String> referencePhases = {piString, "+0.5" + piString, "0", "-0.5" + piString, "-" + piString};
         
         g.setFont(juce::Font("Gill Sans", 10.0f, juce::Font::plain));
-        g.setColour(juce::Colour(FREQUENCIES_COLOUR));
-        g.drawText(formatFrequency(referenceFrequencies[0] * sampleRate), 0, height * 0.5, 20, 20, juce::Justification::centred);
+        
+        int i = 0;
+        float y = 0;
+        float offsetY = 0;
+        for (auto phase : referencePhases)
+        {
+            if (i != 0 and i != 4)
+            {
+                offsetY = -10;
+                g.setColour(juce::Colour(GRID_COLOUR));
+                g.drawHorizontalLine(y, 0, width);
+            }
+            else if (i == 0)
+            {
+                offsetY = 0;
+            }
+            else
+            {
+                offsetY = -20;
+            }
+                
+            g.setColour(juce::Colour(TEXT_COLOUR));
+            g.drawText(phase, 6, y + offsetY, 20, 20, juce::Justification::centredLeft);
+                
+            y += 0.25 * height;
+            ++ i;
+        }
+                
+        g.setColour(juce::Colour(TEXT_COLOUR));
         
         long int valuesSize = values.size();
         float x;
-        float y;
+        y = 0;
         int k = 1;
         
         for (int i = 1; i < valuesSize; ++ i)
@@ -146,16 +189,14 @@ public:
             {
                 g.setColour(juce::Colour(GRID_COLOUR));
                 g.drawVerticalLine(x, 0, height);
-                g.setColour(juce::Colour(FREQUENCIES_COLOUR));
+                g.setColour(juce::Colour(TEXT_COLOUR));
                 g.drawText(formatFrequency(referenceFrequencies[k] * sampleRate), x - 10, height * 0.5, 20, 20, juce::Justification::centred);
                 ++ k;
             }
         }
         g.strokePath(responsePath, juce::PathStrokeType(1.5f));
         
-        g.setColour(juce::Colour(GRID_COLOUR));
-        g.drawVerticalLine(x, 0, height); // linea di nyquist
-        g.setColour(juce::Colour(FREQUENCIES_COLOUR));
+        g.setColour(juce::Colour(TEXT_COLOUR));
         g.drawText(formatFrequency(sampleRate * 0.5), x - 20, height * 0.5, 20, 20, juce::Justification::centred);
     }
 };
