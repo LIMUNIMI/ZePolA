@@ -64,14 +64,14 @@ public:
 
     void coefficientsNormalization(double& c0, double& c1, double& c2);
     void fromCoefficientsToMagnitudeAndPhase(double& mg, double& ph, double c1, double c2);
-    
+
     void updateGUIButterworth();
     void updateGUIChebyshevI();
     void updateGUIChebyshevII();
 
     void updateGUILowpassShape();
     void updateGUIHighpassShape();
-    
+
     void butterworthDesign(const double design_frequency, const double sampleRate, const int order, int shape);
 
     void filterDesignCalculation();

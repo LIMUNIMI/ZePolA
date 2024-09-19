@@ -1671,33 +1671,38 @@ void PluginEditor::butterworthDesign(const double design_frequency, const double
     for (int i = 0; i < iirCoefficients.size(); ++i)
     {
         const auto& coeffs = iirCoefficients[i];
-        
+
         // Coefficienti per FIR
         b0 = coeffs->coefficients[0];
         b1 = coeffs->coefficients[1];
         b2 = coeffs->coefficients[2];
-        
+
         // Coefficienti per IIR
         a1 = coeffs->coefficients[3];
         a2 = coeffs->coefficients[4];
-        
+
         coefficientsNormalization(b0, b1, b2); // Normalizzazione della parte FIR
-        
+
         // I coefficienti IIR sono ritornati già normalizzati
-        
-        if (shape) // Se la shape è HIGHPASS inversione dei coefficienti dispari FIR
+
+        if (shape)  // Se la shape è HIGHPASS inversione dei poli e degli zeri
+                    // rispetto al prototipo digitale lowpass. L'unico coefficiente
+                    // che cambia è c1 della parte FIR. Dato il polo pi il suo
+                    // opposto presenta magnitudine uguale e fase sommata di 2π.
+                    // Essendo la fase mappata tra 0 e π sommare π significa
+                    // non cambiare il valore della fase del polo.
             b1 = -b1;
-        
+
         // Setup del filtro FIR
         fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
         processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
-        
+
         ++ elementNr;
-        
+
         // Set del filtro IIR
         fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
         processor.setFilter(magnitude, phase, FilterElement::POLE, elementNr);
-        
+
         ++ elementNr;
     }
 }
@@ -1720,7 +1725,7 @@ void PluginEditor::filterDesignCalculation()
 
                 case 2: // LOWPASS CHEBYSHEV I
                 {
-                    
+
                 } break;
 
                 case 3: // LOWPASS CHEBYSHEV II
