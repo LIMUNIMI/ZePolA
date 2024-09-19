@@ -102,7 +102,7 @@ private:
     double design_quality;
     double design_ripple;
     double design_attenuation;
-    
+
     std::vector<juce::String> selectable_filter_types;
     std::vector<juce::String> selectable_orders_butterworth;
 

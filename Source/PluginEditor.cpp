@@ -52,10 +52,10 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate());
         gaussian_plane->updateElements(processor.getFilterElementsChain());
     });
-    
+
     selectable_filter_types = SELECTABLE_FILTER_TYPES;
     selectable_orders_butterworth = SELECTABLE_ORDERS_BUTTERWORTH;
-    
+
     getSpectrum();
     updateReferenceFrequencies();
 
@@ -892,7 +892,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     linLog = false;
     linLog_switch->setToggleState(false, juce::dontSendNotification);
-    
+
     //[/UserPreSize]
 
     setSize (1200, 750);
@@ -1479,12 +1479,12 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
             {
                 updateGUIButterworth();
             } break;
-                
+
             case 2:
             {
                 updateGUIChebyshevI();
             } break;
-                
+
             case 3:
             {
                 updateGUIChebyshevII();
@@ -1502,7 +1502,7 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
             {
                 updateGUILowpassShape();
             } break;
-                
+
             case 2:
             {
                 updateGUIHighpassShape();
@@ -1641,7 +1641,7 @@ void PluginEditor::updateGUIButterworth()
 
 void PluginEditor::updateGUIChebyshevI()
 {
-    
+
 }
 
 void PluginEditor::updateGUIChebyshevII()
@@ -1715,42 +1715,10 @@ void PluginEditor::filterDesignCalculation()
 
                 case 2: // LOWPASS CHEBYSHEV I
                 {
-                    auto iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderChebyshev1Method(design_frequency, sampleRate, 0.005, -19, -23);
-                    double b0, b1, b2, a1, a2;
-                    double magnitude, phase;
-                    int elementNr = 1;
-                    for (int i = 0; i < iirCoefficients.size(); ++i)
-                    {
-                        const auto& coeffs = iirCoefficients[i];
-
-                        // Coefficienti per FIR
-                        b0 = coeffs->coefficients[0];
-                        b1 = coeffs->coefficients[1];
-                        b2 = coeffs->coefficients[2];
-
-                        // Coefficienti per IIR
-                        a1 = coeffs->coefficients[3];
-                        a2 = coeffs->coefficients[4];
-
-                        coefficientsNormalization(b0, b1, b2); // Normalizzazione della parte FIR
-
-                        // I coefficienti IIR sono ritornati già normalizzati
-
-                        // Setup del filtro FIR
-                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
-                        processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
-
-                        ++ elementNr;
-
-                        // Set del filtro IIR
-                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
-                        processor.setFilter(magnitude, phase, FilterElement::POLE, elementNr);
-
-                        ++ elementNr;
-                    }
+                    
                 } break;
 
-                case 3: // LOWPASS CHEBYSHEV II-
+                case 3: // LOWPASS CHEBYSHEV II
                 {
 
                 } break;
