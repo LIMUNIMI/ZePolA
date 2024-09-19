@@ -1662,10 +1662,50 @@ void PluginEditor::fromCoefficientsToMagnitudeAndPhase (double& mg, double& ph, 
     ph = (1 / MathConstants<double>::pi) * acos(-c1 / (2 * mg));
 }
 
+void PluginEditor::butterworthDesign(const double design_frequency, const double sampleRate, const int order, int shape)
+{
+    auto iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
+    double b0, b1, b2, a1, a2;
+    double magnitude, phase;
+    int elementNr = 1;
+    for (int i = 0; i < iirCoefficients.size(); ++i)
+    {
+        const auto& coeffs = iirCoefficients[i];
+        
+        // Coefficienti per FIR
+        b0 = coeffs->coefficients[0];
+        b1 = coeffs->coefficients[1];
+        b2 = coeffs->coefficients[2];
+        
+        // Coefficienti per IIR
+        a1 = coeffs->coefficients[3];
+        a2 = coeffs->coefficients[4];
+        
+        coefficientsNormalization(b0, b1, b2); // Normalizzazione della parte FIR
+        
+        // I coefficienti IIR sono ritornati già normalizzati
+        
+        if (shape) // Se la shape è HIGHPASS inversione dei coefficienti dispari FIR
+            b1 = -b1;
+        
+        // Setup del filtro FIR
+        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
+        processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
+        
+        ++ elementNr;
+        
+        // Set del filtro IIR
+        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
+        processor.setFilter(magnitude, phase, FilterElement::POLE, elementNr);
+        
+        ++ elementNr;
+    }
+}
+
 void PluginEditor::filterDesignCalculation()
 {
     const double sampleRate = processor.getSampleRate();
-    const double order = design_filters_to_activate;
+    const int order = design_filters_to_activate;
 
     switch (design_shape)
     {
@@ -1675,42 +1715,7 @@ void PluginEditor::filterDesignCalculation()
             {
                 case 1: // LOWPASS BUTTERWORTH
                 {
-                    auto iirCoefficients = juce::dsp::FilterDesign<double>::designIIRHighpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
-                    double b0, b1, b2, a1, a2;
-                    double magnitude, phase;
-                    int elementNr = 1;
-                    for (int i = 0; i < iirCoefficients.size(); ++i)
-                    {
-                        const auto& coeffs = iirCoefficients[i];
-
-                        // Coefficienti per FIR
-                        b0 = coeffs->coefficients[0];
-                        b1 = coeffs->coefficients[1];
-                        b2 = coeffs->coefficients[2];
-
-                        // Coefficienti per IIR
-                        a1 = coeffs->coefficients[3];
-                        a2 = coeffs->coefficients[4];
-
-                        coefficientsNormalization(b0, b1, b2); // Normalizzazione della parte FIR
-
-                        // I coefficienti IIR sono ritornati già normalizzati
-
-                        // Ottengo il lowpass invertendo i coefficienti FIR con indice dispari a partire da un highpass butterworth
-                        b1 = -b1;
-
-                        // Setup del filtro FIR
-                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
-                        processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
-
-                        ++ elementNr;
-
-                        // Set del filtro IIR
-                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
-                        processor.setFilter(magnitude, phase, FilterElement::POLE, elementNr);
-
-                        ++ elementNr;
-                    }
+                    butterworthDesign(design_frequency, sampleRate, order, 0);
                 } break;
 
                 case 2: // LOWPASS CHEBYSHEV I
@@ -1731,39 +1736,7 @@ void PluginEditor::filterDesignCalculation()
             {
                 case 1: // HIGHPASS BUTTERWORTH
                 {
-                    auto iirCoefficients = juce::dsp::FilterDesign<double>::designIIRHighpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
-                    double b0, b1, b2, a1, a2;
-                    double magnitude, phase;
-                    int elementNr = 1;
-                    for (int i = 0; i < iirCoefficients.size(); ++i)
-                    {
-                        const auto& coeffs = iirCoefficients[i];
-
-                        // Coefficienti per FIR
-                        b0 = coeffs->coefficients[0];
-                        b1 = coeffs->coefficients[1];
-                        b2 = coeffs->coefficients[2];
-
-                        // Coefficienti per IIR
-                        a1 = coeffs->coefficients[3];
-                        a2 = coeffs->coefficients[4];
-
-                        coefficientsNormalization(b0, b1, b2); // Normalizzazione della parte FIR
-
-                        // I coefficienti IIR sono ritornati già normalizzati
-
-                        // Setup del filtro FIR
-                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
-                        processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
-
-                        ++ elementNr;
-
-                        // Set del filtro IIR
-                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
-                        processor.setFilter(magnitude, phase, FilterElement::POLE, elementNr);
-
-                        ++ elementNr;
-                    }
+                    butterworthDesign(design_frequency, sampleRate, order, 1);
                 } break;
 
                 case 2: // HIGHPASS CHEBYSHEV I
