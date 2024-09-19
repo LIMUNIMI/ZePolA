@@ -42,9 +42,9 @@ typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
                                                                     //[/Comments]
 */
 class PluginEditor  : public juce::AudioProcessorEditor,
-                      public juce::Label::Listener,
                       public juce::Button::Listener,
                       public juce::Slider::Listener,
+                      public juce::Label::Listener,
                       public juce::ComboBox::Listener
 {
 public:
@@ -61,13 +61,13 @@ public:
     void updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
 
     void formatFrequencyInput(int frequency, juce::Label* label, double sampleRate);
-    void formatQualityInput(double quality, juce::Label* label);
-    void formatRippleInput(double ripple, juce::Label* label);
-    void formatAttenuationInput(double attenuation, juce::Label* label);
 
     void updateGUIButterworth();
     void updateGUIChebyshevI();
     void updateGUIChebyshevII();
+
+    void updateGUILowpassShape();
+    void updateGUIHighpassShape();
 
     void coefficientsNormalization(double& c0, double& c1, double& c2);
     void fromCoefficientsToMagnitudeAndPhase(double& mg, double& ph, double c1, double c2);
@@ -77,9 +77,9 @@ public:
 
     void paint (juce::Graphics& g) override;
     void resized() override;
-    void labelTextChanged (juce::Label* labelThatHasChanged) override;
     void buttonClicked (juce::Button* buttonThatWasClicked) override;
     void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
+    void labelTextChanged (juce::Label* labelThatHasChanged) override;
     void comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged) override;
 
 
@@ -102,6 +102,9 @@ private:
     double design_quality;
     double design_ripple;
     double design_attenuation;
+    
+    std::vector<juce::String> selectable_filter_types;
+    std::vector<juce::String> selectable_orders_butterworth;
 
     std::vector<std::unique_ptr<SliderAttachment>> magnitudesAttachments;
     std::vector<std::unique_ptr<SliderAttachment>> phasesAttachments;
@@ -135,8 +138,6 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<juce::Label> ripple_label;
-    std::unique_ptr<juce::Label> attenuation_label;
     std::unique_ptr<juce::TextButton> reset_button;
     std::unique_ptr<FrequencyResponse> frequency_response;
     std::unique_ptr<juce::Label> freq_response_label;
@@ -202,7 +203,6 @@ private:
     std::unique_ptr<juce::ComboBox> type_box;
     std::unique_ptr<juce::ComboBox> shape_box;
     std::unique_ptr<juce::Label> frequency_label;
-    std::unique_ptr<juce::Label> quality_label;
     std::unique_ptr<juce::TextButton> calculate_button;
     std::unique_ptr<juce::TextButton> multiply_phases_button;
     std::unique_ptr<juce::TextButton> divide_phases_button;
@@ -211,7 +211,6 @@ private:
     std::unique_ptr<juce::TextButton> turn_off_button;
     std::unique_ptr<juce::ComboBox> order_box;
     std::unique_ptr<juce::Label> design_frequency_label;
-    std::unique_ptr<juce::Label> text_label;
 
 
     //==============================================================================

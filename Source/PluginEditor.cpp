@@ -26,17 +26,11 @@
 #define NUMBER_OF_REFERENCE_FREQUENCIES         8
 #define FREQUENCY_FLOOR                         10.0
 
-#define QUALITY_FLOOR                           0.1
-#define QUALITY_CEILING                         100.0
+#define DESIGN_FREQUENCY_FLOOR                  1.0
 
-#define RIPPLE_FLOOR                            0.1
-#define RIPPLE_CEILING                          3.0
+#define SELECTABLE_FILTER_TYPES                 {"BUTTERWORTH", "CHEBYSHEV I", "CHEBYSHEV II"}
 
-#define ATTENUATION_FLOOR                       20.0
-#define ATTENUATION_CEILING                     100.0
-
-#define MINIMUM_BUTTERWORTH_ORDER               2
-#define MAXIMUM_BUTTERWORTH_ORDER               8
+#define SELECTABLE_ORDERS_BUTTERWORTH           {"2", "4", "6", "8"}
 
 //[/Headers]
 
@@ -58,6 +52,10 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate());
         gaussian_plane->updateElements(processor.getFilterElementsChain());
     });
+    
+    selectable_filter_types = SELECTABLE_FILTER_TYPES;
+    selectable_orders_butterworth = SELECTABLE_ORDERS_BUTTERWORTH;
+    
     getSpectrum();
     updateReferenceFrequencies();
 
@@ -66,34 +64,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     typesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     activeAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     //[/Constructor_pre]
-
-    ripple_label.reset (new juce::Label ("Ripple",
-                                         juce::String()));
-    addAndMakeVisible (ripple_label.get());
-    ripple_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    ripple_label->setJustificationType (juce::Justification::centredLeft);
-    ripple_label->setEditable (true, true, false);
-    ripple_label->setColour (juce::Label::backgroundColourId, juce::Colour (0xffa6acaf));
-    ripple_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    ripple_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    ripple_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
-    ripple_label->addListener (this);
-
-    ripple_label->setBounds (1010, 280, 60, 25);
-
-    attenuation_label.reset (new juce::Label ("Attenuation",
-                                              juce::String()));
-    addAndMakeVisible (attenuation_label.get());
-    attenuation_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    attenuation_label->setJustificationType (juce::Justification::centredLeft);
-    attenuation_label->setEditable (true, true, false);
-    attenuation_label->setColour (juce::Label::backgroundColourId, juce::Colour (0xffa6acaf));
-    attenuation_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    attenuation_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    attenuation_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
-    attenuation_label->addListener (this);
-
-    attenuation_label->setBounds (1010, 280, 60, 25);
 
     reset_button.reset (new juce::TextButton ("Reset"));
     addAndMakeVisible (reset_button.get());
@@ -711,12 +681,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     type_box->setJustificationType (juce::Justification::centredLeft);
     type_box->setTextWhenNothingSelected (TRANS ("TYPE"));
     type_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
-    type_box->addItem (TRANS ("BUTTERWORTH"), 1);
-    type_box->addItem (TRANS ("CHEBYSHEV I"), 2);
-    type_box->addItem (TRANS ("CHEBYSHEV II"), 3);
     type_box->addListener (this);
 
-    type_box->setBounds (1010, 65, 140, 25);
+    type_box->setBounds (1010, 120, 140, 25);
 
     shape_box.reset (new juce::ComboBox ("Design shape"));
     addAndMakeVisible (shape_box.get());
@@ -728,7 +695,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     shape_box->addItem (TRANS ("HIGHPASS"), 2);
     shape_box->addListener (this);
 
-    shape_box->setBounds (1010, 175, 140, 25);
+    shape_box->setBounds (1010, 65, 140, 25);
 
     frequency_label.reset (new juce::Label ("Frequency",
                                             juce::String()));
@@ -743,20 +710,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     frequency_label->addListener (this);
 
     frequency_label->setBounds (1010, 230, 60, 25);
-
-    quality_label.reset (new juce::Label ("Quality",
-                                          juce::String()));
-    addAndMakeVisible (quality_label.get());
-    quality_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    quality_label->setJustificationType (juce::Justification::centredLeft);
-    quality_label->setEditable (true, true, false);
-    quality_label->setColour (juce::Label::backgroundColourId, juce::Colour (0xffa6acaf));
-    quality_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    quality_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    quality_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
-    quality_label->addListener (this);
-
-    quality_label->setBounds (1010, 280, 60, 25);
 
     calculate_button.reset (new juce::TextButton ("Calculate"));
     addAndMakeVisible (calculate_button.get());
@@ -820,7 +773,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     order_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
     order_box->addListener (this);
 
-    order_box->setBounds (1010, 120, 140, 25);
+    order_box->setBounds (1010, 175, 140, 25);
 
     design_frequency_label.reset (new juce::Label ("Design frequency",
                                                    TRANS ("FREQUENCY\n")));
@@ -833,18 +786,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     design_frequency_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
     design_frequency_label->setBounds (1078, 234, 81, 20);
-
-    text_label.reset (new juce::Label ("Parameter",
-                                       juce::String()));
-    addAndMakeVisible (text_label.get());
-    text_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    text_label->setJustificationType (juce::Justification::centredLeft);
-    text_label->setEditable (false, false, false);
-    text_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    text_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    text_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    text_label->setBounds (1078, 285, 81, 20);
 
 
     //[UserPreSize]
@@ -951,10 +892,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     linLog = false;
     linLog_switch->setToggleState(false, juce::dontSendNotification);
-
-    quality_label->setVisible(false);
-    ripple_label->setVisible(false);
-    attenuation_label->setVisible(false);
+    
     //[/UserPreSize]
 
     setSize (1200, 750);
@@ -978,8 +916,6 @@ PluginEditor::~PluginEditor()
     bypassAttachment.reset();
     //[/Destructor_pre]
 
-    ripple_label = nullptr;
-    attenuation_label = nullptr;
     reset_button = nullptr;
     frequency_response = nullptr;
     freq_response_label = nullptr;
@@ -1045,7 +981,6 @@ PluginEditor::~PluginEditor()
     type_box = nullptr;
     shape_box = nullptr;
     frequency_label = nullptr;
-    quality_label = nullptr;
     calculate_button = nullptr;
     multiply_phases_button = nullptr;
     divide_phases_button = nullptr;
@@ -1054,7 +989,6 @@ PluginEditor::~PluginEditor()
     turn_off_button = nullptr;
     order_box = nullptr;
     design_frequency_label = nullptr;
-    text_label = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1286,98 +1220,6 @@ void PluginEditor::resized()
     //[/UserResized]
 }
 
-void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
-{
-    //[UserlabelTextChanged_Pre]
-    const double sampleRate = processor.getSampleRate();
-    int newFrequency = labelThatHasChanged->getText().getIntValue();
-    //[/UserlabelTextChanged_Pre]
-
-    if (labelThatHasChanged == ripple_label.get())
-    {
-        //[UserLabelCode_ripple_label] -- add your label text handling code here..
-        formatRippleInput(labelThatHasChanged->getText().getDoubleValue(), ripple_label.get());
-        //[/UserLabelCode_ripple_label]
-    }
-    else if (labelThatHasChanged == attenuation_label.get())
-    {
-        //[UserLabelCode_attenuation_label] -- add your label text handling code here..
-        formatAttenuationInput(labelThatHasChanged->getText().getDoubleValue(), attenuation_label.get());
-        //[/UserLabelCode_attenuation_label]
-    }
-    else if (labelThatHasChanged == p1_freq.get())
-    {
-        //[UserLabelCode_p1_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p1_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
-        //[/UserLabelCode_p1_freq]
-    }
-    else if (labelThatHasChanged == p2_freq.get())
-    {
-        //[UserLabelCode_p2_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p2_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p2_slider.get(), p2_freq.get(), sampleRate);
-        //[/UserLabelCode_p2_freq]
-    }
-    else if (labelThatHasChanged == p3_freq.get())
-    {
-        //[UserLabelCode_p3_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p3_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p3_slider.get(), p3_freq.get(), sampleRate);
-        //[/UserLabelCode_p3_freq]
-    }
-    else if (labelThatHasChanged == p4_freq.get())
-    {
-        //[UserLabelCode_p4_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p4_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p4_slider.get(), p4_freq.get(), sampleRate);
-        //[/UserLabelCode_p4_freq]
-    }
-    else if (labelThatHasChanged == p5_freq.get())
-    {
-        //[UserLabelCode_p5_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p5_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p5_slider.get(), p5_freq.get(), sampleRate);
-        //[/UserLabelCode_p5_freq]
-    }
-    else if (labelThatHasChanged == p6_freq.get())
-    {
-        //[UserLabelCode_p6_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p6_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
-        //[/UserLabelCode_p6_freq]
-    }
-    else if (labelThatHasChanged == p7_freq.get())
-    {
-        //[UserLabelCode_p7_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p7_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
-        //[/UserLabelCode_p7_freq]
-    }
-    else if (labelThatHasChanged == p8_freq.get())
-    {
-        //[UserLabelCode_p8_freq] -- add your label text handling code here..
-        updateSliderFromFrequency(newFrequency, p8_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
-        //[/UserLabelCode_p8_freq]
-    }
-    else if (labelThatHasChanged == frequency_label.get())
-    {
-        //[UserLabelCode_frequency_label] -- add your label text handling code here..
-        formatFrequencyInput(newFrequency, frequency_label.get(), sampleRate);
-        //[/UserLabelCode_frequency_label]
-    }
-    else if (labelThatHasChanged == quality_label.get())
-    {
-        //[UserLabelCode_quality_label] -- add your label text handling code here..
-        formatQualityInput(labelThatHasChanged->getText().getDoubleValue(), quality_label.get());
-        //[/UserLabelCode_quality_label]
-    }
-
-    //[UserlabelTextChanged_Post]
-    //[/UserlabelTextChanged_Post]
-}
-
 void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
@@ -1548,6 +1390,80 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
+void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
+{
+    //[UserlabelTextChanged_Pre]
+    const double sampleRate = processor.getSampleRate();
+    int newFrequency = labelThatHasChanged->getText().getIntValue();
+    //[/UserlabelTextChanged_Pre]
+
+    if (labelThatHasChanged == p1_freq.get())
+    {
+        //[UserLabelCode_p1_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p1_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
+        //[/UserLabelCode_p1_freq]
+    }
+    else if (labelThatHasChanged == p2_freq.get())
+    {
+        //[UserLabelCode_p2_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p2_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p2_slider.get(), p2_freq.get(), sampleRate);
+        //[/UserLabelCode_p2_freq]
+    }
+    else if (labelThatHasChanged == p3_freq.get())
+    {
+        //[UserLabelCode_p3_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p3_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p3_slider.get(), p3_freq.get(), sampleRate);
+        //[/UserLabelCode_p3_freq]
+    }
+    else if (labelThatHasChanged == p4_freq.get())
+    {
+        //[UserLabelCode_p4_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p4_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p4_slider.get(), p4_freq.get(), sampleRate);
+        //[/UserLabelCode_p4_freq]
+    }
+    else if (labelThatHasChanged == p5_freq.get())
+    {
+        //[UserLabelCode_p5_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p5_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p5_slider.get(), p5_freq.get(), sampleRate);
+        //[/UserLabelCode_p5_freq]
+    }
+    else if (labelThatHasChanged == p6_freq.get())
+    {
+        //[UserLabelCode_p6_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p6_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
+        //[/UserLabelCode_p6_freq]
+    }
+    else if (labelThatHasChanged == p7_freq.get())
+    {
+        //[UserLabelCode_p7_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p7_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
+        //[/UserLabelCode_p7_freq]
+    }
+    else if (labelThatHasChanged == p8_freq.get())
+    {
+        //[UserLabelCode_p8_freq] -- add your label text handling code here..
+        updateSliderFromFrequency(newFrequency, p8_slider.get(), sampleRate);
+        updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
+        //[/UserLabelCode_p8_freq]
+    }
+    else if (labelThatHasChanged == frequency_label.get())
+    {
+        //[UserLabelCode_frequency_label] -- add your label text handling code here..
+        formatFrequencyInput(newFrequency, frequency_label.get(), sampleRate);
+        //[/UserLabelCode_frequency_label]
+    }
+
+    //[UserlabelTextChanged_Post]
+    //[/UserlabelTextChanged_Post]
+}
+
 void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
@@ -1563,15 +1479,16 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
             {
                 updateGUIButterworth();
             } break;
+                
             case 2:
             {
                 updateGUIChebyshevI();
             } break;
-
+                
             case 3:
             {
                 updateGUIChebyshevII();
-            } break;
+            }
         }
         //[/UserComboBoxCode_type_box]
     }
@@ -1579,6 +1496,18 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_shape_box] -- add your combo box handling code here..
         design_shape = comboBoxThatHasChanged->getSelectedId();
+        switch (design_shape)
+        {
+            case 1: // LOWPASS
+            {
+                updateGUILowpassShape();
+            } break;
+                
+            case 2:
+            {
+                updateGUIHighpassShape();
+            } break;
+        }
         //[/UserComboBoxCode_shape_box]
     }
     else if (comboBoxThatHasChanged == order_box.get())
@@ -1662,9 +1591,9 @@ void PluginEditor::formatFrequencyInput(int frequency, juce::Label *label, doubl
 {
     double maxFrequency = sampleRate / 2.0;
 
-    if (frequency < FREQUENCY_FLOOR)
+    if (frequency < DESIGN_FREQUENCY_FLOOR)
     {
-        frequency = FREQUENCY_FLOOR;
+        frequency = DESIGN_FREQUENCY_FLOOR;
     }
     else if (frequency > maxFrequency)
     {
@@ -1674,86 +1603,50 @@ void PluginEditor::formatFrequencyInput(int frequency, juce::Label *label, doubl
     design_frequency = frequency;
 }
 
-void PluginEditor::formatQualityInput(double quality, juce::Label *label)
+void PluginEditor::updateGUILowpassShape()
 {
-    if (quality < QUALITY_FLOOR)
+    type_box->clear();
+    order_box->clear();
+    int i = 1;
+    for (juce::String& type : selectable_filter_types)
     {
-        quality = QUALITY_FLOOR;
+        type_box->addItem(type, i);
+        ++ i;
     }
-    else if (quality > QUALITY_CEILING)
-    {
-        quality = QUALITY_CEILING;
-    }
-    quality = std::round(quality * 10) / 10;
-    label->setText(juce::String(quality), juce::dontSendNotification);
-    design_quality = quality;
 }
 
-void PluginEditor::formatRippleInput(double ripple, juce::Label *label)
+void PluginEditor::updateGUIHighpassShape()
 {
-    if (ripple < RIPPLE_FLOOR)
+    type_box->clear();
+    order_box->clear();
+    int i = 1;
+    for (juce::String& type : selectable_filter_types)
     {
-        ripple = RIPPLE_FLOOR;
+        type_box->addItem(type, i);
+        ++ i;
     }
-    else if (ripple > RIPPLE_CEILING)
-    {
-        ripple = RIPPLE_CEILING;
-    }
-    ripple = std::round(ripple * 10) / 10;
-    label->setText(juce::String(ripple) + " dB", juce::dontSendNotification);
-    design_ripple = ripple;
-}
-
-void PluginEditor::formatAttenuationInput(double attenuation, juce::Label *label)
-{
-    if (attenuation < ATTENUATION_FLOOR)
-    {
-        attenuation = ATTENUATION_FLOOR;
-    }
-    else if (attenuation > ATTENUATION_CEILING)
-    {
-        attenuation = ATTENUATION_CEILING;
-    }
-    attenuation = std::round(attenuation * 10) / 10;
-    label->setText(juce::String(attenuation) + " dB", juce::dontSendNotification);
-    design_attenuation = attenuation;
 }
 
 void PluginEditor::updateGUIButterworth()
 {
-    quality_label->setVisible(false);
-    ripple_label->setVisible(false);
-    attenuation_label->setVisible(false);
-
     order_box->clear();
-    for (int i = MINIMUM_BUTTERWORTH_ORDER; i <= MAXIMUM_BUTTERWORTH_ORDER; i += 2)
+    for (juce::String order : SELECTABLE_ORDERS_BUTTERWORTH)
     {
-        int attenuation = 6 * i;
-        juce::String stringToVisualize = juce::String(i) + "  (-" + juce::String(attenuation) + " dB / octave)";
-        order_box->addItem(stringToVisualize, i);
+        int int_order = order.getIntValue();
+        int attenuation = 6 * int_order;
+        juce::String stringToVisualize = order + "  (-" + juce::String(attenuation) + " db / octave";
+        order_box->addItem(stringToVisualize, int_order);
     }
 }
 
 void PluginEditor::updateGUIChebyshevI()
 {
-    quality_label->setVisible(false);
-    ripple_label->setVisible(true);
-    attenuation_label->setVisible(false);
-
-    order_box->clear();
-
-    text_label->setText("RIPPLE", juce::dontSendNotification);
+    
 }
 
 void PluginEditor::updateGUIChebyshevII()
 {
-    quality_label->setVisible(false);
-    ripple_label->setVisible(false);
-    attenuation_label->setVisible(true);
 
-    order_box->clear();
-
-    text_label->setText("ATTENUATION", juce::dontSendNotification);
 }
 
 void PluginEditor::coefficientsNormalization (double& c0, double& c1, double& c2)
@@ -1774,19 +1667,56 @@ void PluginEditor::filterDesignCalculation()
     const double sampleRate = processor.getSampleRate();
     const double order = design_filters_to_activate;
 
-    // Reset della catena di filtri
-    processor.resetFilter();
-
-    switch (design_type)
+    switch (design_shape)
     {
-        case 1:
-        { // Butterworth
-            switch (design_shape)
+        case 1: // Shape LOWPASS
+        {
+            switch (design_type)
             {
-                case 1: // Butterworth LOWPASS
+                case 1: // LOWPASS BUTTERWORTH
                 {
-                    auto iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
-                    double b0, b1, b2, a0, a1, a2;
+                    auto iirCoefficients = juce::dsp::FilterDesign<double>::designIIRHighpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
+                    double b0, b1, b2, a1, a2;
+                    double magnitude, phase;
+                    int elementNr = 1;
+                    for (int i = 0; i < iirCoefficients.size(); ++i)
+                    {
+                        const auto& coeffs = iirCoefficients[i];
+
+                        // Coefficienti per FIR
+                        b0 = coeffs->coefficients[0];
+                        b1 = coeffs->coefficients[1];
+                        b2 = coeffs->coefficients[2];
+
+                        // Coefficienti per IIR
+                        a1 = coeffs->coefficients[3];
+                        a2 = coeffs->coefficients[4];
+
+                        coefficientsNormalization(b0, b1, b2); // Normalizzazione della parte FIR
+
+                        // I coefficienti IIR sono ritornati già normalizzati
+
+                        // Ottengo il lowpass invertendo i coefficienti FIR con indice dispari a partire da un highpass butterworth
+                        b1 = -b1;
+
+                        // Setup del filtro FIR
+                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
+                        processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
+
+                        ++ elementNr;
+
+                        // Set del filtro IIR
+                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
+                        processor.setFilter(magnitude, phase, FilterElement::POLE, elementNr);
+
+                        ++ elementNr;
+                    }
+                } break;
+
+                case 2: // LOWPASS CHEBYSHEV I
+                {
+                    auto iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderChebyshev1Method(design_frequency, sampleRate, 0.005, -19, -23);
+                    double b0, b1, b2, a1, a2;
                     double magnitude, phase;
                     int elementNr = 1;
                     for (int i = 0; i < iirCoefficients.size(); ++i)
@@ -1818,42 +1748,62 @@ void PluginEditor::filterDesignCalculation()
 
                         ++ elementNr;
                     }
-
                 } break;
 
-                case 2: // Butterworth HIGHPASS
+                case 3: // LOWPASS CHEBYSHEV II-
                 {
 
                 } break;
             }
         } break;
 
-        case 2:
-        { // Chebyshev I
-            switch (design_shape)
+        case 2: // Shape HIGHPASS
+        {
+            switch (design_type)
             {
-                case 1: // Chebyshev I LOWPASS
+                case 1: // HIGHPASS BUTTERWORTH
+                {
+                    auto iirCoefficients = juce::dsp::FilterDesign<double>::designIIRHighpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
+                    double b0, b1, b2, a1, a2;
+                    double magnitude, phase;
+                    int elementNr = 1;
+                    for (int i = 0; i < iirCoefficients.size(); ++i)
+                    {
+                        const auto& coeffs = iirCoefficients[i];
+
+                        // Coefficienti per FIR
+                        b0 = coeffs->coefficients[0];
+                        b1 = coeffs->coefficients[1];
+                        b2 = coeffs->coefficients[2];
+
+                        // Coefficienti per IIR
+                        a1 = coeffs->coefficients[3];
+                        a2 = coeffs->coefficients[4];
+
+                        coefficientsNormalization(b0, b1, b2); // Normalizzazione della parte FIR
+
+                        // I coefficienti IIR sono ritornati già normalizzati
+
+                        // Setup del filtro FIR
+                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
+                        processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
+
+                        ++ elementNr;
+
+                        // Set del filtro IIR
+                        fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
+                        processor.setFilter(magnitude, phase, FilterElement::POLE, elementNr);
+
+                        ++ elementNr;
+                    }
+                } break;
+
+                case 2: // HIGHPASS CHEBYSHEV I
                 {
 
                 } break;
 
-                case 2: // Chebyshev I HIGHPASS
-                {
-
-                } break;
-            }
-        } break;
-
-        case 3:
-        { // Chebyshev II
-            switch (design_shape)
-            {
-                case 1: // Chebyshev II LOWPASS
-                {
-
-                } break;
-
-                case 2: // Chebyshev II HIGHPASS
+                case 3: // HIGHPASS CHEBYSHEV II
                 {
 
                 } break;
@@ -1917,18 +1867,6 @@ BEGIN_JUCER_METADATA
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
   </BACKGROUND>
-  <LABEL name="Ripple" id="64b55e9d3286538b" memberName="ripple_label"
-         virtualName="" explicitFocusOrder="0" pos="1010 280 60 25" bkgCol="ffa6acaf"
-         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
-         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
-         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
-         justification="33"/>
-  <LABEL name="Attenuation" id="c27e7a446ca2a270" memberName="attenuation_label"
-         virtualName="" explicitFocusOrder="0" pos="1010 280 60 25" bkgCol="ffa6acaf"
-         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
-         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
-         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
-         justification="33"/>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
               virtualName="" explicitFocusOrder="0" pos="1010 520 70 30" bgColOff="ff505050"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
@@ -2205,21 +2143,14 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="Design type" id="5a16af79e3a09d2b" memberName="type_box"
-            virtualName="" explicitFocusOrder="0" pos="1010 65 140 25" editable="0"
-            layout="33" items="BUTTERWORTH&#10;CHEBYSHEV I&#10;CHEBYSHEV II"
-            textWhenNonSelected="TYPE" textWhenNoItems="(no choices)"/>
+            virtualName="" explicitFocusOrder="0" pos="1010 120 140 25" editable="0"
+            layout="33" items="" textWhenNonSelected="TYPE" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="Design shape" id="fab26cb579c24549" memberName="shape_box"
-            virtualName="" explicitFocusOrder="0" pos="1010 175 140 25" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="1010 65 140 25" editable="0"
             layout="33" items="LOWPASS&#10;HIGHPASS" textWhenNonSelected="SHAPE"
             textWhenNoItems="(no choices)"/>
   <LABEL name="Frequency" id="ddaa2a20ba2e76a5" memberName="frequency_label"
          virtualName="" explicitFocusOrder="0" pos="1010 230 60 25" bkgCol="ffa6acaf"
-         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
-         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
-         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
-         justification="33"/>
-  <LABEL name="Quality" id="c37d7b01efb8bd68" memberName="quality_label"
-         virtualName="" explicitFocusOrder="0" pos="1010 280 60 25" bkgCol="ffa6acaf"
          textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
          editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
@@ -2249,7 +2180,7 @@ BEGIN_JUCER_METADATA
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <COMBOBOX name="Design order" id="a7c23e76d01914d5" memberName="order_box"
-            virtualName="" explicitFocusOrder="0" pos="1010 120 140 25" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="1010 175 140 25" editable="0"
             layout="33" items="" textWhenNonSelected="ORDER" textWhenNoItems="(no choices)"/>
   <LABEL name="Design frequency" id="bc37557b2c8cc2ce" memberName="design_frequency_label"
          virtualName="" explicitFocusOrder="0" pos="1078 234 81 20" textCol="ff333333"
@@ -2257,12 +2188,6 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
          justification="33" typefaceStyle="SemiBold"/>
-  <LABEL name="Parameter" id="989d864d4447b618" memberName="text_label"
-         virtualName="" explicitFocusOrder="0" pos="1078 285 81 20" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"
-         typefaceStyle="SemiBold"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
