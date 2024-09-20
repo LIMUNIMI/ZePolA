@@ -48,8 +48,8 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p.setEditorCallback([this]()
                         {
         getSpectrum();
-        frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate());
-        phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate());
+        frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
+        phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate(), true);
         gaussian_plane->updateElements(processor.getFilterElementsChain());
     });
 
@@ -74,7 +74,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     reset_button->setBounds (1010, 520, 70, 30);
 
-    frequency_response.reset (new FrequencyResponse (magnitudes, referenceFrequencies, processor.getSampleRate()));
+    frequency_response.reset (new FrequencyResponse (magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb));
     addAndMakeVisible (frequency_response.get());
     frequency_response->setName ("frequencyResponse");
 
@@ -92,7 +92,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     freq_response_label->setBounds (665, 325, 140, 24);
 
-    phase_response.reset (new PhaseResponse (phases, referenceFrequencies, processor.getSampleRate()));
+    phase_response.reset (new PhaseResponse (phases, referenceFrequencies, processor.getSampleRate(), ampDb));
     addAndMakeVisible (phase_response.get());
     phase_response->setName ("phaseResponse");
 
@@ -787,6 +787,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     design_frequency_label->setBounds (1078, 234, 81, 20);
 
+    ampDb_switch.reset (new juce::ToggleButton ("Amplitude / dB"));
+    addAndMakeVisible (ampDb_switch.get());
+    ampDb_switch->setButtonText (juce::String());
+    ampDb_switch->addListener (this);
+
+    ampDb_switch->setBounds (516, 327, 52, 21);
+
 
     //[UserPreSize]
     magnitudesAttachments[0].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
@@ -868,6 +875,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_slider->setLookAndFeel(&gainSliderTheme);
     bypass->setLookAndFeel(&bypassSwitchTheme);
     linLog_switch->setLookAndFeel(&linLogTheme);
+    ampDb_switch->setLookAndFeel(&ampDbTheme);
     calculate_button->setLookAndFeel(&calculateButtonTheme);
     multiply_phases_button->setLookAndFeel(&multiplyButtonTheme);
     divide_phases_button->setLookAndFeel(&divideButtonTheme);
@@ -989,6 +997,7 @@ PluginEditor::~PluginEditor()
     turn_off_button = nullptr;
     order_box = nullptr;
     design_frequency_label = nullptr;
+    ampDb_switch = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1285,8 +1294,8 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         linLog = linLog_switch->getToggleState();
         getSpectrum();
         updateReferenceFrequencies();
-        frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate());
-        phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate());
+        frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
+        phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate(), true);
         //[/UserButtonCode_linLog_switch]
     }
     else if (buttonThatWasClicked == calculate_button.get())
@@ -1325,6 +1334,13 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         //[UserButtonCode_turn_off_button] -- add your button handler code here..
         processor.turnOnOffAllElements(0);
         //[/UserButtonCode_turn_off_button]
+    }
+    else if (buttonThatWasClicked == ampDb_switch.get())
+    {
+        //[UserButtonCode_ampDb_switch] -- add your button handler code here..
+        ampDb = ampDb_switch->getToggleState();
+        frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
+        //[/UserButtonCode_ampDb_switch]
     }
 
     //[UserbuttonClicked_Post]
@@ -1662,9 +1678,11 @@ void PluginEditor::fromCoefficientsToMagnitudeAndPhase (double& mg, double& ph, 
     ph = (1 / MathConstants<double>::pi) * acos(-c1 / (2 * mg));
 }
 
-void PluginEditor::butterworthDesign(const double design_frequency, const double sampleRate, const int order, int shape)
+void PluginEditor::butterworthDesignAndSetup(const double design_frequency, const double sampleRate, const int order, int shape)
 {
     auto iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
+    if (shape)
+        iirCoefficients = juce::dsp::FilterDesign<double>::designIIRHighpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
     double b0, b1, b2, a1, a2;
     double magnitude, phase;
     int elementNr = 1;
@@ -1684,14 +1702,6 @@ void PluginEditor::butterworthDesign(const double design_frequency, const double
         coefficientsNormalization(b0, b1, b2); // Normalizzazione della parte FIR
 
         // I coefficienti IIR sono ritornati già normalizzati
-
-        if (shape)  // Se la shape è HIGHPASS inversione dei poli e degli zeri
-                    // rispetto al prototipo digitale lowpass. L'unico coefficiente
-                    // che cambia è c1 della parte FIR. Dato il polo pi il suo
-                    // opposto presenta magnitudine uguale e fase sommata di 2π.
-                    // Essendo la fase mappata tra 0 e π sommare π significa
-                    // non cambiare il valore della fase del polo.
-            b1 = -b1;
 
         // Setup del filtro FIR
         fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
@@ -1720,7 +1730,7 @@ void PluginEditor::filterDesignCalculation()
             {
                 case 1: // LOWPASS BUTTERWORTH
                 {
-                    butterworthDesign(design_frequency, sampleRate, order, 0);
+                    butterworthDesignAndSetup(design_frequency, sampleRate, order, 0);
                 } break;
 
                 case 2: // LOWPASS CHEBYSHEV I
@@ -1741,7 +1751,7 @@ void PluginEditor::filterDesignCalculation()
             {
                 case 1: // HIGHPASS BUTTERWORTH
                 {
-                    butterworthDesign(design_frequency, sampleRate, order, 1);
+                    butterworthDesignAndSetup(design_frequency, sampleRate, order, 1);
                 } break;
 
                 case 2: // HIGHPASS CHEBYSHEV I
@@ -1819,7 +1829,7 @@ BEGIN_JUCER_METADATA
               radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
                     virtualName="" explicitFocusOrder="0" pos="520 35 430 285" class="FrequencyResponse"
-                    params="magnitudes, referenceFrequencies, processor.getSampleRate()"/>
+                    params="magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb"/>
   <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
          virtualName="" explicitFocusOrder="0" pos="665 325 140 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="SPECTRUM MAGNITUDE&#10;"
@@ -1828,7 +1838,7 @@ BEGIN_JUCER_METADATA
          justification="36" typefaceStyle="SemiBold"/>
   <GENERICCOMPONENT name="phaseResponse" id="c9a48273dec25832" memberName="phase_response"
                     virtualName="" explicitFocusOrder="0" pos="540 415 390 260" class="PhaseResponse"
-                    params="phases, referenceFrequencies, processor.getSampleRate()"/>
+                    params="phases, referenceFrequencies, processor.getSampleRate(), ampDb"/>
   <LABEL name="Phase response" id="6d08c4e421703ed5" memberName="ph_response_label"
          virtualName="" explicitFocusOrder="0" pos="675 680 110 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="SPECTRUM PHASE"
@@ -2134,6 +2144,9 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
          justification="33" typefaceStyle="SemiBold"/>
+  <TOGGLEBUTTON name="Amplitude / dB" id="b9198764b9daa498" memberName="ampDb_switch"
+                virtualName="" explicitFocusOrder="0" pos="516 327 52 21" buttonText=""
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

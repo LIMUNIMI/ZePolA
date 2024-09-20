@@ -16,6 +16,8 @@
 #define GAIN_SLIDER_BORDER_COLOUR           0xff626567
 #define LIN_COLOUR                          0xcd3498d8
 #define LOG_COLOUR                          0xcde74c3c
+#define AMP_COLOUR                          0xffa6acaf
+#define DB_COLOUR                           0xff626567
 
 class MagnitudeSliderTheme : public LookAndFeel_V4
 {
@@ -265,6 +267,48 @@ public:
             juce::Rectangle<float> switchRect(bounds.toFloat());
             if (text == "LIN")
                 switchRect.translate(-7.0f, 0.0f);
+            else
+                switchRect.translate(+7.0f, 0.0f);
+            g.drawText(text, switchRect, juce::Justification::centred);
+        }
+};
+
+class AmpDbSwitchTheme : public juce::LookAndFeel_V4
+{
+public:
+    
+    void drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
+                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+        {
+            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 8.0f, button.getHeight() - 2.0f);
+
+            auto ampColor = juce::Colour(AMP_COLOUR);
+            auto dbColor = juce::Colour(DB_COLOUR);
+            auto borderColor = juce::Colours::black;
+            auto indicatorColor = juce::Colours::white;
+
+            g.setColour(button.getToggleState() ? ampColor : dbColor);
+            g.fillRoundedRectangle(bounds.toFloat(), 9.5f);
+
+            g.setColour(borderColor);
+            g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 1.5f);
+
+            const int indicatorDiameter = 14;
+            auto indicatorX = button.getToggleState() ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
+            auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2) + 0.5;
+
+            g.setColour(indicatorColor);
+            g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
+            
+            g.setColour(juce::Colours::white);
+            g.setFont(juce::Font(10.0f, juce::Font::bold));
+            juce::String text = button.getToggleState() ? "AMP" : "DB";
+            juce::Rectangle<float> switchRect(bounds.toFloat());
+            if (text == "AMP")
+            {
+                g.setColour(juce::Colours::black);
+                switchRect.translate(-7.0f, 0.0f);
+            }
             else
                 switchRect.translate(+7.0f, 0.0f);
             g.drawText(text, switchRect, juce::Justification::centred);

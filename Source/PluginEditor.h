@@ -72,7 +72,7 @@ public:
     void updateGUILowpassShape();
     void updateGUIHighpassShape();
 
-    void butterworthDesign(const double design_frequency, const double sampleRate, const int order, int shape);
+    void butterworthDesignAndSetup(const double design_frequency, const double sampleRate, const int order, int shape);
 
     void filterDesignCalculation();
     //[/UserMethods]
@@ -96,6 +96,7 @@ private:
     std::vector<double> referenceFrequencies;
 
     bool linLog = false;
+    bool ampDb = false;
 
     int design_type;
     int design_shape;
@@ -127,6 +128,7 @@ private:
     BypassSwitchTheme bypassSwitchTheme;
 
     LinLogSwitchTheme linLogTheme;
+    AmpDbSwitchTheme ampDbTheme;
 
     CalculateButtonTheme calculateButtonTheme;
 
@@ -213,6 +215,7 @@ private:
     std::unique_ptr<juce::TextButton> turn_off_button;
     std::unique_ptr<juce::ComboBox> order_box;
     std::unique_ptr<juce::Label> design_frequency_label;
+    std::unique_ptr<juce::ToggleButton> ampDb_switch;
 
 
     //==============================================================================
