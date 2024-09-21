@@ -500,11 +500,11 @@ class ComboBoxTheme : public juce::LookAndFeel_V4
 public:
     ComboBoxTheme()
     {
-        setColour(juce::ComboBox::backgroundColourId, juce::Colours::black);
+        setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xff333333));
         setColour(juce::ComboBox::textColourId, juce::Colours::white);
-        setColour(juce::ComboBox::outlineColourId, juce::Colours::grey);
+        setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff333333));
         setColour(juce::ComboBox::arrowColourId, juce::Colours::white);
-        setColour(juce::PopupMenu::backgroundColourId, juce::Colours::darkgrey);
+        setColour(juce::PopupMenu::backgroundColourId, juce::Colour(0xff707070));
         setColour(juce::PopupMenu::textColourId, juce::Colours::white);
         setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colour(0xff2e86c1));
         setColour(juce::PopupMenu::highlightedTextColourId, juce::Colours::black);
@@ -512,7 +512,6 @@ public:
 
     juce::Font getComboBoxFont(juce::ComboBox& box) override
     {
-        // Imposta il font per il testo della ComboBox
         return juce::Font("Gill Sans", 12.0f, juce::Font::plain);
     }
 
@@ -522,15 +521,12 @@ public:
         auto cornerSize = 5.0f;
         juce::Rectangle<int> boxBounds(0, 0, width, height);
 
-        // Riempimento del background della ComboBox
         g.setColour(findColour(juce::ComboBox::backgroundColourId));
         g.fillRoundedRectangle(boxBounds.toFloat(), cornerSize);
 
-        // Disegno dei bordi della ComboBox
         g.setColour(findColour(juce::ComboBox::outlineColourId));
         g.drawRoundedRectangle(boxBounds.toFloat().reduced(0.5f), cornerSize, 1.0f);
 
-        // Disegno della freccia (dropdown) senza ridisegnare il testo (che sarà già disegnato dalla ComboBox stessa)
         juce::Path arrowPath;
         arrowPath.addTriangle(0.0f, 0.0f, 10.0f, 0.0f, 5.0f, 7.0f);
         auto arrowX = (float)buttonX + (float)buttonW * 0.5f - 5.0f;

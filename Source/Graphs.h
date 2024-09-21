@@ -142,7 +142,9 @@ class FrequencyResponse : public GraphicResponse
             for (float level : linearLevels)
             {
                 float yPos = juce::jmap<float>(level, 0.0f, 1.0f, height, 0.0f);
-                g.drawHorizontalLine(static_cast<int>(yPos), 0, width);
+                
+                if (level != 1.0f)
+                    g.drawHorizontalLine(static_cast<int>(yPos), 0, width);
                 
                 float yOffset = 0.0f;
                 if (level == 1.0f)
@@ -320,13 +322,12 @@ class GaussianPlane : public juce::Component
         g.drawEllipse(centerX - radius, centerY - radius, radius * 2, radius * 2, 1.5f);
         
         g.setColour(juce::Colour(PLANE_GRID_COLOUR));
-        // Disegno i cerchi concentrici (ogni quarto di raggio)
         for (float r = radius * 0.25f; r < radius; r += radius * 0.25f)
         {
             g.drawEllipse(centerX - r, centerY - r, r * 2, r * 2, 0.5f);
         }
         
-        // Disegno le linee che dividono il piano in sezioni da 30 gradi
+        
         for (int angle = 0; angle < 360; angle += 30)
         {
             float rad = juce::MathConstants<float>::pi * angle / 180.0f;
@@ -360,7 +361,7 @@ class GaussianPlane : public juce::Component
             
             g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
             
-            //          DRAW CONJUGATE
+            // DRAW CONJUGATE
             y = ((std::imag(zero)) * (height / 2)) + centerY;
             g.setColour(juce::Colour (CONJ_ZEROS_COLOUR));
             g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
@@ -375,7 +376,7 @@ class GaussianPlane : public juce::Component
             
             g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
             g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
-            //            DRAW CONJUGATE
+            // DRAW CONJUGATE
             g.setColour(juce::Colour (CONJ_POLES_COLOUR));
             y = ((std::imag(pole)) * (height / 2)) + centerY;
             g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
