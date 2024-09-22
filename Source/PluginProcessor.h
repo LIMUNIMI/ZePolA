@@ -34,6 +34,8 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
+    void setUnactive (const int elementNr);
+    
     std::complex<double> getFilterSpectrum (const double phi);
     std::vector<std::shared_ptr<FilterElement>> getFilterElementsChain ();
     

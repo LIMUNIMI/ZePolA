@@ -110,6 +110,11 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
     }
 }
 
+void PolesAndZerosEQAudioProcessor::setUnactive (const int elementNr)
+{
+    parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr))->setValueNotifyingHost(ACTIVE_DEFAULT);
+}
+
 std::complex<double> PolesAndZerosEQAudioProcessor::getFilterSpectrum (const double phi)
 {
     return filter.getSpectrum(phi);

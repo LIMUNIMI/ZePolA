@@ -157,7 +157,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     magnitudes_label->setBounds (33, 20, 90, 24);
 
     phases_label.reset (new juce::Label ("Phases",
-                                         TRANS ("PHASE\n")));
+                                         TRANS ("FREQUENCY\n")));
     addAndMakeVisible (phases_label.get());
     phases_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
     phases_label->setJustificationType (juce::Justification::centred);
@@ -166,7 +166,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     phases_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     phases_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    phases_label->setBounds (197, 20, 62, 24);
+    phases_label->setBounds (198, 20, 80, 24);
 
     zero_pole_label.reset (new juce::Label ("Zero / Pole",
                                             TRANS ("ZERO  /  POLE")));
@@ -683,7 +683,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     type_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
     type_box->addListener (this);
 
-    type_box->setBounds (1010, 120, 140, 25);
+    type_box->setBounds (1010, 115, 140, 25);
 
     shape_box.reset (new juce::ComboBox ("Design shape"));
     addAndMakeVisible (shape_box.get());
@@ -696,20 +696,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     shape_box->addListener (this);
 
     shape_box->setBounds (1010, 65, 140, 25);
-
-    frequency_label.reset (new juce::Label ("Frequency",
-                                            juce::String()));
-    addAndMakeVisible (frequency_label.get());
-    frequency_label->setFont (juce::Font ("Gill Sans", 15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    frequency_label->setJustificationType (juce::Justification::centredLeft);
-    frequency_label->setEditable (true, true, false);
-    frequency_label->setColour (juce::Label::backgroundColourId, juce::Colour (0xffa6acaf));
-    frequency_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    frequency_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    frequency_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff263238));
-    frequency_label->addListener (this);
-
-    frequency_label->setBounds (1010, 230, 60, 25);
 
     calculate_button.reset (new juce::TextButton ("Calculate"));
     addAndMakeVisible (calculate_button.get());
@@ -773,19 +759,19 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     order_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
     order_box->addListener (this);
 
-    order_box->setBounds (1010, 175, 140, 25);
+    order_box->setBounds (1010, 165, 140, 25);
 
     design_frequency_label.reset (new juce::Label ("Design frequency",
                                                    TRANS ("FREQUENCY\n")));
     addAndMakeVisible (design_frequency_label.get());
     design_frequency_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    design_frequency_label->setJustificationType (juce::Justification::centredLeft);
+    design_frequency_label->setJustificationType (juce::Justification::centred);
     design_frequency_label->setEditable (false, false, false);
     design_frequency_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
     design_frequency_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     design_frequency_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    design_frequency_label->setBounds (1078, 234, 81, 20);
+    design_frequency_label->setBounds (1048, 208, 72, 20);
 
     ampDb_switch.reset (new juce::ToggleButton ("Amplitude / dB"));
     addAndMakeVisible (ampDb_switch.get());
@@ -793,6 +779,33 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     ampDb_switch->addListener (this);
 
     ampDb_switch->setBounds (516, 327, 52, 21);
+
+    frequency_design_slider.reset (new juce::Slider ("Frequency design slider"));
+    addAndMakeVisible (frequency_design_slider.get());
+    frequency_design_slider->setRange (0.0001, 1000, 0.0001);
+    frequency_design_slider->setSliderStyle (juce::Slider::LinearHorizontal);
+    frequency_design_slider->setTextBoxStyle (juce::Slider::NoTextBox, true, 50, 20);
+    frequency_design_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    frequency_design_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    frequency_design_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
+    frequency_design_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    frequency_design_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    frequency_design_slider->addListener (this);
+
+    frequency_design_slider->setBounds (1007, 230, 83, 25);
+
+    frequency_label.reset (new juce::Label ("Frequency Label",
+                                            juce::String()));
+    addAndMakeVisible (frequency_label.get());
+    frequency_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    frequency_label->setJustificationType (juce::Justification::centredLeft);
+    frequency_label->setEditable (true, true, false);
+    frequency_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    frequency_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    frequency_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
+    frequency_label->addListener (this);
+
+    frequency_label->setBounds (1095, 230, 60, 25);
 
 
     //[UserPreSize]
@@ -886,6 +899,8 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     type_box->setLookAndFeel(&comboBoxTheme);
     order_box->setLookAndFeel(&comboBoxTheme);
     shape_box->setLookAndFeel(&comboBoxTheme);
+
+    frequency_design_slider->setLookAndFeel(&magnitudeSlidersTheme);
 
     double sampleRate = processor.getSampleRate();
 
@@ -988,7 +1003,6 @@ PluginEditor::~PluginEditor()
     p8_freq = nullptr;
     type_box = nullptr;
     shape_box = nullptr;
-    frequency_label = nullptr;
     calculate_button = nullptr;
     multiply_phases_button = nullptr;
     divide_phases_button = nullptr;
@@ -998,6 +1012,8 @@ PluginEditor::~PluginEditor()
     order_box = nullptr;
     design_frequency_label = nullptr;
     ampDb_switch = nullptr;
+    frequency_design_slider = nullptr;
+    frequency_label = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1301,7 +1317,6 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == calculate_button.get())
     {
         //[UserButtonCode_calculate_button] -- add your button handler code here..
-        processor.resetFilter();
         filterDesignCalculation();
         //[/UserButtonCode_calculate_button]
     }
@@ -1401,6 +1416,12 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
         //[/UserSliderCode_p8_slider]
     }
+    else if (sliderThatWasMoved == frequency_design_slider.get())
+    {
+        //[UserSliderCode_frequency_design_slider] -- add your slider handling code here..
+        updateFrequencyFromDesignSlider(frequency_design_slider.get(), frequency_label.get(), sampleRate);
+        //[/UserSliderCode_frequency_design_slider]
+    }
 
     //[UsersliderValueChanged_Post]
     //[/UsersliderValueChanged_Post]
@@ -1411,68 +1432,69 @@ void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
     //[UserlabelTextChanged_Pre]
     const double sampleRate = processor.getSampleRate();
     int newFrequency = labelThatHasChanged->getText().getIntValue();
+
+    if (labelThatHasChanged == frequency_label.get())
+    {
+        formatDesignFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
+    }
+    else
+    {
+        formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
+    }
     //[/UserlabelTextChanged_Pre]
 
     if (labelThatHasChanged == p1_freq.get())
     {
         //[UserLabelCode_p1_freq] -- add your label text handling code here..
         updateSliderFromFrequency(newFrequency, p1_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
         //[/UserLabelCode_p1_freq]
     }
     else if (labelThatHasChanged == p2_freq.get())
     {
         //[UserLabelCode_p2_freq] -- add your label text handling code here..
         updateSliderFromFrequency(newFrequency, p2_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p2_slider.get(), p2_freq.get(), sampleRate);
         //[/UserLabelCode_p2_freq]
     }
     else if (labelThatHasChanged == p3_freq.get())
     {
         //[UserLabelCode_p3_freq] -- add your label text handling code here..
         updateSliderFromFrequency(newFrequency, p3_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p3_slider.get(), p3_freq.get(), sampleRate);
         //[/UserLabelCode_p3_freq]
     }
     else if (labelThatHasChanged == p4_freq.get())
     {
         //[UserLabelCode_p4_freq] -- add your label text handling code here..
         updateSliderFromFrequency(newFrequency, p4_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p4_slider.get(), p4_freq.get(), sampleRate);
         //[/UserLabelCode_p4_freq]
     }
     else if (labelThatHasChanged == p5_freq.get())
     {
         //[UserLabelCode_p5_freq] -- add your label text handling code here..
         updateSliderFromFrequency(newFrequency, p5_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p5_slider.get(), p5_freq.get(), sampleRate);
         //[/UserLabelCode_p5_freq]
     }
     else if (labelThatHasChanged == p6_freq.get())
     {
         //[UserLabelCode_p6_freq] -- add your label text handling code here..
         updateSliderFromFrequency(newFrequency, p6_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
         //[/UserLabelCode_p6_freq]
     }
     else if (labelThatHasChanged == p7_freq.get())
     {
         //[UserLabelCode_p7_freq] -- add your label text handling code here..
         updateSliderFromFrequency(newFrequency, p7_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
         //[/UserLabelCode_p7_freq]
     }
     else if (labelThatHasChanged == p8_freq.get())
     {
         //[UserLabelCode_p8_freq] -- add your label text handling code here..
         updateSliderFromFrequency(newFrequency, p8_slider.get(), sampleRate);
-        updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
         //[/UserLabelCode_p8_freq]
     }
     else if (labelThatHasChanged == frequency_label.get())
     {
         //[UserLabelCode_frequency_label] -- add your label text handling code here..
-        formatFrequencyInput(newFrequency, frequency_label.get(), sampleRate);
+        updateDesignSliderFromFrequency(newFrequency, frequency_design_slider.get(), sampleRate);
         //[/UserLabelCode_frequency_label]
     }
 
@@ -1591,19 +1613,48 @@ void PluginEditor::updateReferenceFrequencies()
 
 void PluginEditor::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
 {
-    double phaseValue = slider->getValue();
-    double frequency = (phaseValue * sampleRate) / 2.0;
+    double sliderValue = slider->getValue();
+    double frequency = (sliderValue * sampleRate) / 2.0;
 
     label->setText(juce::String(juce::roundToInt(frequency)) + " Hz", juce::dontSendNotification);
 }
 
 void PluginEditor::updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate)
 {
-    double phaseValue = (frequency * 2.0) / sampleRate;
-    slider->setValue(phaseValue, juce::sendNotificationSync);
+    double sliderValue = (frequency * 2.0) / sampleRate;
+    slider->setValue(sliderValue, juce::sendNotificationSync);
 }
 
-void PluginEditor::formatFrequencyInput(int frequency, juce::Label *label, double sampleRate)
+void PluginEditor::updateFrequencyFromDesignSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
+{
+    double sliderValue = slider->getValue();
+    double frequency = (sliderValue * sampleRate) / 2000.0;
+    label->setText(juce::String(juce::roundToInt(frequency)) + " Hz", juce::dontSendNotification);
+    design_frequency = frequency;
+}
+
+void PluginEditor::updateDesignSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate)
+{
+    double sliderValue = (frequency * 2000.0) / sampleRate;
+    slider->setValue(sliderValue, juce::sendNotificationSync);
+}
+
+void PluginEditor::formatFrequencyInput(int& frequency, juce::Label *label, double sampleRate)
+{
+    double maxFrequency = sampleRate / 2.0;
+
+    if (frequency < 0)
+    {
+        frequency = 0;
+    }
+    else if (frequency > maxFrequency)
+    {
+        frequency = maxFrequency;
+    }
+    label->setText(juce::String(frequency) + " Hz", juce::dontSendNotification);
+}
+
+void PluginEditor::formatDesignFrequencyInput(int& frequency, juce::Label *label, double sampleRate)
 {
     double maxFrequency = sampleRate / 2.0;
 
@@ -1681,8 +1732,7 @@ void PluginEditor::fromCoefficientsToMagnitudeAndPhase (double& mg, double& ph, 
 void PluginEditor::butterworthDesignAndSetup(const double design_frequency, const double sampleRate, const int order, int shape)
 {
     auto iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
-    if (shape)
-        iirCoefficients = juce::dsp::FilterDesign<double>::designIIRHighpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
+
     double b0, b1, b2, a1, a2;
     double magnitude, phase;
     int elementNr = 1;
@@ -1703,6 +1753,9 @@ void PluginEditor::butterworthDesignAndSetup(const double design_frequency, cons
 
         // I coefficienti IIR sono ritornati già normalizzati
 
+        if (shape)
+            b1 = -b1;
+
         // Setup del filtro FIR
         fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
         processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
@@ -1715,6 +1768,8 @@ void PluginEditor::butterworthDesignAndSetup(const double design_frequency, cons
 
         ++ elementNr;
     }
+    for (; elementNr <= NUMBER_OF_FILTER_ELEMENTS; ++ elementNr)
+        processor.setUnactive(elementNr);
 }
 
 void PluginEditor::filterDesignCalculation()
@@ -1867,11 +1922,11 @@ BEGIN_JUCER_METADATA
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <LABEL name="Phases" id="e0e34f187bbbdcdc" memberName="phases_label"
-         virtualName="" explicitFocusOrder="0" pos="197 20 62 24" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="PHASE&#10;" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"
-         typefaceStyle="SemiBold"/>
+         virtualName="" explicitFocusOrder="0" pos="198 20 80 24" textCol="ff333333"
+         edTextCol="ff000000" edBkgCol="0" labelText="FREQUENCY&#10;"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
+         justification="36" typefaceStyle="SemiBold"/>
   <LABEL name="Zero / Pole" id="676532893526fbc7" memberName="zero_pole_label"
          virtualName="" explicitFocusOrder="0" pos="322 20 91 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="ZERO  /  POLE" editableSingleClick="0"
@@ -2099,18 +2154,12 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="Design type" id="5a16af79e3a09d2b" memberName="type_box"
-            virtualName="" explicitFocusOrder="0" pos="1010 120 140 25" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="1010 115 140 25" editable="0"
             layout="33" items="" textWhenNonSelected="TYPE" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="Design shape" id="fab26cb579c24549" memberName="shape_box"
             virtualName="" explicitFocusOrder="0" pos="1010 65 140 25" editable="0"
             layout="33" items="LOWPASS&#10;HIGHPASS" textWhenNonSelected="SHAPE"
             textWhenNoItems="(no choices)"/>
-  <LABEL name="Frequency" id="ddaa2a20ba2e76a5" memberName="frequency_label"
-         virtualName="" explicitFocusOrder="0" pos="1010 230 60 25" bkgCol="ffa6acaf"
-         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff263238" labelText=""
-         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
-         fontname="Gill Sans" fontsize="15.0" kerning="0.0" bold="0" italic="0"
-         justification="33"/>
   <TEXTBUTTON name="Calculate" id="6b0929d790004858" memberName="calculate_button"
               virtualName="" explicitFocusOrder="0" pos="1070 352 90 30" bgColOff="ff505050"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
@@ -2136,17 +2185,28 @@ BEGIN_JUCER_METADATA
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <COMBOBOX name="Design order" id="a7c23e76d01914d5" memberName="order_box"
-            virtualName="" explicitFocusOrder="0" pos="1010 175 140 25" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="1010 165 140 25" editable="0"
             layout="33" items="" textWhenNonSelected="ORDER" textWhenNoItems="(no choices)"/>
   <LABEL name="Design frequency" id="bc37557b2c8cc2ce" memberName="design_frequency_label"
-         virtualName="" explicitFocusOrder="0" pos="1078 234 81 20" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="1048 208 72 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="FREQUENCY&#10;"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
-         justification="33" typefaceStyle="SemiBold"/>
+         justification="36" typefaceStyle="SemiBold"/>
   <TOGGLEBUTTON name="Amplitude / dB" id="b9198764b9daa498" memberName="ampDb_switch"
                 virtualName="" explicitFocusOrder="0" pos="516 327 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
+  <SLIDER name="Frequency design slider" id="805d44cec628c3" memberName="frequency_design_slider"
+          virtualName="" explicitFocusOrder="0" pos="1007 230 83 25" thumbcol="ffffffff"
+          textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
+          textboxoutline="0" min="0.0001" max="1000.0" int="0.0001" style="LinearHorizontal"
+          textBoxPos="NoTextBox" textBoxEditable="0" textBoxWidth="50"
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+  <LABEL name="Frequency Label" id="bb3cf5d37607187f" memberName="frequency_label"
+         virtualName="" explicitFocusOrder="0" pos="1095 230 60 25" textCol="ff333333"
+         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
+         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

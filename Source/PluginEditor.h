@@ -60,7 +60,11 @@ public:
     void updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
     void updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
 
-    void formatFrequencyInput(int frequency, juce::Label* label, double sampleRate);
+    void updateFrequencyFromDesignSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
+    void updateDesignSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
+
+    void formatFrequencyInput(int& frequency, juce::Label* label, double sampleRate);
+    void formatDesignFrequencyInput(int& frequency, juce::Label* label, double sampleRate);
 
     void coefficientsNormalization(double& c0, double& c1, double& c2);
     void fromCoefficientsToMagnitudeAndPhase(double& mg, double& ph, double c1, double c2);
@@ -206,7 +210,6 @@ private:
     std::unique_ptr<juce::Label> p8_freq;
     std::unique_ptr<juce::ComboBox> type_box;
     std::unique_ptr<juce::ComboBox> shape_box;
-    std::unique_ptr<juce::Label> frequency_label;
     std::unique_ptr<juce::TextButton> calculate_button;
     std::unique_ptr<juce::TextButton> multiply_phases_button;
     std::unique_ptr<juce::TextButton> divide_phases_button;
@@ -216,6 +219,8 @@ private:
     std::unique_ptr<juce::ComboBox> order_box;
     std::unique_ptr<juce::Label> design_frequency_label;
     std::unique_ptr<juce::ToggleButton> ampDb_switch;
+    std::unique_ptr<juce::Slider> frequency_design_slider;
+    std::unique_ptr<juce::Label> frequency_label;
 
 
     //==============================================================================

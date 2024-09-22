@@ -463,6 +463,3 @@ public:
 private:
     std::vector<std::shared_ptr<FilterElement>> elements;
 };
-
-
-
