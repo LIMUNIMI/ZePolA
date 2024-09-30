@@ -42,8 +42,8 @@ typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
                                                                     //[/Comments]
 */
 class PluginEditor  : public juce::AudioProcessorEditor,
-                      public juce::Button::Listener,
                       public juce::Slider::Listener,
+                      public juce::Button::Listener,
                       public juce::Label::Listener,
                       public juce::ComboBox::Listener
 {
@@ -57,6 +57,8 @@ public:
     void getSpectrum ();
     void updateReferenceFrequencies();
 
+    void updateDraggablePoints (std::vector<std::shared_ptr<FilterElement>>& elements);
+
     void updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
     void updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
 
@@ -69,22 +71,25 @@ public:
     void coefficientsNormalization(double& c0, double& c1, double& c2);
     void fromCoefficientsToMagnitudeAndPhase(double& mg, double& ph, double c1, double c2);
 
-    void updateGUIButterworth();
-    void updateGUIChebyshevI();
-    void updateGUIChebyshevII();
-
     void updateGUILowpassShape();
     void updateGUIHighpassShape();
+    void updateGUIButterworth();
+    void updateGUIChebyshevIandII();
+
+    void setTransitionWidthRange (double frquency);
+
+    bool isEverythingSet ();
 
     void butterworthDesignAndSetup(const double design_frequency, const double sampleRate, const int order, int shape);
+    void ChebyshevDesignAndSetup(const double design_frequency, const double sampleRate, const double normalisedTransitionWidth, const double passbandAmplitudedB, const double stopbandAmplitudedB, const int type);
 
     void filterDesignCalculation();
     //[/UserMethods]
 
     void paint (juce::Graphics& g) override;
     void resized() override;
-    void buttonClicked (juce::Button* buttonThatWasClicked) override;
     void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
+    void buttonClicked (juce::Button* buttonThatWasClicked) override;
     void labelTextChanged (juce::Label* labelThatHasChanged) override;
     void comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged) override;
 
@@ -106,9 +111,9 @@ private:
     int design_shape;
     int design_filters_to_activate;
     int design_frequency;
-    double design_quality;
-    double design_ripple;
-    double design_attenuation;
+    double transition_width = 0.001;
+    double bandpassAmplitude = -0.1;
+    double stopbandAmplitude = -21;
 
     std::vector<juce::String> selectable_filter_types;
     std::vector<juce::String> selectable_orders_butterworth;
@@ -146,12 +151,14 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    std::unique_ptr<juce::Label> bandpassAmplitude_label;
+    std::unique_ptr<juce::Slider> stopbandAmplitude_slider;
+    std::unique_ptr<GaussianPlane> gaussian_plane;
     std::unique_ptr<juce::TextButton> reset_button;
     std::unique_ptr<FrequencyResponse> frequency_response;
     std::unique_ptr<juce::Label> freq_response_label;
     std::unique_ptr<PhaseResponse> phase_response;
     std::unique_ptr<juce::Label> ph_response_label;
-    std::unique_ptr<GaussianPlane> gaussian_plane;
     std::unique_ptr<juce::Slider> m1_slider;
     std::unique_ptr<juce::Slider> p1_slider;
     std::unique_ptr<juce::Label> magnitudes_label;
@@ -221,6 +228,10 @@ private:
     std::unique_ptr<juce::ToggleButton> ampDb_switch;
     std::unique_ptr<juce::Slider> frequency_design_slider;
     std::unique_ptr<juce::Label> frequency_label;
+    std::unique_ptr<juce::Label> transition_width_label;
+    std::unique_ptr<juce::Slider> transition_width_slider;
+    std::unique_ptr<juce::Slider> bandpassAmplitude_slider;
+    std::unique_ptr<juce::Label> stopbandAmplitude_label;
 
 
     //==============================================================================
