@@ -79,7 +79,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     stopbandAmplitude_slider.reset (new juce::Slider ("Stopband Amplitude"));
     addAndMakeVisible (stopbandAmplitude_slider.get());
-    stopbandAmplitude_slider->setRange (-30, -21, 0.1);
+    stopbandAmplitude_slider->setRange (-35, -21, 0.1);
     stopbandAmplitude_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     stopbandAmplitude_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
     stopbandAmplitude_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
@@ -861,7 +861,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     bandpassAmplitude_slider.reset (new juce::Slider ("Bandpass Amplitude"));
     addAndMakeVisible (bandpassAmplitude_slider.get());
-    bandpassAmplitude_slider->setRange (-4, -0.1, 0.1);
+    bandpassAmplitude_slider->setRange (-10, -0.1, 0.1);
     bandpassAmplitude_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     bandpassAmplitude_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
     bandpassAmplitude_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
@@ -1851,6 +1851,7 @@ void PluginEditor::updateGUIChebyshevIandII()
 
     design_frequency_label->setBounds (1048, 148, 72, 20);
     frequency_design_slider->setBounds (1007, 170, 83, 25);
+//    frequency_design_slider->setRange(0.00001, roundToInt(0.499995 * processor.getSampleRate()));
     frequency_label->setBounds (1090, 170, 60, 25);
 
     transition_width_label->setVisible(true);
@@ -1874,12 +1875,17 @@ void PluginEditor::updateGUIChebyshevIandII()
     calculate_button->setEnabled(true);
 }
 
+void PluginEditor::updateGUIHighOrder()
+{
+    DBG("modifica gui");
+}
+
 void PluginEditor::setTransitionWidthRange (double frequency)
 {
     double sampleRate = processor.getSampleRate();
     double normalisedFrequency = frequency / sampleRate;
-    double maxValue = jmin(2 * normalisedFrequency, 2 * (0.5 - normalisedFrequency));
     double minValue = 0.00001;
+    double maxValue = jmin(2 * normalisedFrequency - minValue, 2 * (0.5 - normalisedFrequency) - minValue);
 
     transition_width_slider->setRange(minValue, maxValue);
     transition_width_slider->setValue(minValue);
@@ -1927,26 +1933,20 @@ void PluginEditor::butterworthDesignAndSetup(const double design_frequency, cons
     {
         const auto& coeffs = iirCoefficients[i];
 
-        // Coefficienti per FIR
         b0 = coeffs->coefficients[0];
         b1 = coeffs->coefficients[1];
         b2 = coeffs->coefficients[2];
 
-        // Coefficienti per IIR
         a1 = coeffs->coefficients[3];
         a2 = coeffs->coefficients[4];
 
-        coefficientsNormalization(b0, b1, b2); // Normalizzazione della parte FIR
+        coefficientsNormalization(b0, b1, b2);
 
-        // I coefficienti IIR sono ritornati già normalizzati
-
-        // Setup del filtro FIR
         fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
         processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
 
         ++ elementNr;
 
-        // Set del filtro IIR
         fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
         processor.setFilter(magnitude, phase, FilterElement::POLE, elementNr);
 
@@ -1967,43 +1967,50 @@ void PluginEditor::ChebyshevDesignAndSetup(const double design_frequency, const 
             double b0, b1, b2, a1, a2;
             double magnitude, phase;
             int elementNr = 1;
-            if (iirCoefficients.size() > 8)
-                return;
-            DBG("COEFFS");
-            for (int i = 0; i < iirCoefficients.size(); ++i)
+
+            if (iirCoefficients.size() > 4)
+                updateGUIHighOrder();
+
+
+            for (int i = 0; i < iirCoefficients.size(); ++ i)
             {
                 const auto& coeffs = iirCoefficients[i];
 
-                // Coefficienti per FIR
-                b0 = coeffs->coefficients[0];
-                b1 = coeffs->coefficients[1];
-                b2 = coeffs->coefficients[2];
-
-                coefficientsNormalization(b0, b1, b2); // Normalizzazione della parte FIR
-
-                // Setup del filtro FIR
-                fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
-                processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
-
-                ++ elementNr;
-                
-                // Coefficienti per IIR
-                if (coeffs->coefficients.size() > 3)
+                if (coeffs->coefficients.size() == 3)
                 {
+                    std::complex<double> zero = - coeffs->coefficients[1] / coeffs->coefficients[0];
+                    processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr);
+                    ++ elementNr;
+
+                    std::complex<double> pole = - coeffs->coefficients[2];
+                    processor.setFilter(std::abs(pole), std::arg(pole), FilterElement::POLE, elementNr);
+                    ++ elementNr;
+                }
+                else
+                {
+                    b0 = coeffs->coefficients[0];
+                    b1 = coeffs->coefficients[1];
+                    b2 = coeffs->coefficients[2];
+
                     a1 = coeffs->coefficients[3];
                     a2 = coeffs->coefficients[4];
-                    // Set del filtro IIR
+
+                    coefficientsNormalization(b0, b1, b2);
+
+                    fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
+                    processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
+
+                    ++ elementNr;
+
                     fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
                     processor.setFilter(magnitude, phase, FilterElement::POLE, elementNr);
 
                     ++ elementNr;
+
                 }
-                DBG(i);
-                for (auto val : coeffs->coefficients)
-                    DBG(val);
             }
             for (; elementNr <= NUMBER_OF_FILTER_ELEMENTS; ++ elementNr)
-                processor.setUnactive(elementNr);
+                    processor.setUnactive(elementNr);
         } break;
 
         case 2: // Chebyshev II
@@ -2128,7 +2135,7 @@ BEGIN_JUCER_METADATA
   <SLIDER name="Stopband Amplitude" id="308fcfe400b70b27" memberName="stopbandAmplitude_slider"
           virtualName="" explicitFocusOrder="0" pos="1007 326 135 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
-          textboxoutline="0" min="-30.0" max="-21.0" int="0.1" style="LinearHorizontal"
+          textboxoutline="0" min="-35.0" max="-21.0" int="0.1" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <GENERICCOMPONENT name="gaussianPlane" id="f84485816497c4e3" memberName="gaussian_plane"
@@ -2475,7 +2482,7 @@ BEGIN_JUCER_METADATA
   <SLIDER name="Bandpass Amplitude" id="ef6299d4c0c90b49" memberName="bandpassAmplitude_slider"
           virtualName="" explicitFocusOrder="0" pos="1007 344 135 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
-          textboxoutline="0" min="-4.0" max="-0.1" int="0.1" style="LinearHorizontal"
+          textboxoutline="0" min="-10.0" max="-0.1" int="0.1" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="Stopband Amplitude" id="586783be637d3c53" memberName="stopbandAmplitude_label"

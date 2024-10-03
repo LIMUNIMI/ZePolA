@@ -202,6 +202,8 @@ void PolesAndZerosEQAudioProcessor::turnOnOffAllElements(bool option)
 
 void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr)
 {
+    if (elementNr > NUMBER_OF_FILTER_ELEMENTS)
+        return;
     parameters.getParameter(MAGNITUDE_NAME + std::to_string(elementNr))->setValueNotifyingHost(magnitude);
     parameters.getParameter(PHASE_NAME + std::to_string(elementNr))->setValueNotifyingHost(phase);
     parameters.getParameter(TYPE_NAME + std::to_string(elementNr))->setValueNotifyingHost(!type);
