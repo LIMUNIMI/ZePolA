@@ -75,9 +75,8 @@ public:
     void updateGUIHighpassShape();
     void updateGUIButterworth();
     void updateGUIChebyshevIandII();
-    void updateGUIHighOrder();
 
-    void setTransitionWidthRange (double frquency);
+    void setTransitionWidthRange();
 
     bool isEverythingSet ();
 

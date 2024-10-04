@@ -809,6 +809,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     frequency_design_slider.reset (new juce::Slider ("Frequency design slider"));
     addAndMakeVisible (frequency_design_slider.get());
     frequency_design_slider->setRange (0.0001, 1000, 0.0001);
+    frequency_design_slider->setValue(500);
     frequency_design_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     frequency_design_slider->setTextBoxStyle (juce::Slider::NoTextBox, true, 50, 20);
     frequency_design_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
@@ -996,8 +997,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     linLog = false;
     linLog_switch->setToggleState(false, juce::dontSendNotification);
-
-    updateDesignSliderFromFrequency(1, frequency_design_slider.get(), sampleRate);
 
     transition_width_label->setVisible(false);
     transition_width_slider->setVisible(false);
@@ -1355,6 +1354,7 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     {
         //[UserSliderCode_stopbandAmplitude_slider] -- add your slider handling code here..
         stopbandAmplitude = sliderThatWasMoved->getValue();
+        setTransitionWidthRange();
         //[/UserSliderCode_stopbandAmplitude_slider]
     }
     else if (sliderThatWasMoved == p1_slider.get())
@@ -1409,6 +1409,8 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     {
         //[UserSliderCode_frequency_design_slider] -- add your slider handling code here..
         updateFrequencyFromDesignSlider(frequency_design_slider.get(), frequency_label.get(), sampleRate);
+        if (type_box->getSelectedId() != 1 && type_box->getSelectedId() != 0)
+            setTransitionWidthRange();
         //[/UserSliderCode_frequency_design_slider]
     }
     else if (sliderThatWasMoved == transition_width_slider.get())
@@ -1421,6 +1423,7 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     {
         //[UserSliderCode_bandpassAmplitude_slider] -- add your slider handling code here..
         bandpassAmplitude = sliderThatWasMoved->getValue();
+        setTransitionWidthRange();
         //[/UserSliderCode_bandpassAmplitude_slider]
     }
 
@@ -1734,9 +1737,9 @@ void PluginEditor::updateReferenceFrequencies()
 void PluginEditor::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
 {
     double sliderValue = slider->getValue();
-    double frequency = (sliderValue * sampleRate) / 2.0;
+    int frequency = std::ceil((sliderValue * sampleRate) / 2.0);
 
-    label->setText(juce::String(juce::roundToInt(frequency)) + " Hz", juce::dontSendNotification);
+    label->setText(juce::String(frequency) + " Hz", juce::dontSendNotification);
 }
 
 void PluginEditor::updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate)
@@ -1748,10 +1751,9 @@ void PluginEditor::updateSliderFromFrequency(int frequency, juce::Slider* slider
 void PluginEditor::updateFrequencyFromDesignSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
 {
     double sliderValue = slider->getValue();
-    double frequency = (sliderValue * sampleRate) / 2000.0;
-    label->setText(juce::String(juce::roundToInt(frequency)) + " Hz", juce::dontSendNotification);
+    int frequency = std::ceil((sliderValue * sampleRate) / 2000.0);
+    label->setText(juce::String(frequency) + " Hz", juce::dontSendNotification);
     design_frequency = frequency;
-    setTransitionWidthRange(frequency);
 }
 
 void PluginEditor::updateDesignSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate)
@@ -1759,7 +1761,6 @@ void PluginEditor::updateDesignSliderFromFrequency(int frequency, juce::Slider* 
     double sliderValue = (frequency * 2000.0) / sampleRate;
     slider->setValue(sliderValue, juce::sendNotificationSync);
     design_frequency = frequency;
-    setTransitionWidthRange(frequency);
 }
 
 void PluginEditor::formatFrequencyInput(int& frequency, juce::Label *label, double sampleRate)
@@ -1832,6 +1833,8 @@ void PluginEditor::updateGUIButterworth()
 
     design_frequency_label->setBounds (1048, 208, 72, 20);
     frequency_design_slider->setBounds (1007, 230, 83, 25);
+    frequency_design_slider->setRange (0.0001, 999, 0.0001);
+    frequency_design_slider->setValue(0.0001);
     frequency_label->setBounds (1090, 230, 60, 25);
 
     for (juce::String order : SELECTABLE_ORDERS_BUTTERWORTH)
@@ -1851,7 +1854,12 @@ void PluginEditor::updateGUIChebyshevIandII()
 
     design_frequency_label->setBounds (1048, 148, 72, 20);
     frequency_design_slider->setBounds (1007, 170, 83, 25);
-//    frequency_design_slider->setRange(0.00001, roundToInt(0.499995 * processor.getSampleRate()));
+    auto minValue = std::ceil(0.00005 * 2000.0);
+    frequency_design_slider->setRange(minValue, std::floor(0.499945 * 2000.0));
+    frequency_design_slider->setValue(2000.0 * 0.25);
+    design_frequency = processor.getSampleRate() * 0.25;
+    setTransitionWidthRange();
+    
     frequency_label->setBounds (1090, 170, 60, 25);
 
     transition_width_label->setVisible(true);
@@ -1875,18 +1883,28 @@ void PluginEditor::updateGUIChebyshevIandII()
     calculate_button->setEnabled(true);
 }
 
-void PluginEditor::updateGUIHighOrder()
-{
-    DBG("modifica gui");
-}
-
-void PluginEditor::setTransitionWidthRange (double frequency)
+void PluginEditor::setTransitionWidthRange ()
 {
     double sampleRate = processor.getSampleRate();
-    double normalisedFrequency = frequency / sampleRate;
-    double minValue = 0.00001;
+    double normalisedFrequency = design_frequency / sampleRate;
+    double minValue = 0.0001;
     double maxValue = jmin(2 * normalisedFrequency - minValue, 2 * (0.5 - normalisedFrequency) - minValue);
-
+    const double interval = 0.00001;
+    const int maxOrder = 8;
+   
+    auto Gp = Decibels::decibelsToGain (bandpassAmplitude, -300.0);
+    auto Gs = Decibels::decibelsToGain (stopbandAmplitude, -300.0);
+    
+    double X = acosh( sqrt(1 / (Gs * Gs) - 1.0)  /  sqrt(1 / (Gp * Gp) - 1.0));
+    
+    double Y = acosh( tan(MathConstants<double>::pi * (normalisedFrequency + minValue / 2)) / tan(MathConstants<double>::pi * (normalisedFrequency - minValue / 2)));
+    
+    while (roundToInt(std::ceil(X / Y)) > maxOrder)
+    {
+        minValue += interval;
+        Y = acosh( tan(MathConstants<double>::pi * (normalisedFrequency + minValue / 2)) / tan(MathConstants<double>::pi * (normalisedFrequency - minValue / 2)));
+    }
+   
     transition_width_slider->setRange(minValue, maxValue);
     transition_width_slider->setValue(minValue);
 }
@@ -1969,9 +1987,8 @@ void PluginEditor::ChebyshevDesignAndSetup(const double design_frequency, const 
             int elementNr = 1;
 
             if (iirCoefficients.size() > 4)
-                updateGUIHighOrder();
-
-
+                DBG("high order");
+            
             for (int i = 0; i < iirCoefficients.size(); ++ i)
             {
                 const auto& coeffs = iirCoefficients[i];
@@ -2015,7 +2032,7 @@ void PluginEditor::ChebyshevDesignAndSetup(const double design_frequency, const 
 
         case 2: // Chebyshev II
         {
-
+            
         } break;
     }
 }
