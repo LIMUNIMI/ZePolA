@@ -27,6 +27,16 @@
 #include "GUImiscellaneous.h"
 #include "Parameters.h"
 
+#define GRAPHS_QUALITY                          2048
+#define NUMBER_OF_REFERENCE_FREQUENCIES         8
+#define FREQUENCY_FLOOR                         10.0
+
+#define DESIGN_FREQUENCY_FLOOR                  1.0
+
+#define SELECTABLE_FILTER_TYPES                 {"BUTTERWORTH", "CHEBYSHEV I", "CHEBYSHEV II"}
+
+#define SELECTABLE_ORDERS_BUTTERWORTH           {"2", "4", "6", "8"}
+
 typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 //[/Headers]
@@ -81,7 +91,7 @@ public:
     bool isEverythingSet ();
 
     void butterworthDesignAndSetup(const double design_frequency, const double sampleRate, const int order, int shape);
-    void ChebyshevDesignAndSetup(const double design_frequency, const double sampleRate, const double normalisedTransitionWidth, const double passbandAmplitudedB, const double stopbandAmplitudedB, const int type);
+    void chebyshevDesignAndSetup(const double design_frequency, const double sampleRate, const double normalisedTransitionWidth, const double passbandAmplitudedB, const double stopbandAmplitudedB, const int type, const int shape);
 
     void filterDesignCalculation();
     //[/UserMethods]
@@ -110,7 +120,7 @@ private:
     int design_type;
     int design_shape;
     int design_filters_to_activate;
-    int design_frequency;
+    int design_frequency = DESIGN_FREQUENCY_FLOOR;
     double transition_width = 0.001;
     double bandpassAmplitude = -0.1;
     double stopbandAmplitude = -21;

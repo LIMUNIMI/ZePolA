@@ -21,17 +21,6 @@
 #include "Parameters.h"
 #include <cmath>
 #include <JuceHeader.h>
-
-#define GRAPHS_QUALITY                          2048
-#define NUMBER_OF_REFERENCE_FREQUENCIES         8
-#define FREQUENCY_FLOOR                         10.0
-
-#define DESIGN_FREQUENCY_FLOOR                  1.0
-
-#define SELECTABLE_FILTER_TYPES                 {"BUTTERWORTH", "CHEBYSHEV I", "CHEBYSHEV II"}
-
-#define SELECTABLE_ORDERS_BUTTERWORTH           {"2", "4", "6", "8"}
-
 //[/Headers]
 
 #include "PluginEditor.h"
@@ -809,7 +798,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     frequency_design_slider.reset (new juce::Slider ("Frequency design slider"));
     addAndMakeVisible (frequency_design_slider.get());
     frequency_design_slider->setRange (0.0001, 1000, 0.0001);
-    frequency_design_slider->setValue(500);
     frequency_design_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     frequency_design_slider->setTextBoxStyle (juce::Slider::NoTextBox, true, 50, 20);
     frequency_design_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
@@ -1859,7 +1847,7 @@ void PluginEditor::updateGUIChebyshevIandII()
     frequency_design_slider->setValue(2000.0 * 0.25);
     design_frequency = processor.getSampleRate() * 0.25;
     setTransitionWidthRange();
-    
+
     frequency_label->setBounds (1090, 170, 60, 25);
 
     transition_width_label->setVisible(true);
@@ -1891,20 +1879,20 @@ void PluginEditor::setTransitionWidthRange ()
     double maxValue = jmin(2 * normalisedFrequency - minValue, 2 * (0.5 - normalisedFrequency) - minValue);
     const double interval = 0.00001;
     const int maxOrder = 8;
-   
+
     auto Gp = Decibels::decibelsToGain (bandpassAmplitude, -300.0);
     auto Gs = Decibels::decibelsToGain (stopbandAmplitude, -300.0);
-    
+
     double X = acosh( sqrt(1 / (Gs * Gs) - 1.0)  /  sqrt(1 / (Gp * Gp) - 1.0));
-    
+
     double Y = acosh( tan(MathConstants<double>::pi * (normalisedFrequency + minValue / 2)) / tan(MathConstants<double>::pi * (normalisedFrequency - minValue / 2)));
-    
+
     while (roundToInt(std::ceil(X / Y)) > maxOrder)
     {
         minValue += interval;
         Y = acosh( tan(MathConstants<double>::pi * (normalisedFrequency + minValue / 2)) / tan(MathConstants<double>::pi * (normalisedFrequency - minValue / 2)));
     }
-   
+
     transition_width_slider->setRange(minValue, maxValue);
     transition_width_slider->setValue(minValue);
 }
@@ -1974,7 +1962,7 @@ void PluginEditor::butterworthDesignAndSetup(const double design_frequency, cons
         processor.setUnactive(elementNr);
 }
 
-void PluginEditor::ChebyshevDesignAndSetup(const double design_frequency, const double sampleRate, const double normalisedTransitionWidth, const double passbandAmplitudedB, const double stopbandAmplitudedB, const int type)
+void PluginEditor::chebyshevDesignAndSetup(const double design_frequency, const double sampleRate, const double normalisedTransitionWidth, const double passbandAmplitudedB, const double stopbandAmplitudedB, const int type, const int shape)
 {
     switch (type)
     {
@@ -1986,20 +1974,28 @@ void PluginEditor::ChebyshevDesignAndSetup(const double design_frequency, const 
             double magnitude, phase;
             int elementNr = 1;
 
-            if (iirCoefficients.size() > 4)
-                DBG("high order");
-            
             for (int i = 0; i < iirCoefficients.size(); ++ i)
             {
                 const auto& coeffs = iirCoefficients[i];
 
                 if (coeffs->coefficients.size() == 3)
                 {
-                    std::complex<double> zero = - coeffs->coefficients[1] / coeffs->coefficients[0];
+                    std::complex<double> zero;
+                    std::complex<double> pole;
+                    if (shape)
+                    {
+                        zero = - (- coeffs->coefficients[1]) / coeffs->coefficients[0];
+                        pole = - ( - coeffs->coefficients[2]);
+                    }
+                    else
+                    {
+                        zero = - coeffs->coefficients[1] / coeffs->coefficients[0];
+                        pole = - coeffs->coefficients[2];
+                    }
+
                     processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr);
                     ++ elementNr;
 
-                    std::complex<double> pole = - coeffs->coefficients[2];
                     processor.setFilter(std::abs(pole), std::arg(pole), FilterElement::POLE, elementNr);
                     ++ elementNr;
                 }
@@ -2014,14 +2010,24 @@ void PluginEditor::ChebyshevDesignAndSetup(const double design_frequency, const 
 
                     coefficientsNormalization(b0, b1, b2);
 
+                    if (shape)
+                    {
+                        b1 = - b1;
+                        a1 = - a1;
+                    }
+
                     fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
-                    processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
+
+                    std::complex<double> zero = std::polar(magnitude, phase);
+
+                    processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr);
 
                     ++ elementNr;
 
                     fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
-                    processor.setFilter(magnitude, phase, FilterElement::POLE, elementNr);
+                    std::complex<double> pole = std::polar(magnitude, phase);
 
+                    processor.setFilter(std::abs(pole), std::arg(pole), FilterElement::POLE, elementNr);
                     ++ elementNr;
 
                 }
@@ -2032,7 +2038,7 @@ void PluginEditor::ChebyshevDesignAndSetup(const double design_frequency, const 
 
         case 2: // Chebyshev II
         {
-            
+
         } break;
     }
 }
@@ -2055,12 +2061,12 @@ void PluginEditor::filterDesignCalculation()
 
                 case 2: // LOWPASS CHEBYSHEV I
                 {
-                    ChebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 1);
+                    chebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 1, 0);
                 } break;
 
                 case 3: // LOWPASS CHEBYSHEV II
                 {
-                    ChebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 2);
+                    chebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 2, 1);
                 } break;
             }
         } break;
@@ -2076,12 +2082,12 @@ void PluginEditor::filterDesignCalculation()
 
                 case 2: // HIGHPASS CHEBYSHEV I
                 {
-
+                    chebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 1, 2);
                 } break;
 
                 case 3: // HIGHPASS CHEBYSHEV II
                 {
-
+                    chebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 2, 2);
                 } break;
             }
         } break;
