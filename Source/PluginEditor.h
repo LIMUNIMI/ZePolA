@@ -77,7 +77,7 @@ public:
     void formatDesignFrequencyInput(int& frequency, juce::Label* label, double sampleRate);
     void updateDesignFrequencySlider(short int option);
     void setTransitionWidthRange();
-    
+
     void updateGUIGivenShape();
     void updateGUIButterworth();
     void updateGUIEllipticChebyshevIandII();
@@ -93,9 +93,7 @@ public:
     void buttonClicked (juce::Button* buttonThatWasClicked) override;
     void labelTextChanged (juce::Label* labelThatHasChanged) override;
     void comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged) override;
-
-
-
+    
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     PolesAndZerosEQAudioProcessor& processor;

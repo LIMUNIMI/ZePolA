@@ -728,16 +728,16 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
     multiply_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    multiply_phases_button->setBounds (360, 505, 90, 30);
+    multiply_phases_button->setBounds (325, 536, 70, 25);
 
     divide_phases_button.reset (new juce::TextButton ("Divide phases"));
     addAndMakeVisible (divide_phases_button.get());
     divide_phases_button->setButtonText (juce::String());
     divide_phases_button->addListener (this);
-    divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff727272));
+    divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
     divide_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff727272));
 
-    divide_phases_button->setBounds (360, 555, 90, 30);
+    divide_phases_button->setBounds (410, 536, 70, 25);
 
     swap_button.reset (new juce::TextButton ("Swap poles/zeros"));
     addAndMakeVisible (swap_button.get());
@@ -746,25 +746,25 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     swap_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
     swap_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    swap_button->setBounds (360, 610, 90, 30);
+    swap_button->setBounds (360, 600, 90, 25);
 
     turn_on_button.reset (new juce::TextButton ("Turn on all the elements"));
     addAndMakeVisible (turn_on_button.get());
     turn_on_button->setButtonText (juce::String());
     turn_on_button->addListener (this);
-    turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff03c03c));
+    turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff73cc81));
     turn_on_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_on_button->setBounds (331, 450, 60, 20);
+    turn_on_button->setBounds (325, 481, 70, 25);
 
     turn_off_button.reset (new juce::TextButton ("Turn off all the elements"));
     addAndMakeVisible (turn_off_button.get());
     turn_off_button->setButtonText (juce::String());
     turn_off_button->addListener (this);
-    turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xffe86b5c));
+    turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xffe86d5c));
     turn_off_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_off_button->setBounds (415, 450, 60, 20);
+    turn_off_button->setBounds (410, 481, 70, 25);
 
     order_box.reset (new juce::ComboBox ("Design order"));
     addAndMakeVisible (order_box.get());
@@ -1309,7 +1309,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 360, y = 419, width = 90, height = 20;
+        int x = 360, y = 422, width = 90, height = 20;
         juce::String text (TRANS ("SETUP SHORTCUTS"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -2054,7 +2054,7 @@ BEGIN_JUCER_METADATA
           justification="36" typefaceStyle="SemiBold"/>
     <ROUNDRECT pos="310 415 185 260" cornerSize="14.5" fill="solid: 11b1b1b1"
                hasStroke="1" stroke="0.5, mitered, butt" strokeColour="solid: ff383838"/>
-    <TEXT pos="360 419 90 20" fill="solid: ff333333" hasStroke="0" text="SETUP SHORTCUTS"
+    <TEXT pos="360 422 90 20" fill="solid: ff333333" hasStroke="0" text="SETUP SHORTCUTS"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
   </BACKGROUND>
@@ -2357,23 +2357,23 @@ BEGIN_JUCER_METADATA
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Multiply phases" id="fd9508a1dc4c09ae" memberName="multiply_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="360 505 90 30" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="325 536 70 25" bgColOff="ff505050"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Divide phases" id="a62537b9345044f3" memberName="divide_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="360 555 90 30" bgColOff="ff727272"
+              virtualName="" explicitFocusOrder="0" pos="410 536 70 25" bgColOff="ff505050"
               bgColOn="ff727272" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Swap poles/zeros" id="938b23da9ff326b0" memberName="swap_button"
-              virtualName="" explicitFocusOrder="0" pos="360 610 90 30" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="360 600 90 25" bgColOff="ff505050"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn on all the elements" id="e4b8377926241c51" memberName="turn_on_button"
-              virtualName="" explicitFocusOrder="0" pos="331 450 60 20" bgColOff="ff03c03c"
+              virtualName="" explicitFocusOrder="0" pos="325 481 70 25" bgColOff="ff73cc81"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn off all the elements" id="f6c36c1c53a4a06d" memberName="turn_off_button"
-              virtualName="" explicitFocusOrder="0" pos="415 450 60 20" bgColOff="ffe86b5c"
+              virtualName="" explicitFocusOrder="0" pos="410 481 70 25" bgColOff="ffe86d5c"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <COMBOBOX name="Design order" id="a7c23e76d01914d5" memberName="order_box"

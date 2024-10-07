@@ -353,7 +353,7 @@ public:
                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
         auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
-        auto cornerSize = 8.0f;
+        auto cornerSize = 5.0f;
         
         juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
         
@@ -369,7 +369,7 @@ public:
         g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
         
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        g.setFont(juce::Font(8.0f, juce::Font::bold));
         juce::String text = "MULTIPLY PHASES";
         g.drawText(text, bounds, juce::Justification::centred);
     }
@@ -383,7 +383,7 @@ public:
                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
         auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
-        auto cornerSize = 8.0f;
+        auto cornerSize = 5.0f;
         
         juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
         
@@ -399,7 +399,7 @@ public:
         g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
         
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        g.setFont(juce::Font(8.0f, juce::Font::bold));
         juce::String text = "DIVIDE PHASES";
         g.drawText(text, bounds, juce::Justification::centred);
     }
@@ -459,7 +459,7 @@ public:
         g.drawRoundedRectangle(bounds, cornerSize, 1.5f);
         
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        g.setFont(juce::Font(8.0f, juce::Font::bold));
         juce::String text = "ALL ON";
         g.drawText(text, bounds, juce::Justification::centred);
     }
@@ -489,7 +489,7 @@ public:
         g.drawRoundedRectangle(bounds, cornerSize, 1.5f);
         
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        g.setFont(juce::Font(8.0f, juce::Font::bold));
         juce::String text = "ALL OFF";
         g.drawText(text, bounds, juce::Justification::centred);
     }
@@ -500,11 +500,11 @@ class ComboBoxTheme : public juce::LookAndFeel_V4
 public:
     ComboBoxTheme()
     {
-        setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xff333333));
+        setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xff505050));
         setColour(juce::ComboBox::textColourId, juce::Colours::white);
         setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff333333));
         setColour(juce::ComboBox::arrowColourId, juce::Colours::white);
-        setColour(juce::PopupMenu::backgroundColourId, juce::Colour(0xff707070));
+        setColour(juce::PopupMenu::backgroundColourId, juce::Colour(0xff555555));
         setColour(juce::PopupMenu::textColourId, juce::Colours::white);
         setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colour(0xff2e86c1));
         setColour(juce::PopupMenu::highlightedTextColourId, juce::Colours::black);
@@ -538,7 +538,16 @@ public:
 
     void drawPopupMenuBackground(juce::Graphics& g, int width, int height) override
     {
-        g.fillAll(findColour(juce::PopupMenu::backgroundColourId));
+        auto cornerSize = 5.0f;
+        juce::Rectangle<float> bounds(0, 0, width, height);
+        
+        g.fillAll(juce::Colour(0xffc4c6c7));
+
+        g.setColour(findColour(juce::PopupMenu::backgroundColourId));
+        g.fillRoundedRectangle(bounds, cornerSize);
+
+        g.setColour(findColour(juce::ComboBox::outlineColourId));
+        g.drawRoundedRectangle(bounds.reduced(0.5f), cornerSize, 1.0f);
     }
 
     void drawPopupMenuItem(juce::Graphics& g, const juce::Rectangle<int>& area, const bool isSeparator, const bool isActive,
