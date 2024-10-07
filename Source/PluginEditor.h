@@ -33,7 +33,7 @@
 
 #define DESIGN_FREQUENCY_FLOOR                  1.0
 
-#define SELECTABLE_FILTER_TYPES                 {"BUTTERWORTH", "CHEBYSHEV I", "CHEBYSHEV II"}
+#define SELECTABLE_FILTER_TYPES                 {"BUTTERWORTH", "CHEBYSHEV I", "CHEBYSHEV II", "ELLIPTIC"}
 
 #define SELECTABLE_ORDERS_BUTTERWORTH           {"2", "4", "6", "8"}
 
@@ -80,20 +80,19 @@ public:
 
     void coefficientsNormalization(double& c0, double& c1, double& c2);
     void fromCoefficientsToMagnitudeAndPhase(double& mg, double& ph, double c1, double c2);
+    
+    void updateDesignFrequencySlider(short int option);
 
-    void updateGUILowpassShape();
-    void updateGUIHighpassShape();
+    void updateGUIGivenShape();
     void updateGUIButterworth();
-    void updateGUIChebyshevIandII();
+    void updateGUIEllipticChebyshevIandII();
 
     void setTransitionWidthRange();
-
-    bool isEverythingSet ();
 
     void butterworthDesignAndSetup(const double design_frequency, const double sampleRate, const int order, int shape);
     void chebyshevDesignAndSetup(const double design_frequency, const double sampleRate, const double normalisedTransitionWidth, const double passbandAmplitudedB, const double stopbandAmplitudedB, const int type, const int shape);
 
-    void filterDesignCalculation();
+    void filterDesignAndSetup ();
     //[/UserMethods]
 
     void paint (juce::Graphics& g) override;
@@ -121,9 +120,9 @@ private:
     int design_shape;
     int design_filters_to_activate;
     int design_frequency;
-    double transition_width;
-    double bandpassAmplitude = -0.1;
-    double stopbandAmplitude = -21;
+    double normalisedTransitionWidth;
+    double passbandAmplitudedB = -0.1;
+    double stopbandAmplitudedB = -21;
 
     std::vector<juce::String> selectable_filter_types;
     std::vector<juce::String> selectable_orders_butterworth;
