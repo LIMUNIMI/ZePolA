@@ -997,6 +997,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     calculate_button->setEnabled(false);
 
+    updateDesignSliderFromFrequency(DESIGN_FREQUENCY_FLOOR, frequency_design_slider.get(), sampleRate);
     //[/UserPreSize]
 
     setSize (1200, 750);
@@ -1846,6 +1847,9 @@ void PluginEditor::updateGUIChebyshevIandII()
     frequency_design_slider->setRange(minValue, std::floor(0.499945 * 2000.0));
     frequency_design_slider->setValue(2000.0 * 0.25);
     design_frequency = processor.getSampleRate() * 0.25;
+
+    bandpassAmplitude_slider->setValue(bandpassAmplitude);
+    stopbandAmplitude_slider->setValue(stopbandAmplitude);
     setTransitionWidthRange();
 
     frequency_label->setBounds (1090, 170, 60, 25);
@@ -1895,6 +1899,7 @@ void PluginEditor::setTransitionWidthRange ()
 
     transition_width_slider->setRange(minValue, maxValue);
     transition_width_slider->setValue(minValue);
+    transition_width = transition_width_slider->getValue();
 }
 
 void PluginEditor::coefficientsNormalization (double& c0, double& c1, double& c2)
@@ -1912,7 +1917,6 @@ void PluginEditor::fromCoefficientsToMagnitudeAndPhase (double& mg, double& ph, 
 
 bool PluginEditor::isEverythingSet ()
 {
-    // Caso butterworth
     if (design_type == 1)
     {
         if (order_box->getSelectedId())
@@ -1926,11 +1930,13 @@ bool PluginEditor::isEverythingSet ()
 void PluginEditor::butterworthDesignAndSetup(const double design_frequency, const double sampleRate, const int order, int shape)
 {
     juce::ReferenceCountedArray<juce::dsp::IIR::Coefficients<double>> iirCoefficients;
+    
+    double cutoff = design_frequency;
 
     if (shape)
-        iirCoefficients = juce::dsp::FilterDesign<double>::designIIRHighpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
-    else
-        iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderButterworthMethod(design_frequency, sampleRate, order);
+        cutoff = sampleRate * 0.5 - design_frequency;
+    
+    iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderButterworthMethod(cutoff, sampleRate, order);
 
     double b0, b1, b2, a1, a2;
     double magnitude, phase;
@@ -1947,6 +1953,12 @@ void PluginEditor::butterworthDesignAndSetup(const double design_frequency, cons
         a2 = coeffs->coefficients[4];
 
         coefficientsNormalization(b0, b1, b2);
+        
+        if (shape)
+        {
+            b1 = - b1;
+            a1 = - a1;
+        }
 
         fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
         processor.setFilter(magnitude, phase, FilterElement::ZERO, elementNr);
@@ -1969,7 +1981,13 @@ void PluginEditor::chebyshevDesignAndSetup(const double design_frequency, const 
         case 1: // Chebyshev I
         {
             juce::ReferenceCountedArray<juce::dsp::IIR::Coefficients<double>> iirCoefficients;
-            iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderChebyshev1Method(design_frequency, sampleRate, normalisedTransitionWidth, passbandAmplitudedB, stopbandAmplitudedB);
+            
+            double cutoff = design_frequency;
+            
+            if (shape)
+                cutoff = sampleRate * 0.5 - design_frequency;
+                
+            iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderChebyshev1Method(cutoff, sampleRate, normalisedTransitionWidth, passbandAmplitudedB, stopbandAmplitudedB);
             double b0, b1, b2, a1, a2;
             double magnitude, phase;
             int elementNr = 1;
@@ -2038,6 +2056,87 @@ void PluginEditor::chebyshevDesignAndSetup(const double design_frequency, const 
 
         case 2: // Chebyshev II
         {
+            juce::ReferenceCountedArray<juce::dsp::IIR::Coefficients<double>> iirCoefficients;
+            
+            double cutoff = design_frequency;
+            
+            if (shape)
+            {
+                DBG("here");
+                DBG(shape);
+                cutoff = sampleRate * 0.5 - design_frequency;
+            }
+                
+            iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderChebyshev2Method(cutoff, sampleRate, normalisedTransitionWidth, passbandAmplitudedB, stopbandAmplitudedB);
+            double b0, b1, b2, a1, a2;
+            double magnitude, phase;
+            int elementNr = 1;
+
+            DBG("Coeffcients: ");
+            for (int i = 0; i < iirCoefficients.size(); ++ i)
+            {
+                const auto& coeffs = iirCoefficients[i];
+
+                DBG("\nelement " << i + 1);
+                for (auto& val : coeffs->coefficients)
+                    DBG(val);
+                
+                if (coeffs->coefficients.size() == 3)
+                {
+                    std::complex<double> zero;
+                    std::complex<double> pole;
+                    if (shape)
+                    {
+                        zero = - (- coeffs->coefficients[1]) / coeffs->coefficients[0];
+                        pole = - ( - coeffs->coefficients[2]);
+                    }
+                    else
+                    {
+                        zero = - coeffs->coefficients[1] / coeffs->coefficients[0];
+                        pole = - coeffs->coefficients[2];
+                    }
+
+                    processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr);
+                    ++ elementNr;
+
+                    processor.setFilter(std::abs(pole), std::arg(pole), FilterElement::POLE, elementNr);
+                    ++ elementNr;
+                }
+                else
+                {
+                    b0 = coeffs->coefficients[0];
+                    b1 = coeffs->coefficients[1];
+                    b2 = coeffs->coefficients[2];
+
+                    a1 = coeffs->coefficients[3];
+                    a2 = coeffs->coefficients[4];
+
+                    coefficientsNormalization(b0, b1, b2);
+
+                    if (shape)
+                    {
+                        b1 = - b1;
+                        a1 = - a1;
+                    }
+
+                    fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
+
+                    std::complex<double> zero = std::polar(magnitude, phase);
+
+                    processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr);
+
+                    ++ elementNr;
+
+                    fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
+                    std::complex<double> pole = std::polar(magnitude, phase);
+
+                    processor.setFilter(std::abs(pole), std::arg(pole), FilterElement::POLE, elementNr);
+                    ++ elementNr;
+
+                }
+            }
+            for (; elementNr <= NUMBER_OF_FILTER_ELEMENTS; ++ elementNr)
+                    processor.setUnactive(elementNr);
 
         } break;
     }
@@ -2066,7 +2165,7 @@ void PluginEditor::filterDesignCalculation()
 
                 case 3: // LOWPASS CHEBYSHEV II
                 {
-                    chebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 2, 1);
+                    chebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 2, 0);
                 } break;
             }
         } break;
@@ -2082,12 +2181,12 @@ void PluginEditor::filterDesignCalculation()
 
                 case 2: // HIGHPASS CHEBYSHEV I
                 {
-                    chebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 1, 2);
+                    chebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 1, 1);
                 } break;
 
                 case 3: // HIGHPASS CHEBYSHEV II
                 {
-                    chebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 2, 2);
+                    chebyshevDesignAndSetup(design_frequency, sampleRate, transition_width, bandpassAmplitude, stopbandAmplitude, 2, 1);
                 } break;
             }
         } break;

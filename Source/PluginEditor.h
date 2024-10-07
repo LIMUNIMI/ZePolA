@@ -120,8 +120,8 @@ private:
     int design_type;
     int design_shape;
     int design_filters_to_activate;
-    int design_frequency = DESIGN_FREQUENCY_FLOOR;
-    double transition_width = 0.001;
+    int design_frequency;
+    double transition_width;
     double bandpassAmplitude = -0.1;
     double stopbandAmplitude = -21;
 
