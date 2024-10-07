@@ -1641,9 +1641,12 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
             calculate_button->setEnabled(true);
         //[/UserComboBoxCode_order_box]
     }
+
     //[UsercomboBoxChanged_Post]
     //[/UsercomboBoxChanged_Post]
 }
+
+
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void PluginEditor::getSpectrum()
@@ -1767,7 +1770,7 @@ void PluginEditor::updateDesignFrequencySlider(short int option)
             updateDesignSliderFromFrequency(design_frequency, frequency_design_slider.get(), sampleRate);
             frequency_label->setBounds (1090, 230, 60, 25);
         } break;
-            
+
         case 2:
         {
             design_frequency_label->setBounds (1048, 148, 72, 20);
@@ -1775,9 +1778,9 @@ void PluginEditor::updateDesignFrequencySlider(short int option)
             auto minValue = std::ceil(0.00005 * 2000.0);
             auto maxValue = std::floor(0.499945 * 2000.0);
             frequency_design_slider->setRange(minValue, maxValue);
-            
+
             auto sliderValue = (design_frequency * 2000.0) / sampleRate;
-            
+
             if (minValue <= sliderValue && sliderValue <= maxValue)
                 frequency_design_slider->setValue(sliderValue);
             else
@@ -1787,79 +1790,6 @@ void PluginEditor::updateDesignFrequencySlider(short int option)
             }
         } break;
     }
-}
-
-void PluginEditor::updateGUIGivenShape()
-{
-    type_box->clear();
-    order_box->clear();
-    int i = 1;
-    for (juce::String& type : selectable_filter_types)
-    {
-        type_box->addItem(type, i);
-        ++ i;
-    }
-    calculate_button->setEnabled(false);
-}
-
-void PluginEditor::updateGUIButterworth()
-{
-    calculate_button->setEnabled(false);
-    
-    order_box->clear();
-    order_box->setVisible(true);
-
-    transition_width_label->setVisible(false);
-    transition_width_slider->setVisible(false);
-
-    bandpassAmplitude_label->setVisible(false);
-    bandpassAmplitude_slider->setVisible(false);
-
-    stopbandAmplitude_label->setVisible(false);
-    stopbandAmplitude_slider->setVisible(false);
-    
-    updateDesignFrequencySlider(1);
-
-    for (juce::String order : SELECTABLE_ORDERS_BUTTERWORTH)
-    {
-        int int_order = order.getIntValue();
-        int attenuation = 6 * int_order;
-        juce::String stringToVisualize = order + "  (-" + juce::String(attenuation) + " db / octave";
-        order_box->addItem(stringToVisualize, int_order);
-    }
-}
-
-void PluginEditor::updateGUIEllipticChebyshevIandII()
-{
-    order_box->setVisible(false);
-    
-    updateDesignFrequencySlider(2);
-    
-    bandpassAmplitude_slider->setValue(passbandAmplitudedB);
-    stopbandAmplitude_slider->setValue(stopbandAmplitudedB);
-    setTransitionWidthRange();
-
-    frequency_label->setBounds (1090, 170, 60, 25);
-
-    transition_width_label->setVisible(true);
-    transition_width_label->setBounds(1020, 195, 129, 20);
-
-    transition_width_slider->setVisible(true);
-    transition_width_slider->setBounds (1007, 219, 134, 25);
-
-    bandpassAmplitude_label->setVisible(true);
-    bandpassAmplitude_label->setBounds (1005, 250, 159, 20);
-
-    bandpassAmplitude_slider->setVisible(true);
-    bandpassAmplitude_slider->setBounds (1007, 274, 135, 25);
-
-    stopbandAmplitude_label->setVisible(true);
-    stopbandAmplitude_label->setBounds(1005, 305, 159, 20);
-
-    stopbandAmplitude_slider->setVisible(true);
-    stopbandAmplitude_slider->setBounds(1007, 329, 135, 25);
-
-    calculate_button->setEnabled(true);
 }
 
 void PluginEditor::setTransitionWidthRange ()
@@ -1889,6 +1819,79 @@ void PluginEditor::setTransitionWidthRange ()
     normalisedTransitionWidth = transition_width_slider->getValue();
 }
 
+void PluginEditor::updateGUIGivenShape()
+{
+    type_box->clear();
+    order_box->clear();
+    int i = 1;
+    for (juce::String& type : selectable_filter_types)
+    {
+        type_box->addItem(type, i);
+        ++ i;
+    }
+    calculate_button->setEnabled(false);
+}
+
+void PluginEditor::updateGUIButterworth()
+{
+    calculate_button->setEnabled(false);
+
+    order_box->clear();
+    order_box->setVisible(true);
+
+    transition_width_label->setVisible(false);
+    transition_width_slider->setVisible(false);
+
+    bandpassAmplitude_label->setVisible(false);
+    bandpassAmplitude_slider->setVisible(false);
+
+    stopbandAmplitude_label->setVisible(false);
+    stopbandAmplitude_slider->setVisible(false);
+
+    updateDesignFrequencySlider(1);
+
+    for (juce::String order : SELECTABLE_ORDERS_BUTTERWORTH)
+    {
+        int int_order = order.getIntValue();
+        int attenuation = 6 * int_order;
+        juce::String stringToVisualize = order + "  (-" + juce::String(attenuation) + " db / octave";
+        order_box->addItem(stringToVisualize, int_order);
+    }
+}
+
+void PluginEditor::updateGUIEllipticChebyshevIandII()
+{
+    order_box->setVisible(false);
+
+    updateDesignFrequencySlider(2);
+
+    bandpassAmplitude_slider->setValue(passbandAmplitudedB);
+    stopbandAmplitude_slider->setValue(stopbandAmplitudedB);
+    setTransitionWidthRange();
+
+    frequency_label->setBounds (1090, 170, 60, 25);
+
+    transition_width_label->setVisible(true);
+    transition_width_label->setBounds(1020, 195, 129, 20);
+
+    transition_width_slider->setVisible(true);
+    transition_width_slider->setBounds (1007, 219, 134, 25);
+
+    bandpassAmplitude_label->setVisible(true);
+    bandpassAmplitude_label->setBounds (1005, 250, 159, 20);
+
+    bandpassAmplitude_slider->setVisible(true);
+    bandpassAmplitude_slider->setBounds (1007, 274, 135, 25);
+
+    stopbandAmplitude_label->setVisible(true);
+    stopbandAmplitude_label->setBounds(1005, 305, 159, 20);
+
+    stopbandAmplitude_slider->setVisible(true);
+    stopbandAmplitude_slider->setBounds(1007, 329, 135, 25);
+
+    calculate_button->setEnabled(true);
+}
+
 void PluginEditor::coefficientsNormalization (double& c0, double& c1, double& c2)
 {
     c1 /= c0;
@@ -1906,50 +1909,50 @@ void PluginEditor::filterDesignAndSetup()
 {
     const double sampleRate = processor.getSampleRate();
     const int order = design_filters_to_activate;
-    
+
     juce::ReferenceCountedArray<juce::dsp::IIR::Coefficients<double>> iirCoefficients;
-    
+
     double cutoff = design_frequency;
-    
+
     if (design_shape == 2)
         cutoff = sampleRate * 0.5 - design_frequency;
-    
+
     switch (design_type)
     {
         case 1:
         {
             iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderButterworthMethod(cutoff, sampleRate, order);
         } break;
-            
+
         case 2:
         {
             iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderChebyshev1Method(cutoff, sampleRate, normalisedTransitionWidth, passbandAmplitudedB, stopbandAmplitudedB);
         } break;
-            
+
         case 3:
         {
             iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderChebyshev2Method(cutoff, sampleRate, normalisedTransitionWidth, passbandAmplitudedB, stopbandAmplitudedB);
         } break;
-            
+
         case 4:
         {
             iirCoefficients = juce::dsp::FilterDesign<double>::designIIRLowpassHighOrderEllipticMethod(cutoff, sampleRate, normalisedTransitionWidth, passbandAmplitudedB, stopbandAmplitudedB);
         } break;
     }
-    
+
     double b0, b1, b2, a1, a2;
     double magnitude, phase;
     int elementNr = 1;
-    
+
     for (int i = 0; i < iirCoefficients.size(); ++ i)
     {
         const auto& coeffs = iirCoefficients[i];
-        
+
         if (coeffs->coefficients.size() == 3)
         {
             std::complex<double> zero;
             std::complex<double> pole;
-            
+
             if (design_shape == 2)
             {
                 zero = - (- coeffs->coefficients[1]) / coeffs->coefficients[0];
@@ -1981,21 +1984,21 @@ void PluginEditor::filterDesignAndSetup()
                 b1 = - b1;
                 a1 = - a1;
             }
-            
+
             coefficientsNormalization(b0, b1, b2);
-            
+
             fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
             std::complex<double> zero = std::polar(magnitude, phase);
             processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr);
             ++ elementNr;
-            
+
             fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
             std::complex<double> pole = std::polar(magnitude, phase);
             processor.setFilter(std::abs(pole), std::arg(pole), FilterElement::POLE, elementNr);
             ++ elementNr;
         }
     }
-    
+
     for (; elementNr <= NUMBER_OF_FILTER_ELEMENTS; ++ elementNr)
             processor.setUnactive(elementNr);
 }

@@ -67,8 +67,6 @@ public:
     void getSpectrum ();
     void updateReferenceFrequencies();
 
-    void updateDraggablePoints (std::vector<std::shared_ptr<FilterElement>>& elements);
-
     void updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
     void updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
 
@@ -77,21 +75,15 @@ public:
 
     void formatFrequencyInput(int& frequency, juce::Label* label, double sampleRate);
     void formatDesignFrequencyInput(int& frequency, juce::Label* label, double sampleRate);
-
-    void coefficientsNormalization(double& c0, double& c1, double& c2);
-    void fromCoefficientsToMagnitudeAndPhase(double& mg, double& ph, double c1, double c2);
-    
     void updateDesignFrequencySlider(short int option);
-
+    void setTransitionWidthRange();
+    
     void updateGUIGivenShape();
     void updateGUIButterworth();
     void updateGUIEllipticChebyshevIandII();
 
-    void setTransitionWidthRange();
-
-    void butterworthDesignAndSetup(const double design_frequency, const double sampleRate, const int order, int shape);
-    void chebyshevDesignAndSetup(const double design_frequency, const double sampleRate, const double normalisedTransitionWidth, const double passbandAmplitudedB, const double stopbandAmplitudedB, const int type, const int shape);
-
+    void coefficientsNormalization(double& c0, double& c1, double& c2);
+    void fromCoefficientsToMagnitudeAndPhase(double& mg, double& ph, double c1, double c2);
     void filterDesignAndSetup ();
     //[/UserMethods]
 
