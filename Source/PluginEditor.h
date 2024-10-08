@@ -93,7 +93,9 @@ public:
     void buttonClicked (juce::Button* buttonThatWasClicked) override;
     void labelTextChanged (juce::Label* labelThatHasChanged) override;
     void comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged) override;
-    
+
+
+
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     PolesAndZerosEQAudioProcessor& processor;
@@ -127,24 +129,23 @@ private:
 
     MagnitudeSliderTheme magnitudeSlidersTheme;
     PhaseSliderTheme phaseSlidersTheme;
+    GainSliderTheme gainSliderTheme;
 
     TypeSwitchTheme typeSwitchesTheme;
-    ActiveSwitchTheme activeSwitchesTheme;
-
-    ResetButtonTheme resetButtonTheme;
-    GainSliderTheme gainSliderTheme;
-    BypassSwitchTheme bypassSwitchTheme;
-
     LinLogSwitchTheme linLogTheme;
     AmpDbSwitchTheme ampDbTheme;
 
-    CalculateButtonTheme calculateButtonTheme;
+    ActiveSwitchTheme activeSwitchesTheme;
+    BypassSwitchTheme bypassSwitchTheme;
 
-    MultiplyPhasesButtonTheme multiplyButtonTheme;
-    DividePhasesButtonTheme divideButtonTheme;
-    SwapElementsButtonTheme swapButtonTheme;
-    TurnOnAllElementsButtonTheme turnOnAllElementsButtonTheme;
-    TurnOffAllElementsButtonTheme turnOffAllElementsButtonTheme;
+    GenericBigButtonTheme resetButtonTheme;
+    GenericBigButtonTheme calculateButtonTheme;
+
+    GenericSmallButtonTheme turnAllOnTheme;
+    GenericSmallButtonTheme turnAllOffTheme;
+    GenericSmallButtonTheme multiplyPhasesTheme;
+    GenericSmallButtonTheme dividePhasesTheme;
+    GenericSmallButtonTheme swapButtonTheme;
 
     ComboBoxTheme comboBoxTheme;
     //[/UserVariables]

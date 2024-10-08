@@ -3,6 +3,9 @@
 #define LED_ON_COLOUR           0xffff5f58
 #define LED_OFF_COLOUR          0xff781a13
 
+/*
+ The LEDComponent class represents the implementation of a digital LED.
+*/
 class LEDComponent : public juce::Component
 {
 public:

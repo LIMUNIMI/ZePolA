@@ -184,8 +184,11 @@ void PolesAndZerosEQAudioProcessor::swapElements()
         newType = true;
         auto currentType = elements[i - 1]->getType();
         if (currentType == FilterElement::ZERO)
+        {
             newType = false;
-        
+            if (elements[i - 1]->getMagnitude() == 1.0)
+                parameters.getParameter(MAGNITUDE_NAME + std::to_string(i))->setValueNotifyingHost(POLE_MAX_MAGNITUDE);
+        }
         parameters.getParameter(TYPE_NAME + std::to_string(i))->setValueNotifyingHost(newType);
     }
 }

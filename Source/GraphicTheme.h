@@ -19,6 +19,9 @@
 #define AMP_COLOUR                          0xffa6acaf
 #define DB_COLOUR                           0xff626567
 
+/*
+ The MagnitudeSliderTheme class implements a look and feel for magnitude sliders.
+*/
 class MagnitudeSliderTheme : public LookAndFeel_V4
 {
 public:
@@ -41,6 +44,9 @@ public:
     }
 };
 
+/*
+ The PhaseSliderTheme class implements a look and feel for magnitude sliders.
+*/
 class PhaseSliderTheme : public LookAndFeel_V4
 {
 public:
@@ -63,6 +69,9 @@ public:
     }
 };
 
+/*
+ The GainSliderTheme class implements a look and feel for phase sliders.
+*/
 class GainSliderTheme : public LookAndFeel_V4
 {
 public:
@@ -85,6 +94,9 @@ public:
     }
 };
 
+/*
+ The TypeSwitchTheme class implements a look and feel for type switches.
+*/
 class TypeSwitchTheme : public juce::LookAndFeel_V4
 {
 public:
@@ -124,8 +136,9 @@ public:
         }
 };
 
-
-
+/*
+ The ActiveSwitchTheme class implements a look and feel for active switches.
+*/
 class ActiveSwitchTheme : public juce::LookAndFeel_V4
 {
 public:
@@ -165,36 +178,9 @@ public:
     }
 };
 
-class ResetButtonTheme : public LookAndFeel_V4
-{
-public:
-    
-    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
-                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
-    {
-        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
-        auto cornerSize = 8.0f;
-        
-        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
-        
-        if (shouldDrawButtonAsDown)
-            baseColour = baseColour.darker(0.4f);
-        else if (shouldDrawButtonAsHighlighted)
-            baseColour = baseColour.brighter(0.4f);
-        
-        g.setColour(baseColour);
-        g.fillRoundedRectangle(bounds, cornerSize);
-        
-        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
-        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
-        
-        g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(11.0f, juce::Font::bold));
-        juce::String text = "RESET";
-        g.drawText(text, bounds, juce::Justification::centred);
-    }
-};
-
+/*
+ The BypassSwitchTheme class implements a look and feel for the bypass button.
+*/
 class BypassSwitchTheme : public juce::LookAndFeel_V4
 {
 public:
@@ -227,13 +213,18 @@ public:
         g.fillRoundedRectangle(buttonRect, 5.0f);
 
         g.setColour(juce::Colours::white);
-        float fontSize = button.getToggleState() ? 10.5f : 11.0f;
-        g.setFont(juce::Font(fontSize, juce::Font::bold));
+        float fontSize = button.getToggleState() ? 11.5f : 12.0f;
+        juce::Font font("Gill Sans", fontSize, juce::Font::bold);
+        font.setTypefaceStyle("SemiBold");
+        g.setFont(font);
         juce::String text = "BYPASS";
         g.drawText(text, switchRect, juce::Justification::centred);
     }
 };
 
+/*
+ The LinLogSwitchTheme class implements a look and feel for the lin/log switch.
+*/
 class LinLogSwitchTheme : public juce::LookAndFeel_V4
 {
 public:
@@ -273,6 +264,9 @@ public:
         }
 };
 
+/*
+ The AmpDbSwitchTheme class implements a look and feel for the amp/dB switch.
+*/
 class AmpDbSwitchTheme : public juce::LookAndFeel_V4
 {
 public:
@@ -315,9 +309,10 @@ public:
         }
 };
 
-class CalculateButtonTheme : public LookAndFeel_V4
+class GenericBigButtonTheme : public LookAndFeel_V4
 {
 public:
+    GenericBigButtonTheme (juce::String textToDisplay = "") : text(textToDisplay) {}
     
     void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
@@ -339,105 +334,25 @@ public:
         g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
         
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(11.0f, juce::Font::bold));
-        juce::String text = "CALCULATE";
+        juce::Font font("Gill Sans", 12.0f, juce::Font::bold);
+        font.setTypefaceStyle("SemiBold");
+        g.setFont(font);
         g.drawText(text, bounds, juce::Justification::centred);
     }
-};
-
-class MultiplyPhasesButtonTheme : public LookAndFeel_V4
-{
-public:
     
-    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
-                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    void setTextToDisplay (juce::String textToDisplay)
     {
-        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
-        auto cornerSize = 5.0f;
-        
-        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
-        
-        if (shouldDrawButtonAsDown)
-            baseColour = baseColour.darker(0.4f);
-        else if (shouldDrawButtonAsHighlighted)
-            baseColour = baseColour.brighter(0.4f);
-        
-        g.setColour(baseColour);
-        g.fillRoundedRectangle(bounds, cornerSize);
-        
-        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
-        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
-        
-        g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(8.0f, juce::Font::bold));
-        juce::String text = "MULTIPLY PHASES";
-        g.drawText(text, bounds, juce::Justification::centred);
+        text = textToDisplay;
     }
-};
-
-class DividePhasesButtonTheme : public LookAndFeel_V4
-{
-public:
     
-    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
-                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
-    {
-        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
-        auto cornerSize = 5.0f;
-        
-        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
-        
-        if (shouldDrawButtonAsDown)
-            baseColour = baseColour.darker(0.4f);
-        else if (shouldDrawButtonAsHighlighted)
-            baseColour = baseColour.brighter(0.4f);
-        
-        g.setColour(baseColour);
-        g.fillRoundedRectangle(bounds, cornerSize);
-        
-        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
-        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
-        
-        g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(8.0f, juce::Font::bold));
-        juce::String text = "DIVIDE PHASES";
-        g.drawText(text, bounds, juce::Justification::centred);
-    }
+private:
+    juce::String text = "";
 };
 
-class SwapElementsButtonTheme : public LookAndFeel_V4
+class GenericSmallButtonTheme : public LookAndFeel_V4
 {
 public:
-    
-    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
-                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
-    {
-        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
-        auto cornerSize = 8.0f;
-        
-        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
-        
-        if (shouldDrawButtonAsDown)
-            baseColour = baseColour.darker(0.4f);
-        else if (shouldDrawButtonAsHighlighted)
-            baseColour = baseColour.brighter(0.4f);
-        
-        g.setColour(baseColour);
-        g.fillRoundedRectangle(bounds, cornerSize);
-        
-        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
-        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
-        
-        g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(9.0f, juce::Font::bold));
-        juce::String text = "SWAP POLES/ZEROS";
-        g.drawText(text, bounds, juce::Justification::centred);
-    }
-};
-
-class TurnOnAllElementsButtonTheme : public LookAndFeel_V4
-{
-public:
+    GenericSmallButtonTheme (juce::String textToDisplay = "") : text(textToDisplay) {}
     
     void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
@@ -459,52 +374,34 @@ public:
         g.drawRoundedRectangle(bounds, cornerSize, 1.5f);
         
         g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(8.0f, juce::Font::bold));
-        juce::String text = "ALL ON";
+        juce::Font font("Gill Sans", 9.0f, juce::Font::bold);
+        font.setTypefaceStyle("SemiBold");
+        g.setFont(font);
         g.drawText(text, bounds, juce::Justification::centred);
     }
-};
-
-class TurnOffAllElementsButtonTheme : public LookAndFeel_V4
-{
-public:
     
-    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
-                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    void setTextToDisplay (juce::String textToDisplay)
     {
-        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
-        auto cornerSize = 5.0f;
-        
-        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
-        
-        if (shouldDrawButtonAsDown)
-            baseColour = baseColour.darker(0.4f);
-        else if (shouldDrawButtonAsHighlighted)
-            baseColour = baseColour.brighter(0.4f);
-        
-        g.setColour(baseColour);
-        g.fillRoundedRectangle(bounds, cornerSize);
-        
-        g.setColour(juce::Colours::black);
-        g.drawRoundedRectangle(bounds, cornerSize, 1.5f);
-        
-        g.setColour(juce::Colours::white);
-        g.setFont(juce::Font(8.0f, juce::Font::bold));
-        juce::String text = "ALL OFF";
-        g.drawText(text, bounds, juce::Justification::centred);
+        text = textToDisplay;
     }
+    
+private:
+    juce::String text = "";
 };
 
+/*
+ The ComboBoxTheme class implements a look and feel for a combo box.
+*/
 class ComboBoxTheme : public juce::LookAndFeel_V4
 {
 public:
     ComboBoxTheme()
     {
-        setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xff505050));
+        setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xff363738));
         setColour(juce::ComboBox::textColourId, juce::Colours::white);
-        setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff333333));
+        setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff252525));
         setColour(juce::ComboBox::arrowColourId, juce::Colours::white);
-        setColour(juce::PopupMenu::backgroundColourId, juce::Colour(0xff555555));
+        setColour(juce::PopupMenu::backgroundColourId, juce::Colour(0xff363738).brighter(0.05));
         setColour(juce::PopupMenu::textColourId, juce::Colours::white);
         setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colour(0xff2e86c1));
         setColour(juce::PopupMenu::highlightedTextColourId, juce::Colours::black);
@@ -528,9 +425,13 @@ public:
         g.drawRoundedRectangle(boxBounds.toFloat().reduced(0.5f), cornerSize, 1.0f);
 
         juce::Path arrowPath;
-        arrowPath.addTriangle(0.0f, 0.0f, 10.0f, 0.0f, 5.0f, 7.0f);
-        auto arrowX = (float)buttonX + (float)buttonW * 0.5f - 5.0f;
-        auto arrowY = (float)buttonY + (float)buttonH * 0.5f - 3.5f;
+        float baseWidth = 8.0f;
+        float arrowHeight = 5.0f;
+
+        arrowPath.addTriangle(0.0f, 0.0f, baseWidth, 0.0f, baseWidth * 0.5f, arrowHeight);
+
+        auto arrowX = buttonX + buttonW * 0.5f - (baseWidth * 0.5f);
+        auto arrowY = buttonY + buttonH * 0.5f - (arrowHeight * 0.5f);
 
         g.setColour(findColour(juce::ComboBox::arrowColourId));
         g.fillPath(arrowPath, juce::AffineTransform::translation(arrowX, arrowY));

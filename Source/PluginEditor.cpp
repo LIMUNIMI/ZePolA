@@ -90,7 +90,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (reset_button.get());
     reset_button->setButtonText (juce::String());
     reset_button->addListener (this);
-    reset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    reset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
     reset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
     reset_button->setBounds (1010, 520, 70, 30);
@@ -716,7 +716,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (calculate_button.get());
     calculate_button->setButtonText (juce::String());
     calculate_button->addListener (this);
-    calculate_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    calculate_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
     calculate_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
     calculate_button->setBounds (1070, 362, 90, 30);
@@ -725,28 +725,28 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (multiply_phases_button.get());
     multiply_phases_button->setButtonText (juce::String());
     multiply_phases_button->addListener (this);
-    multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
     multiply_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    multiply_phases_button->setBounds (325, 536, 70, 25);
+    multiply_phases_button->setBounds (315, 540, 80, 28);
 
     divide_phases_button.reset (new juce::TextButton ("Divide phases"));
     addAndMakeVisible (divide_phases_button.get());
     divide_phases_button->setButtonText (juce::String());
     divide_phases_button->addListener (this);
-    divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
     divide_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff727272));
 
-    divide_phases_button->setBounds (410, 536, 70, 25);
+    divide_phases_button->setBounds (405, 540, 80, 28);
 
     swap_button.reset (new juce::TextButton ("Swap poles/zeros"));
     addAndMakeVisible (swap_button.get());
     swap_button->setButtonText (juce::String());
     swap_button->addListener (this);
-    swap_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff505050));
+    swap_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
     swap_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    swap_button->setBounds (360, 600, 90, 25);
+    swap_button->setBounds (355, 605, 90, 28);
 
     turn_on_button.reset (new juce::TextButton ("Turn on all the elements"));
     addAndMakeVisible (turn_on_button.get());
@@ -755,7 +755,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff73cc81));
     turn_on_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_on_button->setBounds (325, 481, 70, 25);
+    turn_on_button->setBounds (315, 475, 80, 28);
 
     turn_off_button.reset (new juce::TextButton ("Turn off all the elements"));
     addAndMakeVisible (turn_off_button.get());
@@ -764,7 +764,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xffe86d5c));
     turn_off_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_off_button->setBounds (410, 481, 70, 25);
+    turn_off_button->setBounds (405, 475, 80, 28);
 
     order_box.reset (new juce::ComboBox ("Design order"));
     addAndMakeVisible (order_box.get());
@@ -933,6 +933,8 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p7_slider->setLookAndFeel(&phaseSlidersTheme);
     p8_slider->setLookAndFeel(&phaseSlidersTheme);
 
+    gain_slider->setLookAndFeel(&gainSliderTheme);
+
     e1_type->setLookAndFeel(&typeSwitchesTheme);
     e2_type->setLookAndFeel(&typeSwitchesTheme);
     e3_type->setLookAndFeel(&typeSwitchesTheme);
@@ -941,6 +943,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e6_type->setLookAndFeel(&typeSwitchesTheme);
     e7_type->setLookAndFeel(&typeSwitchesTheme);
     e8_type->setLookAndFeel(&typeSwitchesTheme);
+
+    linLog_switch->setLookAndFeel(&linLogTheme);
+    ampDb_switch->setLookAndFeel(&ampDbTheme);
 
     e1_active->setLookAndFeel(&activeSwitchesTheme);
     e2_active->setLookAndFeel(&activeSwitchesTheme);
@@ -951,23 +956,35 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e7_active->setLookAndFeel(&activeSwitchesTheme);
     e8_active->setLookAndFeel(&activeSwitchesTheme);
 
-    reset_button->setLookAndFeel(&resetButtonTheme);
-    gain_slider->setLookAndFeel(&gainSliderTheme);
     bypass->setLookAndFeel(&bypassSwitchTheme);
-    linLog_switch->setLookAndFeel(&linLogTheme);
-    ampDb_switch->setLookAndFeel(&ampDbTheme);
+
+    resetButtonTheme.setTextToDisplay("RESET");
+    reset_button->setLookAndFeel(&resetButtonTheme);
+
+    calculateButtonTheme.setTextToDisplay("CALCULATE");
     calculate_button->setLookAndFeel(&calculateButtonTheme);
-    multiply_phases_button->setLookAndFeel(&multiplyButtonTheme);
-    divide_phases_button->setLookAndFeel(&divideButtonTheme);
+
+    swapButtonTheme.setTextToDisplay("SWAP POLES/ZEROS");
     swap_button->setLookAndFeel(&swapButtonTheme);
-    turn_on_button->setLookAndFeel(&turnOnAllElementsButtonTheme);
-    turn_off_button->setLookAndFeel(&turnOffAllElementsButtonTheme);
+
+    multiplyPhasesTheme.setTextToDisplay("MULTIPLY PHASES");
+    multiply_phases_button->setLookAndFeel(&multiplyPhasesTheme);
+
+    dividePhasesTheme.setTextToDisplay("DIVIDE PHASES");
+    divide_phases_button->setLookAndFeel(&dividePhasesTheme);
+
+    turnAllOnTheme.setTextToDisplay("TURN ALL ON");
+    turn_on_button->setLookAndFeel(&turnAllOnTheme);
+
+    turnAllOffTheme.setTextToDisplay("TURN ALL OFF");
+    turn_off_button->setLookAndFeel(&turnAllOffTheme);
 
     type_box->setLookAndFeel(&comboBoxTheme);
     order_box->setLookAndFeel(&comboBoxTheme);
     shape_box->setLookAndFeel(&comboBoxTheme);
 
     frequency_design_slider->setLookAndFeel(&magnitudeSlidersTheme);
+    frequency_design_slider->setSkewFactor(0.2);
     transition_width_slider->setLookAndFeel(&magnitudeSlidersTheme);
     bandpassAmplitude_slider->setLookAndFeel(&magnitudeSlidersTheme);
     stopbandAmplitude_slider->setLookAndFeel(&magnitudeSlidersTheme);
@@ -1297,7 +1314,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 310.0f, y = 415.0f, width = 185.0f, height = 260.0f;
+        float x = 305.0f, y = 415.0f, width = 190.0f, height = 260.0f;
         juce::Colour fillColour = juce::Colour (0x11b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1309,7 +1326,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 360, y = 422, width = 90, height = 20;
+        int x = 355, y = 422, width = 90, height = 20;
         juce::String text (TRANS ("SETUP SHORTCUTS"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -2052,9 +2069,9 @@ BEGIN_JUCER_METADATA
     <TEXT pos="1116 475 40 20" fill="solid: ff333333" hasStroke="0" text="GAIN"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <ROUNDRECT pos="310 415 185 260" cornerSize="14.5" fill="solid: 11b1b1b1"
+    <ROUNDRECT pos="305 415 190 260" cornerSize="14.5" fill="solid: 11b1b1b1"
                hasStroke="1" stroke="0.5, mitered, butt" strokeColour="solid: ff383838"/>
-    <TEXT pos="360 422 90 20" fill="solid: ff333333" hasStroke="0" text="SETUP SHORTCUTS"
+    <TEXT pos="355 422 90 20" fill="solid: ff333333" hasStroke="0" text="SETUP SHORTCUTS"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
   </BACKGROUND>
@@ -2074,7 +2091,7 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="30 415 260 260" class="GaussianPlane"
                     params="processor.getFilterElementsChain()"/>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
-              virtualName="" explicitFocusOrder="0" pos="1010 520 70 30" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="1010 520 70 30" bgColOff="ff363738"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
@@ -2353,27 +2370,27 @@ BEGIN_JUCER_METADATA
             layout="33" items="LOWPASS&#10;HIGHPASS" textWhenNonSelected="SHAPE"
             textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="Calculate" id="6b0929d790004858" memberName="calculate_button"
-              virtualName="" explicitFocusOrder="0" pos="1070 362 90 30" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="1070 362 90 30" bgColOff="ff363738"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Multiply phases" id="fd9508a1dc4c09ae" memberName="multiply_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="325 536 70 25" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="315 540 80 28" bgColOff="ff363738"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Divide phases" id="a62537b9345044f3" memberName="divide_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="410 536 70 25" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="405 540 80 28" bgColOff="ff363738"
               bgColOn="ff727272" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Swap poles/zeros" id="938b23da9ff326b0" memberName="swap_button"
-              virtualName="" explicitFocusOrder="0" pos="360 600 90 25" bgColOff="ff505050"
+              virtualName="" explicitFocusOrder="0" pos="355 605 90 28" bgColOff="ff363738"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn on all the elements" id="e4b8377926241c51" memberName="turn_on_button"
-              virtualName="" explicitFocusOrder="0" pos="325 481 70 25" bgColOff="ff73cc81"
+              virtualName="" explicitFocusOrder="0" pos="315 475 80 28" bgColOff="ff73cc81"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn off all the elements" id="f6c36c1c53a4a06d" memberName="turn_off_button"
-              virtualName="" explicitFocusOrder="0" pos="410 481 70 25" bgColOff="ffe86d5c"
+              virtualName="" explicitFocusOrder="0" pos="405 475 80 28" bgColOff="ffe86d5c"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <COMBOBOX name="Design order" id="a7c23e76d01914d5" memberName="order_box"
