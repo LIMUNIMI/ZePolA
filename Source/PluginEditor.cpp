@@ -93,7 +93,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     reset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
     reset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    reset_button->setBounds (1010, 520, 70, 30);
+    reset_button->setBounds (1010, 510, 70, 30);
 
     frequency_response.reset (new FrequencyResponse (magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb));
     addAndMakeVisible (frequency_response.get());
@@ -376,7 +376,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (bypass.get());
     bypass->setButtonText (juce::String());
 
-    bypass->setBounds (1010, 600, 70, 30);
+    bypass->setBounds (1010, 590, 70, 30);
 
     gain_slider.reset (new juce::Slider ("Gain"));
     addAndMakeVisible (gain_slider.get());
@@ -388,7 +388,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     gain_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x008e989b));
 
-    gain_slider->setBounds (1115, 495, 45, 180);
+    gain_slider->setBounds (1115, 470, 45, 180);
 
     linLog_switch.reset (new juce::ToggleButton ("Linear / Logarithmic"));
     addAndMakeVisible (linLog_switch.get());
@@ -874,6 +874,15 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     stopbandAmplitude_label->setBounds (1005, 302, 159, 20);
 
+    autoGain_button.reset (new juce::TextButton ("Auto Gain"));
+    addAndMakeVisible (autoGain_button.get());
+    autoGain_button->setButtonText (juce::String());
+    autoGain_button->addListener (this);
+    autoGain_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
+    autoGain_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    autoGain_button->setBounds (1109, 662, 60, 25);
+
 
     //[UserPreSize]
     magnitudesAttachments[0].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
@@ -960,6 +969,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     resetButtonTheme.setTextToDisplay("RESET");
     reset_button->setLookAndFeel(&resetButtonTheme);
+
+    autoGainButtonTheme.setTextToDisplay("AUTO GAIN");
+    autoGain_button->setLookAndFeel(&autoGainButtonTheme);
 
     calculateButtonTheme.setTextToDisplay("CALCULATE");
     calculate_button->setLookAndFeel(&calculateButtonTheme);
@@ -1119,6 +1131,7 @@ PluginEditor::~PluginEditor()
     transition_width_slider = nullptr;
     bandpassAmplitude_slider = nullptr;
     stopbandAmplitude_label = nullptr;
+    autoGain_button = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1302,7 +1315,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1116, y = 475, width = 40, height = 20;
+        int x = 1116, y = 455, width = 40, height = 20;
         juce::String text (TRANS ("GAIN"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1414,7 +1427,7 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     else if (sliderThatWasMoved == frequency_design_slider.get())
     {
         //[UserSliderCode_frequency_design_slider] -- add your slider handling code here..
-        updateFrequencyFromDesignSlider(frequency_design_slider.get(), frequency_label.get(), sampleRate);
+        design_frequency = updateFrequencyFromDesignSlider(frequency_design_slider.get(), frequency_label.get(), sampleRate);
         if (type_box->getSelectedId() > 1)
             setTransitionWidthRange();
         //[/UserSliderCode_frequency_design_slider]
@@ -1549,6 +1562,12 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
         //[/UserButtonCode_ampDb_switch]
     }
+    else if (buttonThatWasClicked == autoGain_button.get())
+    {
+        //[UserButtonCode_autoGain_button] -- add your button handler code here..
+        setAutoGain();
+        //[/UserButtonCode_autoGain_button]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -1617,7 +1636,7 @@ void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
     else if (labelThatHasChanged == frequency_label.get())
     {
         //[UserLabelCode_frequency_label] -- add your label text handling code here..
-        updateDesignSliderFromFrequency(newFrequency, frequency_design_slider.get(), sampleRate);
+        design_frequency = updateDesignSliderFromFrequency(newFrequency, frequency_design_slider.get(), sampleRate);
         //[/UserLabelCode_frequency_label]
     }
 
@@ -1681,6 +1700,8 @@ void PluginEditor::getSpectrum()
     auto n2 = log(0.5) - log(FREQUENCY_FLOOR / sampleRate);
     std::complex<double> spectrum;
 
+    const double gain = processor.getCurrentGain();
+
     for (int i = 0; i < GRAPHS_QUALITY; ++ i)
     {
         if (linLog)
@@ -1689,7 +1710,7 @@ void PluginEditor::getSpectrum()
             phi = exp(n1 + (n2 * (static_cast<double>(i) / (static_cast<double>(GRAPHS_QUALITY - 1))))); // Log spectrum
 
         spectrum = processor.getFilterSpectrum(phi);
-        magnitudes[i] = processor.getCurrentGain() * std::abs(spectrum);
+        magnitudes[i] = gain * std::abs(spectrum);
         phases[i] = (pi + std::arg(spectrum)) / twoPi;
     }
 }
@@ -1715,6 +1736,15 @@ void PluginEditor::updateReferenceFrequencies()
     }
 }
 
+void PluginEditor::setAutoGain()
+{
+    auto currentGain = processor.getCurrentGain();
+    auto iteratorToMaxMagnitude = std::max_element(magnitudes.begin(), magnitudes.end());
+
+    auto autoGainLinearValue = 1.0 / (*iteratorToMaxMagnitude / currentGain);
+    processor.setdBGain(Decibels::gainToDecibels(autoGainLinearValue));
+}
+
 void PluginEditor::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
 {
     double sliderValue = slider->getValue();
@@ -1729,19 +1759,21 @@ void PluginEditor::updateSliderFromFrequency(int frequency, juce::Slider* slider
     slider->setValue(sliderValue, juce::sendNotificationSync);
 }
 
-void PluginEditor::updateFrequencyFromDesignSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
+double PluginEditor::updateFrequencyFromDesignSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
 {
     double sliderValue = slider->getValue();
     int frequency = std::ceil((sliderValue * sampleRate) / 2000.0);
     label->setText(juce::String(frequency) + " Hz", juce::dontSendNotification);
-    design_frequency = frequency;
+
+    return frequency;
 }
 
-void PluginEditor::updateDesignSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate)
+double PluginEditor::updateDesignSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate)
 {
     double sliderValue = (frequency * 2000.0) / sampleRate;
     slider->setValue(sliderValue, juce::sendNotificationSync);
-    design_frequency = frequency;
+
+    return std::ceil((slider->getValue() * sampleRate) / 2000.0);
 }
 
 void PluginEditor::formatFrequencyInput(int& frequency, juce::Label *label, double sampleRate)
@@ -2066,7 +2098,7 @@ BEGIN_JUCER_METADATA
     <TEXT pos="1025 20 110 24" fill="solid: ff333333" hasStroke="0" text="FILTER DESIGN"
           fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <TEXT pos="1116 475 40 20" fill="solid: ff333333" hasStroke="0" text="GAIN"
+    <TEXT pos="1116 455 40 20" fill="solid: ff333333" hasStroke="0" text="GAIN"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
     <ROUNDRECT pos="305 415 190 260" cornerSize="14.5" fill="solid: 11b1b1b1"
@@ -2091,7 +2123,7 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="30 415 260 260" class="GaussianPlane"
                     params="processor.getFilterElementsChain()"/>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
-              virtualName="" explicitFocusOrder="0" pos="1010 520 70 30" bgColOff="ff363738"
+              virtualName="" explicitFocusOrder="0" pos="1010 510 70 30" bgColOff="ff363738"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
@@ -2227,10 +2259,10 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="465 374 17 17" class="LEDComponent"
                     params="*e8_active"/>
   <TOGGLEBUTTON name="Bypass" id="4daf2a36bc47407c" memberName="bypass" virtualName=""
-                explicitFocusOrder="0" pos="1010 600 70 30" buttonText="" connectedEdges="0"
+                explicitFocusOrder="0" pos="1010 590 70 30" buttonText="" connectedEdges="0"
                 needsCallback="0" radioGroupId="0" state="0"/>
   <SLIDER name="Gain" id="7e880f1fc774c2af" memberName="gain_slider" virtualName=""
-          explicitFocusOrder="0" pos="1115 495 45 180" thumbcol="ffffffff"
+          explicitFocusOrder="0" pos="1115 470 45 180" thumbcol="ffffffff"
           textboxtext="ff383838" textboxhighlight="66686868" textboxoutline="8e989b"
           min="0.0" max="10.0" int="0.0" style="LinearVertical" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="100" textBoxHeight="20" skewFactor="1.0"
@@ -2440,6 +2472,10 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
+  <TEXTBUTTON name="Auto Gain" id="be8da27f0b03bb8" memberName="autoGain_button"
+              virtualName="" explicitFocusOrder="0" pos="1109 662 60 25" bgColOff="ff363738"
+              bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

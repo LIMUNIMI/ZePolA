@@ -10,7 +10,9 @@ public:
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
-
+    
+    template <typename TargetType, typename SourceType>
+    void castBuffer(AudioBuffer<TargetType>& destination, const AudioBuffer<SourceType>& source, const int numChannels, const int numSamples);
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void processBlockBypassed (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
@@ -36,7 +38,7 @@ public:
     
     void setUnactive (const int elementNr);
     
-    std::complex<double> getFilterSpectrum (const double phi);
+    std::complex<double> getFilterSpectrum(const double phi);
     std::vector<std::shared_ptr<FilterElement>> getFilterElementsChain ();
     
     void setEditorCallback(std::function<void()> callback)
@@ -46,11 +48,12 @@ public:
     
     void resetFilter ();
     
-    float getCurrentGain ();
+    float getCurrentGain();
+    void setdBGain(double newdBGain);
     
-    void multiplyPhases ();
-    void dividePhases ();
-    void swapElements ();
+    void multiplyPhases();
+    void dividePhases();
+    void swapElements();
     
     void turnOnOffAllElements(bool option);
     
@@ -63,8 +66,7 @@ private:
     
     PolesAndZerosCascade filter;
     
-    juce::dsp::Gain<float> gainProcessor;
-    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> smoothedGain;
+    juce::dsp::Gain<double> gainProcessor;
     
     bool active = true;
     

@@ -2,6 +2,7 @@
 #include "PluginProcessor.h"
 #include "Parameters.h"
 #include "PluginEditor.h"
+#include "Filter.h"
 
 PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor()
 : parameters(*this, nullptr, "PolesAndZero-EQ", Parameters::createParameterLayout())
@@ -30,16 +31,33 @@ void PolesAndZerosEQAudioProcessor::releaseResources ()
 {
 }
 
+template <typename TargetType, typename SourceType>
+void PolesAndZerosEQAudioProcessor::castBuffer(AudioBuffer<TargetType>& destination, const AudioBuffer<SourceType>& source, const int numChannels, const int numSamples)
+{
+    auto dst = destination.getArrayOfWritePointers();
+    auto src = source.getArrayOfReadPointers();
+
+    for (int ch = 0; ch < numChannels; ++ch)
+        for (int smp = 0; smp < numSamples; ++smp)
+            dst[ch][smp] = static_cast<TargetType>(src[ch][smp]);
+}
+
 void PolesAndZerosEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     
+    const auto numSamples = buffer.getNumSamples();
+    AudioBuffer<double> doubleBuffer(1, numSamples);
+    castBuffer(doubleBuffer, buffer, 1, numSamples);
+
     if (!active) return;
 
-    filter.processBlock(buffer);
+    filter.processBlock(doubleBuffer);
     
-    juce::dsp::AudioBlock<float> block (buffer);
-    gainProcessor.process(juce::dsp::ProcessContextReplacing<float> (block));
+    juce::dsp::AudioBlock<double> block (doubleBuffer);
+    gainProcessor.process(juce::dsp::ProcessContextReplacing<double> (block));
+    
+    castBuffer(buffer, doubleBuffer, 1, numSamples);
 }
 
 void PolesAndZerosEQAudioProcessor::processBlockBypassed(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -143,6 +161,11 @@ void PolesAndZerosEQAudioProcessor::resetFilter ()
 float PolesAndZerosEQAudioProcessor::getCurrentGain ()
 {
     return gainProcessor.getGainLinear();
+}
+
+void PolesAndZerosEQAudioProcessor::setdBGain(double newdBGain)
+{
+    parameters.getParameter(GAIN_NAME)->setValueNotifyingHost(jmap(static_cast<float>(newdBGain), GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
 }
 
 void PolesAndZerosEQAudioProcessor::multiplyPhases()

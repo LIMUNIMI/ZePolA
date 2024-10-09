@@ -27,7 +27,6 @@
 #include "GUImiscellaneous.h"
 #include "Parameters.h"
 
-#define GRAPHS_QUALITY                          2048
 #define NUMBER_OF_REFERENCE_FREQUENCIES         8
 #define FREQUENCY_FLOOR                         10.0
 
@@ -66,12 +65,13 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     void getSpectrum ();
     void updateReferenceFrequencies();
+    void setAutoGain();
 
     void updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
     void updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
 
-    void updateFrequencyFromDesignSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
-    void updateDesignSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
+    double updateFrequencyFromDesignSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
+    double updateDesignSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
 
     void formatFrequencyInput(int& frequency, juce::Label* label, double sampleRate);
     void formatDesignFrequencyInput(int& frequency, juce::Label* label, double sampleRate);
@@ -141,6 +141,7 @@ private:
     GenericBigButtonTheme resetButtonTheme;
     GenericBigButtonTheme calculateButtonTheme;
 
+    GenericSmallButtonTheme autoGainButtonTheme;
     GenericSmallButtonTheme turnAllOnTheme;
     GenericSmallButtonTheme turnAllOffTheme;
     GenericSmallButtonTheme multiplyPhasesTheme;
@@ -232,6 +233,7 @@ private:
     std::unique_ptr<juce::Slider> transition_width_slider;
     std::unique_ptr<juce::Slider> bandpassAmplitude_slider;
     std::unique_ptr<juce::Label> stopbandAmplitude_label;
+    std::unique_ptr<juce::TextButton> autoGain_button;
 
 
     //==============================================================================

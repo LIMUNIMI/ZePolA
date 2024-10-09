@@ -413,22 +413,7 @@ public:
     {
         elements.push_back(std::make_unique<FilterElement>(type));
     }
-
-    /* The castBuffer method in the PolesAndZerosCascade class is a template
-     function that converts and copies audio data between two buffers of
-     potentially different data types.
-     */
-    template <typename TargetType, typename SourceType>
-    void castBuffer(AudioBuffer<TargetType>& destination, const AudioBuffer<SourceType>& source, const int numChannels, const int numSamples)
-    {
-        auto dst = destination.getArrayOfWritePointers();
-        auto src = source.getArrayOfReadPointers();
-
-        for (int ch = 0; ch < numChannels; ++ch)
-            for (int smp = 0; smp < numSamples; ++smp)
-                dst[ch][smp] = static_cast<TargetType>(src[ch][smp]);
-    }
-    
+   
     /* The processBlock method receives a reference to the audio buffer and is
      responsible for processing the audio. The general mechanism involves
      calling the individual processBlock method for each element in the filter
@@ -443,21 +428,13 @@ public:
      all samples in the buffer, calculated as the ratio between the input and
      output volumes.
     */
-    void processBlock (juce::AudioBuffer<float>& buffer)
+    void processBlock (juce::AudioBuffer<double>& buffer)
     {
         const auto numSamples = buffer.getNumSamples();
         
-        AudioBuffer<double> doubleBuffer(1, numSamples);
-        
-        castBuffer(doubleBuffer, buffer, 1, numSamples);
-        
         for (auto& element : elements)
-        {
             if (element->isActive())
-                element->processBlock(doubleBuffer, numSamples);
-        }
-            
-        castBuffer(buffer, doubleBuffer, 1, numSamples);
+                element->processBlock(buffer, numSamples);
     }
     
 private:

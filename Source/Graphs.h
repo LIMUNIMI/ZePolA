@@ -211,7 +211,7 @@ class PhaseResponse : public GraphicResponse
         float offsetY = 0;
         for (auto phase : referencePhases)
         {
-            if (i != 0 and i != 4)
+            if (i != 0 && i != 4)
             {
                 offsetY = -10;
                 g.setColour(juce::Colour(GRID_COLOUR));
