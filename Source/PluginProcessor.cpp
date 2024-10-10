@@ -97,7 +97,7 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
     
     if (parameterID == "GAIN")
     {
-        gainProcessor.setGainDecibels(newValue);
+        gainProcessor.setGainLinear(Decibels::decibelsToGain(newValue, GAIN_FLOOR));
     }
     
     juce::String parameter = parameterID.substring(0, 1);

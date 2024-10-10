@@ -1350,6 +1350,18 @@ void PluginEditor::paint (juce::Graphics& g)
                     juce::Justification::centred, true);
     }
 
+    {
+        int x = 1157, y = 631, width = 23, height = 20;
+        juce::String text (TRANS ("dB"));
+        juce::Colour fillColour = juce::Colour (0xff333333);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+        g.drawText (text, x, y, width, height,
+                    juce::Justification::centred, true);
+    }
+
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
@@ -1741,8 +1753,9 @@ void PluginEditor::setAutoGain()
     auto currentGain = processor.getCurrentGain();
     auto iteratorToMaxMagnitude = std::max_element(magnitudes.begin(), magnitudes.end());
 
-    auto autoGainLinearValue = 1.0 / (*iteratorToMaxMagnitude / currentGain);
-    processor.setdBGain(Decibels::gainToDecibels(autoGainLinearValue));
+    float autoGainLinearValue = 1.0 / (*iteratorToMaxMagnitude / currentGain);
+
+    processor.setdBGain(Decibels::gainToDecibels(autoGainLinearValue, GAIN_FLOOR));
 }
 
 void PluginEditor::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
@@ -2105,6 +2118,9 @@ BEGIN_JUCER_METADATA
                hasStroke="1" stroke="0.5, mitered, butt" strokeColour="solid: ff383838"/>
     <TEXT pos="355 422 90 20" fill="solid: ff333333" hasStroke="0" text="SETUP SHORTCUTS"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
+          justification="36" typefaceStyle="SemiBold"/>
+    <TEXT pos="1157 631 23 20" fill="solid: ff333333" hasStroke="0" text="dB"
+          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
   </BACKGROUND>
   <LABEL name="Bandpass Amplitude" id="a57ca268c3802211" memberName="bandpassAmplitude_label"
