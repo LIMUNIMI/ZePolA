@@ -138,15 +138,15 @@ private:
     ActiveSwitchTheme activeSwitchesTheme;
     BypassSwitchTheme bypassSwitchTheme;
 
-    GenericBigButtonTheme resetButtonTheme;
-    GenericBigButtonTheme calculateButtonTheme;
+    GenericButtonTheme resetButtonTheme;
+    GenericButtonTheme calculateButtonTheme;
 
-    GenericSmallButtonTheme autoGainButtonTheme;
-    GenericSmallButtonTheme turnAllOnTheme;
-    GenericSmallButtonTheme turnAllOffTheme;
-    GenericSmallButtonTheme multiplyPhasesTheme;
-    GenericSmallButtonTheme dividePhasesTheme;
-    GenericSmallButtonTheme swapButtonTheme;
+    GenericButtonTheme autoGainButtonTheme;
+    GenericButtonTheme turnAllOnTheme;
+    GenericButtonTheme turnAllOffTheme;
+    GenericButtonTheme multiplyPhasesTheme;
+    GenericButtonTheme dividePhasesTheme;
+    GenericButtonTheme swapButtonTheme;
 
     ComboBoxTheme comboBoxTheme;
     //[/UserVariables]

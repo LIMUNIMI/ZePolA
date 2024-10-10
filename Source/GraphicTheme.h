@@ -16,8 +16,8 @@
 #define GAIN_SLIDER_BORDER_COLOUR           0xff626567
 #define LIN_COLOUR                          0xcd3498d8
 #define LOG_COLOUR                          0xcde74c3c
-#define AMP_COLOUR                          0xffa6acaf
-#define DB_COLOUR                           0xff626567
+#define AMP_COLOUR                          0xffcacfd2
+#define DB_COLOUR                           0xff909497
 
 /*
  The MagnitudeSliderTheme class implements a look and feel for magnitude sliders.
@@ -170,7 +170,10 @@ public:
         juce::Rectangle<float> buttonRect(xOffset, yOffset, switchWidth, switchHeight);
         g.fillRoundedRectangle(buttonRect, 5.0f);
 
-        g.setColour(juce::Colours::white);
+        if (button.getToggleState())
+            g.setColour(juce::Colours::white);
+        else
+            g.setColour(juce::Colours::black);
         float fontSize = button.getToggleState() ? 10.0f : 10.5f;
         g.setFont(juce::Font(fontSize, juce::Font::bold));
         juce::String text = button.getToggleState() ? "ON" : "OFF";
@@ -213,7 +216,7 @@ public:
         g.fillRoundedRectangle(buttonRect, 5.0f);
 
         g.setColour(juce::Colours::white);
-        float fontSize = button.getToggleState() ? 11.5f : 12.0f;
+        float fontSize = button.getToggleState() ? 11.0f : 12.0f;
         juce::Font font("Gill Sans", fontSize, juce::Font::bold);
         font.setTypefaceStyle("SemiBold");
         g.setFont(font);
@@ -309,50 +312,10 @@ public:
         }
 };
 
-class GenericBigButtonTheme : public LookAndFeel_V4
+class GenericButtonTheme : public LookAndFeel_V4
 {
 public:
-    GenericBigButtonTheme (juce::String textToDisplay = "") : text(textToDisplay) {}
-    
-    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
-                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
-    {
-        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
-        auto cornerSize = 8.0f;
-        
-        juce::Colour baseColour = button.getToggleState() ? backgroundColour.darker() : backgroundColour;
-        
-        if (shouldDrawButtonAsDown)
-            baseColour = baseColour.darker(0.4f);
-        else if (shouldDrawButtonAsHighlighted)
-            baseColour = baseColour.brighter(0.4f);
-        
-        g.setColour(baseColour);
-        g.fillRoundedRectangle(bounds, cornerSize);
-        
-        g.setColour(button.findColour(juce::ComboBox::outlineColourId));
-        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
-        
-        g.setColour(juce::Colours::white);
-        juce::Font font("Gill Sans", 12.0f, juce::Font::bold);
-        font.setTypefaceStyle("SemiBold");
-        g.setFont(font);
-        g.drawText(text, bounds, juce::Justification::centred);
-    }
-    
-    void setTextToDisplay (juce::String textToDisplay)
-    {
-        text = textToDisplay;
-    }
-    
-private:
-    juce::String text = "";
-};
-
-class GenericSmallButtonTheme : public LookAndFeel_V4
-{
-public:
-    GenericSmallButtonTheme (juce::String textToDisplay = "") : text(textToDisplay) {}
+    GenericButtonTheme (juce::String textToDisplay = "", float size = 9.0f) : text(textToDisplay), fontSize(size) {}
     
     void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
@@ -373,8 +336,7 @@ public:
         g.setColour(juce::Colours::black);
         g.drawRoundedRectangle(bounds, cornerSize, 1.5f);
         
-        g.setColour(juce::Colours::white);
-        juce::Font font("Gill Sans", 9.0f, juce::Font::bold);
+        juce::Font font("Gill Sans", fontSize, juce::Font::bold);
         font.setTypefaceStyle("SemiBold");
         g.setFont(font);
         g.drawText(text, bounds, juce::Justification::centred);
@@ -385,8 +347,14 @@ public:
         text = textToDisplay;
     }
     
+    void setFontSize (float size)
+    {
+        fontSize = size;
+    }
+    
 private:
     juce::String text = "";
+    float fontSize;
 };
 
 /*
@@ -397,13 +365,14 @@ class ComboBoxTheme : public juce::LookAndFeel_V4
 public:
     ComboBoxTheme()
     {
-        setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xff363738));
+        juce::Colour colour = juce::Colour(0xff909497).darker(0.2);
+        setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xff909497).darker(0.2));
         setColour(juce::ComboBox::textColourId, juce::Colours::white);
         setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff252525));
         setColour(juce::ComboBox::arrowColourId, juce::Colours::white);
-        setColour(juce::PopupMenu::backgroundColourId, juce::Colour(0xff363738).brighter(0.05));
+        setColour(juce::PopupMenu::backgroundColourId, colour.brighter(0.05));
         setColour(juce::PopupMenu::textColourId, juce::Colours::white);
-        setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colour(0xff2e86c1));
+        setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colours::whitesmoke);
         setColour(juce::PopupMenu::highlightedTextColourId, juce::Colours::black);
     }
 

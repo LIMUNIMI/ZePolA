@@ -90,7 +90,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (reset_button.get());
     reset_button->setButtonText (juce::String());
     reset_button->addListener (this);
-    reset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
+    reset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     reset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
     reset_button->setBounds (1010, 510, 70, 30);
@@ -117,7 +117,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (phase_response.get());
     phase_response->setName ("phaseResponse");
 
-    phase_response->setBounds (540, 415, 390, 260);
+    phase_response->setBounds (520, 390, 430, 285);
 
     ph_response_label.reset (new juce::Label ("Phase response",
                                               TRANS ("SPECTRUM PHASE")));
@@ -716,37 +716,37 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (calculate_button.get());
     calculate_button->setButtonText (juce::String());
     calculate_button->addListener (this);
-    calculate_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
+    calculate_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     calculate_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    calculate_button->setBounds (1070, 362, 90, 30);
+    calculate_button->setBounds (1075, 367, 90, 30);
 
     multiply_phases_button.reset (new juce::TextButton ("Multiply phases"));
     addAndMakeVisible (multiply_phases_button.get());
     multiply_phases_button->setButtonText (juce::String());
     multiply_phases_button->addListener (this);
-    multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
+    multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     multiply_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    multiply_phases_button->setBounds (315, 540, 80, 28);
+    multiply_phases_button->setBounds (319, 477, 72, 22);
 
     divide_phases_button.reset (new juce::TextButton ("Divide phases"));
     addAndMakeVisible (divide_phases_button.get());
     divide_phases_button->setButtonText (juce::String());
     divide_phases_button->addListener (this);
-    divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
+    divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     divide_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff727272));
 
-    divide_phases_button->setBounds (405, 540, 80, 28);
+    divide_phases_button->setBounds (409, 477, 72, 22);
 
     swap_button.reset (new juce::TextButton ("Swap poles/zeros"));
     addAndMakeVisible (swap_button.get());
     swap_button->setButtonText (juce::String());
     swap_button->addListener (this);
-    swap_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
+    swap_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     swap_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    swap_button->setBounds (355, 605, 90, 28);
+    swap_button->setBounds (359, 512, 82, 22);
 
     turn_on_button.reset (new juce::TextButton ("Turn on all the elements"));
     addAndMakeVisible (turn_on_button.get());
@@ -755,7 +755,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff73cc81));
     turn_on_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_on_button->setBounds (315, 475, 80, 28);
+    turn_on_button->setBounds (319, 442, 72, 22);
 
     turn_off_button.reset (new juce::TextButton ("Turn off all the elements"));
     addAndMakeVisible (turn_off_button.get());
@@ -764,7 +764,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xffe86d5c));
     turn_off_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_off_button->setBounds (405, 475, 80, 28);
+    turn_off_button->setBounds (409, 442, 72, 22);
 
     order_box.reset (new juce::ComboBox ("Design order"));
     addAndMakeVisible (order_box.get());
@@ -878,7 +878,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (autoGain_button.get());
     autoGain_button->setButtonText (juce::String());
     autoGain_button->addListener (this);
-    autoGain_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff363738));
+    autoGain_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     autoGain_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
     autoGain_button->setBounds (1109, 662, 60, 25);
@@ -968,12 +968,14 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     bypass->setLookAndFeel(&bypassSwitchTheme);
 
     resetButtonTheme.setTextToDisplay("RESET");
+    resetButtonTheme.setFontSize(12.0f);
     reset_button->setLookAndFeel(&resetButtonTheme);
 
     autoGainButtonTheme.setTextToDisplay("AUTO GAIN");
     autoGain_button->setLookAndFeel(&autoGainButtonTheme);
 
     calculateButtonTheme.setTextToDisplay("CALCULATE");
+    calculateButtonTheme.setFontSize(12.0f);
     calculate_button->setLookAndFeel(&calculateButtonTheme);
 
     swapButtonTheme.setTextToDisplay("SWAP POLES/ZEROS");
@@ -1327,7 +1329,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 305.0f, y = 415.0f, width = 190.0f, height = 260.0f;
+        float x = 305.0f, y = 415.0f, width = 190.0f, height = 130.0f;
         juce::Colour fillColour = juce::Colour (0x11b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1339,7 +1341,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 355, y = 422, width = 90, height = 20;
+        int x = 355, y = 416, width = 90, height = 20;
         juce::String text (TRANS ("SETUP SHORTCUTS"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -2114,9 +2116,9 @@ BEGIN_JUCER_METADATA
     <TEXT pos="1116 455 40 20" fill="solid: ff333333" hasStroke="0" text="GAIN"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <ROUNDRECT pos="305 415 190 260" cornerSize="14.5" fill="solid: 11b1b1b1"
+    <ROUNDRECT pos="305 415 190 130" cornerSize="14.5" fill="solid: 11b1b1b1"
                hasStroke="1" stroke="0.5, mitered, butt" strokeColour="solid: ff383838"/>
-    <TEXT pos="355 422 90 20" fill="solid: ff333333" hasStroke="0" text="SETUP SHORTCUTS"
+    <TEXT pos="355 416 90 20" fill="solid: ff333333" hasStroke="0" text="SETUP SHORTCUTS"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
     <TEXT pos="1157 631 23 20" fill="solid: ff333333" hasStroke="0" text="dB"
@@ -2139,7 +2141,7 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="30 415 260 260" class="GaussianPlane"
                     params="processor.getFilterElementsChain()"/>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
-              virtualName="" explicitFocusOrder="0" pos="1010 510 70 30" bgColOff="ff363738"
+              virtualName="" explicitFocusOrder="0" pos="1010 510 70 30" bgColOff="ff909497"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
@@ -2152,7 +2154,7 @@ BEGIN_JUCER_METADATA
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <GENERICCOMPONENT name="phaseResponse" id="c9a48273dec25832" memberName="phase_response"
-                    virtualName="" explicitFocusOrder="0" pos="540 415 390 260" class="PhaseResponse"
+                    virtualName="" explicitFocusOrder="0" pos="520 390 430 285" class="PhaseResponse"
                     params="phases, referenceFrequencies, processor.getSampleRate(), ampDb"/>
   <LABEL name="Phase response" id="6d08c4e421703ed5" memberName="ph_response_label"
          virtualName="" explicitFocusOrder="0" pos="675 680 110 24" textCol="ff333333"
@@ -2418,27 +2420,27 @@ BEGIN_JUCER_METADATA
             layout="33" items="LOWPASS&#10;HIGHPASS" textWhenNonSelected="SHAPE"
             textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="Calculate" id="6b0929d790004858" memberName="calculate_button"
-              virtualName="" explicitFocusOrder="0" pos="1070 362 90 30" bgColOff="ff363738"
+              virtualName="" explicitFocusOrder="0" pos="1075 367 90 30" bgColOff="ff909497"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Multiply phases" id="fd9508a1dc4c09ae" memberName="multiply_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="315 540 80 28" bgColOff="ff363738"
+              virtualName="" explicitFocusOrder="0" pos="319 477 72 22" bgColOff="ff909497"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Divide phases" id="a62537b9345044f3" memberName="divide_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="405 540 80 28" bgColOff="ff363738"
+              virtualName="" explicitFocusOrder="0" pos="409 477 72 22" bgColOff="ff909497"
               bgColOn="ff727272" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Swap poles/zeros" id="938b23da9ff326b0" memberName="swap_button"
-              virtualName="" explicitFocusOrder="0" pos="355 605 90 28" bgColOff="ff363738"
+              virtualName="" explicitFocusOrder="0" pos="359 512 82 22" bgColOff="ff909497"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn on all the elements" id="e4b8377926241c51" memberName="turn_on_button"
-              virtualName="" explicitFocusOrder="0" pos="315 475 80 28" bgColOff="ff73cc81"
+              virtualName="" explicitFocusOrder="0" pos="319 442 72 22" bgColOff="ff73cc81"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn off all the elements" id="f6c36c1c53a4a06d" memberName="turn_off_button"
-              virtualName="" explicitFocusOrder="0" pos="405 475 80 28" bgColOff="ffe86d5c"
+              virtualName="" explicitFocusOrder="0" pos="409 442 72 22" bgColOff="ffe86d5c"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <COMBOBOX name="Design order" id="a7c23e76d01914d5" memberName="order_box"
@@ -2489,7 +2491,7 @@ BEGIN_JUCER_METADATA
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <TEXTBUTTON name="Auto Gain" id="be8da27f0b03bb8" memberName="autoGain_button"
-              virtualName="" explicitFocusOrder="0" pos="1109 662 60 25" bgColOff="ff363738"
+              virtualName="" explicitFocusOrder="0" pos="1109 662 60 25" bgColOff="ff909497"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
 </JUCER_COMPONENT>
