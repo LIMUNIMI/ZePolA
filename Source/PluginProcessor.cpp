@@ -44,20 +44,26 @@ void PolesAndZerosEQAudioProcessor::castBuffer(AudioBuffer<TargetType>& destinat
 
 void PolesAndZerosEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    if (!active) return;
+    
     juce::ScopedNoDenormals noDenormals;
     
+    const auto numChannels = buffer.getNumChannels();
     const auto numSamples = buffer.getNumSamples();
-    AudioBuffer<double> doubleBuffer(1, numSamples);
-    castBuffer(doubleBuffer, buffer, 1, numSamples);
-
-    if (!active) return;
-
-    filter.processBlock(doubleBuffer);
+    
+    AudioBuffer<double> doubleBuffer(numChannels, numSamples);
+    castBuffer(doubleBuffer, buffer, numChannels, numSamples);
+    
+    for (int ch = 0; ch < numChannels; ++ ch)
+    {
+        auto bufferData = doubleBuffer.getWritePointer(ch);
+        filter.processBlock(bufferData, numSamples);
+    }
     
     juce::dsp::AudioBlock<double> block (doubleBuffer);
     gainProcessor.process(juce::dsp::ProcessContextReplacing<double> (block));
     
-    castBuffer(buffer, doubleBuffer, 1, numSamples);
+    castBuffer(buffer, doubleBuffer, numChannels, numSamples);
 }
 
 void PolesAndZerosEQAudioProcessor::processBlockBypassed(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -107,11 +113,11 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
 
     if (parameter == "M")
     {
-        filter.setMagnitude(elementNr, newValue);
+        filter.setElementMagnitude(elementNr, newValue);
     }
     else if (parameter == "P")
     {
-        filter.setPhase(elementNr, newValue);
+        filter.setElementPhase(elementNr, newValue);
     }
     else if (parameter == "A")
     {
@@ -119,7 +125,7 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
     }
     else if (parameter == "T")
     {
-        filter.setType(elementNr, newValue > 0.5);
+        filter.setElementType(elementNr, newValue > 0.5);
     }
     
     if (editorCallback)
@@ -166,6 +172,11 @@ float PolesAndZerosEQAudioProcessor::getCurrentGain ()
 void PolesAndZerosEQAudioProcessor::setdBGain(double newdBGain)
 {
     parameters.getParameter(GAIN_NAME)->setValueNotifyingHost(jmap(static_cast<float>(newdBGain), GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+}
+
+void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
+{
+    parameters.getParameter(FILTER_BYPASS_NAME)->setValueNotifyingHost(bypass);
 }
 
 void PolesAndZerosEQAudioProcessor::multiplyPhases()

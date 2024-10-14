@@ -174,12 +174,10 @@ public:
     /* The processBlock method takes the entire buffer of audio samples as input
      and calls the processSample method for each sample in the buffer.
     */
-    void processBlock (juce::AudioBuffer<double>& buffer, int numSamples)
+    void processBlock (double* bufferData, int numSamples)
     {
-        auto bufferData = buffer.getArrayOfWritePointers();
-        
         for (int smp = 0; smp < numSamples; ++smp)
-                bufferData[0][smp] = processSample(bufferData[0][smp]);
+                bufferData[smp] = processSample(bufferData[smp]);
     }
 
     /* The updateMemory method updates the filter's memory. memory1 stores the
@@ -330,7 +328,7 @@ public:
     /* The method setElementMagnitude sets the value of the magnitude of the
      "elementNr" element in the filter chain.
     */
-    void setMagnitude (const int elementNr, double newValue)
+    void setElementMagnitude (const int elementNr, double newValue)
     {
         int i = 1;
         for (auto& element : elements)
@@ -347,7 +345,7 @@ public:
     /* The method setElementPhase sets the value of the phase of the "elementNr"
      element in the filter chain.
     */
-    void setPhase (const int elementNr, double newValue)
+    void setElementPhase (const int elementNr, double newValue)
     {
         int i = 1;
         for (auto& element : elements)
@@ -381,7 +379,7 @@ public:
     /* The method setType sets the type of the "elementNr" element in the filter
      chain.
     */
-    void setType (const int elementNr, bool newValue)
+    void setElementType (const int elementNr, bool newValue)
     {
         int i = 1;
         FilterElement::Type newType = (newValue) ? FilterElement::ZERO : FilterElement::POLE;
@@ -428,13 +426,11 @@ public:
      all samples in the buffer, calculated as the ratio between the input and
      output volumes.
     */
-    void processBlock (juce::AudioBuffer<double>& buffer)
+    void processBlock (double* bufferData, const int numSamples)
     {
-        const auto numSamples = buffer.getNumSamples();
-        
         for (auto& element : elements)
             if (element->isActive())
-                element->processBlock(buffer, numSamples);
+                element->processBlock(bufferData, numSamples);
     }
     
 private:

@@ -2007,6 +2007,8 @@ void PluginEditor::filterDesignAndSetup()
     double b0, b1, b2, a1, a2;
     double magnitude, phase;
     int elementNr = 1;
+    
+    processor.setBypass(true);
 
     for (int i = 0; i < iirCoefficients.size(); ++ i)
     {
@@ -2065,6 +2067,8 @@ void PluginEditor::filterDesignAndSetup()
 
     for (; elementNr <= NUMBER_OF_FILTER_ELEMENTS; ++ elementNr)
             processor.setUnactive(elementNr);
+    setAutoGain();
+    processor.setBypass(false);
 }
 //[/MiscUserCode]
 

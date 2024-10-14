@@ -50,6 +50,7 @@ public:
     
     float getCurrentGain();
     void setdBGain(double newdBGain);
+    void setBypass(bool bypass);
     
     void multiplyPhases();
     void dividePhases();
