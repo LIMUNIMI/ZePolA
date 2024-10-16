@@ -23,7 +23,7 @@
 
 #define LED_ON_COLOUR                       0xffff5f58
 #define LED_OFF_COLOUR                      0xff781a13
-#define LED_RADIUS                          5.0f
+#define LED_RADIUS                          4.5f
 
 /*
  The MagnitudeSliderTheme class implements a look and feel for magnitude sliders.
@@ -32,7 +32,10 @@ class MagnitudeSliderTheme : public LookAndFeel_V4
 {
 public:
     
-    void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider& slider) override
+    void drawLinearSlider (juce::Graphics& g, int x, int y, int width,
+                           int height, float sliderPos, float minSliderPos,
+                           float maxSliderPos, const juce::Slider::SliderStyle,
+                           juce::Slider& slider) override
     {
         g.setColour(juce::Colour(SLIDER_BAR_COLOUR));
         g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.0f, 0.08f);
@@ -57,7 +60,10 @@ class PhaseSliderTheme : public LookAndFeel_V4
 {
 public:
    
-    void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider& slider) override
+    void drawLinearSlider (juce::Graphics& g, int x, int y, int width,
+                           int height, float sliderPos, float minSliderPos,
+                           float maxSliderPos, const juce::Slider::SliderStyle,
+                           juce::Slider& slider) override
     {
         g.setColour(juce::Colour(SLIDER_BAR_COLOUR));
         g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.0f, 0.08f);
@@ -82,7 +88,10 @@ class GainSliderTheme : public LookAndFeel_V4
 {
 public:
     
-    void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider& slider) override
+    void drawLinearSlider (juce::Graphics& g, int x, int y, int width,
+                           int height, float sliderPos, float minSliderPos,
+                           float maxSliderPos, const juce::Slider::SliderStyle,
+                           juce::Slider& slider) override
     {
         g.setColour(juce::Colour(SLIDER_BAR_COLOUR));
         g.fillRoundedRectangle(x + width / 2 - 1.25f, y, 2.5f, height, 0.08f);
@@ -105,41 +114,43 @@ public:
 */
 class TypeSwitchTheme : public juce::LookAndFeel_V4
 {
-public:
+    public:
     
     void drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
-                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
-        {
-            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 8.0f, button.getHeight() - 2.0f);
-
-            auto zeroColor = juce::Colour(ZEROS_COLOUR);
-            auto poleColor = juce::Colour(POLES_COLOUR);
-            auto borderColor = juce::Colours::black;
-            auto indicatorColor = juce::Colours::white;
-
-            g.setColour(button.getToggleState() ? zeroColor : poleColor);
-            g.fillRoundedRectangle(bounds.toFloat(), 9.5f);
-
-            g.setColour(borderColor);
-            g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 1.5f);
-
-            const int indicatorDiameter = 14;
-            auto indicatorX = button.getToggleState() ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
-            auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2) + 0.5;
-
-            g.setColour(indicatorColor);
-            g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
-            
-            g.setColour(juce::Colours::black);
-            g.setFont(juce::Font(10.0f, juce::Font::bold));
-            juce::String text = button.getToggleState() ? "ZERO" : "POLE";
-            juce::Rectangle<float> switchRect(bounds.toFloat());
-            if (text == "ZERO")
-                switchRect.translate(-7.0f, 0.0f);
-            else
-                switchRect.translate(+7.0f, 0.0f);
-            g.drawText(text, switchRect, juce::Justification::centred);
-        }
+                           bool shouldDrawButtonAsHighlighted,
+                           bool shouldDrawButtonAsDown) override
+    {
+        const bool isOn = button.getToggleState();
+        
+        const float cornerRadius = 9.5f;
+        const float borderThickness = 1.5f;
+        const int indicatorDiameter = 14;
+        const auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 8.0f, button.getHeight() - 2.0f);
+        
+        const auto backgroundColor = isOn ? juce::Colour(ZEROS_COLOUR) : juce::Colour(POLES_COLOUR);
+        const auto borderColor = juce::Colours::black;
+        const auto indicatorColor = juce::Colours::white;
+        
+        g.setColour(backgroundColor);
+        g.fillRoundedRectangle(bounds.toFloat(), cornerRadius);
+        
+        g.setColour(borderColor);
+        g.drawRoundedRectangle(bounds.toFloat(), cornerRadius, borderThickness);
+        
+        const auto indicatorX = isOn? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
+        const auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2) + 0.5f;
+        
+        g.setColour(indicatorColor);
+        g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
+        
+        const juce::String text = isOn ? "ZERO" : "POLE";
+        auto switchRect = bounds.toFloat();
+        switchRect.translate(button.getToggleState() ? -7.0f : 7.0f, 0.0f);
+        
+        g.setColour(borderColor);
+        g.setFont(juce::Font(10.0f, juce::Font::bold));
+        g.drawText(text, switchRect, juce::Justification::centred);
+    }
 };
 
 /*
@@ -149,41 +160,44 @@ class ActiveSwitchTheme : public juce::LookAndFeel_V4
 {
 public:
     
-    void drawToggleButton(Graphics& g, ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    void drawToggleButton(Graphics& g, ToggleButton& button,
+                          bool shouldDrawButtonAsHighlighted,
+                          bool shouldDrawButtonAsDown) override
     {
-        const float switchWidth = button.getWidth() - 4.0f;
-        const float switchHeight = button.getHeight() - 4.0f;
+        const bool isOn = button.getToggleState();
+        
+        const float borderRadius = 5.0f;
+        const float borderThickness = 3.5f;
         const float xOffset = 2.0f;
         const float yOffset = 2.0f;
-        const bool isOn = button.getToggleState();
-
+        const float switchWidth = button.getWidth() - 4.0f;
+        const float switchHeight = button.getHeight() - 4.0f;
+        
         g.fillAll(juce::Colour(SWITCH_BACKGROUND));
 
         juce::Rectangle<float> switchRect(xOffset, yOffset, switchWidth, switchHeight);
         g.setColour(juce::Colours::black);
-        g.drawRoundedRectangle(switchRect, 5.0f, 3.5f);
+        g.drawRoundedRectangle(switchRect, borderRadius, borderThickness);
 
-        const float adjustedSwitchWidth = isOn ? switchWidth - 1.5f : switchWidth;
-        const float adjustedSwitchHeight = isOn ? switchHeight - 1.5f : switchHeight;
-        const float adjustedXOffset = xOffset + (isOn ? 0.75f : 0.0f);
-        const float adjustedYOffset = yOffset + (isOn ? 0.75f : 0.0f);
+        const float adjustedSwitchOffset = isOn ? 0.75f : 0.0f;
+        juce::Rectangle<float> buttonRect(xOffset + adjustedSwitchOffset, yOffset + adjustedSwitchOffset,
+                                          switchWidth - adjustedSwitchOffset * 2, switchHeight - adjustedSwitchOffset * 2);
 
         g.setColour(isOn ? juce::Colour(ON_SWITCH_COLOUR) : juce::Colour(OFF_SWITCH_COLOUR));
-        juce::Rectangle<float> buttonRect(adjustedXOffset, adjustedYOffset, adjustedSwitchWidth, adjustedSwitchHeight);
-        g.fillRoundedRectangle(buttonRect, 5.0f);
+        g.fillRoundedRectangle(buttonRect, borderRadius);
 
-        juce::Colour ledColour = isOn ? juce::Colour(LED_ON_COLOUR) : juce::Colour(LED_OFF_COLOUR);
+        const juce::Colour ledColour = juce::Colour(isOn ? LED_ON_COLOUR : LED_OFF_COLOUR);
+        const juce::String text = isOn ? "ON" : "OFF";
+        const float fontSize = 10.0f;
+        
         g.setColour(isOn ? juce::Colours::white : juce::Colours::black);
-
-        const float fontSize = isOn ? 10.0f : 10.5f;
         g.setFont(juce::Font(fontSize, juce::Font::bold));
-        juce::String text = isOn ? "ON" : "OFF";
 
-        juce::Rectangle<float> textRect(adjustedXOffset - 8, adjustedYOffset, adjustedSwitchWidth, adjustedSwitchHeight);
+        juce::Rectangle<float> textRect(xOffset - 8, yOffset, switchWidth, switchHeight);
         g.drawText(text, textRect, juce::Justification::centred);
 
-        const float ledXOffset = adjustedXOffset + (isOn ? 27 : 29);
-        const float ledYOffset = adjustedYOffset + (isOn ? 3 : 3.5);
+        const float ledXOffset = xOffset + 28;
+        const float ledYOffset = yOffset + 4;
 
         g.setColour(ledColour);
         g.fillEllipse(ledXOffset, ledYOffset, LED_RADIUS * 2, LED_RADIUS * 2);
@@ -191,7 +205,6 @@ public:
         g.setColour(juce::Colours::black);
         g.drawEllipse(ledXOffset, ledYOffset, LED_RADIUS * 2, LED_RADIUS * 2, 1.5f);
     }
-
 };
 
 /*
@@ -201,40 +214,43 @@ class BypassSwitchTheme : public juce::LookAndFeel_V4
 {
 public:
     
-    void drawToggleButton(Graphics& g, ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    void drawToggleButton(Graphics& g, ToggleButton& button,
+                          bool shouldDrawButtonAsHighlighted,
+                          bool shouldDrawButtonAsDown) override
     {
+        const bool isOn = button.getToggleState();
+        
+        const float switchMargin = 3.5f;
+        const float borderRadius = 5.0f;
         float switchWidth = button.getWidth() - 4.0f;
         float switchHeight = button.getHeight() - 4.0f;
         float xOffset = 2.0f;
         float yOffset = 2.0f;
-        
+
         g.fillAll(juce::Colour(SWITCH_BACKGROUND));
 
         juce::Rectangle<float> switchRect(xOffset, yOffset, switchWidth, switchHeight);
-
-        auto switchMargin = 3.5f;
         g.setColour(juce::Colours::black);
-        g.drawRoundedRectangle(switchRect, 5.0f, switchMargin);
+        g.drawRoundedRectangle(switchRect, borderRadius, switchMargin);
 
-        g.setColour(button.getToggleState() ? juce::Colour (BYPASS_ON_COLOUR) : juce::Colour (BYPASS_OFF_COLOUR));
-        
-        if (button.getToggleState())
+        g.setColour(isOn ? juce::Colour(BYPASS_ON_COLOUR) : juce::Colour(BYPASS_OFF_COLOUR));
+
+        if (isOn)
         {
-            switchWidth -= 2.5f;
-            switchHeight -= 2.5f;
-            xOffset += 1.25f;
-            yOffset += 1.25f;
+            const float adjustment = 1.25f;
+            switchWidth -= adjustment * 2;
+            switchHeight -= adjustment * 2;
+            xOffset += adjustment;
+            yOffset += adjustment;
         }
+
         juce::Rectangle<float> buttonRect(xOffset, yOffset, switchWidth, switchHeight);
-        g.fillRoundedRectangle(buttonRect, 5.0f);
+        g.fillRoundedRectangle(buttonRect, borderRadius);
 
         g.setColour(juce::Colours::white);
-        float fontSize = button.getToggleState() ? 11.0f : 12.0f;
-        juce::Font font("Gill Sans", fontSize, juce::Font::bold);
-        font.setTypefaceStyle("SemiBold");
-        g.setFont(font);
-        juce::String text = "BYPASS";
-        g.drawText(text, switchRect, juce::Justification::centred);
+        const float fontSize = isOn ? 11.0f : 12.0f;
+        g.setFont(juce::Font("Gill Sans", fontSize, juce::Font::bold).withTypefaceStyle("SemiBold"));
+        g.drawText("BYPASS", switchRect, juce::Justification::centred);
     }
 };
 
@@ -246,38 +262,46 @@ class LinLogSwitchTheme : public juce::LookAndFeel_V4
 public:
     
     void drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
-                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
-        {
-            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 8.0f, button.getHeight() - 2.0f);
+                           bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    {
+        const bool isOn = button.getToggleState();
+        
+        const float cornerRadius = 9.5f;
+        const float borderThickness = 1.5f;
+        const int indicatorDiameter = 14;
 
-            auto linColor = juce::Colour(LIN_COLOUR);
-            auto logColor = juce::Colour(LOG_COLOUR);
-            auto borderColor = juce::Colours::black;
-            auto indicatorColor = juce::Colours::white;
+        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 8.0f, button.getHeight() - 2.0f);
 
-            g.setColour(button.getToggleState() ? linColor : logColor);
-            g.fillRoundedRectangle(bounds.toFloat(), 9.5f);
+        const auto linColor = juce::Colour(LIN_COLOUR);
+        const auto logColor = juce::Colour(LOG_COLOUR);
+        const auto borderColor = juce::Colours::black;
+        const auto indicatorColor = juce::Colours::white;
 
-            g.setColour(borderColor);
-            g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 1.5f);
+        g.setColour(isOn ? linColor : logColor);
+        g.fillRoundedRectangle(bounds.toFloat(), cornerRadius);
 
-            const int indicatorDiameter = 14;
-            auto indicatorX = button.getToggleState() ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
-            auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2) + 0.5;
+        g.setColour(borderColor);
+        g.drawRoundedRectangle(bounds.toFloat(), cornerRadius, borderThickness);
 
-            g.setColour(indicatorColor);
-            g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
+        const auto indicatorX = isOn ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
+        const auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2) + 0.5f;
+
+        g.setColour(indicatorColor);
+        g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
+
+        g.setColour(juce::Colours::black);
+        g.setFont(juce::Font(10.0f, juce::Font::bold));
+
+        juce::String text = isOn ? "LIN" : "LOG";
+        juce::Rectangle<float> switchRect = bounds.toFloat();
+        
+        auto xOffset = 7.0f;
+        if (isOn)
+            xOffset = -7.0f;
             
-            g.setColour(juce::Colours::black);
-            g.setFont(juce::Font(10.0f, juce::Font::bold));
-            juce::String text = button.getToggleState() ? "LIN" : "LOG";
-            juce::Rectangle<float> switchRect(bounds.toFloat());
-            if (text == "LIN")
-                switchRect.translate(-7.0f, 0.0f);
-            else
-                switchRect.translate(+7.0f, 0.0f);
-            g.drawText(text, switchRect, juce::Justification::centred);
-        }
+        switchRect.translate(xOffset, 0.0f);
+        g.drawText(text, switchRect, juce::Justification::centred);
+    }
 };
 
 /*
@@ -288,41 +312,49 @@ class AmpDbSwitchTheme : public juce::LookAndFeel_V4
 public:
     
     void drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
-                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+                           bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    {
+        const bool isOn = button.getToggleState();
+        
+        const float cornerRadius = 9.5f;
+        const float borderThickness = 1.5f;
+        const int indicatorDiameter = 14;
+        
+        auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 8.0f, button.getHeight() - 2.0f);
+        
+        const auto ampColor = juce::Colour(AMP_COLOUR);
+        const auto dbColor = juce::Colour(DB_COLOUR);
+        const auto borderColor = juce::Colours::black;
+        const auto indicatorColor = juce::Colours::white;
+
+        g.setColour(isOn ? ampColor : dbColor);
+        g.fillRoundedRectangle(bounds.toFloat(), cornerRadius);
+
+        g.setColour(borderColor);
+        g.drawRoundedRectangle(bounds.toFloat(), cornerRadius, borderThickness);
+
+        const auto indicatorX = isOn ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
+        const auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2) + 0.5f;
+
+        g.setColour(indicatorColor);
+        g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
+
+        g.setColour(juce::Colours::white);
+        g.setFont(juce::Font(10.0f, juce::Font::bold));
+        
+        juce::String text = isOn ? "AMP" : "DB";
+        juce::Rectangle<float> switchRect = bounds.toFloat();
+        
+        auto xOffset = 7.0f;
+        if (isOn)
         {
-            auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 8.0f, button.getHeight() - 2.0f);
-
-            auto ampColor = juce::Colour(AMP_COLOUR);
-            auto dbColor = juce::Colour(DB_COLOUR);
-            auto borderColor = juce::Colours::black;
-            auto indicatorColor = juce::Colours::white;
-
-            g.setColour(button.getToggleState() ? ampColor : dbColor);
-            g.fillRoundedRectangle(bounds.toFloat(), 9.5f);
-
-            g.setColour(borderColor);
-            g.drawRoundedRectangle(bounds.toFloat(), 9.5f, 1.5f);
-
-            const int indicatorDiameter = 14;
-            auto indicatorX = button.getToggleState() ? (bounds.getRight() - indicatorDiameter - 2) : (bounds.getX() + 2);
-            auto indicatorY = bounds.getCentreY() - (indicatorDiameter / 2) + 0.5;
-
-            g.setColour(indicatorColor);
-            g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
-            
-            g.setColour(juce::Colours::white);
-            g.setFont(juce::Font(10.0f, juce::Font::bold));
-            juce::String text = button.getToggleState() ? "AMP" : "DB";
-            juce::Rectangle<float> switchRect(bounds.toFloat());
-            if (text == "AMP")
-            {
-                g.setColour(juce::Colours::black);
-                switchRect.translate(-7.0f, 0.0f);
-            }
-            else
-                switchRect.translate(+7.0f, 0.0f);
-            g.drawText(text, switchRect, juce::Justification::centred);
+            g.setColour(juce::Colours::black);
+            xOffset = -7.0f;
         }
+        
+        switchRect.translate(xOffset, 0.0f);
+        g.drawText(text, switchRect, juce::Justification::centred);
+    }
 };
 
 class GenericButtonTheme : public LookAndFeel_V4
@@ -330,8 +362,10 @@ class GenericButtonTheme : public LookAndFeel_V4
 public:
     GenericButtonTheme (juce::String textToDisplay = "", float size = 9.0f) : text(textToDisplay), fontSize(size) {}
     
-    void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
-                              bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    void drawButtonBackground(juce::Graphics& g, juce::Button& button,
+                              const juce::Colour& backgroundColour,
+                              bool shouldDrawButtonAsHighlighted,
+                              bool shouldDrawButtonAsDown) override
     {
         auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 2.0f, button.getHeight() - 2.0f).toFloat();
         auto cornerSize = 5.0f;
@@ -433,9 +467,12 @@ public:
         g.drawRoundedRectangle(bounds.reduced(0.5f), cornerSize, 1.0f);
     }
 
-    void drawPopupMenuItem(juce::Graphics& g, const juce::Rectangle<int>& area, const bool isSeparator, const bool isActive,
-                           const bool isHighlighted, const bool isTicked, const bool hasSubMenu, const juce::String& text,
-                           const juce::String& shortcutKeyText, const juce::Drawable* icon, const juce::Colour* textColour) override
+    void drawPopupMenuItem(juce::Graphics& g, const juce::Rectangle<int>& area,
+                           const bool isSeparator, const bool isActive,
+                           const bool isHighlighted, const bool isTicked,
+                           const bool hasSubMenu, const juce::String& text,
+                           const juce::String& shortcutKeyText, const juce::Drawable* icon,
+                           const juce::Colour* textColour) override
     {
         if (isSeparator)
         {
@@ -469,40 +506,44 @@ class AutoUpdateSwitchTheme : public juce::LookAndFeel_V4
 {
 public:
     
-    void drawToggleButton(Graphics& g, ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    void drawToggleButton(Graphics& g, ToggleButton& button,
+                          bool shouldDrawButtonAsHighlighted,
+                          bool shouldDrawButtonAsDown) override
     {
+        const bool isOn = button.getToggleState();
+        
+        const float borderRadius = 5.0f;
+        const float switchMargin = 3.5f;
+        const float adjustment = 0.75f;
+        
         float switchWidth = button.getWidth() - 4.0f;
         float switchHeight = button.getHeight() - 4.0f;
         float xOffset = 2.0f;
         float yOffset = 2.0f;
-        
+
         g.fillAll(juce::Colour(SWITCH_BACKGROUND));
 
         juce::Rectangle<float> switchRect(xOffset, yOffset, switchWidth, switchHeight);
-
-        auto switchMargin = 3.5f;
         g.setColour(juce::Colours::black);
-        g.drawRoundedRectangle(switchRect, 5.0f, switchMargin);
+        g.drawRoundedRectangle(switchRect, borderRadius, switchMargin);
 
-        g.setColour(button.getToggleState() ? juce::Colour (AUTO_UPDATE_ON_COLOUR) : juce::Colour (AUTO_UPDATE_OFF_COLOUR));
-        
-        if (button.getToggleState())
+        g.setColour(isOn ? juce::Colour(AUTO_UPDATE_ON_COLOUR) : juce::Colour(AUTO_UPDATE_OFF_COLOUR));
+
+        if (isOn)
         {
-            switchWidth -= 1.5f;
-            switchHeight -= 1.5f;
-            xOffset += .75f;
-            yOffset += .75f;
+            switchWidth -= adjustment * 2;
+            switchHeight -= adjustment * 2;
+            xOffset += adjustment;
+            yOffset += adjustment;
         }
+
         juce::Rectangle<float> buttonRect(xOffset, yOffset, switchWidth, switchHeight);
-        g.fillRoundedRectangle(buttonRect, 5.0f);
+        g.fillRoundedRectangle(buttonRect, borderRadius);
 
         g.setColour(juce::Colours::black);
-        float fontSize = button.getToggleState() ? 11.5f : 12.0f;
-        juce::Font font("Gill Sans", fontSize, juce::Font::bold);
-        font.setTypefaceStyle("SemiBold");
-        g.setFont(font);
-        juce::String text = "AUTO UPDATE";
-        g.drawText(text, switchRect, juce::Justification::centred);
+        const float fontSize = isOn ? 11.5f : 12.0f;
+        g.setFont(juce::Font("Gill Sans", fontSize, juce::Font::bold).withTypefaceStyle("SemiBold"));
+        g.drawText("AUTO UPDATE", switchRect, juce::Justification::centred);
     }
 };
 
