@@ -1089,7 +1089,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     updateDesignSliderFromFrequency(DESIGN_FREQUENCY_FLOOR, frequency_design_slider.get(), sampleRate);
 
     autoUpdate_button->setLookAndFeel(&autoUpdateSwitchTheme);
-    
+
     gain_1->setVisible(e1_active->getToggleState());
     gain_2->setVisible(e2_active->getToggleState());
     gain_3->setVisible(e3_active->getToggleState());
@@ -1098,7 +1098,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_6->setVisible(e6_active->getToggleState());
     gain_7->setVisible(e7_active->getToggleState());
     gain_8->setVisible(e8_active->getToggleState());
-    
+
     //[/UserPreSize]
 
     setSize (1200, 750);
