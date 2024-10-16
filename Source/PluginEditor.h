@@ -65,7 +65,6 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     void getSpectrum ();
     void updateReferenceFrequencies();
-    void setAutoGain();
 
     void updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
     void updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
@@ -187,14 +186,6 @@ private:
     std::unique_ptr<juce::ToggleButton> e7_active;
     std::unique_ptr<juce::ToggleButton> e8_active;
     std::unique_ptr<juce::Label> gaussian_plane_label;
-    std::unique_ptr<LEDComponent> e1_led;
-    std::unique_ptr<LEDComponent> e2_led;
-    std::unique_ptr<LEDComponent> e3_led;
-    std::unique_ptr<LEDComponent> e4_led;
-    std::unique_ptr<LEDComponent> e5_led;
-    std::unique_ptr<LEDComponent> e6_led;
-    std::unique_ptr<LEDComponent> e7_led;
-    std::unique_ptr<LEDComponent> e8_led;
     std::unique_ptr<juce::ToggleButton> bypass;
     std::unique_ptr<juce::Slider> gain_slider;
     std::unique_ptr<juce::ToggleButton> linLog_switch;
@@ -237,8 +228,15 @@ private:
     std::unique_ptr<juce::Slider> transition_width_slider;
     std::unique_ptr<juce::Slider> passbandAmplitude_slider;
     std::unique_ptr<juce::Label> stopbandAmplitude_label;
-    std::unique_ptr<juce::TextButton> autoGain_button;
     std::unique_ptr<juce::ToggleButton> autoUpdate_button;
+    std::unique_ptr<juce::Label> gain_1;
+    std::unique_ptr<juce::Label> gain_2;
+    std::unique_ptr<juce::Label> gain_3;
+    std::unique_ptr<juce::Label> gain_4;
+    std::unique_ptr<juce::Label> gain_5;
+    std::unique_ptr<juce::Label> gain_6;
+    std::unique_ptr<juce::Label> gain_7;
+    std::unique_ptr<juce::Label> gain_8;
 
 
     //==============================================================================

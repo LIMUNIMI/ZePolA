@@ -136,38 +136,39 @@ class FrequencyResponse : public GraphicResponse
         }
         else
         {
-            std::vector<float> linearLevels = { 0.1f, 0.25f, 0.5f, 0.75f, 1.0f };
+            std::vector<float> linearLevels = { 0.1f, 0.5f, 1.0f, 1.5f, 2.0f };
             g.setColour(juce::Colour(GRID_COLOUR));
-            
+
             for (float level : linearLevels)
             {
-                float yPos = juce::jmap<float>(level, 0.0f, 1.0f, height, 0.0f);
-                
-                if (level != 1.0f)
+                float yPos = juce::jmap<float>(level, 0.0f, 2.0f, height, 0.0f);
+
+                if (level != 2.0f)
                     g.drawHorizontalLine(static_cast<int>(yPos), 0, width);
-                
+
                 float yOffset = 0.0f;
-                if (level == 1.0f)
+                if (level == 2.0f)
                     yOffset = 8.0f;
                 g.setColour(juce::Colour(TEXT_COLOUR));
                 g.drawText(juce::String(level), 5, yPos - 10 + yOffset, 40, 20, juce::Justification::left);
                 g.setColour(juce::Colour(GRID_COLOUR));
             }
-            
-            responsePath.startNewSubPath(0, height - static_cast<float>(values[0]) * height);
-            
+
+            responsePath.startNewSubPath(0, height - juce::jmap<float>(values[0], 0.0f, 2.0f, 0.0f, height));
+
             long int valuesSize = values.size();
             float x;
             float y;
             int k = 1;
-            
+
             for (int i = 1; i < valuesSize; ++i)
             {
                 g.setColour(juce::Colour(LINE_COLOUR));
                 x = static_cast<float>(i) / valuesSize * width;
-                y = height - static_cast<float>(values[i]) * height;
-                responsePath.lineTo(x, y);
                 
+                y = height - juce::jmap<float>(values[i], 0.0f, 2.0f, 0.0f, height);
+                responsePath.lineTo(x, y);
+
                 if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
                 {
                     g.setColour(juce::Colour(GRID_COLOUR));
@@ -177,10 +178,10 @@ class FrequencyResponse : public GraphicResponse
                     ++k;
                 }
             }
-            
+
             g.setColour(juce::Colour(LINE_COLOUR));
             g.strokePath(responsePath, juce::PathStrokeType(1.5f));
-            
+
             g.setColour(juce::Colour(TEXT_COLOUR));
             g.drawText(formatFrequency(sampleRate * 0.5), width - 20, height * 0.5, 20, 20, juce::Justification::centred);
         }

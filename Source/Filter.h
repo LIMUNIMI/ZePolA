@@ -67,6 +67,11 @@ public:
         return type;
     }
     
+    double getGain () const
+    {
+        return gain;
+    }
+    
     // The method isActive returns true if the element is active, false otherwise.
     bool isActive() const
     {
@@ -85,6 +90,7 @@ public:
         }
         magnitude = newValue;
         calculateCoefficients();
+        calculateGain();
     }
 
     /* The method setPhase sets the phase of the complex number to the value of
@@ -95,6 +101,7 @@ public:
     {
         phase = newValue;
         calculateCoefficients();
+        calculateGain();
     }
     
     /* The method setUnsetBypass sets to true if the element is active or false
@@ -132,6 +139,23 @@ public:
         coeff1 = -2 * getRealPart();
         coeff2 = magnitude * magnitude;
     }
+    
+    void calculateGain ()
+    {
+        const double Re = getRealPart();
+        switch (type)
+        {
+            case ZERO:
+            {
+                gain = 1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude);
+            } break;
+                
+            case POLE:
+            {
+                gain = 1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude);
+            } break;
+        }
+    }
 
     /* The processSample method is called for each sample in the incoming buffer
      and processes an input sample (the current instant) by calculating the
@@ -158,12 +182,12 @@ public:
         {
             case ZERO:
             {
-                outputSample = inputSample + coeff1 * memory1 + coeff2 * memory2;
+                outputSample = gain * inputSample + coeff1 * memory1 + coeff2 * memory2;
             } break;
                 
             case POLE:
             {
-                outputSample = inputSample - coeff1 * memory1 - coeff2 * memory2;
+                outputSample = gain * inputSample - coeff1 * memory1 - coeff2 * memory2;
             } break;
         }
         
@@ -227,6 +251,8 @@ private:
     
     double coeff1;
     double coeff2;
+    
+    double gain = 1.0;
 
     double memory1;
     double memory2;
@@ -257,10 +283,21 @@ public:
      of elements of the filter at the time of creation. All elements are initially
      zeros.
     */
-    PolesAndZerosCascade (int nElements = NUMBER_OF_FILTER_ELEMENTS)
+    PolesAndZerosCascade (PolesAndZerosCascade* cascade = nullptr, int nElements = NUMBER_OF_FILTER_ELEMENTS)
     {
-        for (int i = 0; i < nElements; ++ i)
-            addElement(FilterElement::ZERO);
+        if (cascade == nullptr)
+            for (int i = 0; i < nElements; ++ i)
+                addElement(FilterElement::ZERO);
+        else
+        {
+            for (int i = 0; i < cascade->elements.size(); ++ i)
+            {
+                addElement(cascade->getElementType(i + 1));
+                elements[i].setMagnitude(cascade->getElementMagnitude(i + 1));
+                elements[i].setPhase(cascade->getElementPhase(i + 1));
+                elements[i].setUnsetActive(cascade->getElementActiveStatus(i + 1));
+            }
+        }
     }
     
     ~PolesAndZerosCascade () {}
@@ -323,6 +360,58 @@ public:
             ++ i;
         }
         return 0.0;
+    }
+    
+    FilterElement::Type getElementType (const int elementNr)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                return element.getType();
+            }
+            ++ i;
+        }
+    }
+    
+    bool getElementActiveStatus (const int elementNr)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                return element.isActive();
+            }
+            ++ i;
+        }
+    }
+    
+    double getElementGain (const int elementNr)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                return element.getGain();
+            }
+            ++ i;
+        }
+    }
+    
+    FilterElement getElement (const int elementNr)
+    {
+        int i = 1;
+        for (auto& element : elements)
+        {
+            if (i == elementNr)
+            {
+                return element;
+            }
+            ++ i;
+        }
     }
     
     /* The method setElementMagnitude sets the value of the magnitude of the

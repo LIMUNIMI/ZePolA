@@ -151,18 +151,22 @@ std::complex<double> PolesAndZerosEQAudioProcessor::getFilterSpectrum (const dou
     return filter.getSpectrum(phi);
 }
 
+double PolesAndZerosEQAudioProcessor::getElementGain (const int elementNr)
+{
+    return filter.getElementGain(elementNr);
+}
+
 std::vector<FilterElement> PolesAndZerosEQAudioProcessor::getFilterElementsChain ()
 {
     return filter.getElementsChain();
 }
 
-FilterElement PolesAndZerosEQAudioProcessor::getElementState(int elementNr)
+FilterElement PolesAndZerosEQAudioProcessor::getElementState (const int elementNr)
 {
     auto elements = getFilterElementsChain();
-    -- elementNr;
     
     for (int i = 0; i < NUMBER_OF_FILTER_ELEMENTS; ++ i)
-        if (i == elementNr)
+        if (i == elementNr - 1)
             return elements[i];
 }
 
@@ -186,17 +190,12 @@ float PolesAndZerosEQAudioProcessor::getCurrentGain ()
     return gainProcessor.getGainLinear();
 }
 
-void PolesAndZerosEQAudioProcessor::setdBGain(double newdBGain)
-{
-    setParameterValue(parameters.getParameter(GAIN_NAME), jmap(static_cast<float>(newdBGain), GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
-}
-
 void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
 {
     setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME), bypass);
 }
 
-void PolesAndZerosEQAudioProcessor::multiplyPhases()
+void PolesAndZerosEQAudioProcessor::doublePhases()
 {
     auto elements = getFilterElementsChain();
     double currentPhase;
@@ -213,7 +212,7 @@ void PolesAndZerosEQAudioProcessor::multiplyPhases()
     }
 }
 
-void PolesAndZerosEQAudioProcessor::dividePhases()
+void PolesAndZerosEQAudioProcessor::halfPhases()
 {
     auto elements = getFilterElementsChain();
     double currentPhase;
@@ -225,7 +224,7 @@ void PolesAndZerosEQAudioProcessor::dividePhases()
     }
 }
 
-void PolesAndZerosEQAudioProcessor::swapElements()
+void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
 {
     auto elements = getFilterElementsChain();
     bool newType;

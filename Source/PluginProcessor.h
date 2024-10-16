@@ -41,8 +41,9 @@ public:
     void setUnactive (const int elementNr);
     
     std::complex<double> getFilterSpectrum(const double phi);
-    std::vector<FilterElement> getFilterElementsChain ();
-    FilterElement getElementState(int elementNr);
+    double getElementGain(const int elementNr);
+    std::vector<FilterElement> getFilterElementsChain();
+    FilterElement getElementState(const int elementNr);
     
     void setEditorCallback(std::function<void()> callback)
     {
@@ -55,9 +56,9 @@ public:
     void setdBGain(double newdBGain);
     void setBypass(bool bypass);
     
-    void multiplyPhases();
-    void dividePhases();
-    void swapElements();
+    void doublePhases();
+    void halfPhases();
+    void swapPolesAndZeros();
     
     void turnOnOffAllElements(bool option);
     

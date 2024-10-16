@@ -21,6 +21,10 @@
 #define AUTO_UPDATE_ON_COLOUR               0xff73cc81
 #define AUTO_UPDATE_OFF_COLOUR              0xff558a6a
 
+#define LED_ON_COLOUR                       0xffff5f58
+#define LED_OFF_COLOUR                      0xff781a13
+#define LED_RADIUS                          5.0f
+
 /*
  The MagnitudeSliderTheme class implements a look and feel for magnitude sliders.
 */
@@ -147,40 +151,47 @@ public:
     
     void drawToggleButton(Graphics& g, ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
-        float switchWidth = button.getWidth() - 4.0f;
-        float switchHeight = button.getHeight() - 4.0f;
-        float xOffset = 2.0f;
-        float yOffset = 2.0f;
-        
+        const float switchWidth = button.getWidth() - 4.0f;
+        const float switchHeight = button.getHeight() - 4.0f;
+        const float xOffset = 2.0f;
+        const float yOffset = 2.0f;
+        const bool isOn = button.getToggleState();
+
         g.fillAll(juce::Colour(SWITCH_BACKGROUND));
 
         juce::Rectangle<float> switchRect(xOffset, yOffset, switchWidth, switchHeight);
-
-        auto switchMargin = 3.5f;
         g.setColour(juce::Colours::black);
-        g.drawRoundedRectangle(switchRect, 5.0f, switchMargin);
+        g.drawRoundedRectangle(switchRect, 5.0f, 3.5f);
 
-        g.setColour(button.getToggleState() ? juce::Colour (ON_SWITCH_COLOUR) : juce::Colour (OFF_SWITCH_COLOUR));
-        
-        if (button.getToggleState())
-        {
-            switchWidth -= 1.5f;
-            switchHeight -= 1.5f;
-            xOffset += .75f;
-            yOffset += .75f;
-        }
-        juce::Rectangle<float> buttonRect(xOffset, yOffset, switchWidth, switchHeight);
+        const float adjustedSwitchWidth = isOn ? switchWidth - 1.5f : switchWidth;
+        const float adjustedSwitchHeight = isOn ? switchHeight - 1.5f : switchHeight;
+        const float adjustedXOffset = xOffset + (isOn ? 0.75f : 0.0f);
+        const float adjustedYOffset = yOffset + (isOn ? 0.75f : 0.0f);
+
+        g.setColour(isOn ? juce::Colour(ON_SWITCH_COLOUR) : juce::Colour(OFF_SWITCH_COLOUR));
+        juce::Rectangle<float> buttonRect(adjustedXOffset, adjustedYOffset, adjustedSwitchWidth, adjustedSwitchHeight);
         g.fillRoundedRectangle(buttonRect, 5.0f);
 
-        if (button.getToggleState())
-            g.setColour(juce::Colours::white);
-        else
-            g.setColour(juce::Colours::black);
-        float fontSize = button.getToggleState() ? 10.0f : 10.5f;
+        juce::Colour ledColour = isOn ? juce::Colour(LED_ON_COLOUR) : juce::Colour(LED_OFF_COLOUR);
+        g.setColour(isOn ? juce::Colours::white : juce::Colours::black);
+
+        const float fontSize = isOn ? 10.0f : 10.5f;
         g.setFont(juce::Font(fontSize, juce::Font::bold));
-        juce::String text = button.getToggleState() ? "ON" : "OFF";
-        g.drawText(text, switchRect, juce::Justification::centred);
+        juce::String text = isOn ? "ON" : "OFF";
+
+        juce::Rectangle<float> textRect(adjustedXOffset - 8, adjustedYOffset, adjustedSwitchWidth, adjustedSwitchHeight);
+        g.drawText(text, textRect, juce::Justification::centred);
+
+        const float ledXOffset = adjustedXOffset + (isOn ? 27 : 29);
+        const float ledYOffset = adjustedYOffset + (isOn ? 3 : 3.5);
+
+        g.setColour(ledColour);
+        g.fillEllipse(ledXOffset, ledYOffset, LED_RADIUS * 2, LED_RADIUS * 2);
+
+        g.setColour(juce::Colours::black);
+        g.drawEllipse(ledXOffset, ledYOffset, LED_RADIUS * 2, LED_RADIUS * 2, 1.5f);
     }
+
 };
 
 /*
