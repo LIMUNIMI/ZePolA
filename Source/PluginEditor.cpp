@@ -54,17 +54,17 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     activeAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     //[/Constructor_pre]
 
-    bandpassAmplitude_label.reset (new juce::Label ("Bandpass Amplitude",
-                                                    TRANS ("BANDPASS AMPLITUDE (DB)")));
-    addAndMakeVisible (bandpassAmplitude_label.get());
-    bandpassAmplitude_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    bandpassAmplitude_label->setJustificationType (juce::Justification::centred);
-    bandpassAmplitude_label->setEditable (false, false, false);
-    bandpassAmplitude_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    bandpassAmplitude_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    bandpassAmplitude_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    passbandAmplitude_label.reset (new juce::Label ("Passband Amplitude",
+                                                    TRANS ("PASSBAND AMPLITUDE (DB)")));
+    addAndMakeVisible (passbandAmplitude_label.get());
+    passbandAmplitude_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    passbandAmplitude_label->setJustificationType (juce::Justification::centred);
+    passbandAmplitude_label->setEditable (false, false, false);
+    passbandAmplitude_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    passbandAmplitude_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    passbandAmplitude_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    bandpassAmplitude_label->setBounds (1005, 320, 159, 20);
+    passbandAmplitude_label->setBounds (1005, 320, 159, 20);
 
     stopbandAmplitude_slider.reset (new juce::Slider ("Stopband Amplitude"));
     addAndMakeVisible (stopbandAmplitude_slider.get());
@@ -141,6 +141,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m1_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m1_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m1_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    m1_slider->addListener (this);
 
     m1_slider->setBounds (20, 55, 120, 25);
 
@@ -210,48 +211,56 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e1_type.reset (new juce::ToggleButton ("Element 1 type"));
     addAndMakeVisible (e1_type.get());
     e1_type->setButtonText (juce::String());
+    e1_type->addListener (this);
 
     e1_type->setBounds (343, 56, 52, 21);
 
     e2_type.reset (new juce::ToggleButton ("Element 2 type"));
     addAndMakeVisible (e2_type.get());
     e2_type->setButtonText (juce::String());
+    e2_type->addListener (this);
 
     e2_type->setBounds (343, 101, 52, 21);
 
     e3_type.reset (new juce::ToggleButton ("Element 3 type"));
     addAndMakeVisible (e3_type.get());
     e3_type->setButtonText (juce::String());
+    e3_type->addListener (this);
 
     e3_type->setBounds (343, 146, 52, 21);
 
     e4_type.reset (new juce::ToggleButton ("Element 4 type"));
     addAndMakeVisible (e4_type.get());
     e4_type->setButtonText (juce::String());
+    e4_type->addListener (this);
 
     e4_type->setBounds (343, 191, 52, 21);
 
     e5_type.reset (new juce::ToggleButton ("Element 5 type"));
     addAndMakeVisible (e5_type.get());
     e5_type->setButtonText (juce::String());
+    e5_type->addListener (this);
 
     e5_type->setBounds (343, 236, 52, 21);
 
     e6_type.reset (new juce::ToggleButton ("Element 6 type"));
     addAndMakeVisible (e6_type.get());
     e6_type->setButtonText (juce::String());
+    e6_type->addListener (this);
 
     e6_type->setBounds (343, 281, 52, 21);
 
     e7_type.reset (new juce::ToggleButton ("Element 7 type"));
     addAndMakeVisible (e7_type.get());
     e7_type->setButtonText (juce::String());
+    e7_type->addListener (this);
 
     e7_type->setBounds (343, 326, 52, 21);
 
     e8_type.reset (new juce::ToggleButton ("Element 8 type"));
     addAndMakeVisible (e8_type.get());
     e8_type->setButtonText (juce::String());
+    e8_type->addListener (this);
 
     e8_type->setBounds (343, 371, 52, 21);
 
@@ -407,6 +416,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m2_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m2_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m2_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    m2_slider->addListener (this);
 
     m2_slider->setBounds (20, 100, 120, 25);
 
@@ -420,6 +430,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m3_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m3_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m3_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    m3_slider->addListener (this);
 
     m3_slider->setBounds (20, 145, 120, 25);
 
@@ -433,6 +444,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m4_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m4_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m4_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    m4_slider->addListener (this);
 
     m4_slider->setBounds (20, 190, 120, 25);
 
@@ -446,6 +458,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m5_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m5_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m5_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    m5_slider->addListener (this);
 
     m5_slider->setBounds (20, 235, 120, 25);
 
@@ -459,6 +472,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m6_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m6_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m6_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    m6_slider->addListener (this);
 
     m6_slider->setBounds (20, 280, 120, 25);
 
@@ -472,6 +486,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m7_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m7_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m7_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    m7_slider->addListener (this);
 
     m7_slider->setBounds (20, 325, 120, 25);
 
@@ -485,6 +500,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m8_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m8_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m8_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    m8_slider->addListener (this);
 
     m8_slider->setBounds (20, 370, 120, 25);
 
@@ -719,7 +735,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     calculate_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     calculate_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    calculate_button->setBounds (1075, 367, 90, 30);
+    calculate_button->setBounds (1086, 367, 85, 30);
 
     multiply_phases_button.reset (new juce::TextButton ("Multiply phases"));
     addAndMakeVisible (multiply_phases_button.get());
@@ -848,19 +864,19 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     transition_width_slider->setBounds (1007, 280, 135, 25);
 
-    bandpassAmplitude_slider.reset (new juce::Slider ("Bandpass Amplitude"));
-    addAndMakeVisible (bandpassAmplitude_slider.get());
-    bandpassAmplitude_slider->setRange (-10, -0.1, 0.1);
-    bandpassAmplitude_slider->setSliderStyle (juce::Slider::LinearHorizontal);
-    bandpassAmplitude_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
-    bandpassAmplitude_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
-    bandpassAmplitude_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
-    bandpassAmplitude_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
-    bandpassAmplitude_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
-    bandpassAmplitude_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
-    bandpassAmplitude_slider->addListener (this);
+    passbandAmplitude_slider.reset (new juce::Slider ("Passband Amplitude"));
+    addAndMakeVisible (passbandAmplitude_slider.get());
+    passbandAmplitude_slider->setRange (-10, -0.1, 0.1);
+    passbandAmplitude_slider->setSliderStyle (juce::Slider::LinearHorizontal);
+    passbandAmplitude_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
+    passbandAmplitude_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    passbandAmplitude_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    passbandAmplitude_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
+    passbandAmplitude_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    passbandAmplitude_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    passbandAmplitude_slider->addListener (this);
 
-    bandpassAmplitude_slider->setBounds (1007, 344, 135, 25);
+    passbandAmplitude_slider->setBounds (1007, 344, 135, 25);
 
     stopbandAmplitude_label.reset (new juce::Label ("Stopband Amplitude",
                                                     TRANS ("STOPBAND AMPLITUDE (DB)")));
@@ -882,6 +898,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     autoGain_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
     autoGain_button->setBounds (1109, 662, 60, 25);
+
+    autoUpdate_button.reset (new juce::ToggleButton ("Auto update"));
+    addAndMakeVisible (autoUpdate_button.get());
+    autoUpdate_button->setButtonText (juce::String());
+    autoUpdate_button->addListener (this);
+
+    autoUpdate_button->setBounds (990, 367, 85, 30);
 
 
     //[UserPreSize]
@@ -1000,7 +1023,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     frequency_design_slider->setLookAndFeel(&magnitudeSlidersTheme);
     frequency_design_slider->setSkewFactor(0.2);
     transition_width_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    bandpassAmplitude_slider->setLookAndFeel(&magnitudeSlidersTheme);
+    passbandAmplitude_slider->setLookAndFeel(&magnitudeSlidersTheme);
     stopbandAmplitude_slider->setLookAndFeel(&magnitudeSlidersTheme);
 
     double sampleRate = processor.getSampleRate();
@@ -1020,8 +1043,8 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     transition_width_label->setVisible(false);
     transition_width_slider->setVisible(false);
 
-    bandpassAmplitude_label->setVisible(false);
-    bandpassAmplitude_slider->setVisible(false);
+    passbandAmplitude_label->setVisible(false);
+    passbandAmplitude_slider->setVisible(false);
 
     stopbandAmplitude_label->setVisible(false);
     stopbandAmplitude_slider->setVisible(false);
@@ -1029,6 +1052,8 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     calculate_button->setEnabled(false);
 
     updateDesignSliderFromFrequency(DESIGN_FREQUENCY_FLOOR, frequency_design_slider.get(), sampleRate);
+
+    autoUpdate_button->setLookAndFeel(&autoUpdateSwitchTheme);
     //[/UserPreSize]
 
     setSize (1200, 750);
@@ -1052,7 +1077,7 @@ PluginEditor::~PluginEditor()
     bypassAttachment.reset();
     //[/Destructor_pre]
 
-    bandpassAmplitude_label = nullptr;
+    passbandAmplitude_label = nullptr;
     stopbandAmplitude_slider = nullptr;
     gaussian_plane = nullptr;
     reset_button = nullptr;
@@ -1131,9 +1156,10 @@ PluginEditor::~PluginEditor()
     frequency_label = nullptr;
     transition_width_label = nullptr;
     transition_width_slider = nullptr;
-    bandpassAmplitude_slider = nullptr;
+    passbandAmplitude_slider = nullptr;
     stopbandAmplitude_label = nullptr;
     autoGain_button = nullptr;
+    autoUpdate_button = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1388,13 +1414,104 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         //[UserSliderCode_stopbandAmplitude_slider] -- add your slider handling code here..
         stopbandAmplitudedB = sliderThatWasMoved->getValue();
         setTransitionWidthRange();
+
+        if (autoUpdate)
+            autoUpdateCheckAndSetup();
         //[/UserSliderCode_stopbandAmplitude_slider]
+    }
+    else if (sliderThatWasMoved == m1_slider.get())
+    {
+        //[UserSliderCode_m1_slider] -- add your slider handling code here..
+        auto element = processor.getElementState(1);
+        if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
+        else
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        sliderThatWasMoved->repaint();
+        //[/UserSliderCode_m1_slider]
     }
     else if (sliderThatWasMoved == p1_slider.get())
     {
         //[UserSliderCode_p1_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
         //[/UserSliderCode_p1_slider]
+    }
+    else if (sliderThatWasMoved == m2_slider.get())
+    {
+        //[UserSliderCode_m2_slider] -- add your slider handling code here..
+        auto element = processor.getElementState(2);
+        if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
+        else
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        sliderThatWasMoved->repaint();
+        //[/UserSliderCode_m2_slider]
+    }
+    else if (sliderThatWasMoved == m3_slider.get())
+    {
+        //[UserSliderCode_m3_slider] -- add your slider handling code here..
+        auto element = processor.getElementState(3);
+        if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
+        else
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        sliderThatWasMoved->repaint();
+        //[/UserSliderCode_m3_slider]
+    }
+    else if (sliderThatWasMoved == m4_slider.get())
+    {
+        //[UserSliderCode_m4_slider] -- add your slider handling code here..
+        auto element = processor.getElementState(4);
+        if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
+        else
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        sliderThatWasMoved->repaint();
+        //[/UserSliderCode_m4_slider]
+    }
+    else if (sliderThatWasMoved == m5_slider.get())
+    {
+        //[UserSliderCode_m5_slider] -- add your slider handling code here..
+        auto element = processor.getElementState(5);
+        if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
+        else
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        sliderThatWasMoved->repaint();
+        //[/UserSliderCode_m5_slider]
+    }
+    else if (sliderThatWasMoved == m6_slider.get())
+    {
+        //[UserSliderCode_m6_slider] -- add your slider handling code here..
+        auto element = processor.getElementState(6);
+        if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
+        else
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        sliderThatWasMoved->repaint();
+        //[/UserSliderCode_m6_slider]
+    }
+    else if (sliderThatWasMoved == m7_slider.get())
+    {
+        //[UserSliderCode_m7_slider] -- add your slider handling code here..
+        auto element = processor.getElementState(7);
+        if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
+        else
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        sliderThatWasMoved->repaint();
+        //[/UserSliderCode_m7_slider]
+    }
+    else if (sliderThatWasMoved == m8_slider.get())
+    {
+        //[UserSliderCode_m8_slider] -- add your slider handling code here..
+        auto element = processor.getElementState(8);
+        if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
+        else
+            sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        sliderThatWasMoved->repaint();
+        //[/UserSliderCode_m8_slider]
     }
     else if (sliderThatWasMoved == p2_slider.get())
     {
@@ -1444,20 +1561,29 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         design_frequency = updateFrequencyFromDesignSlider(frequency_design_slider.get(), frequency_label.get(), sampleRate);
         if (type_box->getSelectedId() > 1)
             setTransitionWidthRange();
+
+        if (autoUpdate)
+            autoUpdateCheckAndSetup();
         //[/UserSliderCode_frequency_design_slider]
     }
     else if (sliderThatWasMoved == transition_width_slider.get())
     {
         //[UserSliderCode_transition_width_slider] -- add your slider handling code here..
         normalisedTransitionWidth = sliderThatWasMoved->getValue();
+
+        if (autoUpdate)
+            autoUpdateCheckAndSetup();
         //[/UserSliderCode_transition_width_slider]
     }
-    else if (sliderThatWasMoved == bandpassAmplitude_slider.get())
+    else if (sliderThatWasMoved == passbandAmplitude_slider.get())
     {
-        //[UserSliderCode_bandpassAmplitude_slider] -- add your slider handling code here..
+        //[UserSliderCode_passbandAmplitude_slider] -- add your slider handling code here..
         passbandAmplitudedB = sliderThatWasMoved->getValue();
         setTransitionWidthRange();
-        //[/UserSliderCode_bandpassAmplitude_slider]
+
+        if (autoUpdate)
+            autoUpdateCheckAndSetup();
+        //[/UserSliderCode_passbandAmplitude_slider]
     }
 
     //[UsersliderValueChanged_Post]
@@ -1474,6 +1600,102 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         //[UserButtonCode_reset_button] -- add your button handler code here..
         processor.resetFilter();
         //[/UserButtonCode_reset_button]
+    }
+    else if (buttonThatWasClicked == e1_type.get())
+    {
+        //[UserButtonCode_e1_type] -- add your button handler code here..
+        auto element = processor.getElementState(1);
+        if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
+            processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(1)), POLE_MAX_MAGNITUDE);
+        
+        if (element.getType() == FilterElement::POLE)
+            m1_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        m1_slider->repaint();
+        //[/UserButtonCode_e1_type]
+    }
+    else if (buttonThatWasClicked == e2_type.get())
+    {
+        //[UserButtonCode_e2_type] -- add your button handler code here..
+        auto element = processor.getElementState(2);
+        if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
+            processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(2)), POLE_MAX_MAGNITUDE);
+        
+        if (element.getType() == FilterElement::POLE)
+            m2_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        m2_slider->repaint();
+        //[/UserButtonCode_e2_type]
+    }
+    else if (buttonThatWasClicked == e3_type.get())
+    {
+        //[UserButtonCode_e3_type] -- add your button handler code here..
+        auto element = processor.getElementState(3);
+        if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
+            processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(3)), POLE_MAX_MAGNITUDE);
+        
+        if (element.getType() == FilterElement::POLE)
+            m3_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        m3_slider->repaint();
+        //[/UserButtonCode_e3_type]
+    }
+    else if (buttonThatWasClicked == e4_type.get())
+    {
+        //[UserButtonCode_e4_type] -- add your button handler code here..
+        auto element = processor.getElementState(4);
+        if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
+            processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(4)), POLE_MAX_MAGNITUDE);
+        
+        if (element.getType() == FilterElement::POLE)
+            m4_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        m4_slider->repaint();
+        //[/UserButtonCode_e4_type]
+    }
+    else if (buttonThatWasClicked == e5_type.get())
+    {
+        //[UserButtonCode_e5_type] -- add your button handler code here..
+        auto element = processor.getElementState(5);
+        if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
+            processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(5)), POLE_MAX_MAGNITUDE);
+        
+        if (element.getType() == FilterElement::POLE)
+            m5_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        m5_slider->repaint();
+        //[/UserButtonCode_e5_type]
+    }
+    else if (buttonThatWasClicked == e6_type.get())
+    {
+        //[UserButtonCode_e6_type] -- add your button handler code here..
+        auto element = processor.getElementState(6);
+        if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
+            processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(6)), POLE_MAX_MAGNITUDE);
+        
+        if (element.getType() == FilterElement::POLE)
+            m6_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        m6_slider->repaint();
+        //[/UserButtonCode_e6_type]
+    }
+    else if (buttonThatWasClicked == e7_type.get())
+    {
+        //[UserButtonCode_e7_type] -- add your button handler code here..
+        auto element = processor.getElementState(7);
+        if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
+            processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(7)), POLE_MAX_MAGNITUDE);
+        
+        if (element.getType() == FilterElement::POLE)
+            m7_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        m7_slider->repaint();
+        //[/UserButtonCode_e7_type]
+    }
+    else if (buttonThatWasClicked == e8_type.get())
+    {
+        //[UserButtonCode_e8_type] -- add your button handler code here..
+        auto element = processor.getElementState(8);
+        if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
+            processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(8)), POLE_MAX_MAGNITUDE);
+        
+        if (element.getType() == FilterElement::POLE)
+            m8_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+        m8_slider->repaint();
+        //[/UserButtonCode_e8_type]
     }
     else if (buttonThatWasClicked == e1_active.get())
     {
@@ -1582,6 +1804,18 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         setAutoGain();
         //[/UserButtonCode_autoGain_button]
     }
+    else if (buttonThatWasClicked == autoUpdate_button.get())
+    {
+        //[UserButtonCode_autoUpdate_button] -- add your button handler code here..
+        if (autoUpdate_button->getToggleState())
+        {
+            autoUpdate = true;
+            autoUpdateCheckAndSetup();
+        }
+        else
+            autoUpdate = false;
+        //[/UserButtonCode_autoUpdate_button]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -1688,7 +1922,11 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
         //[UserComboBoxCode_order_box] -- add your combo box handling code here..
         design_filters_to_activate = comboBoxThatHasChanged->getSelectedId();
         if (design_filters_to_activate)
+        {
             calculate_button->setEnabled(true);
+            if (autoUpdate)
+                autoUpdateCheckAndSetup();
+        }
         //[/UserComboBoxCode_order_box]
     }
 
@@ -1711,7 +1949,7 @@ void PluginEditor::getSpectrum()
     const double twoPi = MathConstants<double>::twoPi;
 
     auto n1 = log(FREQUENCY_FLOOR / sampleRate);
-    auto n2 = log(0.5) - log(FREQUENCY_FLOOR / sampleRate);
+    auto n2 = log(0.5) - n1;
     std::complex<double> spectrum;
 
     const double gain = processor.getCurrentGain();
@@ -1879,21 +2117,22 @@ void PluginEditor::setTransitionWidthRange ()
     }
 
     transition_width_slider->setRange(minValue, maxValue);
-    transition_width_slider->setValue(minValue);
+    if (transition_width_slider->getValue() < minValue)
+        transition_width_slider->setValue(minValue);
     normalisedTransitionWidth = transition_width_slider->getValue();
 }
 
 void PluginEditor::updateGUIGivenShape()
 {
-    type_box->clear();
-    order_box->clear();
-    int i = 1;
-    for (juce::String& type : selectable_filter_types)
+    if (!type_box->getSelectedId())
     {
-        type_box->addItem(type, i);
-        ++ i;
+        int i = 1;
+        for (juce::String& type : selectable_filter_types)
+        {
+            type_box->addItem(type, i);
+            ++ i;
+        }
     }
-    calculate_button->setEnabled(false);
 }
 
 void PluginEditor::updateGUIButterworth()
@@ -1906,8 +2145,8 @@ void PluginEditor::updateGUIButterworth()
     transition_width_label->setVisible(false);
     transition_width_slider->setVisible(false);
 
-    bandpassAmplitude_label->setVisible(false);
-    bandpassAmplitude_slider->setVisible(false);
+    passbandAmplitude_label->setVisible(false);
+    passbandAmplitude_slider->setVisible(false);
 
     stopbandAmplitude_label->setVisible(false);
     stopbandAmplitude_slider->setVisible(false);
@@ -1929,29 +2168,29 @@ void PluginEditor::updateGUIEllipticChebyshevIandII()
 
     updateDesignFrequencySlider(2);
 
-    bandpassAmplitude_slider->setValue(passbandAmplitudedB);
+    passbandAmplitude_slider->setValue(passbandAmplitudedB);
     stopbandAmplitude_slider->setValue(stopbandAmplitudedB);
     setTransitionWidthRange();
 
     frequency_label->setBounds (1090, 170, 60, 25);
 
-    transition_width_label->setVisible(true);
-    transition_width_label->setBounds(1020, 195, 129, 20);
+    passbandAmplitude_label->setVisible(true);
+    passbandAmplitude_label->setBounds (1005, 195, 159, 20);
 
-    transition_width_slider->setVisible(true);
-    transition_width_slider->setBounds (1007, 219, 134, 25);
-
-    bandpassAmplitude_label->setVisible(true);
-    bandpassAmplitude_label->setBounds (1005, 250, 159, 20);
-
-    bandpassAmplitude_slider->setVisible(true);
-    bandpassAmplitude_slider->setBounds (1007, 274, 135, 25);
+    passbandAmplitude_slider->setVisible(true);
+    passbandAmplitude_slider->setBounds (1007, 219, 135, 25);
 
     stopbandAmplitude_label->setVisible(true);
-    stopbandAmplitude_label->setBounds(1005, 305, 159, 20);
+    stopbandAmplitude_label->setBounds(1005, 250, 159, 20);
 
     stopbandAmplitude_slider->setVisible(true);
-    stopbandAmplitude_slider->setBounds(1007, 329, 135, 25);
+    stopbandAmplitude_slider->setBounds(1007, 274, 135, 25);
+
+    transition_width_label->setVisible(true);
+    transition_width_label->setBounds(1020, 305, 129, 20);
+
+    transition_width_slider->setVisible(true);
+    transition_width_slider->setBounds (1007, 329, 135, 25);
 
     calculate_button->setEnabled(true);
 }
@@ -2007,7 +2246,7 @@ void PluginEditor::filterDesignAndSetup()
     double b0, b1, b2, a1, a2;
     double magnitude, phase;
     int elementNr = 1;
-    
+
     processor.setBypass(true);
 
     for (int i = 0; i < iirCoefficients.size(); ++ i)
@@ -2070,6 +2309,17 @@ void PluginEditor::filterDesignAndSetup()
     setAutoGain();
     processor.setBypass(false);
 }
+
+void PluginEditor::autoUpdateCheckAndSetup ()
+{
+    if (design_type == 1)
+        if (order_box->getSelectedId() != 0)
+            filterDesignAndSetup();
+        else
+            return;
+    else
+        filterDesignAndSetup();
+}
 //[/MiscUserCode]
 
 
@@ -2129,9 +2379,9 @@ BEGIN_JUCER_METADATA
           fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
   </BACKGROUND>
-  <LABEL name="Bandpass Amplitude" id="a57ca268c3802211" memberName="bandpassAmplitude_label"
+  <LABEL name="Passband Amplitude" id="a57ca268c3802211" memberName="passbandAmplitude_label"
          virtualName="" explicitFocusOrder="0" pos="1005 320 159 20" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="0" labelText="BANDPASS AMPLITUDE (DB)"
+         edTextCol="ff000000" edBkgCol="0" labelText="PASSBAND AMPLITUDE (DB)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
@@ -2171,7 +2421,7 @@ BEGIN_JUCER_METADATA
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 1 phase" id="b9f95ed5c32caef9" memberName="p1_slider"
           virtualName="" explicitFocusOrder="0" pos="144 55 120 25" bkgcol="ff383838"
           thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
@@ -2204,28 +2454,28 @@ BEGIN_JUCER_METADATA
          typefaceStyle="SemiBold"/>
   <TOGGLEBUTTON name="Element 1 type" id="cb026ef1068db639" memberName="e1_type"
                 virtualName="" explicitFocusOrder="0" pos="343 56 52 21" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 2 type" id="56addf679899dfb" memberName="e2_type"
                 virtualName="" explicitFocusOrder="0" pos="343 101 52 21" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 3 type" id="5abda647a887dc8e" memberName="e3_type"
                 virtualName="" explicitFocusOrder="0" pos="343 146 52 21" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 4 type" id="3136ab6a98246edb" memberName="e4_type"
                 virtualName="" explicitFocusOrder="0" pos="343 191 52 21" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 5 type" id="4d6d7aa8e46a31c6" memberName="e5_type"
                 virtualName="" explicitFocusOrder="0" pos="343 236 52 21" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 6 type" id="6a190298ad04abf" memberName="e6_type"
                 virtualName="" explicitFocusOrder="0" pos="343 281 52 21" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 7 type" id="57fd1da9881e7a6a" memberName="e7_type"
                 virtualName="" explicitFocusOrder="0" pos="343 326 52 21" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 8 type" id="a0b1086b7f717581" memberName="e8_type"
                 virtualName="" explicitFocusOrder="0" pos="343 371 52 21" buttonText=""
-                connectedEdges="0" needsCallback="0" radioGroupId="0" state="0"/>
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 1 active" id="84bb86bdbd9ccede" memberName="e1_active"
                 virtualName="" explicitFocusOrder="0" pos="420 56 35 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
@@ -2297,43 +2547,43 @@ BEGIN_JUCER_METADATA
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 3 magnitude" id="b0094bd01977f340" memberName="m3_slider"
           virtualName="" explicitFocusOrder="0" pos="20 145 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 4 magnitude" id="8f433acd768ec1d9" memberName="m4_slider"
           virtualName="" explicitFocusOrder="0" pos="20 190 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 5 magnitude" id="fe0864ae3596b10d" memberName="m5_slider"
           virtualName="" explicitFocusOrder="0" pos="20 235 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 6 magnitude" id="e6371565d3e4bb47" memberName="m6_slider"
           virtualName="" explicitFocusOrder="0" pos="20 280 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 7 magnitude" id="3661ca4111317400" memberName="m7_slider"
           virtualName="" explicitFocusOrder="0" pos="20 325 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 8 magnitude" id="8e83a0a6b9d1e264" memberName="m8_slider"
           virtualName="" explicitFocusOrder="0" pos="20 370 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 2 phase" id="60007c00fdd0e234" memberName="p2_slider"
           virtualName="" explicitFocusOrder="0" pos="144 100 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
@@ -2424,7 +2674,7 @@ BEGIN_JUCER_METADATA
             layout="33" items="LOWPASS&#10;HIGHPASS" textWhenNonSelected="SHAPE"
             textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="Calculate" id="6b0929d790004858" memberName="calculate_button"
-              virtualName="" explicitFocusOrder="0" pos="1075 367 90 30" bgColOff="ff909497"
+              virtualName="" explicitFocusOrder="0" pos="1086 367 85 30" bgColOff="ff909497"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Multiply phases" id="fd9508a1dc4c09ae" memberName="multiply_phases_button"
@@ -2482,7 +2732,7 @@ BEGIN_JUCER_METADATA
           textboxoutline="0" min="0.001" max="0.5" int="1.0e-5" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
-  <SLIDER name="Bandpass Amplitude" id="ef6299d4c0c90b49" memberName="bandpassAmplitude_slider"
+  <SLIDER name="Passband Amplitude" id="ef6299d4c0c90b49" memberName="passbandAmplitude_slider"
           virtualName="" explicitFocusOrder="0" pos="1007 344 135 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="-10.0" max="-0.1" int="0.1" style="LinearHorizontal"
@@ -2498,6 +2748,9 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="1109 662 60 25" bgColOff="ff909497"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
+  <TOGGLEBUTTON name="Auto update" id="8d6ebbb17b01b41e" memberName="autoUpdate_button"
+                virtualName="" explicitFocusOrder="0" pos="990 367 85 30" buttonText=""
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

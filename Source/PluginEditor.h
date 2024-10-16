@@ -84,7 +84,8 @@ public:
 
     void coefficientsNormalization(double& c0, double& c1, double& c2);
     void fromCoefficientsToMagnitudeAndPhase(double& mg, double& ph, double c1, double c2);
-    void filterDesignAndSetup ();
+    void filterDesignAndSetup();
+    void autoUpdateCheckAndSetup();
     //[/UserMethods]
 
     void paint (juce::Graphics& g) override;
@@ -107,8 +108,9 @@ private:
 
     bool linLog = false;
     bool ampDb = false;
+    bool autoUpdate = false;
 
-    int design_type;
+    int design_type = -1;
     int design_shape;
     int design_filters_to_activate;
     int design_frequency;
@@ -149,10 +151,12 @@ private:
     GenericButtonTheme swapButtonTheme;
 
     ComboBoxTheme comboBoxTheme;
+
+    AutoUpdateSwitchTheme autoUpdateSwitchTheme;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<juce::Label> bandpassAmplitude_label;
+    std::unique_ptr<juce::Label> passbandAmplitude_label;
     std::unique_ptr<juce::Slider> stopbandAmplitude_slider;
     std::unique_ptr<GaussianPlane> gaussian_plane;
     std::unique_ptr<juce::TextButton> reset_button;
@@ -231,9 +235,10 @@ private:
     std::unique_ptr<juce::Label> frequency_label;
     std::unique_ptr<juce::Label> transition_width_label;
     std::unique_ptr<juce::Slider> transition_width_slider;
-    std::unique_ptr<juce::Slider> bandpassAmplitude_slider;
+    std::unique_ptr<juce::Slider> passbandAmplitude_slider;
     std::unique_ptr<juce::Label> stopbandAmplitude_label;
     std::unique_ptr<juce::TextButton> autoGain_button;
+    std::unique_ptr<juce::ToggleButton> autoUpdate_button;
 
 
     //==============================================================================

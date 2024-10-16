@@ -266,7 +266,7 @@ class PhaseResponse : public GraphicResponse
 class GaussianPlane : public juce::Component
 {
     public:
-    GaussianPlane (const std::vector<std::shared_ptr<FilterElement>>& elements)
+    GaussianPlane (const std::vector<FilterElement>& elements)
     {
         updateElements(elements);
     }
@@ -286,19 +286,19 @@ class GaussianPlane : public juce::Component
         drawPolesAndZeros(g, margin);
     }
     
-    void updateElements(const std::vector<std::shared_ptr<FilterElement>>& elements)
+    void updateElements(const std::vector<FilterElement>& elements)
     {
         zeros.clear();
         poles.clear();
         
         for (auto& element : elements)
         {
-            if (!element->isActive())
+            if (!element.isActive())
                 continue;
-            if (element->getType())
-                poles.push_back(std::polar(element->getMagnitude(), MathConstants<double>::pi * element->getPhase()));
+            if (element.getType())
+                poles.push_back(std::polar(element.getMagnitude(), MathConstants<double>::pi * element.getPhase()));
             else
-                zeros.push_back(std::polar(element->getMagnitude(), MathConstants<double>::pi * element->getPhase()));
+                zeros.push_back(std::polar(element.getMagnitude(), MathConstants<double>::pi * element.getPhase()));
         }
         repaint();
     }

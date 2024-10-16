@@ -40,7 +40,7 @@ public:
     /* The method getMagnitude returns the magnitude of the complex number
      represented by FilterElement.
     */
-    double getMagnitude ()
+    double getMagnitude () const
     {
         return magnitude;
     }
@@ -48,7 +48,7 @@ public:
     /* The method getPhase returns the phase of the complex number represented
     by FilterElement.
     */
-    double getPhase ()
+    double getPhase () const
     {
         return phase;
     }
@@ -62,13 +62,13 @@ public:
     }
 
     // The method getType returns the type of the FilterElement.
-    enum Type getType ()
+    enum Type getType () const
     {
         return type;
     }
     
     // The method isActive returns true if the element is active, false otherwise.
-    bool isActive()
+    bool isActive() const
     {
         return active;
     }
@@ -276,8 +276,8 @@ public:
         
         for (auto& element : elements)
         {
-            if (element->isActive())
-                spectrum *= element->getElementSpectrum(phi);
+            if (element.isActive())
+                spectrum *= element.getElementSpectrum(phi);
         }
         
         return spectrum;
@@ -286,7 +286,7 @@ public:
     /* The getElementsChain method returns a std::vector of std::share_ptr to
      the elements of the filter chain
     */
-    std::vector<std::shared_ptr<FilterElement>> getElementsChain ()
+    std::vector<FilterElement> getElementsChain ()
     {
         return elements;
     }
@@ -301,7 +301,7 @@ public:
         {
             if (i == elementNr)
             {
-                return element->getMagnitude();
+                return element.getMagnitude();
             }
             ++ i;
         }
@@ -318,7 +318,7 @@ public:
         {
             if (i == elementNr)
             {
-                return element->getPhase();
+                return element.getPhase();
             }
             ++ i;
         }
@@ -335,7 +335,7 @@ public:
         {
             if (i == elementNr)
             {
-                element->setMagnitude(newValue);
+                element.setMagnitude(newValue);
                 return;
             }
             ++ i;
@@ -352,7 +352,7 @@ public:
         {
             if (i == elementNr)
             {
-                element->setPhase(newValue);
+                element.setPhase(newValue);
                 return;
             }
             ++ i;
@@ -369,7 +369,7 @@ public:
         {
             if (i == elementNr)
             {
-                element->setUnsetActive(newValue);
+                element.setUnsetActive(newValue);
                 return;
             }
             ++ i;
@@ -387,7 +387,7 @@ public:
         {
             if (i == elementNr)
             {
-                element->setType(newType);
+                element.setType(newType);
                 return;
             }
             ++ i;
@@ -400,7 +400,7 @@ public:
     void memoryReset ()
     {
         for (auto& element : elements)
-            element->memoryReset();
+            element.memoryReset();
     }
     
     /* The addElement method adds an element of the specified type to the
@@ -409,7 +409,7 @@ public:
     */
     void addElement (FilterElement::Type type)
     {
-        elements.push_back(std::make_unique<FilterElement>(type));
+        elements.push_back(FilterElement(type));
     }
    
     /* The processBlock method receives a reference to the audio buffer and is
@@ -429,10 +429,10 @@ public:
     void processBlock (double* bufferData, const int numSamples)
     {
         for (auto& element : elements)
-            if (element->isActive())
-                element->processBlock(bufferData, numSamples);
+            if (element.isActive())
+                element.processBlock(bufferData, numSamples);
     }
     
 private:
-    std::vector<std::shared_ptr<FilterElement>> elements;
+    std::vector<FilterElement> elements;
 };

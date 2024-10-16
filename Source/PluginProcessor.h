@@ -36,10 +36,13 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
+    void setParameterValue (juce::RangedAudioParameter* parameter, float value);
+    
     void setUnactive (const int elementNr);
     
     std::complex<double> getFilterSpectrum(const double phi);
-    std::vector<std::shared_ptr<FilterElement>> getFilterElementsChain ();
+    std::vector<FilterElement> getFilterElementsChain ();
+    FilterElement getElementState(int elementNr);
     
     void setEditorCallback(std::function<void()> callback)
     {
@@ -59,11 +62,11 @@ public:
     void turnOnOffAllElements(bool option);
     
     void setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr);
+    
+    AudioProcessorValueTreeState parameters;
 
 private:
     void parameterChanged(const String& parameterID, float newValue) override;
-    
-    AudioProcessorValueTreeState parameters;
     
     PolesAndZerosCascade filter;
     
