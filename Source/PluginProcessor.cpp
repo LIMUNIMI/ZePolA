@@ -54,11 +54,10 @@ void PolesAndZerosEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
     AudioBuffer<double> doubleBuffer(numChannels, numSamples);
     castBuffer(doubleBuffer, buffer, numChannels, numSamples);
     
+    auto bufferData = doubleBuffer.getArrayOfWritePointers();
+    
     for (int ch = 0; ch < numChannels; ++ ch)
-    {
-        auto bufferData = doubleBuffer.getWritePointer(ch);
-        filter.processBlock(bufferData, numSamples);
-    }
+        filter.processBlock(bufferData[ch], numSamples);
     
     juce::dsp::AudioBlock<double> block (doubleBuffer);
     gainProcessor.process(juce::dsp::ProcessContextReplacing<double> (block));
@@ -103,7 +102,7 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
     
     if (parameterID == "GAIN")
     {
-        gainProcessor.setGainLinear(Decibels::decibelsToGain(newValue, GAIN_FLOOR));
+        gainProcessor.setGainLinear(Decibels::decibelsToGain(newValue, -48.0f));
     }
     
     juce::String parameter = parameterID.substring(0, 1);
@@ -146,9 +145,9 @@ void PolesAndZerosEQAudioProcessor::setUnactive (const int elementNr)
     setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)), ACTIVE_DEFAULT);
 }
 
-std::complex<double> PolesAndZerosEQAudioProcessor::getFilterSpectrum (const double phi)
+std::complex<double> PolesAndZerosEQAudioProcessor::getPhiSpectrum (const double phi)
 {
-    return filter.getSpectrum(phi);
+    return filter.getPhiSpectrum(phi);
 }
 
 double PolesAndZerosEQAudioProcessor::getElementGain (const int elementNr)

@@ -40,7 +40,7 @@ public:
     
     void setUnactive (const int elementNr);
     
-    std::complex<double> getFilterSpectrum(const double phi);
+    std::complex<double> getPhiSpectrum(const double phi);
     double getElementGain(const int elementNr);
     std::vector<FilterElement> getFilterElementsChain();
     FilterElement getElementState(const int elementNr);

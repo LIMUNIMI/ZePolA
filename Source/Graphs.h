@@ -16,8 +16,8 @@
 
 class GraphicResponse : public juce::Component
 {
-    public:
-    GraphicResponse (const std::vector<double>& vls, const std::vector<double>& rf, const double sr, bool yType)
+public:
+    GraphicResponse (double* vls, double* rf, const double sr, bool yType)
     {
         updateValues(vls, rf, sr, yType);
     }
@@ -31,18 +31,18 @@ class GraphicResponse : public juce::Component
         drawResponse(g, ampDb);
     }
     
-    void updateValues (const std::vector<double>& vls, const std::vector<double>& rf, const double sr, bool yType)
+    void updateValues (double* vls, double* rf, const double sr, bool yType)
     {
-        values = vls;
-        referenceFrequencies = rf;
+        std::copy(vls, vls + GRAPHS_QUALITY, values);
+        std::copy(rf, rf + NUMBER_OF_REFERENCE_FREQUENCIES, referenceFrequencies);
         sampleRate = sr;
         ampDb = yType;
         repaint();
     }
     
-    protected:
-    std::vector<double> values;
-    std::vector<double> referenceFrequencies;
+protected:
+    double values[GRAPHS_QUALITY];
+    double referenceFrequencies[NUMBER_OF_REFERENCE_FREQUENCIES];
     
     double sampleRate;
     
@@ -57,13 +57,13 @@ class GraphicResponse : public juce::Component
         return juce::String(juce::roundToInt(frequency));
     }
     
-    private:
+private:
     bool ampDb = false;
 };
 
 class FrequencyResponse : public GraphicResponse
 {
-    public:
+public:
     using GraphicResponse::GraphicResponse;
     
     void drawResponse(juce::Graphics& g, bool linLog) override
@@ -99,14 +99,13 @@ class FrequencyResponse : public GraphicResponse
                 g.setColour(juce::Colour(GRID_COLOUR));
             }
             
-            long int valuesSize = values.size();
             float x;
             float y;
             int k = 1;
             
-            for (int i = 1; i < valuesSize; ++i)
+            for (int i = 1; i < GRAPHS_QUALITY; ++i)
             {
-                x = static_cast<float>(i) / valuesSize * width;
+                x = static_cast<float>(i) / GRAPHS_QUALITY * width;
                 if (isnan(x))
                 {
                     x = 0.0;
@@ -155,16 +154,15 @@ class FrequencyResponse : public GraphicResponse
             }
 
             responsePath.startNewSubPath(0, height - juce::jmap<float>(values[0], 0.0f, 2.0f, 0.0f, height));
-
-            long int valuesSize = values.size();
+            
             float x;
             float y;
             int k = 1;
 
-            for (int i = 1; i < valuesSize; ++i)
+            for (int i = 1; i < GRAPHS_QUALITY; ++i)
             {
                 g.setColour(juce::Colour(LINE_COLOUR));
-                x = static_cast<float>(i) / valuesSize * width;
+                x = static_cast<float>(i) / GRAPHS_QUALITY * width;
                 
                 y = height - juce::jmap<float>(values[i], 0.0f, 2.0f, 0.0f, height);
                 responsePath.lineTo(x, y);
@@ -236,15 +234,14 @@ class PhaseResponse : public GraphicResponse
         
         g.setColour(juce::Colour(TEXT_COLOUR));
         
-        long int valuesSize = values.size();
         float x;
         y = 0;
         int k = 1;
         
-        for (int i = 1; i < valuesSize; ++ i)
+        for (int i = 1; i < GRAPHS_QUALITY; ++ i)
         {
             g.setColour(juce::Colour(LINE_COLOUR));
-            x = static_cast<float>(i) / valuesSize * width;
+            x = static_cast<float>(i) / GRAPHS_QUALITY * width;
             y = height - static_cast<float>(values[i]) * height;
             responsePath.lineTo(x, y);
             

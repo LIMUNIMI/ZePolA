@@ -142,17 +142,16 @@ public:
     
     void calculateGain ()
     {
-        const double Re = getRealPart();
         switch (type)
         {
             case ZERO:
             {
-                gain = 1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude);
+                gain = 1.0;
             } break;
                 
             case POLE:
             {
-                gain = 1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude);
+                gain = 1.0;
             } break;
         }
     }
@@ -182,12 +181,12 @@ public:
         {
             case ZERO:
             {
-                outputSample = gain * inputSample + coeff1 * memory1 + coeff2 * memory2;
+                outputSample = inputSample + coeff1 * memory1 + coeff2 * memory2;
             } break;
                 
             case POLE:
             {
-                outputSample = gain * inputSample - coeff1 * memory1 - coeff2 * memory2;
+                outputSample = inputSample - coeff1 * memory1 - coeff2 * memory2;
             } break;
         }
         
@@ -231,7 +230,7 @@ public:
      represent the value of the spectrum corresponding to the value of the
      normalized frequency "phi".
     */
-    std::complex<double> getElementSpectrum (const double phi)
+    std::complex<double> getPhiSpectrum (const double phi)
     {
         switch (type)
         {
@@ -307,14 +306,14 @@ public:
      The spectrum value is calculated as the product of the spectra of the individual
      filter elements.
     */
-    std::complex<double> getSpectrum (const double phi)
+    std::complex<double> getPhiSpectrum (const double phi)
     {
         std::complex<double> spectrum(1.0, 0.0);
         
         for (auto& element : elements)
         {
             if (element.isActive())
-                spectrum *= element.getElementSpectrum(phi);
+                spectrum *= element.getPhiSpectrum(phi);
         }
         
         return spectrum;

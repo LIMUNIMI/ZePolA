@@ -101,9 +101,9 @@ private:
     PolesAndZerosEQAudioProcessor& processor;
     AudioProcessorValueTreeState& valueTreeState;
 
-    std::vector<double> magnitudes;
-    std::vector<double> phases;
-    std::vector<double> referenceFrequencies;
+    double magnitudes[GRAPHS_QUALITY];
+    double phases[GRAPHS_QUALITY];
+    double referenceFrequencies[NUMBER_OF_REFERENCE_FREQUENCIES];
 
     bool linLog = false;
     bool ampDb = false;
