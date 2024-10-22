@@ -24,7 +24,6 @@
 #include "PluginProcessor.h"
 #include "Graphs.h"
 #include "GraphicTheme.h"
-#include "GUImiscellaneous.h"
 #include "Parameters.h"
 
 #define NUMBER_OF_REFERENCE_FREQUENCIES         8

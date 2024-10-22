@@ -36,6 +36,8 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
+    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
+    
     void setParameterValue (juce::RangedAudioParameter* parameter, float value);
     
     void setUnactive (const int elementNr);
@@ -69,7 +71,7 @@ public:
 private:
     void parameterChanged(const String& parameterID, float newValue) override;
     
-    PolesAndZerosCascade filter;
+    std::vector<PolesAndZerosCascade> multiChannelCascade;
     
     juce::dsp::Gain<double> gainProcessor;
     

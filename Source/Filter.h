@@ -85,9 +85,8 @@ public:
     void setMagnitude (double newValue)
     {
         if (type)
-        {
             newValue = jmin(newValue, POLE_MAX_MAGNITUDE);
-        }
+        
         magnitude = newValue;
         calculateCoefficients();
         calculateGain();
@@ -142,11 +141,12 @@ public:
     
     void calculateGain ()
     {
+        auto Re = getRealPart();
         switch (type)
         {
             case ZERO:
             {
-                gain = 1.0;
+                gain = 1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude;
             } break;
                 
             case POLE:
@@ -181,12 +181,12 @@ public:
         {
             case ZERO:
             {
-                outputSample = inputSample + coeff1 * memory1 + coeff2 * memory2;
+                outputSample = gain * inputSample + coeff1 * memory1 + coeff2 * memory2;
             } break;
                 
             case POLE:
             {
-                outputSample = inputSample - coeff1 * memory1 - coeff2 * memory2;
+                outputSample = gain * inputSample - coeff1 * memory1 - coeff2 * memory2;
             } break;
         }
         
@@ -317,6 +317,11 @@ public:
         }
         
         return spectrum;
+    }
+    
+    PolesAndZerosCascade* getCascade ()
+    {
+        return this;
     }
     
     /* The getElementsChain method returns a std::vector of std::share_ptr to
