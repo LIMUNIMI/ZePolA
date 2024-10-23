@@ -146,7 +146,7 @@ public:
         {
             case ZERO:
             {
-                gain = 1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude;
+                gain = 1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude);
             } break;
                 
             case POLE:
