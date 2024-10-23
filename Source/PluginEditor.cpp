@@ -2205,6 +2205,7 @@ void PluginEditor::updateGUIGivenShape()
 {
     if (!type_box->getSelectedId())
     {
+        type_box->clear();
         int i = 1;
         for (juce::String& type : selectable_filter_types)
         {
