@@ -3,7 +3,7 @@
 <JUCERPROJECT id="AyGleg" name="Poles and Zeros - EQ" projectType="audioplug"
               jucerFormatVersion="1" companyName="Andrea Casati" pluginCode="pz3q"
               pluginFormats="buildAU,buildStandalone" pluginAUMainType="'aufx'"
-              displaySplashScreen="1" pluginChannelConfigs="{1,1},{2,2}">
+              displaySplashScreen="1">
   <MAINGROUP id="ZGYPR9" name="Poles and Zeros - EQ">
     <GROUP id="{7D61AFCF-4618-4DA8-96D3-B0DC7D2A26DB}" name="Source">
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
