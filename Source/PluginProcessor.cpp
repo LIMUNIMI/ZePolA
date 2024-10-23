@@ -110,7 +110,7 @@ void PolesAndZerosEQAudioProcessor::setStateInformation (const void* data, int s
 
 bool PolesAndZerosEQAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-    return true;
+    return getTotalNumInputChannels() == getTotalNumOutputChannels();
 }
 
 void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID, float newValue)
