@@ -2000,6 +2000,8 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
         //[UserComboBoxCode_shape_box] -- add your combo box handling code here..
         design_shape = comboBoxThatHasChanged->getSelectedId();
         updateGUIGivenShape();
+        if (autoUpdate)
+            autoUpdateCheckAndSetup();
         //[/UserComboBoxCode_shape_box]
     }
     else if (comboBoxThatHasChanged == order_box.get())
@@ -2210,7 +2212,6 @@ void PluginEditor::updateGUIGivenShape()
             ++ i;
         }
     }
-    autoUpdateCheckAndSetup();
 }
 
 void PluginEditor::updateGUIButterworth()
