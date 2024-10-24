@@ -64,7 +64,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     passbandAmplitude_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     passbandAmplitude_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    passbandAmplitude_label->setBounds (1020, 320, 159, 20);
+    passbandAmplitude_label->setBounds (1020, 350, 159, 20);
 
     stopbandAmplitude_slider.reset (new juce::Slider ("Stopband Amplitude"));
     addAndMakeVisible (stopbandAmplitude_slider.get());
@@ -78,13 +78,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     stopbandAmplitude_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     stopbandAmplitude_slider->addListener (this);
 
-    stopbandAmplitude_slider->setBounds (1022, 326, 135, 25);
+    stopbandAmplitude_slider->setBounds (1022, 356, 135, 25);
 
     gaussian_plane.reset (new GaussianPlane (processor.getFilterElementsChain()));
     addAndMakeVisible (gaussian_plane.get());
     gaussian_plane->setName ("gaussianPlane");
 
-    gaussian_plane->setBounds (30, 415, 260, 260);
+    gaussian_plane->setBounds (30, 445, 260, 260);
 
     reset_button.reset (new juce::TextButton ("Reset"));
     addAndMakeVisible (reset_button.get());
@@ -93,13 +93,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     reset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     reset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    reset_button->setBounds (360, 568, 70, 30);
+    reset_button->setBounds (360, 598, 70, 30);
 
     frequency_response.reset (new FrequencyResponse (magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb));
     addAndMakeVisible (frequency_response.get());
     frequency_response->setName ("frequencyResponse");
 
-    frequency_response->setBounds (550, 35, 430, 285);
+    frequency_response->setBounds (550, 65, 430, 285);
 
     freq_response_label.reset (new juce::Label ("Frequency response",
                                                 TRANS ("SPECTRUM MAGNITUDE\n")));
@@ -111,13 +111,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     freq_response_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     freq_response_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    freq_response_label->setBounds (695, 325, 140, 24);
+    freq_response_label->setBounds (695, 355, 140, 24);
 
     phase_response.reset (new PhaseResponse (phases, referenceFrequencies, processor.getSampleRate(), ampDb));
     addAndMakeVisible (phase_response.get());
     phase_response->setName ("phaseResponse");
 
-    phase_response->setBounds (550, 390, 430, 285);
+    phase_response->setBounds (550, 420, 430, 285);
 
     ph_response_label.reset (new juce::Label ("Phase response",
                                               TRANS ("SPECTRUM PHASE")));
@@ -129,7 +129,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     ph_response_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     ph_response_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    ph_response_label->setBounds (705, 680, 110, 24);
+    ph_response_label->setBounds (705, 710, 110, 24);
 
     m1_slider.reset (new juce::Slider ("Element 1 magnitude"));
     addAndMakeVisible (m1_slider.get());
@@ -143,7 +143,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m1_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m1_slider->addListener (this);
 
-    m1_slider->setBounds (20, 55, 120, 25);
+    m1_slider->setBounds (20, 85, 120, 25);
 
     p1_slider.reset (new juce::Slider ("Element 1 phase"));
     addAndMakeVisible (p1_slider.get());
@@ -158,7 +158,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p1_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p1_slider->addListener (this);
 
-    p1_slider->setBounds (144, 55, 120, 25);
+    p1_slider->setBounds (144, 85, 120, 25);
 
     magnitudes_label.reset (new juce::Label ("Magnitudes",
                                              TRANS ("MAGNITUDE\n")));
@@ -170,7 +170,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     magnitudes_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     magnitudes_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    magnitudes_label->setBounds (33, 20, 90, 24);
+    magnitudes_label->setBounds (33, 50, 90, 24);
 
     phases_label.reset (new juce::Label ("Phases",
                                          TRANS ("FREQUENCY\n")));
@@ -182,7 +182,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     phases_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     phases_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    phases_label->setBounds (198, 20, 80, 24);
+    phases_label->setBounds (198, 50, 80, 24);
 
     zero_pole_label.reset (new juce::Label ("Filter Type",
                                             TRANS ("FILTER TYPE")));
@@ -194,7 +194,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     zero_pole_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     zero_pole_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    zero_pole_label->setBounds (310, 20, 91, 24);
+    zero_pole_label->setBounds (310, 50, 91, 24);
 
     active_label.reset (new juce::Label ("Active",
                                          TRANS ("ACTIVE")));
@@ -206,119 +206,119 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     active_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     active_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    active_label->setBounds (401, 20, 55, 24);
+    active_label->setBounds (401, 50, 55, 24);
 
     e1_type.reset (new juce::ToggleButton ("Element 1 type"));
     addAndMakeVisible (e1_type.get());
     e1_type->setButtonText (juce::String());
     e1_type->addListener (this);
 
-    e1_type->setBounds (331, 56, 52, 21);
+    e1_type->setBounds (331, 86, 52, 21);
 
     e2_type.reset (new juce::ToggleButton ("Element 2 type"));
     addAndMakeVisible (e2_type.get());
     e2_type->setButtonText (juce::String());
     e2_type->addListener (this);
 
-    e2_type->setBounds (331, 101, 52, 21);
+    e2_type->setBounds (331, 131, 52, 21);
 
     e3_type.reset (new juce::ToggleButton ("Element 3 type"));
     addAndMakeVisible (e3_type.get());
     e3_type->setButtonText (juce::String());
     e3_type->addListener (this);
 
-    e3_type->setBounds (331, 146, 52, 21);
+    e3_type->setBounds (331, 176, 52, 21);
 
     e4_type.reset (new juce::ToggleButton ("Element 4 type"));
     addAndMakeVisible (e4_type.get());
     e4_type->setButtonText (juce::String());
     e4_type->addListener (this);
 
-    e4_type->setBounds (331, 191, 52, 21);
+    e4_type->setBounds (331, 221, 52, 21);
 
     e5_type.reset (new juce::ToggleButton ("Element 5 type"));
     addAndMakeVisible (e5_type.get());
     e5_type->setButtonText (juce::String());
     e5_type->addListener (this);
 
-    e5_type->setBounds (331, 236, 52, 21);
+    e5_type->setBounds (331, 266, 52, 21);
 
     e6_type.reset (new juce::ToggleButton ("Element 6 type"));
     addAndMakeVisible (e6_type.get());
     e6_type->setButtonText (juce::String());
     e6_type->addListener (this);
 
-    e6_type->setBounds (331, 281, 52, 21);
+    e6_type->setBounds (331, 311, 52, 21);
 
     e7_type.reset (new juce::ToggleButton ("Element 7 type"));
     addAndMakeVisible (e7_type.get());
     e7_type->setButtonText (juce::String());
     e7_type->addListener (this);
 
-    e7_type->setBounds (331, 326, 52, 21);
+    e7_type->setBounds (331, 356, 52, 21);
 
     e8_type.reset (new juce::ToggleButton ("Element 8 type"));
     addAndMakeVisible (e8_type.get());
     e8_type->setButtonText (juce::String());
     e8_type->addListener (this);
 
-    e8_type->setBounds (331, 371, 52, 21);
+    e8_type->setBounds (331, 401, 52, 21);
 
     e1_active.reset (new juce::ToggleButton ("Element 1 active"));
     addAndMakeVisible (e1_active.get());
     e1_active->setButtonText (juce::String());
     e1_active->addListener (this);
 
-    e1_active->setBounds (404, 56, 49, 21);
+    e1_active->setBounds (404, 86, 49, 21);
 
     e2_active.reset (new juce::ToggleButton ("Element 2 active"));
     addAndMakeVisible (e2_active.get());
     e2_active->setButtonText (juce::String());
     e2_active->addListener (this);
 
-    e2_active->setBounds (404, 101, 49, 21);
+    e2_active->setBounds (404, 131, 49, 21);
 
     e3_active.reset (new juce::ToggleButton ("Element 3 active"));
     addAndMakeVisible (e3_active.get());
     e3_active->setButtonText (juce::String());
     e3_active->addListener (this);
 
-    e3_active->setBounds (404, 146, 49, 21);
+    e3_active->setBounds (404, 176, 49, 21);
 
     e4_active.reset (new juce::ToggleButton ("Element 4 active"));
     addAndMakeVisible (e4_active.get());
     e4_active->setButtonText (juce::String());
     e4_active->addListener (this);
 
-    e4_active->setBounds (404, 191, 49, 21);
+    e4_active->setBounds (404, 221, 49, 21);
 
     e5_active.reset (new juce::ToggleButton ("Element 5 active"));
     addAndMakeVisible (e5_active.get());
     e5_active->setButtonText (juce::String());
     e5_active->addListener (this);
 
-    e5_active->setBounds (404, 236, 49, 21);
+    e5_active->setBounds (404, 266, 49, 21);
 
     e6_active.reset (new juce::ToggleButton ("Element 6 active"));
     addAndMakeVisible (e6_active.get());
     e6_active->setButtonText (juce::String());
     e6_active->addListener (this);
 
-    e6_active->setBounds (404, 281, 49, 21);
+    e6_active->setBounds (404, 311, 49, 21);
 
     e7_active.reset (new juce::ToggleButton ("Element 7 active"));
     addAndMakeVisible (e7_active.get());
     e7_active->setButtonText (juce::String());
     e7_active->addListener (this);
 
-    e7_active->setBounds (404, 326, 49, 21);
+    e7_active->setBounds (404, 356, 49, 21);
 
     e8_active.reset (new juce::ToggleButton ("Element 8 active"));
     addAndMakeVisible (e8_active.get());
     e8_active->setButtonText (juce::String());
     e8_active->addListener (this);
 
-    e8_active->setBounds (404, 371, 49, 21);
+    e8_active->setBounds (404, 401, 49, 21);
 
     gaussian_plane_label.reset (new juce::Label ("Gaussian plane",
                                                  TRANS ("GAUSSIAN PLANE")));
@@ -330,13 +330,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gaussian_plane_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     gaussian_plane_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    gaussian_plane_label->setBounds (95, 680, 140, 24);
+    gaussian_plane_label->setBounds (95, 710, 140, 24);
 
     bypass.reset (new juce::ToggleButton ("Bypass"));
     addAndMakeVisible (bypass.get());
     bypass->setButtonText (juce::String());
 
-    bypass->setBounds (1067, 672, 60, 25);
+    bypass->setBounds (1067, 702, 60, 25);
 
     gain_slider.reset (new juce::Slider ("Gain"));
     addAndMakeVisible (gain_slider.get());
@@ -348,14 +348,14 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     gain_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x008e989b));
 
-    gain_slider->setBounds (1074, 520, 45, 140);
+    gain_slider->setBounds (1074, 550, 45, 140);
 
     linLog_switch.reset (new juce::ToggleButton ("Linear / Logarithmic"));
     addAndMakeVisible (linLog_switch.get());
     linLog_switch->setButtonText (juce::String());
     linLog_switch->addListener (this);
 
-    linLog_switch->setBounds (931, 327, 52, 21);
+    linLog_switch->setBounds (931, 357, 52, 21);
 
     m2_slider.reset (new juce::Slider ("Element 2 magnitude"));
     addAndMakeVisible (m2_slider.get());
@@ -369,7 +369,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m2_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m2_slider->addListener (this);
 
-    m2_slider->setBounds (20, 100, 120, 25);
+    m2_slider->setBounds (20, 130, 120, 25);
 
     m3_slider.reset (new juce::Slider ("Element 3 magnitude"));
     addAndMakeVisible (m3_slider.get());
@@ -383,7 +383,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m3_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m3_slider->addListener (this);
 
-    m3_slider->setBounds (20, 145, 120, 25);
+    m3_slider->setBounds (20, 175, 120, 25);
 
     m4_slider.reset (new juce::Slider ("Element 4 magnitude"));
     addAndMakeVisible (m4_slider.get());
@@ -397,7 +397,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m4_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m4_slider->addListener (this);
 
-    m4_slider->setBounds (20, 190, 120, 25);
+    m4_slider->setBounds (20, 220, 120, 25);
 
     m5_slider.reset (new juce::Slider ("Element 5 magnitude"));
     addAndMakeVisible (m5_slider.get());
@@ -411,7 +411,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m5_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m5_slider->addListener (this);
 
-    m5_slider->setBounds (20, 235, 120, 25);
+    m5_slider->setBounds (20, 265, 120, 25);
 
     m6_slider.reset (new juce::Slider ("Element 6 magnitude"));
     addAndMakeVisible (m6_slider.get());
@@ -425,7 +425,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m6_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m6_slider->addListener (this);
 
-    m6_slider->setBounds (20, 280, 120, 25);
+    m6_slider->setBounds (20, 310, 120, 25);
 
     m7_slider.reset (new juce::Slider ("Element 7 magnitude"));
     addAndMakeVisible (m7_slider.get());
@@ -439,7 +439,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m7_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m7_slider->addListener (this);
 
-    m7_slider->setBounds (20, 325, 120, 25);
+    m7_slider->setBounds (20, 355, 120, 25);
 
     m8_slider.reset (new juce::Slider ("Element 8 magnitude"));
     addAndMakeVisible (m8_slider.get());
@@ -453,7 +453,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m8_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m8_slider->addListener (this);
 
-    m8_slider->setBounds (20, 370, 120, 25);
+    m8_slider->setBounds (20, 400, 120, 25);
 
     p2_slider.reset (new juce::Slider ("Element 2 phase"));
     addAndMakeVisible (p2_slider.get());
@@ -467,7 +467,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p2_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p2_slider->addListener (this);
 
-    p2_slider->setBounds (144, 100, 120, 25);
+    p2_slider->setBounds (144, 130, 120, 25);
 
     p3_slider.reset (new juce::Slider ("Element 3 phase"));
     addAndMakeVisible (p3_slider.get());
@@ -481,7 +481,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p3_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p3_slider->addListener (this);
 
-    p3_slider->setBounds (144, 145, 120, 25);
+    p3_slider->setBounds (144, 175, 120, 25);
 
     p4_slider.reset (new juce::Slider ("Element 4 phase"));
     addAndMakeVisible (p4_slider.get());
@@ -495,7 +495,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p4_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p4_slider->addListener (this);
 
-    p4_slider->setBounds (144, 190, 120, 25);
+    p4_slider->setBounds (144, 220, 120, 25);
 
     p5_slider.reset (new juce::Slider ("Element 5 phase"));
     addAndMakeVisible (p5_slider.get());
@@ -509,7 +509,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p5_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p5_slider->addListener (this);
 
-    p5_slider->setBounds (144, 235, 120, 25);
+    p5_slider->setBounds (144, 265, 120, 25);
 
     p6_slider.reset (new juce::Slider ("Element 6 phase"));
     addAndMakeVisible (p6_slider.get());
@@ -523,7 +523,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p6_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p6_slider->addListener (this);
 
-    p6_slider->setBounds (144, 280, 120, 25);
+    p6_slider->setBounds (144, 310, 120, 25);
 
     p7_slider.reset (new juce::Slider ("Element 7 phase"));
     addAndMakeVisible (p7_slider.get());
@@ -537,7 +537,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p7_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p7_slider->addListener (this);
 
-    p7_slider->setBounds (144, 325, 120, 25);
+    p7_slider->setBounds (144, 355, 120, 25);
 
     p8_slider.reset (new juce::Slider ("Element 8 phase"));
     addAndMakeVisible (p8_slider.get());
@@ -551,7 +551,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p8_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p8_slider->addListener (this);
 
-    p8_slider->setBounds (144, 370, 120, 25);
+    p8_slider->setBounds (144, 400, 120, 25);
 
     p1_freq.reset (new juce::Label ("Element 1 frequency",
                                     juce::String()));
@@ -564,7 +564,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p1_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p1_freq->addListener (this);
 
-    p1_freq->setBounds (265, 55, 60, 25);
+    p1_freq->setBounds (265, 85, 60, 25);
 
     p2_freq.reset (new juce::Label ("Element 2 frequency",
                                     juce::String()));
@@ -577,7 +577,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p2_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p2_freq->addListener (this);
 
-    p2_freq->setBounds (265, 100, 60, 25);
+    p2_freq->setBounds (265, 130, 60, 25);
 
     p3_freq.reset (new juce::Label ("Element 3 frequency",
                                     juce::String()));
@@ -590,7 +590,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p3_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p3_freq->addListener (this);
 
-    p3_freq->setBounds (265, 145, 60, 25);
+    p3_freq->setBounds (265, 175, 60, 25);
 
     p4_freq.reset (new juce::Label ("Element 4 frequency",
                                     juce::String()));
@@ -603,7 +603,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p4_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p4_freq->addListener (this);
 
-    p4_freq->setBounds (265, 190, 60, 25);
+    p4_freq->setBounds (265, 220, 60, 25);
 
     p5_freq.reset (new juce::Label ("Element 5 frequency",
                                     juce::String()));
@@ -616,7 +616,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p5_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p5_freq->addListener (this);
 
-    p5_freq->setBounds (265, 235, 60, 25);
+    p5_freq->setBounds (265, 265, 60, 25);
 
     p6_freq.reset (new juce::Label ("Element 6 frequency",
                                     juce::String()));
@@ -629,7 +629,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p6_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p6_freq->addListener (this);
 
-    p6_freq->setBounds (265, 280, 60, 25);
+    p6_freq->setBounds (265, 310, 60, 25);
 
     p7_freq.reset (new juce::Label ("Element 7 frequency",
                                     juce::String()));
@@ -642,7 +642,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p7_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p7_freq->addListener (this);
 
-    p7_freq->setBounds (265, 325, 60, 25);
+    p7_freq->setBounds (265, 355, 60, 25);
 
     p8_freq.reset (new juce::Label ("Element 8 frequency",
                                     juce::String()));
@@ -655,7 +655,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p8_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p8_freq->addListener (this);
 
-    p8_freq->setBounds (265, 370, 60, 25);
+    p8_freq->setBounds (265, 400, 60, 25);
 
     type_box.reset (new juce::ComboBox ("Design type"));
     addAndMakeVisible (type_box.get());
@@ -665,7 +665,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     type_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
     type_box->addListener (this);
 
-    type_box->setBounds (1025, 110, 140, 25);
+    type_box->setBounds (1025, 140, 140, 25);
 
     shape_box.reset (new juce::ComboBox ("Design shape"));
     addAndMakeVisible (shape_box.get());
@@ -677,7 +677,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     shape_box->addItem (TRANS ("HIGHPASS"), 2);
     shape_box->addListener (this);
 
-    shape_box->setBounds (1025, 65, 140, 25);
+    shape_box->setBounds (1025, 95, 140, 25);
 
     calculate_button.reset (new juce::TextButton ("Calculate"));
     addAndMakeVisible (calculate_button.get());
@@ -686,7 +686,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     calculate_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     calculate_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    calculate_button->setBounds (1098, 390, 80, 30);
+    calculate_button->setBounds (1098, 420, 80, 30);
 
     multiply_phases_button.reset (new juce::TextButton ("Multiply phases"));
     addAndMakeVisible (multiply_phases_button.get());
@@ -695,7 +695,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     multiply_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    multiply_phases_button->setBounds (319, 477, 72, 22);
+    multiply_phases_button->setBounds (319, 507, 72, 22);
 
     divide_phases_button.reset (new juce::TextButton ("Divide phases"));
     addAndMakeVisible (divide_phases_button.get());
@@ -704,7 +704,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     divide_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff727272));
 
-    divide_phases_button->setBounds (409, 477, 72, 22);
+    divide_phases_button->setBounds (409, 507, 72, 22);
 
     swap_button.reset (new juce::TextButton ("Swap poles/zeros"));
     addAndMakeVisible (swap_button.get());
@@ -713,7 +713,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     swap_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     swap_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    swap_button->setBounds (359, 512, 82, 22);
+    swap_button->setBounds (359, 542, 82, 22);
 
     turn_on_button.reset (new juce::TextButton ("Turn on all the elements"));
     addAndMakeVisible (turn_on_button.get());
@@ -722,7 +722,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff73cc81));
     turn_on_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_on_button->setBounds (319, 442, 72, 22);
+    turn_on_button->setBounds (319, 472, 72, 22);
 
     turn_off_button.reset (new juce::TextButton ("Turn off all the elements"));
     addAndMakeVisible (turn_off_button.get());
@@ -731,7 +731,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xffe86d5c));
     turn_off_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_off_button->setBounds (409, 442, 72, 22);
+    turn_off_button->setBounds (409, 472, 72, 22);
 
     order_box.reset (new juce::ComboBox ("Design order"));
     addAndMakeVisible (order_box.get());
@@ -741,7 +741,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     order_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
     order_box->addListener (this);
 
-    order_box->setBounds (1025, 155, 140, 25);
+    order_box->setBounds (1025, 185, 140, 25);
 
     design_frequency_label.reset (new juce::Label ("Design frequency",
                                                    TRANS ("FREQUENCY\n")));
@@ -753,14 +753,14 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     design_frequency_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     design_frequency_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    design_frequency_label->setBounds (1063, 193, 72, 20);
+    design_frequency_label->setBounds (1063, 223, 72, 20);
 
     ampDb_switch.reset (new juce::ToggleButton ("Amplitude / dB"));
     addAndMakeVisible (ampDb_switch.get());
     ampDb_switch->setButtonText (juce::String());
     ampDb_switch->addListener (this);
 
-    ampDb_switch->setBounds (546, 327, 52, 21);
+    ampDb_switch->setBounds (546, 357, 52, 21);
 
     frequency_design_slider.reset (new juce::Slider ("Frequency design slider"));
     addAndMakeVisible (frequency_design_slider.get());
@@ -774,7 +774,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     frequency_design_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     frequency_design_slider->addListener (this);
 
-    frequency_design_slider->setBounds (1022, 215, 83, 25);
+    frequency_design_slider->setBounds (1022, 245, 83, 25);
 
     frequency_label.reset (new juce::Label ("Frequency Label",
                                             juce::String()));
@@ -787,7 +787,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     frequency_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     frequency_label->addListener (this);
 
-    frequency_label->setBounds (1110, 215, 60, 25);
+    frequency_label->setBounds (1110, 245, 60, 25);
 
     transition_width_label.reset (new juce::Label ("Transition width",
                                                    TRANS ("TRANSITION WIDTH")));
@@ -799,7 +799,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     transition_width_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     transition_width_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    transition_width_label->setBounds (1031, 256, 129, 20);
+    transition_width_label->setBounds (1031, 286, 129, 20);
 
     transition_width_slider.reset (new juce::Slider ("Transition width slider"));
     addAndMakeVisible (transition_width_slider.get());
@@ -813,7 +813,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     transition_width_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     transition_width_slider->addListener (this);
 
-    transition_width_slider->setBounds (1022, 280, 135, 25);
+    transition_width_slider->setBounds (1022, 310, 135, 25);
 
     passbandAmplitude_slider.reset (new juce::Slider ("Passband Amplitude"));
     addAndMakeVisible (passbandAmplitude_slider.get());
@@ -827,7 +827,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     passbandAmplitude_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     passbandAmplitude_slider->addListener (this);
 
-    passbandAmplitude_slider->setBounds (1022, 344, 135, 25);
+    passbandAmplitude_slider->setBounds (1022, 374, 135, 25);
 
     stopbandAmplitude_label.reset (new juce::Label ("Stopband Amplitude",
                                                     TRANS ("STOPBAND AMPLITUDE (DB)")));
@@ -839,14 +839,14 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     stopbandAmplitude_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     stopbandAmplitude_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    stopbandAmplitude_label->setBounds (1020, 302, 159, 20);
+    stopbandAmplitude_label->setBounds (1020, 332, 159, 20);
 
     autoUpdate_button.reset (new juce::ToggleButton ("Auto update"));
     addAndMakeVisible (autoUpdate_button.get());
     autoUpdate_button->setButtonText (juce::String());
     autoUpdate_button->addListener (this);
 
-    autoUpdate_button->setBounds (1013, 390, 80, 30);
+    autoUpdate_button->setBounds (1013, 420, 80, 30);
 
     gain_1.reset (new juce::Label ("Gain 1 label",
                                    juce::String()));
@@ -858,7 +858,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_1->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     gain_1->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
 
-    gain_1->setBounds (470, 55, 45, 25);
+    gain_1->setBounds (470, 85, 45, 25);
 
     gain_2.reset (new juce::Label ("Gain 2 label",
                                    juce::String()));
@@ -870,7 +870,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_2->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     gain_2->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
 
-    gain_2->setBounds (470, 100, 45, 25);
+    gain_2->setBounds (470, 130, 45, 25);
 
     gain_3.reset (new juce::Label ("Gain 2 label",
                                    juce::String()));
@@ -882,7 +882,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_3->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     gain_3->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
 
-    gain_3->setBounds (470, 145, 45, 25);
+    gain_3->setBounds (470, 175, 45, 25);
 
     gain_4.reset (new juce::Label ("Gain 2 label",
                                    juce::String()));
@@ -894,7 +894,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_4->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     gain_4->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
 
-    gain_4->setBounds (470, 190, 45, 25);
+    gain_4->setBounds (470, 220, 45, 25);
 
     gain_5.reset (new juce::Label ("Gain 2 label",
                                    juce::String()));
@@ -906,7 +906,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_5->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     gain_5->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
 
-    gain_5->setBounds (470, 235, 45, 25);
+    gain_5->setBounds (470, 265, 45, 25);
 
     gain_6.reset (new juce::Label ("Gain 2 label",
                                    juce::String()));
@@ -918,7 +918,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_6->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     gain_6->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
 
-    gain_6->setBounds (470, 280, 45, 25);
+    gain_6->setBounds (470, 310, 45, 25);
 
     gain_7.reset (new juce::Label ("Gain 2 label",
                                    juce::String()));
@@ -930,7 +930,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_7->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     gain_7->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
 
-    gain_7->setBounds (470, 325, 45, 25);
+    gain_7->setBounds (470, 355, 45, 25);
 
     gain_8.reset (new juce::Label ("Gain 2 label",
                                    juce::String()));
@@ -942,7 +942,43 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_8->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     gain_8->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
 
-    gain_8->setBounds (470, 370, 45, 25);
+    gain_8->setBounds (470, 400, 45, 25);
+
+    undo_button.reset (new juce::TextButton ("Undo"));
+    addAndMakeVisible (undo_button.get());
+    undo_button->setButtonText (juce::String());
+    undo_button->addListener (this);
+    undo_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
+    undo_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    undo_button->setBounds (15, 9, 72, 25);
+
+    redo_button.reset (new juce::TextButton ("Redo"));
+    addAndMakeVisible (redo_button.get());
+    redo_button->setButtonText (juce::String());
+    redo_button->addListener (this);
+    redo_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
+    redo_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    redo_button->setBounds (85, 9, 72, 25);
+
+    save_preset_button.reset (new juce::TextButton ("Save preset"));
+    addAndMakeVisible (save_preset_button.get());
+    save_preset_button->setButtonText (juce::String());
+    save_preset_button->addListener (this);
+    save_preset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
+    save_preset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    save_preset_button->setBounds (1041, 9, 72, 25);
+
+    load_preset_button.reset (new juce::TextButton ("Load preset"));
+    addAndMakeVisible (load_preset_button.get());
+    load_preset_button->setButtonText (juce::String());
+    load_preset_button->addListener (this);
+    load_preset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
+    load_preset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    load_preset_button->setBounds (1111, 9, 72, 25);
 
 
     //[UserPreSize]
@@ -1051,6 +1087,20 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turnAllOffTheme.setTextToDisplay("ALL OFF");
     turn_off_button->setLookAndFeel(&turnAllOffTheme);
 
+    undoButtonTheme.setTextToDisplay("UNDO");
+    undo_button->setLookAndFeel(&undoButtonTheme);
+    undoButtonTheme.setFontSize(11.0f);
+    redoButtonTheme.setTextToDisplay("REDO");
+    redo_button->setLookAndFeel(&redoButtonTheme);
+    redoButtonTheme.setFontSize(11.0f);
+
+    savePresetButtonTheme.setTextToDisplay("SAVE PRESET");
+    save_preset_button->setLookAndFeel(&savePresetButtonTheme);
+    savePresetButtonTheme.setFontSize(11.0f);
+    loadPresetButtonTheme.setTextToDisplay("LOAD PRESET");
+    load_preset_button->setLookAndFeel(&loadPresetButtonTheme);
+    loadPresetButtonTheme.setFontSize(11.0f);
+
     type_box->setLookAndFeel(&comboBoxTheme);
     order_box->setLookAndFeel(&comboBoxTheme);
     shape_box->setLookAndFeel(&comboBoxTheme);
@@ -1074,6 +1124,10 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     linLog = false;
     linLog_switch->setToggleState(false, juce::dontSendNotification);
+
+    design_frequency_label->setBounds (1058, 238, 72, 20);
+    frequency_design_slider->setBounds (1027, 260, 83, 25);
+    frequency_label->setBounds (1110, 260, 60, 25);
 
     transition_width_label->setVisible(false);
     transition_width_slider->setVisible(false);
@@ -1101,7 +1155,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     //[/UserPreSize]
 
-    setSize (1200, 750);
+    setSize (1200, 780);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -1204,6 +1258,10 @@ PluginEditor::~PluginEditor()
     gain_6 = nullptr;
     gain_7 = nullptr;
     gain_8 = nullptr;
+    undo_button = nullptr;
+    redo_button = nullptr;
+    save_preset_button = nullptr;
+    load_preset_button = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1219,7 +1277,7 @@ void PluginEditor::paint (juce::Graphics& g)
     g.fillAll (juce::Colour (0xffecf0f1));
 
     {
-        float x = 15.0f, y = 15.0f, width = 510.0f, height = 720.0f;
+        float x = 15.0f, y = 45.0f, width = 510.0f, height = 720.0f;
         juce::Colour fillColour = juce::Colour (0x17b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1231,7 +1289,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 1005.0f, y = 15.0f, width = 180.0f, height = 720.0f;
+        float x = 1005.0f, y = 45.0f, width = 180.0f, height = 720.0f;
         juce::Colour fillColour = juce::Colour (0x19656565);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1243,7 +1301,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 525.0f, y = 15.0f, width = 480.0f, height = 720.0f;
+        float x = 525.0f, y = 45.0f, width = 480.0f, height = 720.0f;
         juce::Colour fillColour = juce::Colour (0x17b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1255,7 +1313,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1097, y = 708, width = 90, height = 30;
+        int x = 1097, y = 738, width = 90, height = 30;
         juce::String text (TRANS ("TOOLS"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1267,7 +1325,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 90, width = 510, height = 1;
+        int x = 15, y = 120, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1276,7 +1334,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 395, y = 708, width = 116, height = 30;
+        int x = 395, y = 738, width = 116, height = 30;
         juce::String text (TRANS ("FILTER SETUP"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1288,7 +1346,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 810, y = 708, width = 186, height = 30;
+        int x = 810, y = 738, width = 186, height = 30;
         juce::String text (TRANS ("FILTER RESPONSE"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1300,7 +1358,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 135, width = 510, height = 1;
+        int x = 15, y = 165, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1309,7 +1367,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 180, width = 510, height = 1;
+        int x = 15, y = 210, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1318,7 +1376,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 225, width = 510, height = 1;
+        int x = 15, y = 255, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1327,7 +1385,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 270, width = 510, height = 1;
+        int x = 15, y = 300, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1336,7 +1394,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 360, width = 510, height = 1;
+        int x = 15, y = 390, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1345,7 +1403,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 15, y = 315, width = 510, height = 1;
+        int x = 15, y = 345, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1354,7 +1412,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1005, y = 455, width = 180, height = 1;
+        int x = 1005, y = 485, width = 180, height = 1;
         juce::Colour fillColour = juce::Colour (0x4a909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -1363,7 +1421,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1050, y = 460, width = 90, height = 24;
+        int x = 1050, y = 490, width = 90, height = 24;
         juce::String text (TRANS ("CONTROLS"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1375,7 +1433,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1040, y = 20, width = 110, height = 24;
+        int x = 1040, y = 50, width = 110, height = 24;
         juce::String text (TRANS ("FILTER DESIGN"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1387,7 +1445,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1075, y = 500, width = 40, height = 20;
+        int x = 1075, y = 530, width = 40, height = 20;
         juce::String text (TRANS ("GAIN"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1399,7 +1457,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 305.0f, y = 415.0f, width = 190.0f, height = 130.0f;
+        float x = 305.0f, y = 445.0f, width = 190.0f, height = 130.0f;
         juce::Colour fillColour = juce::Colour (0x11b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1411,7 +1469,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 355, y = 416, width = 90, height = 20;
+        int x = 355, y = 446, width = 90, height = 20;
         juce::String text (TRANS ("SETUP SHORTCUTS"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1423,13 +1481,25 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1120, y = 641, width = 23, height = 20;
+        int x = 1120, y = 671, width = 23, height = 20;
         juce::String text (TRANS ("dB"));
         juce::Colour fillColour = juce::Colour (0xff333333);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+        g.drawText (text, x, y, width, height,
+                    juce::Justification::centred, true);
+    }
+
+    {
+        int x = 495, y = 9, width = 210, height = 25;
+        juce::String text (TRANS ("POLES AND ZEROS - EQ"));
+        juce::Colour fillColour = juce::Colour (0xff333333);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (juce::Font ("Gill Sans", 20.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
                     juce::Justification::centred, true);
     }
@@ -1901,6 +1971,52 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             autoUpdate = false;
         //[/UserButtonCode_autoUpdate_button]
     }
+    else if (buttonThatWasClicked == undo_button.get())
+    {
+        //[UserButtonCode_undo_button] -- add your button handler code here..
+        valueTreeState.undoManager->undo();
+        //[/UserButtonCode_undo_button]
+    }
+    else if (buttonThatWasClicked == redo_button.get())
+    {
+        //[UserButtonCode_redo_button] -- add your button handler code here..
+        valueTreeState.undoManager->redo();
+        //[/UserButtonCode_redo_button]
+    }
+    else if (buttonThatWasClicked == save_preset_button.get())
+    {
+        //[UserButtonCode_save_preset_button] -- add your button handler code here..
+        auto defaultPresetLocation = File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory);
+        juce::FileChooser chooser("Select the save location...", defaultPresetLocation, "*.xml");
+        if (chooser.browseForFileToSave(true))
+        {
+            auto file = chooser.getResult();
+            if (file.exists())
+                file.deleteFile();
+            juce::FileOutputStream outputStream(file);
+            if (outputStream.openedOk())
+            {
+                MemoryBlock destData;
+                processor.getStateInformation(destData);
+                outputStream.write(destData.getData(), destData.getSize());
+            }
+        }
+        //[/UserButtonCode_save_preset_button]
+    }
+    else if (buttonThatWasClicked == load_preset_button.get())
+    {
+        //[UserButtonCode_load_preset_button] -- add your button handler code here..
+        auto defaultPresetLocation = File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory);
+        juce::FileChooser chooser("Select the preset to load...", defaultPresetLocation, "*.xml");
+        if (chooser.browseForFileToOpen())
+        {
+            auto file = chooser.getResult();
+            MemoryBlock sourceData;
+            file.loadFileAsData(sourceData);
+            processor.setStateInformation(sourceData.getData(), sourceData.getSize());
+        }
+        //[/UserButtonCode_load_preset_button]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -2145,17 +2261,17 @@ void PluginEditor::updateDesignFrequencySlider(short int option)
     {
         case 1:
         {
-            design_frequency_label->setBounds (1058, 208, 72, 20);
-            frequency_design_slider->setBounds (1027, 230, 83, 25);
+            design_frequency_label->setBounds (1058, 238, 72, 20);
+            frequency_design_slider->setBounds (1027, 260, 83, 25);
             frequency_design_slider->setRange (0.0001, 999, 0.0001);
             updateDesignSliderFromFrequency(design_frequency, frequency_design_slider.get(), sampleRate);
-            frequency_label->setBounds (1110, 230, 60, 25);
+            frequency_label->setBounds (1110, 260, 60, 25);
         } break;
 
         case 2:
         {
-            design_frequency_label->setBounds (1058, 148, 72, 20);
-            frequency_design_slider->setBounds (1027, 170, 83, 25);
+            design_frequency_label->setBounds (1058, 178, 72, 20);
+            frequency_design_slider->setBounds (1027, 200, 83, 25);
             auto minValue = std::ceil(0.00005 * 2000.0);
             auto maxValue = std::floor(0.499945 * 2000.0);
             frequency_design_slider->setRange(minValue, maxValue);
@@ -2252,25 +2368,25 @@ void PluginEditor::updateGUIEllipticChebyshevIandII()
     stopbandAmplitude_slider->setValue(stopbandAmplitudedB);
     setTransitionWidthRange();
 
-    frequency_label->setBounds (1110, 170, 60, 25);
+    frequency_label->setBounds (1110, 200, 60, 25);
 
     passbandAmplitude_label->setVisible(true);
-    passbandAmplitude_label->setBounds (1020, 195, 159, 20);
+    passbandAmplitude_label->setBounds (1020, 231, 159, 20);
 
     passbandAmplitude_slider->setVisible(true);
-    passbandAmplitude_slider->setBounds (1027, 219, 135, 25);
+    passbandAmplitude_slider->setBounds (1027, 255, 135, 25);
 
     stopbandAmplitude_label->setVisible(true);
-    stopbandAmplitude_label->setBounds(1022, 250, 159, 20);
+    stopbandAmplitude_label->setBounds(1022, 286, 159, 20);
 
     stopbandAmplitude_slider->setVisible(true);
-    stopbandAmplitude_slider->setBounds(1027, 274, 135, 25);
+    stopbandAmplitude_slider->setBounds(1027, 310, 135, 25);
 
     transition_width_label->setVisible(true);
-    transition_width_label->setBounds(1030, 305, 129, 20);
+    transition_width_label->setBounds(1030, 341, 129, 20);
 
     transition_width_slider->setVisible(true);
-    transition_width_slider->setBounds (1027, 329, 135, 25);
+    transition_width_slider->setBounds (1027, 365, 135, 25);
 
     calculate_button->setEnabled(true);
 }
@@ -2415,433 +2531,450 @@ BEGIN_JUCER_METADATA
                  parentClasses="public juce::AudioProcessorEditor" constructorParams="PolesAndZerosEQAudioProcessor&amp; p, AudioProcessorValueTreeState&amp; vts"
                  variableInitialisers="AudioProcessorEditor(&amp;p), processor (p), valueTreeState (vts)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="1200" initialHeight="750">
+                 fixedSize="1" initialWidth="1200" initialHeight="780">
   <BACKGROUND backgroundColour="ffecf0f1">
-    <ROUNDRECT pos="15 15 510 720" cornerSize="14.5" fill="solid: 17b1b1b1"
+    <ROUNDRECT pos="15 45 510 720" cornerSize="14.5" fill="solid: 17b1b1b1"
                hasStroke="1" stroke="1.5, mitered, butt" strokeColour="solid: ff383838"/>
-    <ROUNDRECT pos="1005 15 180 720" cornerSize="14.5" fill="solid: 19656565"
+    <ROUNDRECT pos="1005 45 180 720" cornerSize="14.5" fill="solid: 19656565"
                hasStroke="1" stroke="1.5, mitered, butt" strokeColour="solid: ff383838"/>
-    <ROUNDRECT pos="525 15 480 720" cornerSize="14.5" fill="solid: 17b1b1b1"
+    <ROUNDRECT pos="525 45 480 720" cornerSize="14.5" fill="solid: 17b1b1b1"
                hasStroke="1" stroke="1.5, mitered, butt" strokeColour="solid: ff383838"/>
-    <TEXT pos="1097 708 90 30" fill="solid: ff333333" hasStroke="0" text="TOOLS"
+    <TEXT pos="1097 738 90 30" fill="solid: ff333333" hasStroke="0" text="TOOLS"
           fontname="Gill Sans" fontsize="16.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <RECT pos="15 90 510 1" fill="solid: 25909497" hasStroke="0"/>
-    <TEXT pos="395 708 116 30" fill="solid: ff333333" hasStroke="0" text="FILTER SETUP"
+    <RECT pos="15 120 510 1" fill="solid: 25909497" hasStroke="0"/>
+    <TEXT pos="395 738 116 30" fill="solid: ff333333" hasStroke="0" text="FILTER SETUP"
           fontname="Gill Sans" fontsize="16.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <TEXT pos="810 708 186 30" fill="solid: ff333333" hasStroke="0" text="FILTER RESPONSE"
+    <TEXT pos="810 738 186 30" fill="solid: ff333333" hasStroke="0" text="FILTER RESPONSE"
           fontname="Gill Sans" fontsize="16.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <RECT pos="15 135 510 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="15 180 510 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="15 225 510 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="15 270 510 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="15 360 510 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="15 315 510 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="1005 455 180 1" fill="solid: 4a909497" hasStroke="0"/>
-    <TEXT pos="1050 460 90 24" fill="solid: ff333333" hasStroke="0" text="CONTROLS"
+    <RECT pos="15 165 510 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="15 210 510 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="15 255 510 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="15 300 510 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="15 390 510 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="15 345 510 1" fill="solid: 25909497" hasStroke="0"/>
+    <RECT pos="1005 485 180 1" fill="solid: 4a909497" hasStroke="0"/>
+    <TEXT pos="1050 490 90 24" fill="solid: ff333333" hasStroke="0" text="CONTROLS"
           fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <TEXT pos="1040 20 110 24" fill="solid: ff333333" hasStroke="0" text="FILTER DESIGN"
+    <TEXT pos="1040 50 110 24" fill="solid: ff333333" hasStroke="0" text="FILTER DESIGN"
           fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <TEXT pos="1075 500 40 20" fill="solid: ff333333" hasStroke="0" text="GAIN"
+    <TEXT pos="1075 530 40 20" fill="solid: ff333333" hasStroke="0" text="GAIN"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <ROUNDRECT pos="305 415 190 130" cornerSize="14.5" fill="solid: 11b1b1b1"
+    <ROUNDRECT pos="305 445 190 130" cornerSize="14.5" fill="solid: 11b1b1b1"
                hasStroke="1" stroke="0.5, mitered, butt" strokeColour="solid: ff383838"/>
-    <TEXT pos="355 416 90 20" fill="solid: ff333333" hasStroke="0" text="SETUP SHORTCUTS"
+    <TEXT pos="355 446 90 20" fill="solid: ff333333" hasStroke="0" text="SETUP SHORTCUTS"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <TEXT pos="1120 641 23 20" fill="solid: ff333333" hasStroke="0" text="dB"
+    <TEXT pos="1120 671 23 20" fill="solid: ff333333" hasStroke="0" text="dB"
           fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
+          justification="36" typefaceStyle="SemiBold"/>
+    <TEXT pos="495 9 210 25" fill="solid: ff333333" hasStroke="0" text="POLES AND ZEROS - EQ"
+          fontname="Gill Sans" fontsize="20.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
   </BACKGROUND>
   <LABEL name="Passband Amplitude" id="a57ca268c3802211" memberName="passbandAmplitude_label"
-         virtualName="" explicitFocusOrder="0" pos="1020 320 159 20" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="1020 350 159 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="PASSBAND AMPLITUDE (DB)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <SLIDER name="Stopband Amplitude" id="308fcfe400b70b27" memberName="stopbandAmplitude_slider"
-          virtualName="" explicitFocusOrder="0" pos="1022 326 135 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="1022 356 135 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="-35.0" max="-21.0" int="0.1" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <GENERICCOMPONENT name="gaussianPlane" id="f84485816497c4e3" memberName="gaussian_plane"
-                    virtualName="" explicitFocusOrder="0" pos="30 415 260 260" class="GaussianPlane"
+                    virtualName="" explicitFocusOrder="0" pos="30 445 260 260" class="GaussianPlane"
                     params="processor.getFilterElementsChain()"/>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
-              virtualName="" explicitFocusOrder="0" pos="360 568 70 30" bgColOff="ff909497"
+              virtualName="" explicitFocusOrder="0" pos="360 598 70 30" bgColOff="ff909497"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
-                    virtualName="" explicitFocusOrder="0" pos="550 35 430 285" class="FrequencyResponse"
+                    virtualName="" explicitFocusOrder="0" pos="550 65 430 285" class="FrequencyResponse"
                     params="magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb"/>
   <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
-         virtualName="" explicitFocusOrder="0" pos="695 325 140 24" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="695 355 140 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="SPECTRUM MAGNITUDE&#10;"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <GENERICCOMPONENT name="phaseResponse" id="c9a48273dec25832" memberName="phase_response"
-                    virtualName="" explicitFocusOrder="0" pos="550 390 430 285" class="PhaseResponse"
+                    virtualName="" explicitFocusOrder="0" pos="550 420 430 285" class="PhaseResponse"
                     params="phases, referenceFrequencies, processor.getSampleRate(), ampDb"/>
   <LABEL name="Phase response" id="6d08c4e421703ed5" memberName="ph_response_label"
-         virtualName="" explicitFocusOrder="0" pos="705 680 110 24" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="705 710 110 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="SPECTRUM PHASE"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <SLIDER name="Element 1 magnitude" id="9107cda7959bc0ad" memberName="m1_slider"
-          virtualName="" explicitFocusOrder="0" pos="20 55 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="20 85 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 1 phase" id="b9f95ed5c32caef9" memberName="p1_slider"
-          virtualName="" explicitFocusOrder="0" pos="144 55 120 25" bkgcol="ff383838"
+          virtualName="" explicitFocusOrder="0" pos="144 85 120 25" bkgcol="ff383838"
           thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="Magnitudes" id="f2206057c7f672c6" memberName="magnitudes_label"
-         virtualName="" explicitFocusOrder="0" pos="33 20 90 24" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="33 50 90 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="MAGNITUDE&#10;"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <LABEL name="Phases" id="e0e34f187bbbdcdc" memberName="phases_label"
-         virtualName="" explicitFocusOrder="0" pos="198 20 80 24" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="198 50 80 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="FREQUENCY&#10;"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <LABEL name="Filter Type" id="676532893526fbc7" memberName="zero_pole_label"
-         virtualName="" explicitFocusOrder="0" pos="310 20 91 24" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="310 50 91 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="FILTER TYPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"
          typefaceStyle="SemiBold"/>
   <LABEL name="Active" id="e82d0bcbcd7af0" memberName="active_label" virtualName=""
-         explicitFocusOrder="0" pos="401 20 55 24" textCol="ff333333"
+         explicitFocusOrder="0" pos="401 50 55 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="ACTIVE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"
          typefaceStyle="SemiBold"/>
   <TOGGLEBUTTON name="Element 1 type" id="cb026ef1068db639" memberName="e1_type"
-                virtualName="" explicitFocusOrder="0" pos="331 56 52 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="331 86 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 2 type" id="56addf679899dfb" memberName="e2_type"
-                virtualName="" explicitFocusOrder="0" pos="331 101 52 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="331 131 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 3 type" id="5abda647a887dc8e" memberName="e3_type"
-                virtualName="" explicitFocusOrder="0" pos="331 146 52 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="331 176 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 4 type" id="3136ab6a98246edb" memberName="e4_type"
-                virtualName="" explicitFocusOrder="0" pos="331 191 52 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="331 221 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 5 type" id="4d6d7aa8e46a31c6" memberName="e5_type"
-                virtualName="" explicitFocusOrder="0" pos="331 236 52 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="331 266 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 6 type" id="6a190298ad04abf" memberName="e6_type"
-                virtualName="" explicitFocusOrder="0" pos="331 281 52 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="331 311 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 7 type" id="57fd1da9881e7a6a" memberName="e7_type"
-                virtualName="" explicitFocusOrder="0" pos="331 326 52 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="331 356 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 8 type" id="a0b1086b7f717581" memberName="e8_type"
-                virtualName="" explicitFocusOrder="0" pos="331 371 52 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="331 401 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 1 active" id="84bb86bdbd9ccede" memberName="e1_active"
-                virtualName="" explicitFocusOrder="0" pos="404 56 49 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="404 86 49 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 2 active" id="176e3fb309f12ef5" memberName="e2_active"
-                virtualName="" explicitFocusOrder="0" pos="404 101 49 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="404 131 49 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 3 active" id="d6d9c0542e41b9c3" memberName="e3_active"
-                virtualName="" explicitFocusOrder="0" pos="404 146 49 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="404 176 49 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 4 active" id="72d6ebba0023e28e" memberName="e4_active"
-                virtualName="" explicitFocusOrder="0" pos="404 191 49 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="404 221 49 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 5 active" id="d8c38a2ce324a73d" memberName="e5_active"
-                virtualName="" explicitFocusOrder="0" pos="404 236 49 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="404 266 49 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 6 active" id="1b42bda33e1c947c" memberName="e6_active"
-                virtualName="" explicitFocusOrder="0" pos="404 281 49 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="404 311 49 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 7 active" id="3405e0694e2b063d" memberName="e7_active"
-                virtualName="" explicitFocusOrder="0" pos="404 326 49 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="404 356 49 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="Element 8 active" id="b60e0b9c2104a2bd" memberName="e8_active"
-                virtualName="" explicitFocusOrder="0" pos="404 371 49 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="404 401 49 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <LABEL name="Gaussian plane" id="32980deccea32218" memberName="gaussian_plane_label"
-         virtualName="" explicitFocusOrder="0" pos="95 680 140 24" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="95 710 140 24" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="GAUSSIAN PLANE"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <TOGGLEBUTTON name="Bypass" id="4daf2a36bc47407c" memberName="bypass" virtualName=""
-                explicitFocusOrder="0" pos="1067 672 60 25" buttonText="" connectedEdges="0"
+                explicitFocusOrder="0" pos="1067 702 60 25" buttonText="" connectedEdges="0"
                 needsCallback="0" radioGroupId="0" state="0"/>
   <SLIDER name="Gain" id="7e880f1fc774c2af" memberName="gain_slider" virtualName=""
-          explicitFocusOrder="0" pos="1074 520 45 140" thumbcol="ffffffff"
+          explicitFocusOrder="0" pos="1074 550 45 140" thumbcol="ffffffff"
           textboxtext="ff383838" textboxhighlight="66686868" textboxoutline="8e989b"
           min="0.0" max="10.0" int="0.0" style="LinearVertical" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="100" textBoxHeight="20" skewFactor="1.0"
           needsCallback="0"/>
   <TOGGLEBUTTON name="Linear / Logarithmic" id="269b07022e58d862" memberName="linLog_switch"
-                virtualName="" explicitFocusOrder="0" pos="931 327 52 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="931 357 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <SLIDER name="Element 2 magnitude" id="e1a6d1b02cc8ab80" memberName="m2_slider"
-          virtualName="" explicitFocusOrder="0" pos="20 100 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="20 130 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 3 magnitude" id="b0094bd01977f340" memberName="m3_slider"
-          virtualName="" explicitFocusOrder="0" pos="20 145 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="20 175 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 4 magnitude" id="8f433acd768ec1d9" memberName="m4_slider"
-          virtualName="" explicitFocusOrder="0" pos="20 190 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="20 220 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 5 magnitude" id="fe0864ae3596b10d" memberName="m5_slider"
-          virtualName="" explicitFocusOrder="0" pos="20 235 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="20 265 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 6 magnitude" id="e6371565d3e4bb47" memberName="m6_slider"
-          virtualName="" explicitFocusOrder="0" pos="20 280 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="20 310 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 7 magnitude" id="3661ca4111317400" memberName="m7_slider"
-          virtualName="" explicitFocusOrder="0" pos="20 325 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="20 355 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 8 magnitude" id="8e83a0a6b9d1e264" memberName="m8_slider"
-          virtualName="" explicitFocusOrder="0" pos="20 370 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="20 400 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 2 phase" id="60007c00fdd0e234" memberName="p2_slider"
-          virtualName="" explicitFocusOrder="0" pos="144 100 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="144 130 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 3 phase" id="dad16f547c32eed" memberName="p3_slider"
-          virtualName="" explicitFocusOrder="0" pos="144 145 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="144 175 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 4 phase" id="2baa73d9d72e7d2a" memberName="p4_slider"
-          virtualName="" explicitFocusOrder="0" pos="144 190 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="144 220 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 5 phase" id="6ba360671cfe4646" memberName="p5_slider"
-          virtualName="" explicitFocusOrder="0" pos="144 235 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="144 265 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 6 phase" id="6fb200ac73072a45" memberName="p6_slider"
-          virtualName="" explicitFocusOrder="0" pos="144 280 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="144 310 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 7 phase" id="481e9546dc440bf4" memberName="p7_slider"
-          virtualName="" explicitFocusOrder="0" pos="144 325 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="144 355 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 8 phase" id="d587f0ce08864b4e" memberName="p8_slider"
-          virtualName="" explicitFocusOrder="0" pos="144 370 120 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="144 400 120 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="Element 1 frequency" id="79f5387b07d9c483" memberName="p1_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 55 60 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="265 85 60 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 2 frequency" id="5b5fee371d8a9052" memberName="p2_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 100 60 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="265 130 60 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 3 frequency" id="a15e9da2c1f0e36b" memberName="p3_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 145 60 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="265 175 60 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 4 frequency" id="d6a7e59b3d26f91e" memberName="p4_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 190 60 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="265 220 60 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 5 frequency" id="f0a2b500cc7bc03" memberName="p5_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 235 60 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="265 265 60 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 6 frequency" id="5dfdb03e7a654b13" memberName="p6_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 280 60 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="265 310 60 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 7 frequency" id="600a01c1726873b3" memberName="p7_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 325 60 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="265 355 60 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Element 8 frequency" id="f85a4dea8bdf47f1" memberName="p8_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 370 60 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="265 400 60 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="Design type" id="5a16af79e3a09d2b" memberName="type_box"
-            virtualName="" explicitFocusOrder="0" pos="1025 110 140 25" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="1025 140 140 25" editable="0"
             layout="33" items="" textWhenNonSelected="TYPE" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="Design shape" id="fab26cb579c24549" memberName="shape_box"
-            virtualName="" explicitFocusOrder="0" pos="1025 65 140 25" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="1025 95 140 25" editable="0"
             layout="33" items="LOWPASS&#10;HIGHPASS" textWhenNonSelected="SHAPE"
             textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="Calculate" id="6b0929d790004858" memberName="calculate_button"
-              virtualName="" explicitFocusOrder="0" pos="1098 390 80 30" bgColOff="ff909497"
+              virtualName="" explicitFocusOrder="0" pos="1098 420 80 30" bgColOff="ff909497"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Multiply phases" id="fd9508a1dc4c09ae" memberName="multiply_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="319 477 72 22" bgColOff="ff909497"
+              virtualName="" explicitFocusOrder="0" pos="319 507 72 22" bgColOff="ff909497"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Divide phases" id="a62537b9345044f3" memberName="divide_phases_button"
-              virtualName="" explicitFocusOrder="0" pos="409 477 72 22" bgColOff="ff909497"
+              virtualName="" explicitFocusOrder="0" pos="409 507 72 22" bgColOff="ff909497"
               bgColOn="ff727272" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Swap poles/zeros" id="938b23da9ff326b0" memberName="swap_button"
-              virtualName="" explicitFocusOrder="0" pos="359 512 82 22" bgColOff="ff909497"
+              virtualName="" explicitFocusOrder="0" pos="359 542 82 22" bgColOff="ff909497"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn on all the elements" id="e4b8377926241c51" memberName="turn_on_button"
-              virtualName="" explicitFocusOrder="0" pos="319 442 72 22" bgColOff="ff73cc81"
+              virtualName="" explicitFocusOrder="0" pos="319 472 72 22" bgColOff="ff73cc81"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="Turn off all the elements" id="f6c36c1c53a4a06d" memberName="turn_off_button"
-              virtualName="" explicitFocusOrder="0" pos="409 442 72 22" bgColOff="ffe86d5c"
+              virtualName="" explicitFocusOrder="0" pos="409 472 72 22" bgColOff="ffe86d5c"
               bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <COMBOBOX name="Design order" id="a7c23e76d01914d5" memberName="order_box"
-            virtualName="" explicitFocusOrder="0" pos="1025 155 140 25" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="1025 185 140 25" editable="0"
             layout="33" items="" textWhenNonSelected="ORDER" textWhenNoItems="(no choices)"/>
   <LABEL name="Design frequency" id="bc37557b2c8cc2ce" memberName="design_frequency_label"
-         virtualName="" explicitFocusOrder="0" pos="1063 193 72 20" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="1063 223 72 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="FREQUENCY&#10;"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <TOGGLEBUTTON name="Amplitude / dB" id="b9198764b9daa498" memberName="ampDb_switch"
-                virtualName="" explicitFocusOrder="0" pos="546 327 52 21" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="546 357 52 21" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <SLIDER name="Frequency design slider" id="805d44cec628c3" memberName="frequency_design_slider"
-          virtualName="" explicitFocusOrder="0" pos="1022 215 83 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="1022 245 83 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0001" max="1000.0" int="0.0001" style="LinearHorizontal"
           textBoxPos="NoTextBox" textBoxEditable="0" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="Frequency Label" id="bb3cf5d37607187f" memberName="frequency_label"
-         virtualName="" explicitFocusOrder="0" pos="1110 215 60 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="1110 245 60 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Transition width" id="b5068a6d459942e" memberName="transition_width_label"
-         virtualName="" explicitFocusOrder="0" pos="1031 256 129 20" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="1031 286 129 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="TRANSITION WIDTH"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <SLIDER name="Transition width slider" id="a9239ce032310b32" memberName="transition_width_slider"
-          virtualName="" explicitFocusOrder="0" pos="1022 280 135 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="1022 310 135 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.001" max="0.5" int="1.0e-5" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Passband Amplitude" id="ef6299d4c0c90b49" memberName="passbandAmplitude_slider"
-          virtualName="" explicitFocusOrder="0" pos="1022 344 135 25" thumbcol="ffffffff"
+          virtualName="" explicitFocusOrder="0" pos="1022 374 135 25" thumbcol="ffffffff"
           textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="-10.0" max="-0.1" int="0.1" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="Stopband Amplitude" id="586783be637d3c53" memberName="stopbandAmplitude_label"
-         virtualName="" explicitFocusOrder="0" pos="1020 302 159 20" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="1020 332 159 20" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="0" labelText="STOPBAND AMPLITUDE (DB)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <TOGGLEBUTTON name="Auto update" id="8d6ebbb17b01b41e" memberName="autoUpdate_button"
-                virtualName="" explicitFocusOrder="0" pos="1013 390 80 30" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="1013 420 80 30" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <LABEL name="Gain 1 label" id="d2af3168bb3295ad" memberName="gain_1"
-         virtualName="" explicitFocusOrder="0" pos="470 55 45 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="470 85 45 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Gain 2 label" id="a88f42871a57d930" memberName="gain_2"
-         virtualName="" explicitFocusOrder="0" pos="470 100 45 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="470 130 45 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Gain 2 label" id="b82703d20aa7b910" memberName="gain_3"
-         virtualName="" explicitFocusOrder="0" pos="470 145 45 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="470 175 45 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Gain 2 label" id="b879fa1c09d8070c" memberName="gain_4"
-         virtualName="" explicitFocusOrder="0" pos="470 190 45 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="470 220 45 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Gain 2 label" id="c3065c046eecdd9f" memberName="gain_5"
-         virtualName="" explicitFocusOrder="0" pos="470 235 45 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="470 265 45 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Gain 2 label" id="2b04579391c20b6b" memberName="gain_6"
-         virtualName="" explicitFocusOrder="0" pos="470 280 45 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="470 310 45 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Gain 2 label" id="3d0555b13f6503a2" memberName="gain_7"
-         virtualName="" explicitFocusOrder="0" pos="470 325 45 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="470 355 45 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Gain 2 label" id="967f80d9a172f0a7" memberName="gain_8"
-         virtualName="" explicitFocusOrder="0" pos="470 370 45 25" textCol="ff333333"
+         virtualName="" explicitFocusOrder="0" pos="470 400 45 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+  <TEXTBUTTON name="Undo" id="aa5d105b68b6f3c" memberName="undo_button" virtualName=""
+              explicitFocusOrder="0" pos="15 9 72 25" bgColOff="ff909497" bgColOn="ff505050"
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="Redo" id="83782176a800780" memberName="redo_button" virtualName=""
+              explicitFocusOrder="0" pos="85 9 72 25" bgColOff="ff909497" bgColOn="ff505050"
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="Save preset" id="df6cbad3d0574472" memberName="save_preset_button"
+              virtualName="" explicitFocusOrder="0" pos="1041 9 72 25" bgColOff="ff909497"
+              bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
+  <TEXTBUTTON name="Load preset" id="7b1d6ea147b5ed36" memberName="load_preset_button"
+              virtualName="" explicitFocusOrder="0" pos="1111 9 72 25" bgColOff="ff909497"
+              bgColOn="ff505050" buttonText="" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

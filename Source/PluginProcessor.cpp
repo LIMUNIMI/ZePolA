@@ -7,7 +7,7 @@
 #define STEREO          2
 
 PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor()
-: parameters(*this, nullptr, "PolesAndZero-EQ", Parameters::createParameterLayout())
+: parameters(*this, &undoManager, "PolesAndZero-EQ", Parameters::createParameterLayout())
 {
     Parameters::addListenerToAllParameters(parameters, this);
     

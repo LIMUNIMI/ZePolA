@@ -148,6 +148,12 @@ private:
     GenericButtonTheme dividePhasesTheme;
     GenericButtonTheme swapButtonTheme;
 
+    GenericButtonTheme undoButtonTheme;
+    GenericButtonTheme redoButtonTheme;
+
+    GenericButtonTheme savePresetButtonTheme;
+    GenericButtonTheme loadPresetButtonTheme;
+
     ComboBoxTheme comboBoxTheme;
 
     AutoUpdateSwitchTheme autoUpdateSwitchTheme;
@@ -236,6 +242,10 @@ private:
     std::unique_ptr<juce::Label> gain_6;
     std::unique_ptr<juce::Label> gain_7;
     std::unique_ptr<juce::Label> gain_8;
+    std::unique_ptr<juce::TextButton> undo_button;
+    std::unique_ptr<juce::TextButton> redo_button;
+    std::unique_ptr<juce::TextButton> save_preset_button;
+    std::unique_ptr<juce::TextButton> load_preset_button;
 
 
     //==============================================================================
