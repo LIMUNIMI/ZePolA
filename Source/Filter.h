@@ -139,22 +139,17 @@ public:
         coeff2 = magnitude * magnitude;
     }
     
-    void calculateGain ()
+    void calculateGain()
     {
         auto Re = getRealPart();
         switch (type)
         {
-            case ZERO:
-            {
-                gain = 1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude);
-            } break;
+            case ZERO: gain = 1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude); break;
                 
-            case POLE:
-            {
-                gain = 1.0;
-            } break;
+            case POLE: gain = 1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude); break;
         }
     }
+
 
     /* The processSample method is called for each sample in the incoming buffer
      and processes an input sample (the current instant) by calculating the
@@ -177,16 +172,18 @@ public:
     float processSample (double inputSample)
     {
         double outputSample;
+        inputSample *= gain;
+        
         switch (type)
         {
             case ZERO:
             {
-                outputSample = gain * inputSample + coeff1 * memory1 + coeff2 * memory2;
+                outputSample = inputSample + coeff1 * memory1 + coeff2 * memory2;
             } break;
                 
             case POLE:
             {
-                outputSample = gain * inputSample - coeff1 * memory1 - coeff2 * memory2;
+                outputSample = inputSample - coeff1 * memory1 - coeff2 * memory2;
             } break;
         }
         
@@ -232,14 +229,20 @@ public:
     */
     std::complex<double> getPhiSpectrum (const double phi)
     {
+        std::complex<double> spectrum;
+        
         switch (type)
         {
             case ZERO:
-                return (1.0 + coeff1 * std::polar(1.0, -2 * MathConstants<double>::pi * phi) + coeff2 * std::polar(1.0, -4 * MathConstants<double>::pi * phi));
+                spectrum = (1.0 + coeff1 * std::polar(1.0, -2 * MathConstants<double>::pi * phi) + coeff2 * std::polar(1.0, -4 * MathConstants<double>::pi * phi));
+            break;
                 
             case POLE:
-                return (1.0 / (1.0 + coeff1 * std::polar(1.0, -2 * MathConstants<double>::pi * phi) + coeff2 * std::polar(1.0, -4 * MathConstants<double>::pi * phi)));
+                spectrum = (1.0 / (1.0 + coeff1 * std::polar(1.0, -2 * MathConstants<double>::pi * phi) + coeff2 * std::polar(1.0, -4 * MathConstants<double>::pi * phi)));
+            break;
         }
+        
+        return std::polar(gain * std::abs(spectrum), std::arg(spectrum));
     }
     
 private:
@@ -263,7 +266,8 @@ private:
 /* The "PolesAndZerosCascade" class represents a digital filter as a chain of
  poles and zeros (simple filters). The approach of the class is to conceive an
  IIR digital filter as a chain of simple digital filters, each composed of
- either a single zero (FIR filter) or a single pole (IIR filter).
+ either a single zero, plus its conjugate, (FIR filter) or a single pole, plus
+ its conjugate (IIR filter).
  A PolesAndZerosCascade is composed of the following parameters: a std::vector
  of pointers to objects of type FilterElement (poles or zeros) to dynamically
  allocate the filter components and arbitrarily decide how many poles and how
