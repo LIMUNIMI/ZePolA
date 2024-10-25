@@ -93,6 +93,15 @@ public:
     void labelTextChanged (juce::Label* labelThatHasChanged) override;
     void comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged) override;
 
+    // Binary resources:
+    static const char* anticlockwise_arrow_png;
+    static const int anticlockwise_arrow_pngSize;
+    static const char* clockwise_arrow_png;
+    static const int clockwise_arrow_pngSize;
+    static const char* load_icon_png;
+    static const int load_icon_pngSize;
+    static const char* save_icon_png;
+    static const int save_icon_pngSize;
 
 
 private:
@@ -148,11 +157,11 @@ private:
     GenericButtonTheme dividePhasesTheme;
     GenericButtonTheme swapButtonTheme;
 
-    GenericButtonTheme undoButtonTheme;
-    GenericButtonTheme redoButtonTheme;
+    MenuButtonTheme undoButtonTheme;
+    MenuButtonTheme redoButtonTheme;
 
-    GenericButtonTheme savePresetButtonTheme;
-    GenericButtonTheme loadPresetButtonTheme;
+    MenuButtonTheme savePresetButtonTheme;
+    MenuButtonTheme loadPresetButtonTheme;
 
     ComboBoxTheme comboBoxTheme;
 
@@ -161,53 +170,53 @@ private:
 
     //==============================================================================
     std::unique_ptr<juce::Label> passbandAmplitude_label;
-    std::unique_ptr<juce::Slider> stopbandAmplitude_slider;
+    std::unique_ptr<CustomSlider> stopbandAmplitude_slider;
     std::unique_ptr<GaussianPlane> gaussian_plane;
-    std::unique_ptr<juce::TextButton> reset_button;
+    std::unique_ptr<CustomButton> reset_button;
     std::unique_ptr<FrequencyResponse> frequency_response;
     std::unique_ptr<juce::Label> freq_response_label;
     std::unique_ptr<PhaseResponse> phase_response;
     std::unique_ptr<juce::Label> ph_response_label;
-    std::unique_ptr<juce::Slider> m1_slider;
-    std::unique_ptr<juce::Slider> p1_slider;
+    std::unique_ptr<CustomSlider> m1_slider;
+    std::unique_ptr<CustomSlider> p1_slider;
     std::unique_ptr<juce::Label> magnitudes_label;
     std::unique_ptr<juce::Label> phases_label;
     std::unique_ptr<juce::Label> zero_pole_label;
     std::unique_ptr<juce::Label> active_label;
-    std::unique_ptr<juce::ToggleButton> e1_type;
-    std::unique_ptr<juce::ToggleButton> e2_type;
-    std::unique_ptr<juce::ToggleButton> e3_type;
-    std::unique_ptr<juce::ToggleButton> e4_type;
-    std::unique_ptr<juce::ToggleButton> e5_type;
-    std::unique_ptr<juce::ToggleButton> e6_type;
-    std::unique_ptr<juce::ToggleButton> e7_type;
-    std::unique_ptr<juce::ToggleButton> e8_type;
-    std::unique_ptr<juce::ToggleButton> e1_active;
-    std::unique_ptr<juce::ToggleButton> e2_active;
-    std::unique_ptr<juce::ToggleButton> e3_active;
-    std::unique_ptr<juce::ToggleButton> e4_active;
-    std::unique_ptr<juce::ToggleButton> e5_active;
-    std::unique_ptr<juce::ToggleButton> e6_active;
-    std::unique_ptr<juce::ToggleButton> e7_active;
-    std::unique_ptr<juce::ToggleButton> e8_active;
+    std::unique_ptr<CustomToggleButton> e1_type;
+    std::unique_ptr<CustomToggleButton> e2_type;
+    std::unique_ptr<CustomToggleButton> e3_type;
+    std::unique_ptr<CustomToggleButton> e4_type;
+    std::unique_ptr<CustomToggleButton> e5_type;
+    std::unique_ptr<CustomToggleButton> e6_type;
+    std::unique_ptr<CustomToggleButton> e7_type;
+    std::unique_ptr<CustomToggleButton> e8_type;
+    std::unique_ptr<CustomToggleButton> e1_active;
+    std::unique_ptr<CustomToggleButton> e2_active;
+    std::unique_ptr<CustomToggleButton> e3_active;
+    std::unique_ptr<CustomToggleButton> e4_active;
+    std::unique_ptr<CustomToggleButton> e5_active;
+    std::unique_ptr<CustomToggleButton> e6_active;
+    std::unique_ptr<CustomToggleButton> e7_active;
+    std::unique_ptr<CustomToggleButton> e8_active;
     std::unique_ptr<juce::Label> gaussian_plane_label;
-    std::unique_ptr<juce::ToggleButton> bypass;
-    std::unique_ptr<juce::Slider> gain_slider;
-    std::unique_ptr<juce::ToggleButton> linLog_switch;
-    std::unique_ptr<juce::Slider> m2_slider;
-    std::unique_ptr<juce::Slider> m3_slider;
-    std::unique_ptr<juce::Slider> m4_slider;
-    std::unique_ptr<juce::Slider> m5_slider;
-    std::unique_ptr<juce::Slider> m6_slider;
-    std::unique_ptr<juce::Slider> m7_slider;
-    std::unique_ptr<juce::Slider> m8_slider;
-    std::unique_ptr<juce::Slider> p2_slider;
-    std::unique_ptr<juce::Slider> p3_slider;
-    std::unique_ptr<juce::Slider> p4_slider;
-    std::unique_ptr<juce::Slider> p5_slider;
-    std::unique_ptr<juce::Slider> p6_slider;
-    std::unique_ptr<juce::Slider> p7_slider;
-    std::unique_ptr<juce::Slider> p8_slider;
+    std::unique_ptr<CustomToggleButton> bypass;
+    std::unique_ptr<CustomSlider> gain_slider;
+    std::unique_ptr<CustomToggleButton> linLog_switch;
+    std::unique_ptr<CustomSlider> m2_slider;
+    std::unique_ptr<CustomSlider> m3_slider;
+    std::unique_ptr<CustomSlider> m4_slider;
+    std::unique_ptr<CustomSlider> m5_slider;
+    std::unique_ptr<CustomSlider> m6_slider;
+    std::unique_ptr<CustomSlider> m7_slider;
+    std::unique_ptr<CustomSlider> m8_slider;
+    std::unique_ptr<CustomSlider> p2_slider;
+    std::unique_ptr<CustomSlider> p3_slider;
+    std::unique_ptr<CustomSlider> p4_slider;
+    std::unique_ptr<CustomSlider> p5_slider;
+    std::unique_ptr<CustomSlider> p6_slider;
+    std::unique_ptr<CustomSlider> p7_slider;
+    std::unique_ptr<CustomSlider> p8_slider;
     std::unique_ptr<juce::Label> p1_freq;
     std::unique_ptr<juce::Label> p2_freq;
     std::unique_ptr<juce::Label> p3_freq;
@@ -216,24 +225,24 @@ private:
     std::unique_ptr<juce::Label> p6_freq;
     std::unique_ptr<juce::Label> p7_freq;
     std::unique_ptr<juce::Label> p8_freq;
-    std::unique_ptr<juce::ComboBox> type_box;
-    std::unique_ptr<juce::ComboBox> shape_box;
-    std::unique_ptr<juce::TextButton> calculate_button;
-    std::unique_ptr<juce::TextButton> multiply_phases_button;
-    std::unique_ptr<juce::TextButton> divide_phases_button;
-    std::unique_ptr<juce::TextButton> swap_button;
-    std::unique_ptr<juce::TextButton> turn_on_button;
-    std::unique_ptr<juce::TextButton> turn_off_button;
-    std::unique_ptr<juce::ComboBox> order_box;
+    std::unique_ptr<CustomComboBox> type_box;
+    std::unique_ptr<CustomComboBox> shape_box;
+    std::unique_ptr<CustomButton> calculate_button;
+    std::unique_ptr<CustomButton> multiply_phases_button;
+    std::unique_ptr<CustomButton> divide_phases_button;
+    std::unique_ptr<CustomButton> swap_button;
+    std::unique_ptr<CustomButton> turn_on_button;
+    std::unique_ptr<CustomButton> turn_off_button;
+    std::unique_ptr<CustomComboBox> order_box;
     std::unique_ptr<juce::Label> design_frequency_label;
-    std::unique_ptr<juce::ToggleButton> ampDb_switch;
-    std::unique_ptr<juce::Slider> frequency_design_slider;
+    std::unique_ptr<CustomToggleButton> ampDb_switch;
+    std::unique_ptr<CustomSlider> frequency_design_slider;
     std::unique_ptr<juce::Label> frequency_label;
     std::unique_ptr<juce::Label> transition_width_label;
-    std::unique_ptr<juce::Slider> transition_width_slider;
-    std::unique_ptr<juce::Slider> passbandAmplitude_slider;
+    std::unique_ptr<CustomSlider> transition_width_slider;
+    std::unique_ptr<CustomSlider> passbandAmplitude_slider;
     std::unique_ptr<juce::Label> stopbandAmplitude_label;
-    std::unique_ptr<juce::ToggleButton> autoUpdate_button;
+    std::unique_ptr<CustomToggleButton> autoUpdate_button;
     std::unique_ptr<juce::Label> gain_1;
     std::unique_ptr<juce::Label> gain_2;
     std::unique_ptr<juce::Label> gain_3;
@@ -242,10 +251,14 @@ private:
     std::unique_ptr<juce::Label> gain_6;
     std::unique_ptr<juce::Label> gain_7;
     std::unique_ptr<juce::Label> gain_8;
-    std::unique_ptr<juce::TextButton> undo_button;
-    std::unique_ptr<juce::TextButton> redo_button;
-    std::unique_ptr<juce::TextButton> save_preset_button;
-    std::unique_ptr<juce::TextButton> load_preset_button;
+    std::unique_ptr<CustomButton> undo_button;
+    std::unique_ptr<CustomButton> redo_button;
+    std::unique_ptr<CustomButton> save_preset_button;
+    std::unique_ptr<CustomButton> load_preset_button;
+    juce::Image cachedImage_anticlockwise_arrow_png_1;
+    juce::Image cachedImage_clockwise_arrow_png_2;
+    juce::Image cachedImage_load_icon_png_3;
+    juce::Image cachedImage_save_icon_png_4;
 
 
     //==============================================================================
