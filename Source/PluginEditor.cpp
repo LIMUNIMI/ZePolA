@@ -93,7 +93,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     reset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     reset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    reset_button->setBounds (360, 608, 70, 30);
+    reset_button->setBounds (414, 639, 80, 25);
 
     frequency_response.reset (new FrequencyResponse (magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb));
     addAndMakeVisible (frequency_response.get());
@@ -695,7 +695,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     multiply_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    multiply_phases_button->setBounds (319, 517, 72, 22);
+    multiply_phases_button->setBounds (321, 569, 80, 25);
 
     divide_phases_button.reset (new CustomButton ("Divide phases"));
     addAndMakeVisible (divide_phases_button.get());
@@ -704,7 +704,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     divide_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff727272));
 
-    divide_phases_button->setBounds (409, 517, 72, 22);
+    divide_phases_button->setBounds (414, 569, 80, 25);
 
     swap_button.reset (new CustomButton ("Swap poles/zeros"));
     addAndMakeVisible (swap_button.get());
@@ -713,7 +713,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     swap_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     swap_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    swap_button->setBounds (359, 552, 82, 22);
+    swap_button->setBounds (321, 639, 80, 25);
 
     turn_on_button.reset (new CustomButton ("Turn on all the elements"));
     addAndMakeVisible (turn_on_button.get());
@@ -722,7 +722,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff73cc81));
     turn_on_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_on_button->setBounds (319, 482, 72, 22);
+    turn_on_button->setBounds (321, 506, 80, 25);
 
     turn_off_button.reset (new CustomButton ("Turn off all the elements"));
     addAndMakeVisible (turn_off_button.get());
@@ -731,7 +731,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xffe86d5c));
     turn_off_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_off_button->setBounds (409, 482, 72, 22);
+    turn_off_button->setBounds (414, 506, 80, 25);
 
     order_box.reset (new CustomComboBox ("Design order"));
     addAndMakeVisible (order_box.get());
@@ -1076,7 +1076,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     calculateButtonTheme.setFontSize(12.0f);
     calculate_button->setLookAndFeel(&calculateButtonTheme);
 
-    swapButtonTheme.setTextToDisplay("SWAP POLES/ZEROS");
+    swapButtonTheme.setTextToDisplay("SWAP Ps/Zs");
     swap_button->setLookAndFeel(&swapButtonTheme);
 
     multiplyPhasesTheme.setTextToDisplay("DOUBLE PHASES");
@@ -1464,7 +1464,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 305.0f, y = 455.0f, width = 190.0f, height = 130.0f;
+        float x = 305.0f, y = 455.0f, width = 205.0f, height = 260.0f;
         juce::Colour fillColour = juce::Colour (0x11b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1476,13 +1476,13 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 355, y = 456, width = 90, height = 20;
+        int x = 357, y = 460, width = 100, height = 20;
         juce::String text (TRANS ("SETUP SHORTCUTS"));
         juce::Colour fillColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
-        g.setFont (juce::Font ("Gill Sans", 10.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+        g.setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
                     juce::Justification::centred, true);
     }
@@ -2625,10 +2625,10 @@ BEGIN_JUCER_METADATA
     <TEXT pos="1075 540 40 20" fill="solid: ff383838" hasStroke="0" text="GAIN"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <ROUNDRECT pos="305 455 190 130" cornerSize="14.5" fill="solid: 11b1b1b1"
+    <ROUNDRECT pos="305 455 205 260" cornerSize="14.5" fill="solid: 11b1b1b1"
                hasStroke="1" stroke="0.5, mitered, butt" strokeColour="solid: ff383838"/>
-    <TEXT pos="355 456 90 20" fill="solid: ff383838" hasStroke="0" text="SETUP SHORTCUTS"
-          fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
+    <TEXT pos="357 460 100 20" fill="solid: ff383838" hasStroke="0" text="SETUP SHORTCUTS"
+          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
     <TEXT pos="1120 681 23 20" fill="solid: ff383838" hasStroke="0" text="dB"
           fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
@@ -2660,7 +2660,7 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="30 455 260 260" class="GaussianPlane"
                     params="processor.getFilterElementsChain()"/>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="360 608 70 30"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="414 639 80 25"
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
@@ -2938,23 +2938,23 @@ BEGIN_JUCER_METADATA
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="Multiply phases" id="fd9508a1dc4c09ae" memberName="multiply_phases_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="319 517 72 22"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="321 569 80 25"
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="Divide phases" id="a62537b9345044f3" memberName="divide_phases_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="409 517 72 22"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="414 569 80 25"
               bgColOff="ff909497" bgColOn="ff727272" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="Swap poles/zeros" id="938b23da9ff326b0" memberName="swap_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="359 552 82 22"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="321 639 80 25"
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="Turn on all the elements" id="e4b8377926241c51" memberName="turn_on_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="319 482 72 22"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="321 506 80 25"
               bgColOff="ff73cc81" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="Turn off all the elements" id="f6c36c1c53a4a06d" memberName="turn_off_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="409 482 72 22"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="414 506 80 25"
               bgColOff="ffe86d5c" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="Design order" id="a7c23e76d01914d5" memberName="order_box"
