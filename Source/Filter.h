@@ -141,6 +141,7 @@ public:
     
     void calculateGain()
     {
+        // IMPLEMENTAZIONE ATTUALE
         auto Re = getRealPart();
         switch (type)
         {
@@ -148,6 +149,10 @@ public:
                 
             case POLE: gain = 1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude); break;
         }
+        
+        // VERSIONE ALTERNATIVA
+        // std::complex<double> j(0.0, 1.0);
+        // gain = std::abs((0.5) / (0.5 + coeff1 * (j / MathConstants<double>::pi)));
     }
 
 
