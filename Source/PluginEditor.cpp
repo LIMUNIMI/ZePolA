@@ -1069,7 +1069,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     bypass->setLookAndFeel(&bypassSwitchTheme);
 
     resetButtonTheme.setTextToDisplay("RESET");
-    resetButtonTheme.setFontSize(12.0f);
     reset_button->setLookAndFeel(&resetButtonTheme);
 
     calculateButtonTheme.setTextToDisplay("CALCULATE");
