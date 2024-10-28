@@ -188,13 +188,12 @@ std::vector<FilterElement> PolesAndZerosEQAudioProcessor::getFilterElementsChain
     return multiChannelCascade[0].getElementsChain();
 }
 
-FilterElement PolesAndZerosEQAudioProcessor::getElementState (const int elementNr)
+FilterElement PolesAndZerosEQAudioProcessor::getElementState(const int elementNr)
 {
     auto elements = getFilterElementsChain();
-    
-    for (int i = 0; i < NUMBER_OF_FILTER_ELEMENTS; ++ i)
-        if (i == elementNr - 1)
-            return elements[i];
+
+    if (elementNr > 0 && elementNr <= elements.size())
+        return elements[elementNr - 1];
 }
 
 void PolesAndZerosEQAudioProcessor::resetFilter ()

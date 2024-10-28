@@ -39,7 +39,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
         getSpectrum();
         frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate(), true);
-        gaussian_plane->updateElements(processor.getFilterElementsChain());
+        updateElements();
     });
 
     selectable_filter_types = SELECTABLE_FILTER_TYPES;
@@ -80,7 +80,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     stopbandAmplitude_slider->setBounds (1022, 366, 135, 25);
 
-    gaussian_plane.reset (new GaussianPlane (processor.getFilterElementsChain()));
+    gaussian_plane.reset (new GaussianPlane());
     addAndMakeVisible (gaussian_plane.get());
     gaussian_plane->setName ("gaussianPlane");
 
@@ -980,6 +980,12 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     load_preset_button->setBounds (1082, 9, 100, 25);
 
+    e1.reset (new DraggableElement (processor.getElementState(1)));
+    addAndMakeVisible (e1.get());
+    e1->setName ("Element 1");
+
+    e1->setBounds (152, 577, 16, 16);
+
     cachedImage_anticlockwise_arrow_png_1 = juce::ImageCache::getFromMemory (anticlockwise_arrow_png, anticlockwise_arrow_pngSize);
     cachedImage_clockwise_arrow_png_2 = juce::ImageCache::getFromMemory (clockwise_arrow_png, clockwise_arrow_pngSize);
     cachedImage_load_icon_png_3 = juce::ImageCache::getFromMemory (load_icon_png, load_icon_pngSize);
@@ -1069,7 +1075,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     bypass->setLookAndFeel(&bypassSwitchTheme);
 
     resetButtonTheme.setTextToDisplay("RESET");
-    resetButtonTheme.setFontSize(12.0f);
     reset_button->setLookAndFeel(&resetButtonTheme);
 
     calculateButtonTheme.setTextToDisplay("CALCULATE");
@@ -1166,6 +1171,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
 
     //[Constructor] You can add your own custom stuff here..
+    updateElements();
     //[/Constructor]
 }
 
@@ -1269,6 +1275,7 @@ PluginEditor::~PluginEditor()
     redo_button = nullptr;
     save_preset_button = nullptr;
     load_preset_button = nullptr;
+    e1 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1922,6 +1929,7 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
     {
         //[UserButtonCode_e1_active] -- add your button handler code here..
         gain_1->setVisible(buttonThatWasClicked->getToggleState());
+        e1->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e1_active]
     }
     else if (buttonThatWasClicked == e2_active.get())
@@ -2251,6 +2259,11 @@ void PluginEditor::updateReferenceFrequencies()
             ++ k;
         }
     }
+}
+
+void PluginEditor::updateElements ()
+{
+    e1->updateElement(processor.getElementState(1), gaussian_plane.get());
 }
 
 void PluginEditor::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
@@ -2658,7 +2671,7 @@ BEGIN_JUCER_METADATA
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <GENERICCOMPONENT name="gaussianPlane" id="f84485816497c4e3" memberName="gaussian_plane"
                     virtualName="" explicitFocusOrder="0" pos="30 455 260 260" class="GaussianPlane"
-                    params="processor.getFilterElementsChain()"/>
+                    params=""/>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
               virtualName="CustomButton" explicitFocusOrder="0" pos="414 639 80 25"
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
@@ -3064,6 +3077,9 @@ BEGIN_JUCER_METADATA
               virtualName="CustomButton" explicitFocusOrder="0" pos="1082 9 100 25"
               bgColOff="909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
+  <GENERICCOMPONENT name="Element 1" id="2619ff360594d8ed" memberName="e1" virtualName=""
+                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    params="processor.getElementState(1)"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

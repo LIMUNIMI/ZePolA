@@ -10,13 +10,20 @@
 #define CONJ_POLES_COLOUR                   0x70ffbc2e
 #define LINE_COLOUR                         0xff000000
 #define PLANE_GRID_COLOUR                   0x67383838
+#define PLANE_PADDING                       0.07f
+#define PLANE_LINE_THICKNESS                1.0f
+#define CIRCLE_LINE_THICKNESS               1.5f
+#define REFERENCE_ANGLES                    {0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360}
 
 #define GRAPHS_QUALITY                      2048
 #define NUMBER_OF_REFERENCE_FREQUENCIES     8
 
+#define ELEMENT_WIDTH                       16
+#define ELEMENT_HEIGHT                      16
+
 class GraphicResponse : public juce::Component
 {
-public:
+    public:
     GraphicResponse (double* vls, double* rf, const double sr, bool yType)
     {
         updateValues(vls, rf, sr, yType);
@@ -40,7 +47,7 @@ public:
         repaint();
     }
     
-protected:
+    protected:
     double values[GRAPHS_QUALITY];
     double referenceFrequencies[NUMBER_OF_REFERENCE_FREQUENCIES];
     
@@ -57,13 +64,13 @@ protected:
         return juce::String(juce::roundToInt(frequency));
     }
     
-private:
+    private:
     bool ampDb = false;
 };
 
 class FrequencyResponse : public GraphicResponse
 {
-public:
+    public:
     using GraphicResponse::GraphicResponse;
     
     void drawResponse(juce::Graphics& g, bool linLog) override
@@ -137,14 +144,14 @@ public:
         {
             std::vector<float> linearLevels = { 0.1f, 0.5f, 1.0f, 1.5f, 2.0f };
             g.setColour(juce::Colour(GRID_COLOUR));
-
+            
             for (float level : linearLevels)
             {
                 float yPos = juce::jmap<float>(level, 0.0f, 2.0f, height, 0.0f);
-
+                
                 if (level != 2.0f)
                     g.drawHorizontalLine(static_cast<int>(yPos), 0, width);
-
+                
                 float yOffset = 0.0f;
                 if (level == 2.0f)
                     yOffset = 8.0f;
@@ -152,13 +159,13 @@ public:
                 g.drawText(juce::String(level), 5, yPos - 10 + yOffset, 40, 20, juce::Justification::left);
                 g.setColour(juce::Colour(GRID_COLOUR));
             }
-
+            
             responsePath.startNewSubPath(0, height - juce::jmap<float>(values[0], 0.0f, 2.0f, 0.0f, height));
             
             float x;
             float y;
             int k = 1;
-
+            
             for (int i = 1; i < GRAPHS_QUALITY; ++i)
             {
                 g.setColour(juce::Colour(LINE_COLOUR));
@@ -166,7 +173,7 @@ public:
                 
                 y = height - juce::jmap<float>(values[i], 0.0f, 2.0f, 0.0f, height);
                 responsePath.lineTo(x, y);
-
+                
                 if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
                 {
                     g.setColour(juce::Colour(GRID_COLOUR));
@@ -176,10 +183,10 @@ public:
                     ++k;
                 }
             }
-
+            
             g.setColour(juce::Colour(LINE_COLOUR));
             g.strokePath(responsePath, juce::PathStrokeType(1.5f));
-
+            
             g.setColour(juce::Colour(TEXT_COLOUR));
             g.drawText(formatFrequency(sampleRate * 0.5), width - 20, height * 0.5, 20, 20, juce::Justification::centred);
         }
@@ -264,48 +271,51 @@ class PhaseResponse : public GraphicResponse
 class GaussianPlane : public juce::Component
 {
     public:
-    GaussianPlane (const std::vector<FilterElement>& elements)
-    {
-        updateElements(elements);
-    }
-    ~GaussianPlane () {}
+    GaussianPlane () {}
     
     void paint(juce::Graphics& g) override
     {
         g.setColour(juce::Colour(GRAPHS_BACKGROUND));
         float cornerSize = 6.0f;
-        auto bounds = getLocalBounds().toFloat();
-        g.fillRoundedRectangle(bounds, cornerSize);
+        auto componentBounds = getLocalBounds().toFloat();
+        g.fillRoundedRectangle(componentBounds, cornerSize);
         
-        auto margin = bounds.reduced(bounds.getWidth() * 0.07f, bounds.getHeight() * 0.07f);
+        bounds = componentBounds.reduced(componentBounds.getWidth() * PLANE_PADDING, componentBounds.getHeight() * PLANE_PADDING);
         
         g.setColour(juce::Colour(LINE_COLOUR));
-        drawPlane(g, margin);
-        drawPolesAndZeros(g, margin);
+        drawPlane(g);
     }
     
-    void updateElements(const std::vector<FilterElement>& elements)
+    juce::Rectangle<float> getBounds ()
     {
-        zeros.clear();
-        poles.clear();
-        
-        for (auto& element : elements)
-        {
-            if (!element.isActive())
-                continue;
-            if (element.getType())
-                poles.push_back(std::polar(element.getMagnitude(), MathConstants<double>::pi * element.getPhase()));
-            else
-                zeros.push_back(std::polar(element.getMagnitude(), MathConstants<double>::pi * element.getPhase()));
-        }
-        repaint();
+        return bounds;
+    }
+    
+    float getCentreX ()
+    {
+        return getBounds().getCentreX() + getX();
+    }
+    
+    float getCentreY ()
+    {
+        return getBounds().getCentreY() + getY();
+    }
+    
+    float getWidth ()
+    {
+        return getBounds().getWidth();
+    }
+    
+    float getHeight ()
+    {
+        return getBounds().getHeight();
     }
     
     private:
-    std::vector<std::complex<double>> zeros;
-    std::vector<std::complex<double>> poles;
     
-    void drawPlane(juce::Graphics& g, juce::Rectangle<float> bounds)
+    juce::Rectangle<float> bounds;
+    
+    void drawPlane(juce::Graphics& g)
     {
         auto width = bounds.getWidth();
         auto height = bounds.getHeight();
@@ -313,20 +323,17 @@ class GaussianPlane : public juce::Component
         auto centerY = bounds.getCentreY();
         
         g.setColour(juce::Colour(LINE_COLOUR));
-        g.drawLine(bounds.getX(), centerY, bounds.getRight(), centerY, 1.0f);
-        g.drawLine(centerX, bounds.getY(), centerX, bounds.getBottom(), 1.0f);
+        g.drawLine(bounds.getX(), centerY, bounds.getRight(), centerY, PLANE_LINE_THICKNESS);
+        g.drawLine(centerX, bounds.getY(), centerX, bounds.getBottom(), PLANE_LINE_THICKNESS);
         
         float radius = std::min(width, height) / 2.0f;
-        g.drawEllipse(centerX - radius, centerY - radius, radius * 2, radius * 2, 1.5f);
+        g.drawEllipse(centerX - radius, centerY - radius, radius * 2, radius * 2, CIRCLE_LINE_THICKNESS);
         
         g.setColour(juce::Colour(PLANE_GRID_COLOUR));
         for (float r = radius * 0.25f; r < radius; r += radius * 0.25f)
-        {
             g.drawEllipse(centerX - r, centerY - r, r * 2, r * 2, 0.5f);
-        }
         
-        
-        for (int angle = 0; angle < 360; angle += 30)
+        for (auto angle : REFERENCE_ANGLES)
         {
             float rad = juce::MathConstants<float>::pi * angle / 180.0f;
             float x = std::cos(rad) * radius;
@@ -341,47 +348,106 @@ class GaussianPlane : public juce::Component
         g.drawText("Re", centerX + radius + 2, centerY - 10, 20, 20, juce::Justification::centred);
         g.drawText("Im", centerX - 8, centerY - radius - 20, 20, 20, juce::Justification::centred);
     }
-    
-    void drawPolesAndZeros(juce::Graphics& g, juce::Rectangle<float> bounds)
-    {
-        auto width = bounds.getWidth();
-        auto height = bounds.getHeight();
-        auto centerX = bounds.getCentreX();
-        auto centerY = bounds.getCentreY();
-        float radius = 5.0f;
-        
-        // Zeros are "O"
-        for (const auto& zero : zeros)
-        {
-            g.setColour(juce::Colour (ZEROS_COLOUR));
-            float x = (std::real(zero) * (width / 2)) + centerX;
-            float y = (-(std::imag(zero)) * (height / 2)) + centerY;
-            
-            g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
-            
-            // DRAW CONJUGATE
-            y = ((std::imag(zero)) * (height / 2)) + centerY;
-            g.setColour(juce::Colour (CONJ_ZEROS_COLOUR));
-            g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
-        }
-        
-        // Poles are "X"
-        for (const auto& pole : poles)
-        {
-            g.setColour(juce::Colour (POLES_COLOUR));
-            float x = (std::real(pole) * (width / 2)) + centerX;
-            float y = (-(std::imag(pole)) * (height / 2)) + centerY;
-            
-            g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
-            g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
-            // DRAW CONJUGATE
-            g.setColour(juce::Colour (CONJ_POLES_COLOUR));
-            y = ((std::imag(pole)) * (height / 2)) + centerY;
-            g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
-            g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
-        }
-    }
 };
 
+class DraggableElement : public juce::Component
+{
+    public:
+    
+    void mouseDown (const MouseEvent& e) override
+    {
+        dragger.startDraggingComponent(this, e);
+    }
+    
+    void mouseDrag (const MouseEvent& e) override
+    {
+        Point<int> circleCentre(static_cast<int>(gaussianPlane->getCentreX()), static_cast<int>(gaussianPlane->getCentreY()));
+        int radius = static_cast<int>(std::min(gaussianPlane->getWidth(), gaussianPlane->getHeight()) / 2.0f);
+        
+        DBG(circleCentre.getX() << " " << circleCentre.getY());
+        
+        // Calcola la nuova posizione del componente basata sul trascinamento
+        auto newPosition = getBounds().withPosition(getX() + e.getDistanceFromDragStartX(),
+                                                    getY() + e.getDistanceFromDragStartY());
+
+        // Calcola la distanza dal centro del cerchio alla nuova posizione
+        auto componentCenter = newPosition.getCentre();
+        auto distanceFromCircleCenter = componentCenter.getDistanceFrom(circleCentre);
+
+        // Controlla se la distanza è entro il raggio
+        if (distanceFromCircleCenter <= radius)
+        {
+            dragger.dragComponent(this, e, nullptr); // Muovi il componente liberamente
+        }
+        else
+        {
+            // Limita la posizione sul perimetro del cerchio
+            auto angle = std::atan2(componentCenter.y - circleCentre.y, componentCenter.x - circleCentre.x);
+            auto constrainedX = circleCentre.x + std::cos(angle) * radius;
+            auto constrainedY = circleCentre.y + std::sin(angle) * radius;
+            setBounds(newPosition.withPosition(constrainedX - getWidth() / 2, constrainedY - getHeight() / 2));
+        }
+    }
+    
+    DraggableElement(FilterElement e)
+    {
+        element = std::polar(e.getMagnitude(), MathConstants<double>::pi * e.getPhase());
+        type = e.getType();
+    }
+    
+    void updateElement(FilterElement e, GaussianPlane *gp)
+    {
+        element = std::polar(e.getMagnitude(), MathConstants<double>::pi * e.getPhase());
+        type = e.getType();
+        gaussianPlane = gp;
+        
+        calculatePosition();
+        
+        this->setBounds(x, y, getWidth(), getHeight());
+        
+        repaint();
+    }
+    
+    void paint (juce::Graphics& g) override
+    {
+        float radius = 5.0f;
+        
+        switch (type)
+        {
+            case FilterElement::ZERO:
+            {
+                g.setColour(juce::Colour(ZEROS_COLOUR));
+                g.drawEllipse(3, 3, radius * 2.0f, radius * 2.0f, 2.0f);
+            } break;
+                
+            case FilterElement::POLE:
+            {
+                g.setColour(juce::Colour(POLES_COLOUR));;
+                int centerX = getWidth() / 2;
+                int centerY = getWidth() / 2;
+                
+                float radius = 5.0f;
+                g.drawLine(centerX - radius, centerY - radius, centerX + radius, centerY + radius, 2.0f);
+                g.drawLine(centerX + radius, centerY - radius, centerX - radius, centerY + radius, 2.0f);
+            } break;
+        }
+    }
+    
+    private:
+    std::complex<double> element;
+    FilterElement::Type type;
+    GaussianPlane *gaussianPlane;
+
+    float x;
+    float y;
+    
+    ComponentDragger dragger;
+    
+    void calculatePosition ()
+    {
+        x = (std::real(element) * (gaussianPlane->getWidth() / 2)) + gaussianPlane->getCentreX() - getWidth() * 0.5;
+        y = (-(std::imag(element)) * (gaussianPlane->getHeight() / 2)) + gaussianPlane->getCentreY() - getHeight() * 0.5;
+    }
+};
 
 

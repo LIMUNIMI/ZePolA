@@ -64,6 +64,7 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     void getSpectrum ();
     void updateReferenceFrequencies();
+    void updateElements();
 
     void updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
     void updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
@@ -255,6 +256,7 @@ private:
     std::unique_ptr<CustomButton> redo_button;
     std::unique_ptr<CustomButton> save_preset_button;
     std::unique_ptr<CustomButton> load_preset_button;
+    std::unique_ptr<DraggableElement> e1;
     juce::Image cachedImage_anticlockwise_arrow_png_1;
     juce::Image cachedImage_clockwise_arrow_png_2;
     juce::Image cachedImage_load_icon_png_3;
