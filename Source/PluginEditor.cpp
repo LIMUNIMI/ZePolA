@@ -54,6 +54,61 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     activeAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     //[/Constructor_pre]
 
+    gaussian_plane.reset (new GaussianPlane());
+    addAndMakeVisible (gaussian_plane.get());
+    gaussian_plane->setName ("gaussianPlane");
+
+    gaussian_plane->setBounds (30, 455, 260, 260);
+
+    e2.reset (new DraggableElement (processor.getElementState(2), 2, gaussian_plane.get(), &processor
+                                    ));
+    addAndMakeVisible (e2.get());
+    e2->setName ("Element 2");
+
+    e2->setBounds (152, 577, 16, 16);
+
+    e3.reset (new DraggableElement (processor.getElementState(3), 3, gaussian_plane.get(), &processor));
+    addAndMakeVisible (e3.get());
+    e3->setName ("Element 3");
+
+    e3->setBounds (152, 577, 16, 16);
+
+    e4.reset (new DraggableElement (processor.getElementState(4), 4, gaussian_plane.get(), &processor));
+    addAndMakeVisible (e4.get());
+    e4->setName ("Element 4");
+
+    e4->setBounds (152, 577, 16, 16);
+
+    e5.reset (new DraggableElement (processor.getElementState(5), 5, gaussian_plane.get(), &processor));
+    addAndMakeVisible (e5.get());
+    e5->setName ("Element 5");
+
+    e5->setBounds (152, 577, 16, 16);
+
+    e6.reset (new DraggableElement (processor.getElementState(6), 6, gaussian_plane.get(), &processor));
+    addAndMakeVisible (e6.get());
+    e6->setName ("Element 6");
+
+    e6->setBounds (152, 577, 16, 16);
+
+    e7.reset (new DraggableElement (processor.getElementState(7), 7, gaussian_plane.get(), &processor));
+    addAndMakeVisible (e7.get());
+    e7->setName ("Element 7");
+
+    e7->setBounds (152, 577, 16, 16);
+
+    e8.reset (new DraggableElement (processor.getElementState(8), 8, gaussian_plane.get(), &processor));
+    addAndMakeVisible (e8.get());
+    e8->setName ("Element 8");
+
+    e8->setBounds (152, 577, 16, 16);
+
+    e1.reset (new DraggableElement (processor.getElementState(1), 1, gaussian_plane.get(), &processor));
+    addAndMakeVisible (e1.get());
+    e1->setName ("Element 1");
+
+    e1->setBounds (152, 577, 16, 16);
+
     passbandAmplitude_label.reset (new juce::Label ("Passband Amplitude",
                                                     TRANS ("PASSBAND AMPLITUDE (DB)")));
     addAndMakeVisible (passbandAmplitude_label.get());
@@ -79,12 +134,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     stopbandAmplitude_slider->addListener (this);
 
     stopbandAmplitude_slider->setBounds (1022, 366, 135, 25);
-
-    gaussian_plane.reset (new GaussianPlane());
-    addAndMakeVisible (gaussian_plane.get());
-    gaussian_plane->setName ("gaussianPlane");
-
-    gaussian_plane->setBounds (30, 455, 260, 260);
 
     reset_button.reset (new CustomButton ("Reset"));
     addAndMakeVisible (reset_button.get());
@@ -980,11 +1029,17 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     load_preset_button->setBounds (1082, 9, 100, 25);
 
-    e1.reset (new DraggableElement (processor.getElementState(1)));
-    addAndMakeVisible (e1.get());
-    e1->setName ("Element 1");
+    active_label2.reset (new juce::Label ("Active",
+                                          TRANS ("GAIN")));
+    addAndMakeVisible (active_label2.get());
+    active_label2->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    active_label2->setJustificationType (juce::Justification::centred);
+    active_label2->setEditable (false, false, false);
+    active_label2->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    active_label2->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    active_label2->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    e1->setBounds (152, 577, 16, 16);
+    active_label2->setBounds (464, 60, 55, 24);
 
     cachedImage_anticlockwise_arrow_png_1 = juce::ImageCache::getFromMemory (anticlockwise_arrow_png, anticlockwise_arrow_pngSize);
     cachedImage_clockwise_arrow_png_2 = juce::ImageCache::getFromMemory (clockwise_arrow_png, clockwise_arrow_pngSize);
@@ -1189,9 +1244,17 @@ PluginEditor::~PluginEditor()
     bypassAttachment.reset();
     //[/Destructor_pre]
 
+    gaussian_plane = nullptr;
+    e2 = nullptr;
+    e3 = nullptr;
+    e4 = nullptr;
+    e5 = nullptr;
+    e6 = nullptr;
+    e7 = nullptr;
+    e8 = nullptr;
+    e1 = nullptr;
     passbandAmplitude_label = nullptr;
     stopbandAmplitude_slider = nullptr;
-    gaussian_plane = nullptr;
     reset_button = nullptr;
     frequency_response = nullptr;
     freq_response_label = nullptr;
@@ -1275,7 +1338,7 @@ PluginEditor::~PluginEditor()
     redo_button = nullptr;
     save_preset_button = nullptr;
     load_preset_button = nullptr;
-    e1 = nullptr;
+    active_label2 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1929,7 +1992,6 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
     {
         //[UserButtonCode_e1_active] -- add your button handler code here..
         gain_1->setVisible(buttonThatWasClicked->getToggleState());
-        e1->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e1_active]
     }
     else if (buttonThatWasClicked == e2_active.get())
@@ -2263,7 +2325,14 @@ void PluginEditor::updateReferenceFrequencies()
 
 void PluginEditor::updateElements ()
 {
-    e1->updateElement(processor.getElementState(1), gaussian_plane.get());
+    e1->updateElement(processor.getElementState(1), 1, gaussian_plane.get(), &processor);
+    e2->updateElement(processor.getElementState(2), 2, gaussian_plane.get(), &processor);
+    e3->updateElement(processor.getElementState(3), 3, gaussian_plane.get(), &processor);
+    e4->updateElement(processor.getElementState(4), 4, gaussian_plane.get(), &processor);
+    e5->updateElement(processor.getElementState(5), 5, gaussian_plane.get(), &processor);
+    e6->updateElement(processor.getElementState(6), 6, gaussian_plane.get(), &processor);
+    e7->updateElement(processor.getElementState(7), 7, gaussian_plane.get(), &processor);
+    e8->updateElement(processor.getElementState(8), 8, gaussian_plane.get(), &processor);
 }
 
 void PluginEditor::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
@@ -2657,6 +2726,33 @@ BEGIN_JUCER_METADATA
     <IMAGE pos="1161 11 23 19" resource="load_icon_png" opacity="1.0" mode="1"/>
     <IMAGE pos="1047 15 17 12" resource="save_icon_png" opacity="1.0" mode="1"/>
   </BACKGROUND>
+  <GENERICCOMPONENT name="gaussianPlane" id="f84485816497c4e3" memberName="gaussian_plane"
+                    virtualName="" explicitFocusOrder="0" pos="30 455 260 260" class="GaussianPlane"
+                    params=""/>
+  <GENERICCOMPONENT name="Element 2" id="9321829c993da051" memberName="e2" virtualName=""
+                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    params="processor.getElementState(2), 2, gaussian_plane.get(), &amp;processor&#10;"/>
+  <GENERICCOMPONENT name="Element 3" id="4ddeafd0e05642ed" memberName="e3" virtualName=""
+                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    params="processor.getElementState(3), 3, gaussian_plane.get(), &amp;processor"/>
+  <GENERICCOMPONENT name="Element 4" id="922bf3d6c293e1ad" memberName="e4" virtualName=""
+                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    params="processor.getElementState(4), 4, gaussian_plane.get(), &amp;processor"/>
+  <GENERICCOMPONENT name="Element 5" id="b7d51f9dcf114b20" memberName="e5" virtualName=""
+                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    params="processor.getElementState(5), 5, gaussian_plane.get(), &amp;processor"/>
+  <GENERICCOMPONENT name="Element 6" id="c34c7547dec4347" memberName="e6" virtualName=""
+                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    params="processor.getElementState(6), 6, gaussian_plane.get(), &amp;processor"/>
+  <GENERICCOMPONENT name="Element 7" id="db33ef1c083bc433" memberName="e7" virtualName=""
+                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    params="processor.getElementState(7), 7, gaussian_plane.get(), &amp;processor"/>
+  <GENERICCOMPONENT name="Element 8" id="444b4efe799724ec" memberName="e8" virtualName=""
+                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    params="processor.getElementState(8), 8, gaussian_plane.get(), &amp;processor"/>
+  <GENERICCOMPONENT name="Element 1" id="2619ff360594d8ed" memberName="e1" virtualName=""
+                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    params="processor.getElementState(1), 1, gaussian_plane.get(), &amp;processor"/>
   <LABEL name="Passband Amplitude" id="a57ca268c3802211" memberName="passbandAmplitude_label"
          virtualName="" explicitFocusOrder="0" pos="1020 360 159 20" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="PASSBAND AMPLITUDE (DB)"
@@ -2669,9 +2765,6 @@ BEGIN_JUCER_METADATA
           textboxoutline="0" min="-35.0" max="-21.0" int="0.1" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
-  <GENERICCOMPONENT name="gaussianPlane" id="f84485816497c4e3" memberName="gaussian_plane"
-                    virtualName="" explicitFocusOrder="0" pos="30 455 260 260" class="GaussianPlane"
-                    params=""/>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
               virtualName="CustomButton" explicitFocusOrder="0" pos="414 639 80 25"
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
@@ -3077,9 +3170,12 @@ BEGIN_JUCER_METADATA
               virtualName="CustomButton" explicitFocusOrder="0" pos="1082 9 100 25"
               bgColOff="909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="Element 1" id="2619ff360594d8ed" memberName="e1" virtualName=""
-                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
-                    params="processor.getElementState(1)"/>
+  <LABEL name="Active" id="d1b48585f0499e3f" memberName="active_label2"
+         virtualName="" explicitFocusOrder="0" pos="464 60 55 24" textCol="ff383838"
+         edTextCol="ff000000" edBkgCol="0" labelText="GAIN" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
+         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"
+         typefaceStyle="SemiBold"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

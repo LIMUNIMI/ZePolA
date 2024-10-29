@@ -24,7 +24,7 @@ void PolesAndZerosEQAudioProcessor::prepareToPlay (double sampleRate, int sample
     juce::dsp::ProcessSpec spec;
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
-    spec.numChannels = 1;
+    spec.numChannels = getTotalNumInputChannels();
     
     gainProcessor.prepare(spec);
     gainProcessor.setGainDecibels(GAIN_DEFAULT);

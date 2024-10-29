@@ -170,9 +170,17 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    std::unique_ptr<GaussianPlane> gaussian_plane;
+    std::unique_ptr<DraggableElement> e2;
+    std::unique_ptr<DraggableElement> e3;
+    std::unique_ptr<DraggableElement> e4;
+    std::unique_ptr<DraggableElement> e5;
+    std::unique_ptr<DraggableElement> e6;
+    std::unique_ptr<DraggableElement> e7;
+    std::unique_ptr<DraggableElement> e8;
+    std::unique_ptr<DraggableElement> e1;
     std::unique_ptr<juce::Label> passbandAmplitude_label;
     std::unique_ptr<CustomSlider> stopbandAmplitude_slider;
-    std::unique_ptr<GaussianPlane> gaussian_plane;
     std::unique_ptr<CustomButton> reset_button;
     std::unique_ptr<FrequencyResponse> frequency_response;
     std::unique_ptr<juce::Label> freq_response_label;
@@ -256,7 +264,7 @@ private:
     std::unique_ptr<CustomButton> redo_button;
     std::unique_ptr<CustomButton> save_preset_button;
     std::unique_ptr<CustomButton> load_preset_button;
-    std::unique_ptr<DraggableElement> e1;
+    std::unique_ptr<juce::Label> active_label2;
     juce::Image cachedImage_anticlockwise_arrow_png_1;
     juce::Image cachedImage_clockwise_arrow_png_2;
     juce::Image cachedImage_load_icon_png_3;
