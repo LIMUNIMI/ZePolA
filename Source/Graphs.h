@@ -15,6 +15,8 @@
 #define CIRCLE_LINE_THICKNESS               1.5f
 #define REFERENCE_ANGLES                    {0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360}
 
+#define GAUSSIAN_PLANE_RECTANGLE            juce::Rectangle<float>(30, 455, 260, 260)
+
 #define GRAPHS_QUALITY                      2048
 #define NUMBER_OF_REFERENCE_FREQUENCIES     8
 
@@ -190,10 +192,28 @@ class PhaseResponse : public GraphicResponse
 class GaussianPlane : public juce::Component
 {
     public:
-    GaussianPlane ()
+    GaussianPlane (const std::vector<FilterElement>& elements)
     {
-        auto componentBounds = juce::Rectangle<float>(30, 455, 260, 260);
+        auto componentBounds = GAUSSIAN_PLANE_RECTANGLE;
         bounds = componentBounds.reduced(componentBounds.getWidth() * PLANE_PADDING, componentBounds.getHeight() * PLANE_PADDING);
+        updateConjugate(elements);
+    }
+    
+    void updateConjugate (const std::vector<FilterElement>& elements)
+    {
+        zeros.clear();
+        poles.clear();
+        
+        for (auto& element : elements)
+        {
+            if (!element.isActive())
+                continue;
+            if (element.getType())
+                poles.push_back(std::polar(element.getMagnitude(), MathConstants<double>::pi * element.getPhase()));
+            else
+                zeros.push_back(std::polar(element.getMagnitude(), MathConstants<double>::pi * element.getPhase()));
+        }
+        repaint();
     }
     
     void paint(juce::Graphics& g) override
@@ -207,6 +227,7 @@ class GaussianPlane : public juce::Component
         
         g.setColour(juce::Colour(LINE_COLOUR));
         drawPlane(g);
+        drawPolesAndZeros(g);
     }
     
     juce::Rectangle<float> getBounds ()
@@ -242,6 +263,9 @@ class GaussianPlane : public juce::Component
     private:
     juce::Rectangle<float> bounds;
     
+    std::vector<std::complex<double>> zeros;
+    std::vector<std::complex<double>> poles;
+    
     void drawPlane(juce::Graphics& g)
     {
         auto width = bounds.getWidth();
@@ -275,14 +299,42 @@ class GaussianPlane : public juce::Component
         g.drawText("Re", centerX + radius + 2, centerY - 10, 20, 20, juce::Justification::centred);
         g.drawText("Im", centerX - 8, centerY - radius - 20, 20, 20, juce::Justification::centred);
     }
+    
+    void drawPolesAndZeros(juce::Graphics& g)
+    {
+        auto width = bounds.getWidth();
+        auto height = bounds.getHeight();
+        auto centerX = bounds.getCentreX();
+        auto centerY = bounds.getCentreY();
+        float radius = 5.0f;
+        
+        for (const auto& zero : zeros)
+        {
+            g.setColour(juce::Colour (CONJ_ZEROS_COLOUR));
+            float x = (std::real(zero) * (width / 2)) + centerX;
+            float y = ((std::imag(zero)) * (height / 2)) + centerY;
+
+            g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
+        }
+    
+        for (const auto& pole : poles)
+        {
+            g.setColour(juce::Colour (CONJ_POLES_COLOUR));
+            float x = (std::real(pole) * (width / 2)) + centerX;
+            float y = ((std::imag(pole)) * (height / 2)) + centerY;
+            
+            g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
+            g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
+        }
+    }
 };
 
 class DraggableElement : public juce::Component
 {
     public:
     
-    DraggableElement(FilterElement e, int elNr, GaussianPlane *gp, PolesAndZerosEQAudioProcessor *p) : conjugateElement(*this)
-    {        
+    DraggableElement(FilterElement e, int elNr, GaussianPlane *gp, PolesAndZerosEQAudioProcessor *p)
+    {
         updateElement(e, elNr, gp, p);
     }
     
@@ -333,24 +385,22 @@ class DraggableElement : public juce::Component
         
         newX = juce::jlimit(limit1, limit2, newX);
         newY = juce::jlimit(juce::jlimit(0, planeCentre.y, static_cast<int>(std::floor(planeCentre.y - yLimit))), static_cast<int>(planeCentre.y), newY);
-    
+        
         setBounds(newX - getWidth() * 0.5, newY - getHeight() * 0.5, getWidth(), getHeight());
         
-        this->toFront(true);
+        toFront(true);
         
         std::complex<double> newPosition = getComplexFromCoordinates(getCentreX(), getCentreY());
         double newMagnitude = std::abs(newPosition);
         double newPhase = std::abs(std::arg(newPosition) / MathConstants<double>::pi);
-
+        
         processor->setParameterValue(processor->parameters.getParameter(MAGNITUDE_NAME + std::to_string(elementNr)), newMagnitude);
         processor->setParameterValue(processor->parameters.getParameter(PHASE_NAME + std::to_string(elementNr)), newPhase);
         
         element = std::polar(newMagnitude, newPhase);
         
-        setConjugateCoordinates(element);
-        conjugateElement.setBounds(conjX, conjY, getWidth(), getHeight());
-        conjugateElement.toFront(true);
-        conjugateElement.repaint();
+        setConjugateCoordinates();
+        
     }
     
     void updateElement(FilterElement e, int elNr, GaussianPlane *gp, PolesAndZerosEQAudioProcessor *p)
@@ -358,6 +408,7 @@ class DraggableElement : public juce::Component
         element = std::polar(e.getMagnitude(), MathConstants<double>::pi * e.getPhase());
         type = e.getType();
         elementNr = elNr;
+        
         if (!e.isActive())
             setVisible(false);
         else
@@ -366,15 +417,12 @@ class DraggableElement : public juce::Component
         gaussianPlane = gp;
         processor = p;
         
-        getCoordinatesFromComplex();
+        setCoordinatesFromComplex();
         setBounds(x, y, getWidth(), getHeight());
         repaint();
         
-        setConjugateCoordinates(element);
-        conjugateElement.setBounds(conjX, conjY, getWidth(), getHeight());
-        addAndMakeVisible(conjugateElement);
-        conjugateElement.toFront(true);
-        conjugateElement.repaint();
+        setConjugateCoordinates();
+        
     }
     
     float getCentreX ()
@@ -413,41 +461,6 @@ class DraggableElement : public juce::Component
     }
     
     private:
-    
-    class ConjugateElement : public juce::Component
-    {
-        public:
-        
-        ConjugateElement(DraggableElement& parentElement) : parent(parentElement) {}
-        
-        void paint(juce::Graphics& g) override
-        {
-            float radius = 5.0f;
-            
-            switch (parent.type)
-            {
-                case FilterElement::ZERO:
-                {
-                    g.setColour(juce::Colour(CONJ_ZEROS_COLOUR));
-                    g.drawEllipse(3, 3, radius * 2.0f, radius * 2.0f, ELEMENT_LINE_THICKNESS);
-                } break;
-                    
-                case FilterElement::POLE:
-                {
-                    g.setColour(juce::Colour(CONJ_POLES_COLOUR));
-                    int centerX = getWidth() * 0.5;
-                    int centerY = getWidth() * 0.5;
-                    
-                    g.drawLine(centerX - radius, centerY - radius, centerX + radius, centerY + radius, ELEMENT_LINE_THICKNESS);
-                    g.drawLine(centerX + radius, centerY - radius, centerX - radius, centerY + radius, ELEMENT_LINE_THICKNESS);
-                } break;
-            }
-        }
-        
-        private:
-        DraggableElement& parent;
-    };
-    
     std::complex<double> element;
     FilterElement::Type type;
     int elementNr;
@@ -458,27 +471,24 @@ class DraggableElement : public juce::Component
     float x, conjX;
     float y, conjY;
     
-    juce::Rectangle<int> dragBounds;
     juce::Point<int> dragOffset;
     
-    ConjugateElement conjugateElement;
-    
-    void getCoordinatesFromComplex ()
+    void setCoordinatesFromComplex ()
     {
         x = (std::real(element) * (gaussianPlane->getWidth() * 0.5)) + gaussianPlane->getCentreX() - getWidth() * 0.5;
         y = (-(std::imag(element)) * (gaussianPlane->getHeight() * 0.5)) + gaussianPlane->getCentreY() - getHeight() * 0.5;
     }
     
-    void setConjugateCoordinates(std::complex<double> conjugate)
+    void setConjugateCoordinates ()
     {
-        conjX = (std::real(conjugate) * (gaussianPlane->getWidth() * 0.5)) + gaussianPlane->getCentreX() - conjugateElement.getWidth() * 0.5;
-        conjY = ((std::imag(conjugate)) * (gaussianPlane->getHeight() * 0.5)) + gaussianPlane->getCentreY() - conjugateElement.getHeight() * 0.5;
+        conjX = x;
+        conjY = (std::imag(element)) * (gaussianPlane->getHeight() * 0.5) + gaussianPlane->getCentreY() - getHeight() * 0.5;
     }
     
-    std::complex<double> getComplexFromCoordinates(float x, float y)
+    std::complex<double> getComplexFromCoordinates (float x, float y)
     {
         float xRel = x - gaussianPlane->getCentreX();
-        float yRel = -(y - gaussianPlane->getCentreY());
+        float yRel = - (y - gaussianPlane->getCentreY());
         
         float realPart = xRel / (gaussianPlane->getWidth() * 0.5);
         float imagPart = yRel / (gaussianPlane->getHeight() * 0.5);

@@ -40,6 +40,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
         frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate(), true);
         updateElements();
+        gaussian_plane->updateConjugate(processor.getFilterElementsChain());
     });
 
     selectable_filter_types = SELECTABLE_FILTER_TYPES;
@@ -54,7 +55,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     activeAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     //[/Constructor_pre]
 
-    gaussian_plane.reset (new GaussianPlane());
+    gaussian_plane.reset (new GaussianPlane (processor.getFilterElementsChain()));
     addAndMakeVisible (gaussian_plane.get());
     gaussian_plane->setName ("gaussianPlane");
 
@@ -2728,7 +2729,7 @@ BEGIN_JUCER_METADATA
   </BACKGROUND>
   <GENERICCOMPONENT name="gaussianPlane" id="f84485816497c4e3" memberName="gaussian_plane"
                     virtualName="" explicitFocusOrder="0" pos="30 455 260 260" class="GaussianPlane"
-                    params=""/>
+                    params="processor.getFilterElementsChain()"/>
   <GENERICCOMPONENT name="Element 2" id="9321829c993da051" memberName="e2" virtualName=""
                     explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
                     params="processor.getElementState(2), 2, gaussian_plane.get(), &amp;processor&#10;"/>
