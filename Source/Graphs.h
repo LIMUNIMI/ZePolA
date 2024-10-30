@@ -282,11 +282,8 @@ class DraggableElement : public juce::Component
     public:
     
     DraggableElement(FilterElement e, int elNr, GaussianPlane *gp, PolesAndZerosEQAudioProcessor *p) : conjugateElement(*this)
-    {
-        dragBounds = juce::Rectangle<int>(42, 467, 236, 126);
-        
+    {        
         updateElement(e, elNr, gp, p);
-        addAndMakeVisible(conjugateElement);
     }
     
     void mouseEnter(const juce::MouseEvent&) override
@@ -306,26 +303,52 @@ class DraggableElement : public juce::Component
     
     void mouseDrag (const MouseEvent& event) override
     {
-        int newX = getX() + (event.getPosition().x - dragOffset.x);
-        int newY = getY() + (event.getPosition().y - dragOffset.y);
+        int newX = getX() + (event.getPosition().x - dragOffset.x) + getWidth() * 0.5;
+        int newY = getY() + (event.getPosition().y - dragOffset.y) + getHeight() * 0.5;
         
-        newX = juce::jlimit(dragBounds.getX(), dragBounds.getRight() - getWidth(), newX);
-        newY = juce::jlimit(dragBounds.getY(), dragBounds.getBottom() - getHeight(), newY);
+        juce::Point<int> planeCentre(gaussianPlane->getCentreX(), gaussianPlane->getCentreY());
+        juce::Point<int> newRelativePosition(newX - planeCentre.x, planeCentre.y - newY);
         
-        setBounds(newX, newY, getWidth(), getHeight());
+        auto theta = std::atan2(static_cast<float>(newRelativePosition.y), static_cast<float>(newRelativePosition.x));
+        auto radius = gaussianPlane->getRadius();
+        auto xLimit = radius * std::cos(theta);
+        auto yLimit = radius * std::sin(theta);
         
-        std::complex<double> newPosition = getComplexFromCoordinates(this->getCentreX(), this->getCentreY());
+        int limit1, limit2;
+        
+        if (!newRelativePosition.x)
+        {
+            limit1 = static_cast<int>(planeCentre.x);
+            limit2 = planeCentre.x + radius;
+        } else if (newRelativePosition.x > 0)
+        {
+            limit1 = static_cast<int>(planeCentre.x);
+            limit2 = static_cast<int>(std::ceil(xLimit + planeCentre.x));
+        }
+        else
+        {
+            limit1 = static_cast<int>(std::floor(xLimit + planeCentre.x));
+            limit2 = static_cast<int>(planeCentre.x);
+        }
+        
+        newX = juce::jlimit(limit1, limit2, newX);
+        newY = juce::jlimit(juce::jlimit(0, planeCentre.y, static_cast<int>(std::floor(planeCentre.y - yLimit))), static_cast<int>(planeCentre.y), newY);
+    
+        setBounds(newX - getWidth() * 0.5, newY - getHeight() * 0.5, getWidth(), getHeight());
+        
+        this->toFront(true);
+        
+        std::complex<double> newPosition = getComplexFromCoordinates(getCentreX(), getCentreY());
         double newMagnitude = std::abs(newPosition);
-        double newPhase = std::arg(newPosition) / MathConstants<double>::pi;
-        
+        double newPhase = std::abs(std::arg(newPosition) / MathConstants<double>::pi);
+
         processor->setParameterValue(processor->parameters.getParameter(MAGNITUDE_NAME + std::to_string(elementNr)), newMagnitude);
         processor->setParameterValue(processor->parameters.getParameter(PHASE_NAME + std::to_string(elementNr)), newPhase);
         
         element = std::polar(newMagnitude, newPhase);
         
-        getConjugateCoordinates(element);
+        setConjugateCoordinates(element);
         conjugateElement.setBounds(conjX, conjY, getWidth(), getHeight());
-        addAndMakeVisible(conjugateElement);
         conjugateElement.toFront(true);
         conjugateElement.repaint();
     }
@@ -347,7 +370,7 @@ class DraggableElement : public juce::Component
         setBounds(x, y, getWidth(), getHeight());
         repaint();
         
-        getConjugateCoordinates(element);
+        setConjugateCoordinates(element);
         conjugateElement.setBounds(conjX, conjY, getWidth(), getHeight());
         addAndMakeVisible(conjugateElement);
         conjugateElement.toFront(true);
@@ -446,7 +469,7 @@ class DraggableElement : public juce::Component
         y = (-(std::imag(element)) * (gaussianPlane->getHeight() * 0.5)) + gaussianPlane->getCentreY() - getHeight() * 0.5;
     }
     
-    void getConjugateCoordinates(std::complex<double> conjugate)
+    void setConjugateCoordinates(std::complex<double> conjugate)
     {
         conjX = (std::real(conjugate) * (gaussianPlane->getWidth() * 0.5)) + gaussianPlane->getCentreX() - conjugateElement.getWidth() * 0.5;
         conjY = ((std::imag(conjugate)) * (gaussianPlane->getHeight() * 0.5)) + gaussianPlane->getCentreY() - conjugateElement.getHeight() * 0.5;
