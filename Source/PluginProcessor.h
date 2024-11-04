@@ -44,6 +44,8 @@ public:
     
     std::complex<double> getPhiSpectrum(const double phi);
     double getElementGain(const int elementNr);
+    void setElementGain (const int elementNr, double gain);
+    
     std::vector<FilterElement> getFilterElementsChain();
     FilterElement getElementState(const int elementNr);
     

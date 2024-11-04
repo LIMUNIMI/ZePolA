@@ -59,56 +59,56 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (gaussian_plane.get());
     gaussian_plane->setName ("gaussianPlane");
 
-    gaussian_plane->setBounds (30, 455, 260, 260);
+    gaussian_plane->setBounds (30, 480, 260, 260);
 
     e2.reset (new DraggableElement (processor.getElementState(2), 2, gaussian_plane.get(), &processor
                                     ));
     addAndMakeVisible (e2.get());
     e2->setName ("Element 2");
 
-    e2->setBounds (152, 577, 16, 16);
+    e2->setBounds (152, 602, 16, 16);
 
     e3.reset (new DraggableElement (processor.getElementState(3), 3, gaussian_plane.get(), &processor));
     addAndMakeVisible (e3.get());
     e3->setName ("Element 3");
 
-    e3->setBounds (152, 577, 16, 16);
+    e3->setBounds (152, 602, 16, 16);
 
     e4.reset (new DraggableElement (processor.getElementState(4), 4, gaussian_plane.get(), &processor));
     addAndMakeVisible (e4.get());
     e4->setName ("Element 4");
 
-    e4->setBounds (152, 577, 16, 16);
+    e4->setBounds (152, 602, 16, 16);
 
     e5.reset (new DraggableElement (processor.getElementState(5), 5, gaussian_plane.get(), &processor));
     addAndMakeVisible (e5.get());
     e5->setName ("Element 5");
 
-    e5->setBounds (152, 577, 16, 16);
+    e5->setBounds (152, 602, 16, 16);
 
     e6.reset (new DraggableElement (processor.getElementState(6), 6, gaussian_plane.get(), &processor));
     addAndMakeVisible (e6.get());
     e6->setName ("Element 6");
 
-    e6->setBounds (152, 577, 16, 16);
+    e6->setBounds (152, 602, 16, 16);
 
     e7.reset (new DraggableElement (processor.getElementState(7), 7, gaussian_plane.get(), &processor));
     addAndMakeVisible (e7.get());
     e7->setName ("Element 7");
 
-    e7->setBounds (152, 577, 16, 16);
+    e7->setBounds (152, 602, 16, 16);
 
     e8.reset (new DraggableElement (processor.getElementState(8), 8, gaussian_plane.get(), &processor));
     addAndMakeVisible (e8.get());
     e8->setName ("Element 8");
 
-    e8->setBounds (152, 577, 16, 16);
+    e8->setBounds (152, 602, 16, 16);
 
     e1.reset (new DraggableElement (processor.getElementState(1), 1, gaussian_plane.get(), &processor));
     addAndMakeVisible (e1.get());
     e1->setName ("Element 1");
 
-    e1->setBounds (152, 577, 16, 16);
+    e1->setBounds (152, 602, 16, 16);
 
     passbandAmplitude_label.reset (new juce::Label ("Passband Amplitude",
                                                     TRANS ("PASSBAND AMPLITUDE (DB)")));
@@ -143,13 +143,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     reset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     reset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    reset_button->setBounds (414, 639, 80, 25);
+    reset_button->setBounds (421, 664, 80, 25);
 
     frequency_response.reset (new FrequencyResponse (magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb));
     addAndMakeVisible (frequency_response.get());
     frequency_response->setName ("frequencyResponse");
 
-    frequency_response->setBounds (550, 75, 430, 285);
+    frequency_response->setBounds (540, 70, 450, 285);
 
     freq_response_label.reset (new juce::Label ("Frequency response",
                                                 TRANS ("SPECTRUM MAGNITUDE\n")));
@@ -161,13 +161,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     freq_response_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     freq_response_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    freq_response_label->setBounds (695, 365, 140, 24);
+    freq_response_label->setBounds (695, 360, 140, 24);
 
     phase_response.reset (new PhaseResponse (phases, referenceFrequencies, processor.getSampleRate(), ampDb));
     addAndMakeVisible (phase_response.get());
     phase_response->setName ("phaseResponse");
 
-    phase_response->setBounds (550, 430, 430, 285);
+    phase_response->setBounds (540, 455, 450, 285);
 
     ph_response_label.reset (new juce::Label ("Phase response",
                                               TRANS ("SPECTRUM PHASE")));
@@ -179,7 +179,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     ph_response_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     ph_response_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    ph_response_label->setBounds (705, 720, 110, 24);
+    ph_response_label->setBounds (705, 745, 110, 24);
 
     m1_slider.reset (new CustomSlider ("Element 1 magnitude"));
     addAndMakeVisible (m1_slider.get());
@@ -380,7 +380,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gaussian_plane_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     gaussian_plane_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    gaussian_plane_label->setBounds (95, 720, 140, 24);
+    gaussian_plane_label->setBounds (95, 745, 140, 24);
 
     bypass.reset (new CustomToggleButton ("Bypass"));
     addAndMakeVisible (bypass.get());
@@ -398,14 +398,14 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gain_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     gain_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x008e989b));
 
-    gain_slider->setBounds (1074, 560, 45, 140);
+    gain_slider->setBounds (1074, 540, 45, 160);
 
     linLog_switch.reset (new CustomToggleButton ("Linear / Logarithmic"));
     addAndMakeVisible (linLog_switch.get());
     linLog_switch->setButtonText (juce::String());
     linLog_switch->addListener (this);
 
-    linLog_switch->setBounds (931, 367, 52, 21);
+    linLog_switch->setBounds (931, 362, 52, 21);
 
     m2_slider.reset (new CustomSlider ("Element 2 magnitude"));
     addAndMakeVisible (m2_slider.get());
@@ -745,7 +745,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     multiply_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    multiply_phases_button->setBounds (321, 569, 80, 25);
+    multiply_phases_button->setBounds (328, 594, 80, 25);
 
     divide_phases_button.reset (new CustomButton ("Divide phases"));
     addAndMakeVisible (divide_phases_button.get());
@@ -754,7 +754,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     divide_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff727272));
 
-    divide_phases_button->setBounds (414, 569, 80, 25);
+    divide_phases_button->setBounds (421, 594, 80, 25);
 
     swap_button.reset (new CustomButton ("Swap poles/zeros"));
     addAndMakeVisible (swap_button.get());
@@ -763,7 +763,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     swap_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     swap_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    swap_button->setBounds (321, 639, 80, 25);
+    swap_button->setBounds (328, 664, 80, 25);
 
     turn_on_button.reset (new CustomButton ("Turn on all the elements"));
     addAndMakeVisible (turn_on_button.get());
@@ -772,7 +772,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff73cc81));
     turn_on_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_on_button->setBounds (321, 506, 80, 25);
+    turn_on_button->setBounds (328, 531, 80, 25);
 
     turn_off_button.reset (new CustomButton ("Turn off all the elements"));
     addAndMakeVisible (turn_off_button.get());
@@ -781,7 +781,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xffe86d5c));
     turn_off_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_off_button->setBounds (414, 506, 80, 25);
+    turn_off_button->setBounds (421, 531, 80, 25);
 
     order_box.reset (new CustomComboBox ("Design order"));
     addAndMakeVisible (order_box.get());
@@ -810,7 +810,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     ampDb_switch->setButtonText (juce::String());
     ampDb_switch->addListener (this);
 
-    ampDb_switch->setBounds (546, 367, 52, 21);
+    ampDb_switch->setBounds (546, 362, 52, 21);
 
     frequency_design_slider.reset (new CustomSlider ("Frequency design slider"));
     addAndMakeVisible (frequency_design_slider.get());
@@ -1391,48 +1391,12 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1097, y = 748, width = 90, height = 30;
-        juce::String text (TRANS ("TOOLS"));
-        juce::Colour fillColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.setFont (juce::Font ("Gill Sans", 16.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centred, true);
-    }
-
-    {
         int x = 15, y = 130, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 395, y = 748, width = 116, height = 30;
-        juce::String text (TRANS ("FILTER SETUP"));
-        juce::Colour fillColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.setFont (juce::Font ("Gill Sans", 16.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centred, true);
-    }
-
-    {
-        int x = 810, y = 748, width = 186, height = 30;
-        juce::String text (TRANS ("FILTER RESPONSE"));
-        juce::Colour fillColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.setFont (juce::Font ("Gill Sans", 16.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centred, true);
     }
 
     {
@@ -1499,18 +1463,6 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1050, y = 500, width = 90, height = 24;
-        juce::String text (TRANS ("CONTROLS"));
-        juce::Colour fillColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centred, true);
-    }
-
-    {
         int x = 1040, y = 60, width = 110, height = 24;
         juce::String text (TRANS ("FILTER DESIGN"));
         juce::Colour fillColour = juce::Colour (0xff383838);
@@ -1523,7 +1475,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1075, y = 540, width = 40, height = 20;
+        int x = 1075, y = 520, width = 40, height = 20;
         juce::String text (TRANS ("GAIN"));
         juce::Colour fillColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1535,7 +1487,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        float x = 305.0f, y = 455.0f, width = 205.0f, height = 260.0f;
+        float x = 320.0f, y = 480.0f, width = 190.0f, height = 260.0f;
         juce::Colour fillColour = juce::Colour (0x11b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -1547,7 +1499,7 @@ void PluginEditor::paint (juce::Graphics& g)
     }
 
     {
-        int x = 357, y = 460, width = 100, height = 20;
+        int x = 365, y = 485, width = 100, height = 20;
         juce::String text (TRANS ("SETUP SHORTCUTS"));
         juce::Colour fillColour = juce::Colour (0xff383838);
         //[UserPaintCustomArguments] Customize the painting arguments here..
@@ -2239,7 +2191,11 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
         if (design_type == 1)
             updateGUIButterworth();
         else
+        {
             updateGUIEllipticChebyshevIandII();
+            if (autoUpdate)
+                autoUpdateCheckAndSetup();
+        }
         //[/UserComboBoxCode_type_box]
     }
     else if (comboBoxThatHasChanged == shape_box.get())
@@ -2538,7 +2494,6 @@ void PluginEditor::coefficientsNormalization (double& c0, double& c1, double& c2
 {
     c1 /= c0;
     c2 /= c0;
-    c0 = 1.0;
 }
 
 void PluginEditor::fromCoefficientsToMagnitudeAndPhase (double& mg, double& ph, double c1, double c2)
@@ -2634,6 +2589,8 @@ void PluginEditor::filterDesignAndSetup()
             fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
             std::complex<double> zero = std::polar(magnitude, phase);
             processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr);
+            processor.setElementGain(elementNr, b0);
+
             ++ elementNr;
 
             fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
@@ -2682,16 +2639,7 @@ BEGIN_JUCER_METADATA
                hasStroke="1" stroke="1.5, mitered, butt" strokeColour="solid: ff383838"/>
     <ROUNDRECT pos="525 55 480 720" cornerSize="14.5" fill="solid: 17b1b1b1"
                hasStroke="1" stroke="1.5, mitered, butt" strokeColour="solid: ff383838"/>
-    <TEXT pos="1097 748 90 30" fill="solid: ff383838" hasStroke="0" text="TOOLS"
-          fontname="Gill Sans" fontsize="16.0" kerning="0.0" bold="0" italic="0"
-          justification="36" typefaceStyle="SemiBold"/>
     <RECT pos="15 130 510 1" fill="solid: 25909497" hasStroke="0"/>
-    <TEXT pos="395 748 116 30" fill="solid: ff383838" hasStroke="0" text="FILTER SETUP"
-          fontname="Gill Sans" fontsize="16.0" kerning="0.0" bold="0" italic="0"
-          justification="36" typefaceStyle="SemiBold"/>
-    <TEXT pos="810 748 186 30" fill="solid: ff383838" hasStroke="0" text="FILTER RESPONSE"
-          fontname="Gill Sans" fontsize="16.0" kerning="0.0" bold="0" italic="0"
-          justification="36" typefaceStyle="SemiBold"/>
     <RECT pos="15 175 510 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="15 220 510 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="15 265 510 1" fill="solid: 25909497" hasStroke="0"/>
@@ -2699,18 +2647,15 @@ BEGIN_JUCER_METADATA
     <RECT pos="15 400 510 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="15 355 510 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="1005 495 180 1" fill="solid: 4a909497" hasStroke="0"/>
-    <TEXT pos="1050 500 90 24" fill="solid: ff383838" hasStroke="0" text="CONTROLS"
-          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
-          justification="36" typefaceStyle="SemiBold"/>
     <TEXT pos="1040 60 110 24" fill="solid: ff383838" hasStroke="0" text="FILTER DESIGN"
           fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <TEXT pos="1075 540 40 20" fill="solid: ff383838" hasStroke="0" text="GAIN"
+    <TEXT pos="1075 520 40 20" fill="solid: ff383838" hasStroke="0" text="GAIN"
           fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
-    <ROUNDRECT pos="305 455 205 260" cornerSize="14.5" fill="solid: 11b1b1b1"
+    <ROUNDRECT pos="320 480 190 260" cornerSize="14.5" fill="solid: 11b1b1b1"
                hasStroke="1" stroke="0.5, mitered, butt" strokeColour="solid: ff383838"/>
-    <TEXT pos="357 460 100 20" fill="solid: ff383838" hasStroke="0" text="SETUP SHORTCUTS"
+    <TEXT pos="365 485 100 20" fill="solid: ff383838" hasStroke="0" text="SETUP SHORTCUTS"
           fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
     <TEXT pos="1120 681 23 20" fill="solid: ff383838" hasStroke="0" text="dB"
@@ -2728,31 +2673,31 @@ BEGIN_JUCER_METADATA
     <IMAGE pos="1047 15 17 12" resource="save_icon_png" opacity="1.0" mode="1"/>
   </BACKGROUND>
   <GENERICCOMPONENT name="gaussianPlane" id="f84485816497c4e3" memberName="gaussian_plane"
-                    virtualName="" explicitFocusOrder="0" pos="30 455 260 260" class="GaussianPlane"
+                    virtualName="" explicitFocusOrder="0" pos="30 480 260 260" class="GaussianPlane"
                     params="processor.getFilterElementsChain()"/>
   <GENERICCOMPONENT name="Element 2" id="9321829c993da051" memberName="e2" virtualName=""
-                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    explicitFocusOrder="0" pos="152 602 16 16" class="DraggableElement"
                     params="processor.getElementState(2), 2, gaussian_plane.get(), &amp;processor&#10;"/>
   <GENERICCOMPONENT name="Element 3" id="4ddeafd0e05642ed" memberName="e3" virtualName=""
-                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    explicitFocusOrder="0" pos="152 602 16 16" class="DraggableElement"
                     params="processor.getElementState(3), 3, gaussian_plane.get(), &amp;processor"/>
   <GENERICCOMPONENT name="Element 4" id="922bf3d6c293e1ad" memberName="e4" virtualName=""
-                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    explicitFocusOrder="0" pos="152 602 16 16" class="DraggableElement"
                     params="processor.getElementState(4), 4, gaussian_plane.get(), &amp;processor"/>
   <GENERICCOMPONENT name="Element 5" id="b7d51f9dcf114b20" memberName="e5" virtualName=""
-                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    explicitFocusOrder="0" pos="152 602 16 16" class="DraggableElement"
                     params="processor.getElementState(5), 5, gaussian_plane.get(), &amp;processor"/>
   <GENERICCOMPONENT name="Element 6" id="c34c7547dec4347" memberName="e6" virtualName=""
-                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    explicitFocusOrder="0" pos="152 602 16 16" class="DraggableElement"
                     params="processor.getElementState(6), 6, gaussian_plane.get(), &amp;processor"/>
   <GENERICCOMPONENT name="Element 7" id="db33ef1c083bc433" memberName="e7" virtualName=""
-                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    explicitFocusOrder="0" pos="152 602 16 16" class="DraggableElement"
                     params="processor.getElementState(7), 7, gaussian_plane.get(), &amp;processor"/>
   <GENERICCOMPONENT name="Element 8" id="444b4efe799724ec" memberName="e8" virtualName=""
-                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    explicitFocusOrder="0" pos="152 602 16 16" class="DraggableElement"
                     params="processor.getElementState(8), 8, gaussian_plane.get(), &amp;processor"/>
   <GENERICCOMPONENT name="Element 1" id="2619ff360594d8ed" memberName="e1" virtualName=""
-                    explicitFocusOrder="0" pos="152 577 16 16" class="DraggableElement"
+                    explicitFocusOrder="0" pos="152 602 16 16" class="DraggableElement"
                     params="processor.getElementState(1), 1, gaussian_plane.get(), &amp;processor"/>
   <LABEL name="Passband Amplitude" id="a57ca268c3802211" memberName="passbandAmplitude_label"
          virtualName="" explicitFocusOrder="0" pos="1020 360 159 20" textCol="ff383838"
@@ -2767,23 +2712,23 @@ BEGIN_JUCER_METADATA
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <TEXTBUTTON name="Reset" id="2581837dc85daae9" memberName="reset_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="414 639 80 25"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="421 664 80 25"
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
-                    virtualName="" explicitFocusOrder="0" pos="550 75 430 285" class="FrequencyResponse"
+                    virtualName="" explicitFocusOrder="0" pos="540 70 450 285" class="FrequencyResponse"
                     params="magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb"/>
   <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
-         virtualName="" explicitFocusOrder="0" pos="695 365 140 24" textCol="ff383838"
+         virtualName="" explicitFocusOrder="0" pos="695 360 140 24" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="SPECTRUM MAGNITUDE&#10;"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <GENERICCOMPONENT name="phaseResponse" id="c9a48273dec25832" memberName="phase_response"
-                    virtualName="" explicitFocusOrder="0" pos="550 430 430 285" class="PhaseResponse"
+                    virtualName="" explicitFocusOrder="0" pos="540 455 450 285" class="PhaseResponse"
                     params="phases, referenceFrequencies, processor.getSampleRate(), ampDb"/>
   <LABEL name="Phase response" id="6d08c4e421703ed5" memberName="ph_response_label"
-         virtualName="" explicitFocusOrder="0" pos="705 720 110 24" textCol="ff383838"
+         virtualName="" explicitFocusOrder="0" pos="705 745 110 24" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="SPECTRUM PHASE"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
@@ -2890,7 +2835,7 @@ BEGIN_JUCER_METADATA
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <LABEL name="Gaussian plane" id="32980deccea32218" memberName="gaussian_plane_label"
-         virtualName="" explicitFocusOrder="0" pos="95 720 140 24" textCol="ff383838"
+         virtualName="" explicitFocusOrder="0" pos="95 745 140 24" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="GAUSSIAN PLANE"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
@@ -2899,13 +2844,13 @@ BEGIN_JUCER_METADATA
                 explicitFocusOrder="0" pos="1067 712 60 25" buttonText="" connectedEdges="0"
                 needsCallback="0" radioGroupId="0" state="0"/>
   <SLIDER name="Gain" id="7e880f1fc774c2af" memberName="gain_slider" virtualName="CustomSlider"
-          explicitFocusOrder="0" pos="1074 560 45 140" thumbcol="ffffffff"
+          explicitFocusOrder="0" pos="1074 540 45 160" thumbcol="ffffffff"
           textboxtext="ff383838" textboxhighlight="66686868" textboxoutline="8e989b"
           min="0.0" max="10.0" int="0.0" style="LinearVertical" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="100" textBoxHeight="20" skewFactor="1.0"
           needsCallback="0"/>
   <TOGGLEBUTTON name="Linear / Logarithmic" id="269b07022e58d862" memberName="linLog_switch"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="931 367 52 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="931 362 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <SLIDER name="Element 2 magnitude" id="e1a6d1b02cc8ab80" memberName="m2_slider"
@@ -3045,23 +2990,23 @@ BEGIN_JUCER_METADATA
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="Multiply phases" id="fd9508a1dc4c09ae" memberName="multiply_phases_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="321 569 80 25"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="328 594 80 25"
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="Divide phases" id="a62537b9345044f3" memberName="divide_phases_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="414 569 80 25"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="421 594 80 25"
               bgColOff="ff909497" bgColOn="ff727272" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="Swap poles/zeros" id="938b23da9ff326b0" memberName="swap_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="321 639 80 25"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="328 664 80 25"
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="Turn on all the elements" id="e4b8377926241c51" memberName="turn_on_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="321 506 80 25"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="328 531 80 25"
               bgColOff="ff73cc81" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="Turn off all the elements" id="f6c36c1c53a4a06d" memberName="turn_off_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="414 506 80 25"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="421 531 80 25"
               bgColOff="ffe86d5c" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="Design order" id="a7c23e76d01914d5" memberName="order_box"
@@ -3075,7 +3020,7 @@ BEGIN_JUCER_METADATA
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <TOGGLEBUTTON name="Amplitude / dB" id="b9198764b9daa498" memberName="ampDb_switch"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="546 367 52 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="546 362 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <SLIDER name="Frequency design slider" id="805d44cec628c3" memberName="frequency_design_slider"

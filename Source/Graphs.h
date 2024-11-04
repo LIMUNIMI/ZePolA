@@ -242,7 +242,7 @@ class GaussianPlane : public juce::Component
     
     float getCentreY ()
     {
-        return bounds.getHeight() * 0.5 + 475;
+        return bounds.getHeight() * 0.5 + 500;
     }
     
     float getWidth ()
@@ -257,7 +257,7 @@ class GaussianPlane : public juce::Component
     
     float getRadius ()
     {
-        return std::min(bounds.getWidth(), bounds.getHeight()) / 2.0f;
+        return std::min(bounds.getWidth(), bounds.getHeight()) * 0.5;
     }
     
     private:
@@ -277,7 +277,7 @@ class GaussianPlane : public juce::Component
         g.drawLine(bounds.getX(), centerY, bounds.getRight(), centerY, PLANE_LINE_THICKNESS);
         g.drawLine(centerX, bounds.getY(), centerX, bounds.getBottom(), PLANE_LINE_THICKNESS);
         
-        float radius = std::min(width, height) / 2.0f;
+        float radius = std::min(width, height) * 0.5f;
         g.drawEllipse(centerX - radius, centerY - radius, radius * 2, radius * 2, CIRCLE_LINE_THICKNESS);
         
         g.setColour(juce::Colour(PLANE_GRID_COLOUR));
@@ -291,13 +291,6 @@ class GaussianPlane : public juce::Component
             float y = std::sin(rad) * radius;
             g.drawLine(centerX, centerY, centerX + x, centerY - y, 0.5f);
         }
-        
-        g.setFont(12.0f);
-        g.setColour(juce::Colour(0xff383838));
-        
-        g.setFont(juce::Font("Gill Sans", 12.0f, juce::Font::plain));
-        g.drawText("Re", centerX + radius + 2, centerY - 10, 20, 20, juce::Justification::centred);
-        g.drawText("Im", centerX - 8, centerY - radius - 20, 20, 20, juce::Justification::centred);
     }
     
     void drawPolesAndZeros(juce::Graphics& g)
@@ -311,8 +304,8 @@ class GaussianPlane : public juce::Component
         for (const auto& zero : zeros)
         {
             g.setColour(juce::Colour (CONJ_ZEROS_COLOUR));
-            float x = (std::real(zero) * (width / 2)) + centerX;
-            float y = ((std::imag(zero)) * (height / 2)) + centerY;
+            float x = (std::real(zero) * (width * 0.5)) + centerX;
+            float y = ((std::imag(zero)) * (height * 0.5)) + centerY;
 
             g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
         }
@@ -320,8 +313,8 @@ class GaussianPlane : public juce::Component
         for (const auto& pole : poles)
         {
             g.setColour(juce::Colour (CONJ_POLES_COLOUR));
-            float x = (std::real(pole) * (width / 2)) + centerX;
-            float y = ((std::imag(pole)) * (height / 2)) + centerY;
+            float x = (std::real(pole) * (width * 0.5)) + centerX;
+            float y = ((std::imag(pole)) * (height * 0.5)) + centerY;
             
             g.drawLine(x - radius, y - radius, x + radius, y + radius, 2.0f);
             g.drawLine(x + radius, y - radius, x - radius, y + radius, 2.0f);
@@ -427,12 +420,12 @@ class DraggableElement : public juce::Component
     
     float getCentreX ()
     {
-        return this->getX() + getWidth() / 2;
+        return this->getX() + getWidth() * 0.5;
     }
     
     float getCentreY()
     {
-        return this->getY() + getHeight() / 2;
+        return this->getY() + getHeight() * 0.5;
     }
     
     void paint (juce::Graphics& g) override

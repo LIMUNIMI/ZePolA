@@ -183,6 +183,12 @@ double PolesAndZerosEQAudioProcessor::getElementGain (const int elementNr)
     return multiChannelCascade[0].getElementGain(elementNr);
 }
 
+void PolesAndZerosEQAudioProcessor::setElementGain (const int elementNr, double gain)
+{
+    for (auto& cascade : multiChannelCascade)
+        cascade.setElementGain(elementNr, gain);
+}
+
 std::vector<FilterElement> PolesAndZerosEQAudioProcessor::getFilterElementsChain ()
 {
     return multiChannelCascade[0].getElementsChain();
