@@ -145,10 +145,27 @@ class PhaseSliderTheme : public LookAndFeel_V4
     }
 };
 
-/*
- The GainSliderTheme class implements a look and feel for phase sliders.
- */
 class GainSliderTheme : public LookAndFeel_V4
+{
+    public:
+    
+    void drawLinearSlider (juce::Graphics& g, int x, int y, int width,
+                           int height, float sliderPos, float minSliderPos,
+                           float maxSliderPos, const juce::Slider::SliderStyle,
+                           juce::Slider& slider) override
+    {
+    }
+    
+    juce::Font getLabelFont(juce::Label& label) override
+    {
+        return juce::Font("Gill Sans", 13.0f, juce::Font::plain);
+    }
+};
+
+/*
+ The MasterGainSliderTheme class implements a look and feel for phase sliders.
+ */
+class MasterGainSliderTheme : public LookAndFeel_V4
 {
     public:
     

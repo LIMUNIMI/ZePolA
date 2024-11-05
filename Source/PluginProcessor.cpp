@@ -27,7 +27,7 @@ void PolesAndZerosEQAudioProcessor::prepareToPlay (double sampleRate, int sample
     spec.numChannels = getTotalNumInputChannels();
     
     gainProcessor.prepare(spec);
-    gainProcessor.setGainDecibels(GAIN_DEFAULT);
+    gainProcessor.setGainDecibels(MASTER_GAIN_DEFAULT);
     
     for (auto& cascade : multiChannelCascade)
         cascade.memoryReset();
@@ -154,6 +154,12 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
         for (auto& cascade : multiChannelCascade)
             cascade.setElementType(elementNr, newValue > 0.5);
     }
+    else if (parameter == "G")
+    {
+        newValue *= 0.5;
+        for (auto& cascade : multiChannelCascade)
+            cascade.setElementGain(elementNr, newValue);
+    }
     
     if (editorCallback)
     {
@@ -211,7 +217,7 @@ void PolesAndZerosEQAudioProcessor::resetFilter ()
         setParameterValue(parameters.getParameter(TYPE_NAME + std::to_string(i)), TYPE_DEFAULT);
         setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(i)), ACTIVE_DEFAULT);
     }
-    setParameterValue(parameters.getParameter(GAIN_NAME), jmap(GAIN_DEFAULT, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+    setParameterValue(parameters.getParameter(MASTER_GAIN_NAME), jmap(MASTER_GAIN_DEFAULT, MASTER_GAIN_FLOOR, MASTER_GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
     setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME), BYPASS_DEFAULT);
     
     for (auto& cascade : multiChannelCascade)
@@ -286,7 +292,7 @@ void PolesAndZerosEQAudioProcessor::turnOnOffAllElements(bool option)
         setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(i)), active);
 }
 
-void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr)
+void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr, const double gain)
 {
     if (elementNr > NUMBER_OF_FILTER_ELEMENTS)
         return;
@@ -295,6 +301,35 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude, const doub
     setParameterValue(parameters.getParameter(PHASE_NAME + std::to_string(elementNr)), phase);
     setParameterValue(parameters.getParameter(TYPE_NAME + std::to_string(elementNr)), !type);
     setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)), true);
+    setParameterValue(parameters.getParameter(GAIN_NAME + std::to_string(elementNr)), gain);
+}
+
+void PolesAndZerosEQAudioProcessor::setGainFromMagnitudeAndPhase(const int elementNr)
+{
+    auto magnitude = multiChannelCascade[0].getElementMagnitude(elementNr);
+    auto phase = multiChannelCascade[0].getElementPhase(elementNr);
+    
+    auto Re = magnitude * cos(phase * MathConstants<double>::pi);
+    
+    double gain;
+    
+    switch (multiChannelCascade[0].getElementType(elementNr))
+        {
+            case FilterElement::ZERO: gain = std::sqrt(1 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude)); break;
+
+            case FilterElement::POLE: gain = std::sqrt(1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude); break;
+        }
+        
+        // VERSIONE ALTERNATIVA
+        // std::complex<double> j(0.0, 1.0);
+        // gain = std::abs((0.5) / (0.5 + coeff1 * (j / MathConstants<double>::pi)));
+    DBG(gain);
+    setParameterValue(parameters.getParameter(GAIN_NAME + std::to_string(elementNr)), gain);
+}
+
+void PolesAndZerosEQAudioProcessor::setGainFromLabel(const int elementNr, double newGain)
+{
+    setParameterValue(parameters.getParameter(GAIN_NAME + std::to_string(elementNr)), newGain);
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()

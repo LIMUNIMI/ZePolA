@@ -77,6 +77,8 @@ public:
     void updateDesignFrequencySlider(short int option);
     void setTransitionWidthRange();
 
+    double formatGainInput(double newGain);
+
     void updateGUIGivenShape();
     void updateGUIButterworth();
     void updateGUIEllipticChebyshevIandII();
@@ -133,13 +135,26 @@ private:
     std::vector<std::unique_ptr<SliderAttachment>> phasesAttachments;
     std::vector<std::unique_ptr<ButtonAttachment>> typesAttachments;
     std::vector<std::unique_ptr<ButtonAttachment>> activeAttachments;
-    std::unique_ptr<SliderAttachment> gainAttachment;
+
+    std::vector<std::unique_ptr<SliderAttachment>> gainsAttachments;
+    std::unique_ptr<CustomSlider> e1_gain;
+    std::unique_ptr<CustomSlider> e2_gain;
+    std::unique_ptr<CustomSlider> e3_gain;
+    std::unique_ptr<CustomSlider> e4_gain;
+    std::unique_ptr<CustomSlider> e5_gain;
+    std::unique_ptr<CustomSlider> e6_gain;
+    std::unique_ptr<CustomSlider> e7_gain;
+    std::unique_ptr<CustomSlider> e8_gain;
+
+    std::unique_ptr<SliderAttachment> masterGainAttachment;
     std::unique_ptr<ButtonAttachment> bypassAttachment;
     std::unique_ptr<ButtonAttachment> linLogAttachment;
 
     MagnitudeSliderTheme magnitudeSlidersTheme;
     PhaseSliderTheme phaseSlidersTheme;
     GainSliderTheme gainSliderTheme;
+
+    MasterGainSliderTheme masterGainSliderTheme;
 
     TypeSwitchTheme typeSwitchesTheme;
     LinLogSwitchTheme linLogTheme;
@@ -252,6 +267,11 @@ private:
     std::unique_ptr<CustomSlider> passbandAmplitude_slider;
     std::unique_ptr<juce::Label> stopbandAmplitude_label;
     std::unique_ptr<CustomToggleButton> autoUpdate_button;
+    std::unique_ptr<CustomButton> undo_button;
+    std::unique_ptr<CustomButton> redo_button;
+    std::unique_ptr<CustomButton> save_preset_button;
+    std::unique_ptr<CustomButton> load_preset_button;
+    std::unique_ptr<juce::Label> gain_label;
     std::unique_ptr<juce::Label> gain_1;
     std::unique_ptr<juce::Label> gain_2;
     std::unique_ptr<juce::Label> gain_3;
@@ -260,11 +280,8 @@ private:
     std::unique_ptr<juce::Label> gain_6;
     std::unique_ptr<juce::Label> gain_7;
     std::unique_ptr<juce::Label> gain_8;
-    std::unique_ptr<CustomButton> undo_button;
-    std::unique_ptr<CustomButton> redo_button;
-    std::unique_ptr<CustomButton> save_preset_button;
-    std::unique_ptr<CustomButton> load_preset_button;
-    std::unique_ptr<juce::Label> active_label2;
+    std::unique_ptr<CustomToggleButton> autoGain_switch;
+    std::unique_ptr<juce::Label> autoGain_label;
     juce::Image cachedImage_anticlockwise_arrow_png_1;
     juce::Image cachedImage_clockwise_arrow_png_2;
     juce::Image cachedImage_load_icon_png_3;

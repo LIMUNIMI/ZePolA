@@ -66,7 +66,10 @@ public:
     
     void turnOnOffAllElements(bool option);
     
-    void setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr);
+    void setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr, const double gain = 1.0);
+    
+    void setGainFromMagnitudeAndPhase(const int elementNr);
+    void setGainFromLabel(const int elementNr, double newGain);
     
     AudioProcessorValueTreeState parameters;
 

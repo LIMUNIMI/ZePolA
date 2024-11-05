@@ -53,6 +53,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     phasesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     typesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     activeAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
+    gainsAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     //[/Constructor_pre]
 
     gaussian_plane.reset (new GaussianPlane (processor.getFilterElementsChain()));
@@ -898,6 +899,54 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     autoUpdate_button->setBounds (1013, 430, 80, 30);
 
+    undo_button.reset (new CustomButton ("Undo"));
+    addAndMakeVisible (undo_button.get());
+    undo_button->setButtonText (juce::String());
+    undo_button->addListener (this);
+    undo_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0x00909497));
+    undo_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    undo_button->setBounds (18, 9, 60, 25);
+
+    redo_button.reset (new CustomButton ("Redo"));
+    addAndMakeVisible (redo_button.get());
+    redo_button->setButtonText (juce::String());
+    redo_button->addListener (this);
+    redo_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0x00909497));
+    redo_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    redo_button->setBounds (91, 9, 60, 25);
+
+    save_preset_button.reset (new CustomButton ("Save preset"));
+    addAndMakeVisible (save_preset_button.get());
+    save_preset_button->setButtonText (juce::String());
+    save_preset_button->addListener (this);
+    save_preset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0x00909497));
+    save_preset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    save_preset_button->setBounds (971, 9, 100, 25);
+
+    load_preset_button.reset (new CustomButton ("Load preset"));
+    addAndMakeVisible (load_preset_button.get());
+    load_preset_button->setButtonText (juce::String());
+    load_preset_button->addListener (this);
+    load_preset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0x00909497));
+    load_preset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    load_preset_button->setBounds (1082, 9, 100, 25);
+
+    gain_label.reset (new juce::Label ("Gain",
+                                       TRANS ("GAIN")));
+    addAndMakeVisible (gain_label.get());
+    gain_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    gain_label->setJustificationType (juce::Justification::centred);
+    gain_label->setEditable (false, false, false);
+    gain_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    gain_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    gain_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+
+    gain_label->setBounds (464, 60, 55, 24);
+
     gain_1.reset (new juce::Label ("Gain 1 label",
                                    juce::String()));
     addAndMakeVisible (gain_1.get());
@@ -994,53 +1043,24 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     gain_8->setBounds (470, 410, 45, 25);
 
-    undo_button.reset (new CustomButton ("Undo"));
-    addAndMakeVisible (undo_button.get());
-    undo_button->setButtonText (juce::String());
-    undo_button->addListener (this);
-    undo_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0x00909497));
-    undo_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+    autoGain_switch.reset (new CustomToggleButton ("Auto Gain"));
+    addAndMakeVisible (autoGain_switch.get());
+    autoGain_switch->setButtonText (juce::String());
+    autoGain_switch->addListener (this);
 
-    undo_button->setBounds (18, 9, 60, 25);
+    autoGain_switch->setBounds (453, 444, 52, 21);
 
-    redo_button.reset (new CustomButton ("Redo"));
-    addAndMakeVisible (redo_button.get());
-    redo_button->setButtonText (juce::String());
-    redo_button->addListener (this);
-    redo_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0x00909497));
-    redo_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+    autoGain_label.reset (new juce::Label ("Auto Gain lbl",
+                                           TRANS ("AUTO GAIN")));
+    addAndMakeVisible (autoGain_label.get());
+    autoGain_label->setFont (juce::Font ("Gill Sans", 11.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    autoGain_label->setJustificationType (juce::Justification::centred);
+    autoGain_label->setEditable (false, false, false);
+    autoGain_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    autoGain_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    autoGain_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    redo_button->setBounds (91, 9, 60, 25);
-
-    save_preset_button.reset (new CustomButton ("Save preset"));
-    addAndMakeVisible (save_preset_button.get());
-    save_preset_button->setButtonText (juce::String());
-    save_preset_button->addListener (this);
-    save_preset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0x00909497));
-    save_preset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
-
-    save_preset_button->setBounds (971, 9, 100, 25);
-
-    load_preset_button.reset (new CustomButton ("Load preset"));
-    addAndMakeVisible (load_preset_button.get());
-    load_preset_button->setButtonText (juce::String());
-    load_preset_button->addListener (this);
-    load_preset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0x00909497));
-    load_preset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
-
-    load_preset_button->setBounds (1082, 9, 100, 25);
-
-    active_label2.reset (new juce::Label ("Active",
-                                          TRANS ("GAIN")));
-    addAndMakeVisible (active_label2.get());
-    active_label2->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    active_label2->setJustificationType (juce::Justification::centred);
-    active_label2->setEditable (false, false, false);
-    active_label2->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
-    active_label2->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    active_label2->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    active_label2->setBounds (464, 60, 55, 24);
+    autoGain_label->setBounds (386, 443, 68, 24);
 
     cachedImage_anticlockwise_arrow_png_1 = juce::ImageCache::getFromMemory (anticlockwise_arrow_png, anticlockwise_arrow_pngSize);
     cachedImage_clockwise_arrow_png_2 = juce::ImageCache::getFromMemory (clockwise_arrow_png, clockwise_arrow_pngSize);
@@ -1048,6 +1068,103 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     cachedImage_save_icon_png_4 = juce::ImageCache::getFromMemory (save_icon_png, save_icon_pngSize);
 
     //[UserPreSize]
+    e1_gain.reset (new CustomSlider ("Gain 1"));
+    addAndMakeVisible (e1_gain.get());
+    e1_gain->setRange (0, 2);
+    e1_gain->setSliderStyle (juce::Slider::LinearHorizontal);
+    e1_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
+    e1_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    e1_gain->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    e1_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
+    e1_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    e1_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+
+    e2_gain.reset (new CustomSlider ("Gain 2"));
+    addAndMakeVisible (e2_gain.get());
+    e2_gain->setRange (0, 2);
+    e2_gain->setSliderStyle (juce::Slider::LinearHorizontal);
+    e2_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
+    e2_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    e2_gain->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    e2_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
+    e2_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    e2_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+
+    e3_gain.reset (new CustomSlider ("Gain 3"));
+    addAndMakeVisible (e3_gain.get());
+    e3_gain->setRange (0, 2);
+    e3_gain->setSliderStyle (juce::Slider::LinearHorizontal);
+    e3_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
+    e3_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    e3_gain->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    e3_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
+    e3_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    e3_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+
+    e4_gain.reset (new CustomSlider ("Gain 4"));
+    addAndMakeVisible (e4_gain.get());
+    e4_gain->setRange (0, 2);
+    e4_gain->setSliderStyle (juce::Slider::LinearHorizontal);
+    e4_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
+    e4_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    e4_gain->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    e4_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
+    e4_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    e4_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+
+    e5_gain.reset(new CustomSlider("Gain 5"));
+    addAndMakeVisible(e5_gain.get());
+    e5_gain->setRange (0, 2);
+    e5_gain->setSliderStyle(juce::Slider::LinearHorizontal);
+    e5_gain->setTextBoxStyle(juce::Slider::TextBoxRight, false, 50, 20);
+    e5_gain->setColour(juce::Slider::thumbColourId, juce::Colours::white);
+    e5_gain->setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+    e5_gain->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0x00000000));
+    e5_gain->setColour(juce::Slider::textBoxHighlightColourId, juce::Colour(0x66686868));
+    e5_gain->setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0x00000000));
+
+    e6_gain.reset(new CustomSlider("Gain 6"));
+    addAndMakeVisible(e6_gain.get());
+    e6_gain->setRange (0, 2);
+    e6_gain->setSliderStyle(juce::Slider::LinearHorizontal);
+    e6_gain->setTextBoxStyle(juce::Slider::TextBoxRight, false, 50, 20);
+    e6_gain->setColour(juce::Slider::thumbColourId, juce::Colours::white);
+    e6_gain->setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+    e6_gain->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0x00000000));
+    e6_gain->setColour(juce::Slider::textBoxHighlightColourId, juce::Colour(0x66686868));
+    e6_gain->setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0x00000000));
+
+    e7_gain.reset(new CustomSlider("Gain 7"));
+    addAndMakeVisible(e7_gain.get());
+    e7_gain->setRange (0, 2);
+    e7_gain->setSliderStyle(juce::Slider::LinearHorizontal);
+    e7_gain->setTextBoxStyle(juce::Slider::TextBoxRight, false, 50, 20);
+    e7_gain->setColour(juce::Slider::thumbColourId, juce::Colours::white);
+    e7_gain->setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+    e7_gain->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0x00000000));
+    e7_gain->setColour(juce::Slider::textBoxHighlightColourId, juce::Colour(0x66686868));
+    e7_gain->setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0x00000000));
+
+    e8_gain.reset(new CustomSlider("Gain 8"));
+    addAndMakeVisible(e8_gain.get());
+    e8_gain->setRange (0, 2);
+    e8_gain->setSliderStyle(juce::Slider::LinearHorizontal);
+    e8_gain->setTextBoxStyle(juce::Slider::TextBoxRight, false, 50, 20);
+    e8_gain->setColour(juce::Slider::thumbColourId, juce::Colours::white);
+    e8_gain->setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+    e8_gain->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0x00000000));
+    e8_gain->setColour(juce::Slider::textBoxHighlightColourId, juce::Colour(0x66686868));
+    e8_gain->setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0x00000000));
+
+    e1_gain->addListener(this);
+    e2_gain->addListener(this);
+    e3_gain->addListener(this);
+    e4_gain->addListener(this);
+    e5_gain->addListener(this);
+    e6_gain->addListener(this);
+    e7_gain->addListener(this);
+    e8_gain->addListener(this);
+
     magnitudesAttachments[0].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
     magnitudesAttachments[1].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(2), *m2_slider));
     magnitudesAttachments[2].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(3), *m3_slider));
@@ -1084,7 +1201,16 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     activeAttachments[6].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(7), *e7_active));
     activeAttachments[7].reset(new ButtonAttachment(valueTreeState, ACTIVE_NAME + std::to_string(8), *e8_active));
 
-    gainAttachment.reset(new SliderAttachment(valueTreeState, GAIN_NAME, *gain_slider));
+    gainsAttachments[0].reset(new SliderAttachment(valueTreeState, GAIN_NAME + std::to_string(1), *e1_gain));
+    gainsAttachments[1].reset(new SliderAttachment(valueTreeState, GAIN_NAME + std::to_string(2), *e2_gain));
+    gainsAttachments[2].reset(new SliderAttachment(valueTreeState, GAIN_NAME + std::to_string(3), *e3_gain));
+    gainsAttachments[3].reset(new SliderAttachment(valueTreeState, GAIN_NAME + std::to_string(4), *e4_gain));
+    gainsAttachments[4].reset(new SliderAttachment(valueTreeState, GAIN_NAME + std::to_string(5), *e5_gain));
+    gainsAttachments[5].reset(new SliderAttachment(valueTreeState, GAIN_NAME + std::to_string(6), *e6_gain));
+    gainsAttachments[6].reset(new SliderAttachment(valueTreeState, GAIN_NAME + std::to_string(7), *e7_gain));
+    gainsAttachments[7].reset(new SliderAttachment(valueTreeState, GAIN_NAME + std::to_string(8), *e8_gain));
+
+    masterGainAttachment.reset(new SliderAttachment(valueTreeState, MASTER_GAIN_NAME, *gain_slider));
     bypassAttachment.reset(new ButtonAttachment(valueTreeState, FILTER_BYPASS_NAME, *bypass));
 
     m1_slider->setLookAndFeel(&magnitudeSlidersTheme);
@@ -1105,7 +1231,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p7_slider->setLookAndFeel(&phaseSlidersTheme);
     p8_slider->setLookAndFeel(&phaseSlidersTheme);
 
-    gain_slider->setLookAndFeel(&gainSliderTheme);
+    gain_slider->setLookAndFeel(&masterGainSliderTheme);
 
     e1_type->setLookAndFeel(&typeSwitchesTheme);
     e2_type->setLookAndFeel(&typeSwitchesTheme);
@@ -1127,6 +1253,18 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e6_active->setLookAndFeel(&activeSwitchesTheme);
     e7_active->setLookAndFeel(&activeSwitchesTheme);
     e8_active->setLookAndFeel(&activeSwitchesTheme);
+
+    e1_gain->setLookAndFeel(&gainSliderTheme);
+    e2_gain->setLookAndFeel(&gainSliderTheme);
+    e3_gain->setLookAndFeel(&gainSliderTheme);
+    e4_gain->setLookAndFeel(&gainSliderTheme);
+    e5_gain->setLookAndFeel(&gainSliderTheme);
+    e6_gain->setLookAndFeel(&gainSliderTheme);
+    e7_gain->setLookAndFeel(&gainSliderTheme);
+    e8_gain->setLookAndFeel(&gainSliderTheme);
+
+    autoGain_switch->setLookAndFeel(&activeSwitchesTheme);
+    autoGain_switch->setToggleState(true, NotificationType::sendNotificationSync);
 
     bypass->setLookAndFeel(&bypassSwitchTheme);
 
@@ -1212,15 +1350,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     autoUpdate_button->setLookAndFeel(&autoUpdateSwitchTheme);
 
-    gain_1->setVisible(e1_active->getToggleState());
-    gain_2->setVisible(e2_active->getToggleState());
-    gain_3->setVisible(e3_active->getToggleState());
-    gain_4->setVisible(e4_active->getToggleState());
-    gain_5->setVisible(e5_active->getToggleState());
-    gain_6->setVisible(e6_active->getToggleState());
-    gain_7->setVisible(e7_active->getToggleState());
-    gain_8->setVisible(e8_active->getToggleState());
-
     //[/UserPreSize]
 
     setSize (1200, 790);
@@ -1240,8 +1369,9 @@ PluginEditor::~PluginEditor()
         phasesAttachments[i].reset();
         typesAttachments[i].reset();
         activeAttachments[i].reset();
+        gainsAttachments[i].reset();
     }
-    gainAttachment.reset();
+    masterGainAttachment.reset();
     bypassAttachment.reset();
     //[/Destructor_pre]
 
@@ -1327,6 +1457,11 @@ PluginEditor::~PluginEditor()
     passbandAmplitude_slider = nullptr;
     stopbandAmplitude_label = nullptr;
     autoUpdate_button = nullptr;
+    undo_button = nullptr;
+    redo_button = nullptr;
+    save_preset_button = nullptr;
+    load_preset_button = nullptr;
+    gain_label = nullptr;
     gain_1 = nullptr;
     gain_2 = nullptr;
     gain_3 = nullptr;
@@ -1335,14 +1470,19 @@ PluginEditor::~PluginEditor()
     gain_6 = nullptr;
     gain_7 = nullptr;
     gain_8 = nullptr;
-    undo_button = nullptr;
-    redo_button = nullptr;
-    save_preset_button = nullptr;
-    load_preset_button = nullptr;
-    active_label2 = nullptr;
+    autoGain_switch = nullptr;
+    autoGain_label = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
+    e1_gain = nullptr;
+    e2_gain = nullptr;
+    e3_gain = nullptr;
+    e4_gain = nullptr;
+    e5_gain = nullptr;
+    e6_gain = nullptr;
+    e7_gain = nullptr;
+    e8_gain = nullptr;
     //[/Destructor]
 }
 
@@ -1447,15 +1587,6 @@ void PluginEditor::paint (juce::Graphics& g)
     {
         int x = 15, y = 355, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 1005, y = 495, width = 180, height = 1;
-        juce::Colour fillColour = juce::Colour (0x4a909497);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
@@ -1625,18 +1756,16 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(1));
-        gain_1->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(1);
         //[/UserSliderCode_m1_slider]
     }
     else if (sliderThatWasMoved == p1_slider.get())
     {
         //[UserSliderCode_p1_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(1));
-        gain_1->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(1);
         //[/UserSliderCode_p1_slider]
     }
     else if (sliderThatWasMoved == m2_slider.get())
@@ -1648,9 +1777,8 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(2));
-        gain_2->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(2);
         //[/UserSliderCode_m2_slider]
     }
     else if (sliderThatWasMoved == m3_slider.get())
@@ -1662,9 +1790,8 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(3));
-        gain_3->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(3);
         //[/UserSliderCode_m3_slider]
     }
     else if (sliderThatWasMoved == m4_slider.get())
@@ -1676,9 +1803,8 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(4));
-        gain_4->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(4);
         //[/UserSliderCode_m4_slider]
     }
     else if (sliderThatWasMoved == m5_slider.get())
@@ -1690,9 +1816,8 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(5));
-        gain_5->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(5);
         //[/UserSliderCode_m5_slider]
     }
     else if (sliderThatWasMoved == m6_slider.get())
@@ -1704,9 +1829,8 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(6));
-        gain_6->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(6);
         //[/UserSliderCode_m6_slider]
     }
     else if (sliderThatWasMoved == m7_slider.get())
@@ -1718,9 +1842,8 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(7));
-        gain_7->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(7);
         //[/UserSliderCode_m7_slider]
     }
     else if (sliderThatWasMoved == m8_slider.get())
@@ -1732,71 +1855,64 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(8));
-        gain_8->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(8);
         //[/UserSliderCode_m8_slider]
     }
     else if (sliderThatWasMoved == p2_slider.get())
     {
         //[UserSliderCode_p2_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p2_slider.get(), p2_freq.get(), sampleRate);
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(2));
-        gain_2->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(2);
         //[/UserSliderCode_p2_slider]
     }
     else if (sliderThatWasMoved == p3_slider.get())
     {
         //[UserSliderCode_p3_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p3_slider.get(), p3_freq.get(), sampleRate);
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(3));
-        gain_3->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(3);
         //[/UserSliderCode_p3_slider]
     }
     else if (sliderThatWasMoved == p4_slider.get())
     {
         //[UserSliderCode_p4_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p4_slider.get(), p4_freq.get(), sampleRate);
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(4));
-        gain_4->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(4);
         //[/UserSliderCode_p4_slider]
     }
     else if (sliderThatWasMoved == p5_slider.get())
     {
         //[UserSliderCode_p5_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p5_slider.get(), p5_freq.get(), sampleRate);
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(5));
-        gain_5->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(5);
         //[/UserSliderCode_p5_slider]
     }
     else if (sliderThatWasMoved == p6_slider.get())
     {
         //[UserSliderCode_p6_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(6));
-        gain_6->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(6);
         //[/UserSliderCode_p6_slider]
     }
     else if (sliderThatWasMoved == p7_slider.get())
     {
         //[UserSliderCode_p7_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(7));
-        gain_7->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(7);
         //[/UserSliderCode_p7_slider]
     }
     else if (sliderThatWasMoved == p8_slider.get())
     {
         //[UserSliderCode_p8_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
-
-        auto dBGain = Decibels::gainToDecibels(processor.getElementGain(8));
-        gain_8->setText(juce::String(dBGain, 2) + " dB", NotificationType::sendNotificationAsync);
+        if (autoGain_switch.get()->getToggleState())
+            processor.setGainFromMagnitudeAndPhase(8);
         //[/UserSliderCode_p8_slider]
     }
     else if (sliderThatWasMoved == frequency_design_slider.get())
@@ -1831,6 +1947,48 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     }
 
     //[UsersliderValueChanged_Post]
+    else if (sliderThatWasMoved == e1_gain.get())
+    {
+        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
+        gain_1->setText(dbValue, juce::NotificationType::dontSendNotification);
+    }
+    else if (sliderThatWasMoved == e2_gain.get())
+    {
+        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
+        gain_2->setText(dbValue, juce::NotificationType::dontSendNotification);
+    }
+    else if (sliderThatWasMoved == e3_gain.get())
+    {
+        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
+        gain_3->setText(dbValue, juce::NotificationType::dontSendNotification);
+    }
+    else if (sliderThatWasMoved == e4_gain.get())
+    {
+        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
+        gain_4->setText(dbValue, juce::NotificationType::dontSendNotification);
+    }
+    else if (sliderThatWasMoved == e5_gain.get())
+    {
+        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
+        gain_5->setText(dbValue, juce::NotificationType::dontSendNotification);
+    }
+    else if (sliderThatWasMoved == e6_gain.get())
+    {
+        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
+        gain_6->setText(dbValue, juce::NotificationType::dontSendNotification);
+    }
+    else if (sliderThatWasMoved == e7_gain.get())
+    {
+        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
+        gain_7->setText(dbValue, juce::NotificationType::dontSendNotification);
+    }
+    else if (sliderThatWasMoved == e8_gain.get())
+    {
+        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
+        gain_8->setText(dbValue, juce::NotificationType::dontSendNotification);
+    }
+
+
     //[/UsersliderValueChanged_Post]
 }
 
@@ -1944,49 +2102,49 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == e1_active.get())
     {
         //[UserButtonCode_e1_active] -- add your button handler code here..
-        gain_1->setVisible(buttonThatWasClicked->getToggleState());
+        e1_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e1_active]
     }
     else if (buttonThatWasClicked == e2_active.get())
     {
         //[UserButtonCode_e2_active] -- add your button handler code here..
-        gain_2->setVisible(buttonThatWasClicked->getToggleState());
+        e2_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e2_active]
     }
     else if (buttonThatWasClicked == e3_active.get())
     {
         //[UserButtonCode_e3_active] -- add your button handler code here..
-        gain_3->setVisible(buttonThatWasClicked->getToggleState());
+        e3_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e3_active]
     }
     else if (buttonThatWasClicked == e4_active.get())
     {
         //[UserButtonCode_e4_active] -- add your button handler code here..
-        gain_4->setVisible(buttonThatWasClicked->getToggleState());
+        e4_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e4_active]
     }
     else if (buttonThatWasClicked == e5_active.get())
     {
         //[UserButtonCode_e5_active] -- add your button handler code here..
-        gain_5->setVisible(buttonThatWasClicked->getToggleState());
+        e5_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e5_active]
     }
     else if (buttonThatWasClicked == e6_active.get())
     {
         //[UserButtonCode_e6_active] -- add your button handler code here..
-        gain_6->setVisible(buttonThatWasClicked->getToggleState());
+        e6_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e6_active]
     }
     else if (buttonThatWasClicked == e7_active.get())
     {
         //[UserButtonCode_e7_active] -- add your button handler code here..
-        gain_7->setVisible(buttonThatWasClicked->getToggleState());
+        e7_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e7_active]
     }
     else if (buttonThatWasClicked == e8_active.get())
     {
         //[UserButtonCode_e8_active] -- add your button handler code here..
-        gain_8->setVisible(buttonThatWasClicked->getToggleState());
+        e8_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e8_active]
     }
     else if (buttonThatWasClicked == linLog_switch.get())
@@ -2100,6 +2258,64 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         }
         //[/UserButtonCode_load_preset_button]
     }
+    else if (buttonThatWasClicked == autoGain_switch.get())
+    {
+        //[UserButtonCode_autoGain_switch] -- add your button handler code here..
+        if (buttonThatWasClicked->getToggleState())
+        {
+            gain_1->setEditable(false);
+            gain_1->removeListener(this);
+
+            gain_2->setEditable(false);
+            gain_2->removeListener(this);
+
+            gain_3->setEditable(false);
+            gain_3->removeListener(this);
+
+            gain_4->setEditable(false);
+            gain_4->removeListener(this);
+
+            gain_5->setEditable(false);
+            gain_5->removeListener(this);
+
+            gain_6->setEditable(false);
+            gain_6->removeListener(this);
+
+            gain_7->setEditable(false);
+            gain_7->removeListener(this);
+
+            gain_8->setEditable(false);
+            gain_8->removeListener(this);
+
+        }
+        else
+        {
+            gain_1->setEditable(true);
+            gain_1->addListener(this);
+
+            gain_2->setEditable(true);
+            gain_2->addListener(this);
+
+            gain_3->setEditable(true);
+            gain_3->addListener(this);
+
+            gain_4->setEditable(true);
+            gain_4->addListener(this);
+
+            gain_5->setEditable(true);
+            gain_5->addListener(this);
+
+            gain_6->setEditable(true);
+            gain_6->addListener(this);
+
+            gain_7->setEditable(true);
+            gain_7->addListener(this);
+
+            gain_8->setEditable(true);
+            gain_8->addListener(this);
+        }
+        //[/UserButtonCode_autoGain_switch]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -2108,6 +2324,65 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
 void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
 {
     //[UserlabelTextChanged_Pre]
+    if (labelThatHasChanged == gain_1.get())
+    {
+        double newGain = labelThatHasChanged->getText().getDoubleValue();
+        auto linearGain = formatGainInput(newGain);
+        processor.setGainFromLabel(1, linearGain);
+        return;
+    }
+    else if (labelThatHasChanged == gain_2.get())
+    {
+        double newGain = labelThatHasChanged->getText().getDoubleValue();
+        auto linearGain = formatGainInput(newGain);
+        processor.setGainFromLabel(2, linearGain);
+        return;
+    }
+    else if (labelThatHasChanged == gain_3.get())
+    {
+        double newGain = labelThatHasChanged->getText().getDoubleValue();
+        auto linearGain = formatGainInput(newGain);
+        processor.setGainFromLabel(3, linearGain);
+        return;
+    }
+    else if (labelThatHasChanged == gain_4.get())
+    {
+        double newGain = labelThatHasChanged->getText().getDoubleValue();
+        auto linearGain = formatGainInput(newGain);
+        processor.setGainFromLabel(4, linearGain);
+        return;
+    }
+    else if (labelThatHasChanged == gain_5.get())
+    {
+        double newGain = labelThatHasChanged->getText().getDoubleValue();
+        auto linearGain = formatGainInput(newGain);
+        processor.setGainFromLabel(5, linearGain);
+        return;
+    }
+    else if (labelThatHasChanged == gain_6.get())
+    {
+        double newGain = labelThatHasChanged->getText().getDoubleValue();
+        auto linearGain = formatGainInput(newGain);
+        processor.setGainFromLabel(6, linearGain);
+        return;
+    }
+    else if (labelThatHasChanged == gain_7.get())
+    {
+        double newGain = labelThatHasChanged->getText().getDoubleValue();
+        auto linearGain = formatGainInput(newGain);
+        processor.setGainFromLabel(7, linearGain);
+        return;
+    }
+    else if (labelThatHasChanged == gain_8.get())
+    {
+        double newGain = labelThatHasChanged->getText().getDoubleValue();
+        auto linearGain = formatGainInput(newGain);
+        processor.setGainFromLabel(8, linearGain);
+        return;
+    }
+
+    
+    
     const double sampleRate = processor.getSampleRate();
     int newFrequency = labelThatHasChanged->getText().getIntValue();
 
@@ -2171,7 +2446,6 @@ void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
         design_frequency = updateDesignSliderFromFrequency(newFrequency, frequency_design_slider.get(), sampleRate);
         //[/UserLabelCode_frequency_label]
     }
-
     //[UserlabelTextChanged_Post]
     //[/UserlabelTextChanged_Post]
 }
@@ -2416,6 +2690,17 @@ void PluginEditor::setTransitionWidthRange ()
     normalisedTransitionWidth = transition_width_slider->getValue();
 }
 
+double PluginEditor::formatGainInput(double newGain)
+{
+    double linearGain = Decibels::decibelsToGain(newGain);
+    if (linearGain < GAIN_FLOOR)
+        linearGain = GAIN_FLOOR;
+    else if (linearGain > GAIN_CEILING)
+        linearGain = GAIN_CEILING;
+    
+    return linearGain;
+}
+
 void PluginEditor::updateGUIGivenShape()
 {
     if (!type_box->getSelectedId())
@@ -2588,8 +2873,7 @@ void PluginEditor::filterDesignAndSetup()
 
             fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
             std::complex<double> zero = std::polar(magnitude, phase);
-            processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr);
-            processor.setElementGain(elementNr, b0);
+            processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr, b0);
 
             ++ elementNr;
 
@@ -2603,6 +2887,7 @@ void PluginEditor::filterDesignAndSetup()
     for (; elementNr <= NUMBER_OF_FILTER_ELEMENTS; ++ elementNr)
             processor.setUnactive(elementNr);
     processor.setBypass(false);
+    autoGain_switch.get()->setToggleState(true, NotificationType::sendNotificationSync);
 }
 
 void PluginEditor::autoUpdateCheckAndSetup ()
@@ -2646,7 +2931,6 @@ BEGIN_JUCER_METADATA
     <RECT pos="15 310 510 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="15 400 510 1" fill="solid: 25909497" hasStroke="0"/>
     <RECT pos="15 355 510 1" fill="solid: 25909497" hasStroke="0"/>
-    <RECT pos="1005 495 180 1" fill="solid: 4a909497" hasStroke="0"/>
     <TEXT pos="1040 60 110 24" fill="solid: ff383838" hasStroke="0" text="FILTER DESIGN"
           fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
           justification="36" typefaceStyle="SemiBold"/>
@@ -3062,6 +3346,26 @@ BEGIN_JUCER_METADATA
                 virtualName="CustomToggleButton" explicitFocusOrder="0" pos="1013 430 80 30"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
+  <TEXTBUTTON name="Undo" id="aa5d105b68b6f3c" memberName="undo_button" virtualName="CustomButton"
+              explicitFocusOrder="0" pos="18 9 60 25" bgColOff="909497" bgColOn="ff505050"
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="Redo" id="83782176a800780" memberName="redo_button" virtualName="CustomButton"
+              explicitFocusOrder="0" pos="91 9 60 25" bgColOff="909497" bgColOn="ff505050"
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="Save preset" id="df6cbad3d0574472" memberName="save_preset_button"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="971 9 100 25"
+              bgColOff="909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="Load preset" id="7b1d6ea147b5ed36" memberName="load_preset_button"
+              virtualName="CustomButton" explicitFocusOrder="0" pos="1082 9 100 25"
+              bgColOff="909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <LABEL name="Gain" id="d1b48585f0499e3f" memberName="gain_label" virtualName=""
+         explicitFocusOrder="0" pos="464 60 55 24" textCol="ff383838"
+         edTextCol="ff000000" edBkgCol="0" labelText="GAIN" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
+         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"
+         typefaceStyle="SemiBold"/>
   <LABEL name="Gain 1 label" id="d2af3168bb3295ad" memberName="gain_1"
          virtualName="" explicitFocusOrder="0" pos="470 95 45 25" textCol="ff333333"
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
@@ -3102,25 +3406,15 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <TEXTBUTTON name="Undo" id="aa5d105b68b6f3c" memberName="undo_button" virtualName="CustomButton"
-              explicitFocusOrder="0" pos="18 9 60 25" bgColOff="909497" bgColOn="ff505050"
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="Redo" id="83782176a800780" memberName="redo_button" virtualName="CustomButton"
-              explicitFocusOrder="0" pos="91 9 60 25" bgColOff="909497" bgColOn="ff505050"
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="Save preset" id="df6cbad3d0574472" memberName="save_preset_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="971 9 100 25"
-              bgColOff="909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="Load preset" id="7b1d6ea147b5ed36" memberName="load_preset_button"
-              virtualName="CustomButton" explicitFocusOrder="0" pos="1082 9 100 25"
-              bgColOff="909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <LABEL name="Active" id="d1b48585f0499e3f" memberName="active_label2"
-         virtualName="" explicitFocusOrder="0" pos="464 60 55 24" textCol="ff383838"
-         edTextCol="ff000000" edBkgCol="0" labelText="GAIN" editableSingleClick="0"
+  <TOGGLEBUTTON name="Auto Gain" id="e86e0ac9b8b3aca3" memberName="autoGain_switch"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="453 444 52 21"
+                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                state="0"/>
+  <LABEL name="Auto Gain lbl" id="cf2e36a7122c519a" memberName="autoGain_label"
+         virtualName="" explicitFocusOrder="0" pos="386 443 68 24" textCol="ff383838"
+         edTextCol="ff000000" edBkgCol="0" labelText="AUTO GAIN" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"
+         fontsize="11.0" kerning="0.0" bold="0" italic="0" justification="36"
          typefaceStyle="SemiBold"/>
 </JUCER_COMPONENT>
 

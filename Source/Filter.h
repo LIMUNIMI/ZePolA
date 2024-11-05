@@ -51,7 +51,6 @@ class FilterElement
         
         magnitude = newValue;
         calculateCoefficients();
-        calculateGain();
     }
     
     // Sets the phase of the zero/pole of the digital filter
@@ -59,7 +58,6 @@ class FilterElement
     {
         phase = newValue;
         calculateCoefficients();
-        calculateGain();
     }
     
     // Sets the active statuts of the digital filter
@@ -95,22 +93,6 @@ class FilterElement
     {
         coeff1 = -2 * getRealPart();
         coeff2 = magnitude * magnitude;
-    }
-    
-    // Calculates the gain to compensate for the increase in volume given by the filter
-    void calculateGain()
-    {
-//        auto Re = getRealPart();
-//        switch (type)
-//        {
-//            case ZERO: gain = std::sqrt(1 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude)); break;
-//                
-//            case POLE: gain = std::sqrt(1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude); break;
-//        }
-        
-        // VERSIONE ALTERNATIVA
-        // std::complex<double> j(0.0, 1.0);
-        // gain = std::abs((0.5) / (0.5 + coeff1 * (j / MathConstants<double>::pi)));
     }
     
     // Calculates the output sample given the input sample
