@@ -164,7 +164,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (frequency_response.get());
     frequency_response->setName ("frequencyResponse");
 
-    frequency_response->setBounds (536, 72, 450, 285);
+    frequency_response->setBounds (540, 70, 450, 285);
 
     freq_response_label.reset (new juce::Label ("Frequency response",
                                                 TRANS ("SPECTRUM MAGNITUDE\n")));
@@ -194,7 +194,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     ph_response_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     ph_response_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    ph_response_label->setBounds (705, 745, 110, 24);
+    ph_response_label->setBounds (710, 745, 110, 24);
 
     m1_slider.reset (new CustomSlider ("Element 1 magnitude"));
     addAndMakeVisible (m1_slider.get());
@@ -840,7 +840,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     ampDb_switch->setButtonText (juce::String());
     ampDb_switch->addListener (this);
 
-    ampDb_switch->setBounds (546, 362, 52, 21);
+    ampDb_switch->setBounds (543, 362, 52, 21);
 
     frequency_design_slider.reset (new CustomSlider ("Frequency design slider"));
     addAndMakeVisible (frequency_design_slider.get());
@@ -2445,7 +2445,7 @@ void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
 
     if (labelThatHasChanged == frequency_label.get())
         formatDesignFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
-    else
+    
     //[/UserlabelTextChanged_Pre]
 
     if (labelThatHasChanged == p1_freq.get())
@@ -3151,7 +3151,7 @@ BEGIN_JUCER_METADATA
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
-                    virtualName="" explicitFocusOrder="0" pos="536 72 450 285" class="FrequencyResponse"
+                    virtualName="" explicitFocusOrder="0" pos="540 70 450 285" class="FrequencyResponse"
                     params="magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb"/>
   <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
          virtualName="" explicitFocusOrder="0" pos="695 360 140 24" textCol="ff383838"
@@ -3163,7 +3163,7 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="540 455 450 285" class="PhaseResponse"
                     params="phases, referenceFrequencies, processor.getSampleRate(), ampDb"/>
   <LABEL name="Phase response" id="6d08c4e421703ed5" memberName="ph_response_label"
-         virtualName="" explicitFocusOrder="0" pos="705 745 110 24" textCol="ff383838"
+         virtualName="" explicitFocusOrder="0" pos="710 745 110 24" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="SPECTRUM PHASE"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
@@ -3470,7 +3470,7 @@ BEGIN_JUCER_METADATA
          fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <TOGGLEBUTTON name="Amplitude / dB" id="b9198764b9daa498" memberName="ampDb_switch"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="546 362 52 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="543 362 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <SLIDER name="Frequency design slider" id="805d44cec628c3" memberName="frequency_design_slider"
