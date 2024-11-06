@@ -56,6 +56,20 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gainsAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     //[/Constructor_pre]
 
+    e1_gain.reset (new CustomSlider ("Element 1 gain"));
+    addAndMakeVisible (e1_gain.get());
+    e1_gain->setRange (0, 10, 0);
+    e1_gain->setSliderStyle (juce::Slider::LinearHorizontal);
+    e1_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 30, 10);
+    e1_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    e1_gain->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    e1_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
+    e1_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    e1_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    e1_gain->addListener (this);
+
+    e1_gain->setBounds (310, 5, 97, 25);
+
     gaussian_plane.reset (new GaussianPlane (processor.getFilterElementsChain()));
     addAndMakeVisible (gaussian_plane.get());
     gaussian_plane->setName ("gaussianPlane");
@@ -150,7 +164,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     addAndMakeVisible (frequency_response.get());
     frequency_response->setName ("frequencyResponse");
 
-    frequency_response->setBounds (540, 70, 450, 285);
+    frequency_response->setBounds (536, 72, 450, 285);
 
     freq_response_label.reset (new juce::Label ("Frequency response",
                                                 TRANS ("SPECTRUM MAGNITUDE\n")));
@@ -187,14 +201,16 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m1_slider->setRange (0, 10, 0);
     m1_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     m1_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
-    m1_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
-    m1_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    m1_slider->setColour (juce::Slider::backgroundColourId, juce::Colour (0xff383838));
+    m1_slider->setColour (juce::Slider::thumbColourId, juce::Colour (0xff909497));
+    m1_slider->setColour (juce::Slider::trackColourId, juce::Colour (0xff383838));
+    m1_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff383838));
     m1_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m1_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m1_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m1_slider->addListener (this);
 
-    m1_slider->setBounds (20, 95, 120, 25);
+    m1_slider->setBounds (20, 92, 120, 25);
 
     p1_slider.reset (new CustomSlider ("Element 1 phase"));
     addAndMakeVisible (p1_slider.get());
@@ -202,14 +218,15 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p1_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     p1_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
     p1_slider->setColour (juce::Slider::backgroundColourId, juce::Colour (0xff383838));
-    p1_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
-    p1_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    p1_slider->setColour (juce::Slider::thumbColourId, juce::Colour (0xff909497));
+    p1_slider->setColour (juce::Slider::trackColourId, juce::Colour (0xff383838));
+    p1_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff383838));
     p1_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     p1_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     p1_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p1_slider->addListener (this);
 
-    p1_slider->setBounds (144, 95, 120, 25);
+    p1_slider->setBounds (144, 92, 120, 25);
 
     magnitudes_label.reset (new juce::Label ("Magnitudes",
                                              TRANS ("MAGNITUDE\n")));
@@ -221,7 +238,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     magnitudes_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     magnitudes_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    magnitudes_label->setBounds (33, 60, 90, 24);
+    magnitudes_label->setBounds (33, 57, 90, 24);
 
     phases_label.reset (new juce::Label ("Phases",
                                          TRANS ("FREQUENCY\n")));
@@ -233,7 +250,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     phases_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     phases_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    phases_label->setBounds (198, 60, 80, 24);
+    phases_label->setBounds (198, 57, 80, 24);
 
     zero_pole_label.reset (new juce::Label ("Filter Type",
                                             TRANS ("FILTER TYPE")));
@@ -245,7 +262,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     zero_pole_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     zero_pole_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    zero_pole_label->setBounds (310, 60, 91, 24);
+    zero_pole_label->setBounds (310, 57, 91, 24);
 
     active_label.reset (new juce::Label ("Active",
                                          TRANS ("ACTIVE")));
@@ -257,119 +274,119 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     active_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     active_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    active_label->setBounds (401, 60, 55, 24);
+    active_label->setBounds (401, 57, 55, 24);
 
     e1_type.reset (new CustomToggleButton ("Element 1 type"));
     addAndMakeVisible (e1_type.get());
     e1_type->setButtonText (juce::String());
     e1_type->addListener (this);
 
-    e1_type->setBounds (331, 96, 52, 21);
+    e1_type->setBounds (331, 93, 52, 21);
 
     e2_type.reset (new CustomToggleButton ("Element 2 type"));
     addAndMakeVisible (e2_type.get());
     e2_type->setButtonText (juce::String());
     e2_type->addListener (this);
 
-    e2_type->setBounds (331, 141, 52, 21);
+    e2_type->setBounds (331, 138, 52, 21);
 
     e3_type.reset (new CustomToggleButton ("Element 3 type"));
     addAndMakeVisible (e3_type.get());
     e3_type->setButtonText (juce::String());
     e3_type->addListener (this);
 
-    e3_type->setBounds (331, 186, 52, 21);
+    e3_type->setBounds (331, 183, 52, 21);
 
     e4_type.reset (new CustomToggleButton ("Element 4 type"));
     addAndMakeVisible (e4_type.get());
     e4_type->setButtonText (juce::String());
     e4_type->addListener (this);
 
-    e4_type->setBounds (331, 231, 52, 21);
+    e4_type->setBounds (331, 228, 52, 21);
 
     e5_type.reset (new CustomToggleButton ("Element 5 type"));
     addAndMakeVisible (e5_type.get());
     e5_type->setButtonText (juce::String());
     e5_type->addListener (this);
 
-    e5_type->setBounds (331, 276, 52, 21);
+    e5_type->setBounds (331, 273, 52, 21);
 
     e6_type.reset (new CustomToggleButton ("Element 6 type"));
     addAndMakeVisible (e6_type.get());
     e6_type->setButtonText (juce::String());
     e6_type->addListener (this);
 
-    e6_type->setBounds (331, 321, 52, 21);
+    e6_type->setBounds (331, 318, 52, 21);
 
     e7_type.reset (new CustomToggleButton ("Element 7 type"));
     addAndMakeVisible (e7_type.get());
     e7_type->setButtonText (juce::String());
     e7_type->addListener (this);
 
-    e7_type->setBounds (331, 366, 52, 21);
+    e7_type->setBounds (331, 363, 52, 21);
 
     e8_type.reset (new CustomToggleButton ("Element 8 type"));
     addAndMakeVisible (e8_type.get());
     e8_type->setButtonText (juce::String());
     e8_type->addListener (this);
 
-    e8_type->setBounds (331, 411, 52, 21);
+    e8_type->setBounds (331, 408, 52, 21);
 
     e1_active.reset (new CustomToggleButton ("Element 1 active"));
     addAndMakeVisible (e1_active.get());
     e1_active->setButtonText (juce::String());
     e1_active->addListener (this);
 
-    e1_active->setBounds (404, 96, 49, 21);
+    e1_active->setBounds (404, 93, 49, 21);
 
     e2_active.reset (new CustomToggleButton ("Element 2 active"));
     addAndMakeVisible (e2_active.get());
     e2_active->setButtonText (juce::String());
     e2_active->addListener (this);
 
-    e2_active->setBounds (404, 141, 49, 21);
+    e2_active->setBounds (404, 138, 49, 21);
 
     e3_active.reset (new CustomToggleButton ("Element 3 active"));
     addAndMakeVisible (e3_active.get());
     e3_active->setButtonText (juce::String());
     e3_active->addListener (this);
 
-    e3_active->setBounds (404, 186, 49, 21);
+    e3_active->setBounds (404, 183, 49, 21);
 
     e4_active.reset (new CustomToggleButton ("Element 4 active"));
     addAndMakeVisible (e4_active.get());
     e4_active->setButtonText (juce::String());
     e4_active->addListener (this);
 
-    e4_active->setBounds (404, 231, 49, 21);
+    e4_active->setBounds (404, 228, 49, 21);
 
     e5_active.reset (new CustomToggleButton ("Element 5 active"));
     addAndMakeVisible (e5_active.get());
     e5_active->setButtonText (juce::String());
     e5_active->addListener (this);
 
-    e5_active->setBounds (404, 276, 49, 21);
+    e5_active->setBounds (404, 273, 49, 21);
 
     e6_active.reset (new CustomToggleButton ("Element 6 active"));
     addAndMakeVisible (e6_active.get());
     e6_active->setButtonText (juce::String());
     e6_active->addListener (this);
 
-    e6_active->setBounds (404, 321, 49, 21);
+    e6_active->setBounds (404, 318, 49, 21);
 
     e7_active.reset (new CustomToggleButton ("Element 7 active"));
     addAndMakeVisible (e7_active.get());
     e7_active->setButtonText (juce::String());
     e7_active->addListener (this);
 
-    e7_active->setBounds (404, 366, 49, 21);
+    e7_active->setBounds (404, 363, 49, 21);
 
     e8_active.reset (new CustomToggleButton ("Element 8 active"));
     addAndMakeVisible (e8_active.get());
     e8_active->setButtonText (juce::String());
     e8_active->addListener (this);
 
-    e8_active->setBounds (404, 411, 49, 21);
+    e8_active->setBounds (404, 408, 49, 21);
 
     gaussian_plane_label.reset (new juce::Label ("Gaussian plane",
                                                  TRANS ("GAUSSIAN PLANE")));
@@ -389,17 +406,17 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     bypass->setBounds (1067, 712, 60, 25);
 
-    gain_slider.reset (new CustomSlider ("Gain"));
-    addAndMakeVisible (gain_slider.get());
-    gain_slider->setRange (0, 10, 0);
-    gain_slider->setSliderStyle (juce::Slider::LinearVertical);
-    gain_slider->setTextBoxStyle (juce::Slider::TextBoxBelow, false, 100, 20);
-    gain_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
-    gain_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff383838));
-    gain_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
-    gain_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x008e989b));
+    masterGain_slider.reset (new CustomSlider ("Master Gain"));
+    addAndMakeVisible (masterGain_slider.get());
+    masterGain_slider->setRange (0, 10, 0);
+    masterGain_slider->setSliderStyle (juce::Slider::LinearVertical);
+    masterGain_slider->setTextBoxStyle (juce::Slider::TextBoxBelow, false, 100, 20);
+    masterGain_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    masterGain_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff383838));
+    masterGain_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    masterGain_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x008e989b));
 
-    gain_slider->setBounds (1074, 540, 45, 160);
+    masterGain_slider->setBounds (1074, 540, 45, 160);
 
     linLog_switch.reset (new CustomToggleButton ("Linear / Logarithmic"));
     addAndMakeVisible (linLog_switch.get());
@@ -413,42 +430,48 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m2_slider->setRange (0, 10, 0);
     m2_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     m2_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
-    m2_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
-    m2_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    m2_slider->setColour (juce::Slider::backgroundColourId, juce::Colour (0xff383838));
+    m2_slider->setColour (juce::Slider::thumbColourId, juce::Colour (0xff909497));
+    m2_slider->setColour (juce::Slider::trackColourId, juce::Colour (0xff383838));
+    m2_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff383838));
     m2_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m2_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m2_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m2_slider->addListener (this);
 
-    m2_slider->setBounds (20, 140, 120, 25);
+    m2_slider->setBounds (20, 137, 120, 25);
 
     m3_slider.reset (new CustomSlider ("Element 3 magnitude"));
     addAndMakeVisible (m3_slider.get());
     m3_slider->setRange (0, 10, 0);
     m3_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     m3_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
-    m3_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
-    m3_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    m3_slider->setColour (juce::Slider::backgroundColourId, juce::Colour (0xff383838));
+    m3_slider->setColour (juce::Slider::thumbColourId, juce::Colour (0xff909497));
+    m3_slider->setColour (juce::Slider::trackColourId, juce::Colour (0xff383838));
+    m3_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff383838));
     m3_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m3_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m3_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m3_slider->addListener (this);
 
-    m3_slider->setBounds (20, 185, 120, 25);
+    m3_slider->setBounds (20, 182, 120, 25);
 
     m4_slider.reset (new CustomSlider ("Element 4 magnitude"));
     addAndMakeVisible (m4_slider.get());
     m4_slider->setRange (0, 10, 0);
     m4_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     m4_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
-    m4_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
-    m4_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    m4_slider->setColour (juce::Slider::backgroundColourId, juce::Colour (0xff383838));
+    m4_slider->setColour (juce::Slider::thumbColourId, juce::Colour (0xff909497));
+    m4_slider->setColour (juce::Slider::trackColourId, juce::Colour (0xff383838));
+    m4_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff383838));
     m4_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     m4_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     m4_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m4_slider->addListener (this);
 
-    m4_slider->setBounds (20, 230, 120, 25);
+    m4_slider->setBounds (20, 227, 120, 25);
 
     m5_slider.reset (new CustomSlider ("Element 5 magnitude"));
     addAndMakeVisible (m5_slider.get());
@@ -462,7 +485,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m5_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m5_slider->addListener (this);
 
-    m5_slider->setBounds (20, 275, 120, 25);
+    m5_slider->setBounds (20, 272, 120, 25);
 
     m6_slider.reset (new CustomSlider ("Element 6 magnitude"));
     addAndMakeVisible (m6_slider.get());
@@ -476,7 +499,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m6_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m6_slider->addListener (this);
 
-    m6_slider->setBounds (20, 320, 120, 25);
+    m6_slider->setBounds (20, 317, 120, 25);
 
     m7_slider.reset (new CustomSlider ("Element 7 magnitude"));
     addAndMakeVisible (m7_slider.get());
@@ -490,7 +513,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m7_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m7_slider->addListener (this);
 
-    m7_slider->setBounds (20, 365, 120, 25);
+    m7_slider->setBounds (20, 362, 120, 25);
 
     m8_slider.reset (new CustomSlider ("Element 8 magnitude"));
     addAndMakeVisible (m8_slider.get());
@@ -504,49 +527,55 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     m8_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     m8_slider->addListener (this);
 
-    m8_slider->setBounds (20, 410, 120, 25);
+    m8_slider->setBounds (20, 407, 120, 25);
 
     p2_slider.reset (new CustomSlider ("Element 2 phase"));
     addAndMakeVisible (p2_slider.get());
     p2_slider->setRange (0, 10, 0);
     p2_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     p2_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
-    p2_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
-    p2_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    p2_slider->setColour (juce::Slider::backgroundColourId, juce::Colour (0xff383838));
+    p2_slider->setColour (juce::Slider::thumbColourId, juce::Colour (0xff909497));
+    p2_slider->setColour (juce::Slider::trackColourId, juce::Colour (0xff383838));
+    p2_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff383838));
     p2_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     p2_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     p2_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p2_slider->addListener (this);
 
-    p2_slider->setBounds (144, 140, 120, 25);
+    p2_slider->setBounds (144, 137, 120, 25);
 
     p3_slider.reset (new CustomSlider ("Element 3 phase"));
     addAndMakeVisible (p3_slider.get());
     p3_slider->setRange (0, 10, 0);
     p3_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     p3_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
-    p3_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
-    p3_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    p3_slider->setColour (juce::Slider::backgroundColourId, juce::Colour (0xff383838));
+    p3_slider->setColour (juce::Slider::thumbColourId, juce::Colour (0xff909497));
+    p3_slider->setColour (juce::Slider::trackColourId, juce::Colour (0xff383838));
+    p3_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff383838));
     p3_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     p3_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     p3_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p3_slider->addListener (this);
 
-    p3_slider->setBounds (144, 185, 120, 25);
+    p3_slider->setBounds (144, 182, 120, 25);
 
     p4_slider.reset (new CustomSlider ("Element 4 phase"));
     addAndMakeVisible (p4_slider.get());
     p4_slider->setRange (0, 10, 0);
     p4_slider->setSliderStyle (juce::Slider::LinearHorizontal);
     p4_slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
-    p4_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
-    p4_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    p4_slider->setColour (juce::Slider::backgroundColourId, juce::Colour (0xff383838));
+    p4_slider->setColour (juce::Slider::thumbColourId, juce::Colour (0xff909497));
+    p4_slider->setColour (juce::Slider::trackColourId, juce::Colour (0xff383838));
+    p4_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff383838));
     p4_slider->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     p4_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     p4_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p4_slider->addListener (this);
 
-    p4_slider->setBounds (144, 230, 120, 25);
+    p4_slider->setBounds (144, 227, 120, 25);
 
     p5_slider.reset (new CustomSlider ("Element 5 phase"));
     addAndMakeVisible (p5_slider.get());
@@ -560,7 +589,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p5_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p5_slider->addListener (this);
 
-    p5_slider->setBounds (144, 275, 120, 25);
+    p5_slider->setBounds (144, 272, 120, 25);
 
     p6_slider.reset (new CustomSlider ("Element 6 phase"));
     addAndMakeVisible (p6_slider.get());
@@ -574,7 +603,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p6_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p6_slider->addListener (this);
 
-    p6_slider->setBounds (144, 320, 120, 25);
+    p6_slider->setBounds (144, 317, 120, 25);
 
     p7_slider.reset (new CustomSlider ("Element 7 phase"));
     addAndMakeVisible (p7_slider.get());
@@ -588,7 +617,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p7_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p7_slider->addListener (this);
 
-    p7_slider->setBounds (144, 365, 120, 25);
+    p7_slider->setBounds (144, 362, 120, 25);
 
     p8_slider.reset (new CustomSlider ("Element 8 phase"));
     addAndMakeVisible (p8_slider.get());
@@ -602,9 +631,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p8_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     p8_slider->addListener (this);
 
-    p8_slider->setBounds (144, 410, 120, 25);
+    p8_slider->setBounds (144, 407, 120, 25);
 
-    p1_freq.reset (new juce::Label ("Element 1 frequency",
+    p1_freq.reset (new CustomLabel ("Element 1 frequency",
                                     juce::String()));
     addAndMakeVisible (p1_freq.get());
     p1_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -615,9 +644,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p1_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p1_freq->addListener (this);
 
-    p1_freq->setBounds (265, 95, 60, 25);
+    p1_freq->setBounds (265, 92, 60, 25);
 
-    p2_freq.reset (new juce::Label ("Element 2 frequency",
+    p2_freq.reset (new CustomLabel ("Element 2 frequency",
                                     juce::String()));
     addAndMakeVisible (p2_freq.get());
     p2_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -628,9 +657,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p2_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p2_freq->addListener (this);
 
-    p2_freq->setBounds (265, 140, 60, 25);
+    p2_freq->setBounds (265, 137, 60, 25);
 
-    p3_freq.reset (new juce::Label ("Element 3 frequency",
+    p3_freq.reset (new CustomLabel ("Element 3 frequency",
                                     juce::String()));
     addAndMakeVisible (p3_freq.get());
     p3_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -641,9 +670,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p3_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p3_freq->addListener (this);
 
-    p3_freq->setBounds (265, 185, 60, 25);
+    p3_freq->setBounds (265, 182, 60, 25);
 
-    p4_freq.reset (new juce::Label ("Element 4 frequency",
+    p4_freq.reset (new CustomLabel ("Element 4 frequency",
                                     juce::String()));
     addAndMakeVisible (p4_freq.get());
     p4_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -654,9 +683,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p4_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p4_freq->addListener (this);
 
-    p4_freq->setBounds (265, 230, 60, 25);
+    p4_freq->setBounds (265, 227, 60, 25);
 
-    p5_freq.reset (new juce::Label ("Element 5 frequency",
+    p5_freq.reset (new CustomLabel ("Element 5 frequency",
                                     juce::String()));
     addAndMakeVisible (p5_freq.get());
     p5_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -667,9 +696,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p5_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p5_freq->addListener (this);
 
-    p5_freq->setBounds (265, 275, 60, 25);
+    p5_freq->setBounds (265, 272, 60, 25);
 
-    p6_freq.reset (new juce::Label ("Element 6 frequency",
+    p6_freq.reset (new CustomLabel ("Element 6 frequency",
                                     juce::String()));
     addAndMakeVisible (p6_freq.get());
     p6_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -680,9 +709,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p6_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p6_freq->addListener (this);
 
-    p6_freq->setBounds (265, 320, 60, 25);
+    p6_freq->setBounds (265, 317, 60, 25);
 
-    p7_freq.reset (new juce::Label ("Element 7 frequency",
+    p7_freq.reset (new CustomLabel ("Element 7 frequency",
                                     juce::String()));
     addAndMakeVisible (p7_freq.get());
     p7_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -693,9 +722,9 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p7_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p7_freq->addListener (this);
 
-    p7_freq->setBounds (265, 365, 60, 25);
+    p7_freq->setBounds (265, 362, 60, 25);
 
-    p8_freq.reset (new juce::Label ("Element 8 frequency",
+    p8_freq.reset (new CustomLabel ("Element 8 frequency",
                                     juce::String()));
     addAndMakeVisible (p8_freq.get());
     p8_freq->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -706,7 +735,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     p8_freq->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     p8_freq->addListener (this);
 
-    p8_freq->setBounds (265, 410, 60, 25);
+    p8_freq->setBounds (265, 407, 60, 25);
 
     type_box.reset (new CustomComboBox ("Design type"));
     addAndMakeVisible (type_box.get());
@@ -827,7 +856,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     frequency_design_slider->setBounds (1022, 255, 83, 25);
 
-    frequency_label.reset (new juce::Label ("Frequency Label",
+    frequency_label.reset (new CustomLabel ("Frequency Label",
                                             juce::String()));
     addAndMakeVisible (frequency_label.get());
     frequency_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -935,153 +964,28 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     load_preset_button->setBounds (1082, 9, 100, 25);
 
-    gain_label.reset (new juce::Label ("Gain",
-                                       TRANS ("GAIN")));
-    addAndMakeVisible (gain_label.get());
-    gain_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    gain_label->setJustificationType (juce::Justification::centred);
-    gain_label->setEditable (false, false, false);
-    gain_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
-    gain_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    gain_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    active_label2.reset (new juce::Label ("Active",
+                                          TRANS ("GAIN")));
+    addAndMakeVisible (active_label2.get());
+    active_label2->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    active_label2->setJustificationType (juce::Justification::centred);
+    active_label2->setEditable (false, false, false);
+    active_label2->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    active_label2->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    active_label2->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    gain_label->setBounds (464, 60, 55, 24);
+    active_label2->setBounds (464, 57, 55, 24);
 
-    gain_1.reset (new juce::Label ("Gain 1 label",
-                                   juce::String()));
-    addAndMakeVisible (gain_1.get());
-    gain_1->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    gain_1->setJustificationType (juce::Justification::centredLeft);
-    gain_1->setEditable (false, false, false);
-    gain_1->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    gain_1->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    gain_1->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
+    autoGain.reset (new CustomToggleButton ("Auto Gain"));
+    addAndMakeVisible (autoGain.get());
+    autoGain->setButtonText (juce::String());
+    autoGain->addListener (this);
 
-    gain_1->setBounds (470, 95, 45, 25);
+    autoGain->setBounds (462, 445, 49, 21);
 
-    gain_2.reset (new juce::Label ("Gain 2 label",
-                                   juce::String()));
-    addAndMakeVisible (gain_2.get());
-    gain_2->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    gain_2->setJustificationType (juce::Justification::centredLeft);
-    gain_2->setEditable (false, false, false);
-    gain_2->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    gain_2->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    gain_2->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
-
-    gain_2->setBounds (470, 140, 45, 25);
-
-    gain_3.reset (new juce::Label ("Gain 2 label",
-                                   juce::String()));
-    addAndMakeVisible (gain_3.get());
-    gain_3->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    gain_3->setJustificationType (juce::Justification::centredLeft);
-    gain_3->setEditable (false, false, false);
-    gain_3->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    gain_3->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    gain_3->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
-
-    gain_3->setBounds (470, 185, 45, 25);
-
-    gain_4.reset (new juce::Label ("Gain 2 label",
-                                   juce::String()));
-    addAndMakeVisible (gain_4.get());
-    gain_4->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    gain_4->setJustificationType (juce::Justification::centredLeft);
-    gain_4->setEditable (false, false, false);
-    gain_4->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    gain_4->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    gain_4->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
-
-    gain_4->setBounds (470, 230, 45, 25);
-
-    gain_5.reset (new juce::Label ("Gain 2 label",
-                                   juce::String()));
-    addAndMakeVisible (gain_5.get());
-    gain_5->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    gain_5->setJustificationType (juce::Justification::centredLeft);
-    gain_5->setEditable (false, false, false);
-    gain_5->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    gain_5->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    gain_5->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
-
-    gain_5->setBounds (470, 275, 45, 25);
-
-    gain_6.reset (new juce::Label ("Gain 2 label",
-                                   juce::String()));
-    addAndMakeVisible (gain_6.get());
-    gain_6->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    gain_6->setJustificationType (juce::Justification::centredLeft);
-    gain_6->setEditable (false, false, false);
-    gain_6->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    gain_6->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    gain_6->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
-
-    gain_6->setBounds (470, 320, 45, 25);
-
-    gain_7.reset (new juce::Label ("Gain 2 label",
-                                   juce::String()));
-    addAndMakeVisible (gain_7.get());
-    gain_7->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    gain_7->setJustificationType (juce::Justification::centredLeft);
-    gain_7->setEditable (false, false, false);
-    gain_7->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    gain_7->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    gain_7->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
-
-    gain_7->setBounds (470, 365, 45, 25);
-
-    gain_8.reset (new juce::Label ("Gain 2 label",
-                                   juce::String()));
-    addAndMakeVisible (gain_8.get());
-    gain_8->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
-    gain_8->setJustificationType (juce::Justification::centredLeft);
-    gain_8->setEditable (false, false, false);
-    gain_8->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
-    gain_8->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    gain_8->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
-
-    gain_8->setBounds (470, 410, 45, 25);
-
-    autoGain_switch.reset (new CustomToggleButton ("Auto Gain"));
-    addAndMakeVisible (autoGain_switch.get());
-    autoGain_switch->setButtonText (juce::String());
-    autoGain_switch->addListener (this);
-
-    autoGain_switch->setBounds (453, 444, 52, 21);
-
-    autoGain_label.reset (new juce::Label ("Auto Gain lbl",
-                                           TRANS ("AUTO GAIN")));
-    addAndMakeVisible (autoGain_label.get());
-    autoGain_label->setFont (juce::Font ("Gill Sans", 11.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    autoGain_label->setJustificationType (juce::Justification::centred);
-    autoGain_label->setEditable (false, false, false);
-    autoGain_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
-    autoGain_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    autoGain_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    autoGain_label->setBounds (386, 443, 68, 24);
-
-    cachedImage_anticlockwise_arrow_png_1 = juce::ImageCache::getFromMemory (anticlockwise_arrow_png, anticlockwise_arrow_pngSize);
-    cachedImage_clockwise_arrow_png_2 = juce::ImageCache::getFromMemory (clockwise_arrow_png, clockwise_arrow_pngSize);
-    cachedImage_load_icon_png_3 = juce::ImageCache::getFromMemory (load_icon_png, load_icon_pngSize);
-    cachedImage_save_icon_png_4 = juce::ImageCache::getFromMemory (save_icon_png, save_icon_pngSize);
-
-    //[UserPreSize]
-    e1_gain.reset (new CustomSlider ("Gain 1"));
-    addAndMakeVisible (e1_gain.get());
-    e1_gain->setRange (0, 2);
-    e1_gain->setSliderStyle (juce::Slider::LinearHorizontal);
-    e1_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
-    e1_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
-    e1_gain->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
-    e1_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
-    e1_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
-    e1_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
-
-    e2_gain.reset (new CustomSlider ("Gain 2"));
+    e2_gain.reset (new CustomSlider ("Element 2 gain"));
     addAndMakeVisible (e2_gain.get());
-    e2_gain->setRange (0, 2);
+    e2_gain->setRange (0, 10, 0);
     e2_gain->setSliderStyle (juce::Slider::LinearHorizontal);
     e2_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
     e2_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
@@ -1089,10 +993,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e2_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     e2_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     e2_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    e2_gain->addListener (this);
 
-    e3_gain.reset (new CustomSlider ("Gain 3"));
+    e2_gain->setBounds (310, 5, 97, 25);
+
+    e3_gain.reset (new CustomSlider ("Element 3 gain"));
     addAndMakeVisible (e3_gain.get());
-    e3_gain->setRange (0, 2);
+    e3_gain->setRange (0, 10, 0);
     e3_gain->setSliderStyle (juce::Slider::LinearHorizontal);
     e3_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
     e3_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
@@ -1100,10 +1007,13 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e3_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     e3_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     e3_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    e3_gain->addListener (this);
 
-    e4_gain.reset (new CustomSlider ("Gain 4"));
+    e3_gain->setBounds (310, 8, 97, 25);
+
+    e4_gain.reset (new CustomSlider ("Element 4 gain"));
     addAndMakeVisible (e4_gain.get());
-    e4_gain->setRange (0, 2);
+    e4_gain->setRange (0, 10, 0);
     e4_gain->setSliderStyle (juce::Slider::LinearHorizontal);
     e4_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
     e4_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
@@ -1111,60 +1021,176 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e4_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
     e4_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     e4_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    e4_gain->addListener (this);
 
-    e5_gain.reset(new CustomSlider("Gain 5"));
-    addAndMakeVisible(e5_gain.get());
-    e5_gain->setRange (0, 2);
-    e5_gain->setSliderStyle(juce::Slider::LinearHorizontal);
-    e5_gain->setTextBoxStyle(juce::Slider::TextBoxRight, false, 50, 20);
-    e5_gain->setColour(juce::Slider::thumbColourId, juce::Colours::white);
-    e5_gain->setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
-    e5_gain->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0x00000000));
-    e5_gain->setColour(juce::Slider::textBoxHighlightColourId, juce::Colour(0x66686868));
-    e5_gain->setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0x00000000));
+    e4_gain->setBounds (310, 8, 97, 25);
 
-    e6_gain.reset(new CustomSlider("Gain 6"));
-    addAndMakeVisible(e6_gain.get());
-    e6_gain->setRange (0, 2);
-    e6_gain->setSliderStyle(juce::Slider::LinearHorizontal);
-    e6_gain->setTextBoxStyle(juce::Slider::TextBoxRight, false, 50, 20);
-    e6_gain->setColour(juce::Slider::thumbColourId, juce::Colours::white);
-    e6_gain->setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
-    e6_gain->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0x00000000));
-    e6_gain->setColour(juce::Slider::textBoxHighlightColourId, juce::Colour(0x66686868));
-    e6_gain->setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0x00000000));
+    e5_gain.reset (new CustomSlider ("Element 5 gain"));
+    addAndMakeVisible (e5_gain.get());
+    e5_gain->setRange (0, 10, 0);
+    e5_gain->setSliderStyle (juce::Slider::LinearHorizontal);
+    e5_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
+    e5_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    e5_gain->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    e5_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
+    e5_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    e5_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    e5_gain->addListener (this);
 
-    e7_gain.reset(new CustomSlider("Gain 7"));
-    addAndMakeVisible(e7_gain.get());
-    e7_gain->setRange (0, 2);
-    e7_gain->setSliderStyle(juce::Slider::LinearHorizontal);
-    e7_gain->setTextBoxStyle(juce::Slider::TextBoxRight, false, 50, 20);
-    e7_gain->setColour(juce::Slider::thumbColourId, juce::Colours::white);
-    e7_gain->setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
-    e7_gain->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0x00000000));
-    e7_gain->setColour(juce::Slider::textBoxHighlightColourId, juce::Colour(0x66686868));
-    e7_gain->setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0x00000000));
+    e5_gain->setBounds (310, 8, 97, 25);
 
-    e8_gain.reset(new CustomSlider("Gain 8"));
-    addAndMakeVisible(e8_gain.get());
-    e8_gain->setRange (0, 2);
-    e8_gain->setSliderStyle(juce::Slider::LinearHorizontal);
-    e8_gain->setTextBoxStyle(juce::Slider::TextBoxRight, false, 50, 20);
-    e8_gain->setColour(juce::Slider::thumbColourId, juce::Colours::white);
-    e8_gain->setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
-    e8_gain->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0x00000000));
-    e8_gain->setColour(juce::Slider::textBoxHighlightColourId, juce::Colour(0x66686868));
-    e8_gain->setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0x00000000));
+    e6_gain.reset (new CustomSlider ("Element 6 gain"));
+    addAndMakeVisible (e6_gain.get());
+    e6_gain->setRange (0, 10, 0);
+    e6_gain->setSliderStyle (juce::Slider::LinearHorizontal);
+    e6_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
+    e6_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    e6_gain->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    e6_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
+    e6_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    e6_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    e6_gain->addListener (this);
 
-    e1_gain->addListener(this);
-    e2_gain->addListener(this);
-    e3_gain->addListener(this);
-    e4_gain->addListener(this);
-    e5_gain->addListener(this);
-    e6_gain->addListener(this);
-    e7_gain->addListener(this);
-    e8_gain->addListener(this);
+    e6_gain->setBounds (310, 8, 97, 25);
 
+    e7_gain.reset (new CustomSlider ("Element 7 gain"));
+    addAndMakeVisible (e7_gain.get());
+    e7_gain->setRange (0, 10, 0);
+    e7_gain->setSliderStyle (juce::Slider::LinearHorizontal);
+    e7_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
+    e7_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    e7_gain->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    e7_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
+    e7_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    e7_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    e7_gain->addListener (this);
+
+    e7_gain->setBounds (310, 8, 97, 25);
+
+    e8_gain.reset (new CustomSlider ("Element 8 gain"));
+    addAndMakeVisible (e8_gain.get());
+    e8_gain->setRange (0, 10, 0);
+    e8_gain->setSliderStyle (juce::Slider::LinearHorizontal);
+    e8_gain->setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
+    e8_gain->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    e8_gain->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff333333));
+    e8_gain->setColour (juce::Slider::textBoxBackgroundColourId, juce::Colour (0x00000000));
+    e8_gain->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
+    e8_gain->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
+    e8_gain->addListener (this);
+
+    e8_gain->setBounds (310, 8, 97, 25);
+
+    gain1_label.reset (new CustomLabel ("Element 1 Gain",
+                                        juce::String()));
+    addAndMakeVisible (gain1_label.get());
+    gain1_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    gain1_label->setJustificationType (juce::Justification::centredLeft);
+    gain1_label->setEditable (true, true, false);
+    gain1_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    gain1_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    gain1_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
+    gain1_label->addListener (this);
+
+    gain1_label->setBounds (467, 92, 50, 25);
+
+    gain2_label.reset (new CustomLabel ("Element 2 Gain",
+                                        juce::String()));
+    addAndMakeVisible (gain2_label.get());
+    gain2_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    gain2_label->setJustificationType (juce::Justification::centredLeft);
+    gain2_label->setEditable (true, true, false);
+    gain2_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    gain2_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    gain2_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
+    gain2_label->addListener (this);
+
+    gain2_label->setBounds (467, 137, 50, 25);
+
+    gain3_label.reset (new CustomLabel ("Element 3 Gain",
+                                        juce::String()));
+    addAndMakeVisible (gain3_label.get());
+    gain3_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    gain3_label->setJustificationType (juce::Justification::centredLeft);
+    gain3_label->setEditable (true, true, false);
+    gain3_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    gain3_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    gain3_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
+    gain3_label->addListener (this);
+
+    gain3_label->setBounds (467, 182, 50, 25);
+
+    gain4_label.reset (new CustomLabel ("Element 4 Gain",
+                                        juce::String()));
+    addAndMakeVisible (gain4_label.get());
+    gain4_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    gain4_label->setJustificationType (juce::Justification::centredLeft);
+    gain4_label->setEditable (true, true, false);
+    gain4_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    gain4_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    gain4_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
+    gain4_label->addListener (this);
+
+    gain4_label->setBounds (467, 227, 50, 25);
+
+    gain5_label.reset (new CustomLabel ("Element 5 Gain",
+                                        juce::String()));
+    addAndMakeVisible (gain5_label.get());
+    gain5_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    gain5_label->setJustificationType (juce::Justification::centredLeft);
+    gain5_label->setEditable (true, true, false);
+    gain5_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    gain5_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    gain5_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
+    gain5_label->addListener (this);
+
+    gain5_label->setBounds (467, 272, 50, 25);
+
+    gain6_label.reset (new CustomLabel ("Element 6 Gain",
+                                        juce::String()));
+    addAndMakeVisible (gain6_label.get());
+    gain6_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    gain6_label->setJustificationType (juce::Justification::centredLeft);
+    gain6_label->setEditable (true, true, false);
+    gain6_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    gain6_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    gain6_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
+    gain6_label->addListener (this);
+
+    gain6_label->setBounds (467, 317, 50, 25);
+
+    gain7_label.reset (new CustomLabel ("Element 7 Gain",
+                                        juce::String()));
+    addAndMakeVisible (gain7_label.get());
+    gain7_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    gain7_label->setJustificationType (juce::Justification::centredLeft);
+    gain7_label->setEditable (true, true, false);
+    gain7_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    gain7_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    gain7_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
+    gain7_label->addListener (this);
+
+    gain7_label->setBounds (467, 362, 50, 25);
+
+    gain8_label.reset (new CustomLabel ("Element 8 Gain",
+                                        juce::String()));
+    addAndMakeVisible (gain8_label.get());
+    gain8_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
+    gain8_label->setJustificationType (juce::Justification::centredLeft);
+    gain8_label->setEditable (true, true, false);
+    gain8_label->setColour (juce::Label::textColourId, juce::Colour (0xff333333));
+    gain8_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    gain8_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
+    gain8_label->addListener (this);
+
+    gain8_label->setBounds (467, 407, 50, 25);
+
+    cachedImage_anticlockwise_arrow_png_1 = juce::ImageCache::getFromMemory (anticlockwise_arrow_png, anticlockwise_arrow_pngSize);
+    cachedImage_clockwise_arrow_png_2 = juce::ImageCache::getFromMemory (clockwise_arrow_png, clockwise_arrow_pngSize);
+    cachedImage_load_icon_png_3 = juce::ImageCache::getFromMemory (load_icon_png, load_icon_pngSize);
+    cachedImage_save_icon_png_4 = juce::ImageCache::getFromMemory (save_icon_png, save_icon_pngSize);
+
+    //[UserPreSize]
     magnitudesAttachments[0].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
     magnitudesAttachments[1].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(2), *m2_slider));
     magnitudesAttachments[2].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(3), *m3_slider));
@@ -1210,28 +1236,28 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     gainsAttachments[6].reset(new SliderAttachment(valueTreeState, GAIN_NAME + std::to_string(7), *e7_gain));
     gainsAttachments[7].reset(new SliderAttachment(valueTreeState, GAIN_NAME + std::to_string(8), *e8_gain));
 
-    masterGainAttachment.reset(new SliderAttachment(valueTreeState, MASTER_GAIN_NAME, *gain_slider));
+    masterGainAttachment.reset(new SliderAttachment(valueTreeState, MASTER_GAIN_NAME, *masterGain_slider));
     bypassAttachment.reset(new ButtonAttachment(valueTreeState, FILTER_BYPASS_NAME, *bypass));
 
-    m1_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    m2_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    m3_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    m4_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    m5_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    m6_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    m7_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    m8_slider->setLookAndFeel(&magnitudeSlidersTheme);
+    m1_slider->setLookAndFeel(&sliderTheme);
+    m2_slider->setLookAndFeel(&sliderTheme);
+    m3_slider->setLookAndFeel(&sliderTheme);
+    m4_slider->setLookAndFeel(&sliderTheme);
+    m5_slider->setLookAndFeel(&sliderTheme);
+    m6_slider->setLookAndFeel(&sliderTheme);
+    m7_slider->setLookAndFeel(&sliderTheme);
+    m8_slider->setLookAndFeel(&sliderTheme);
 
-    p1_slider->setLookAndFeel(&phaseSlidersTheme);
-    p2_slider->setLookAndFeel(&phaseSlidersTheme);
-    p3_slider->setLookAndFeel(&phaseSlidersTheme);
-    p4_slider->setLookAndFeel(&phaseSlidersTheme);
-    p5_slider->setLookAndFeel(&phaseSlidersTheme);
-    p6_slider->setLookAndFeel(&phaseSlidersTheme);
-    p7_slider->setLookAndFeel(&phaseSlidersTheme);
-    p8_slider->setLookAndFeel(&phaseSlidersTheme);
+    p1_slider->setLookAndFeel(&sliderTheme);
+    p2_slider->setLookAndFeel(&sliderTheme);
+    p3_slider->setLookAndFeel(&sliderTheme);
+    p4_slider->setLookAndFeel(&sliderTheme);
+    p5_slider->setLookAndFeel(&sliderTheme);
+    p6_slider->setLookAndFeel(&sliderTheme);
+    p7_slider->setLookAndFeel(&sliderTheme);
+    p8_slider->setLookAndFeel(&sliderTheme);
 
-    gain_slider->setLookAndFeel(&masterGainSliderTheme);
+    masterGain_slider->setLookAndFeel(&masterGainSliderTheme);
 
     e1_type->setLookAndFeel(&typeSwitchesTheme);
     e2_type->setLookAndFeel(&typeSwitchesTheme);
@@ -1254,19 +1280,18 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     e7_active->setLookAndFeel(&activeSwitchesTheme);
     e8_active->setLookAndFeel(&activeSwitchesTheme);
 
-    e1_gain->setLookAndFeel(&gainSliderTheme);
-    e2_gain->setLookAndFeel(&gainSliderTheme);
-    e3_gain->setLookAndFeel(&gainSliderTheme);
-    e4_gain->setLookAndFeel(&gainSliderTheme);
-    e5_gain->setLookAndFeel(&gainSliderTheme);
-    e6_gain->setLookAndFeel(&gainSliderTheme);
-    e7_gain->setLookAndFeel(&gainSliderTheme);
-    e8_gain->setLookAndFeel(&gainSliderTheme);
-
-    autoGain_switch->setLookAndFeel(&activeSwitchesTheme);
-    autoGain_switch->setToggleState(true, NotificationType::sendNotificationSync);
+    e1_gain->setVisible(false);
+    e2_gain->setVisible(false);
+    e3_gain->setVisible(false);
+    e4_gain->setVisible(false);
+    e5_gain->setVisible(false);
+    e6_gain->setVisible(false);
+    e7_gain->setVisible(false);
+    e8_gain->setVisible(false);
 
     bypass->setLookAndFeel(&bypassSwitchTheme);
+
+    autoGain->setLookAndFeel(&activeSwitchesTheme);
 
     resetButtonTheme.setTextToDisplay("RESET");
     reset_button->setLookAndFeel(&resetButtonTheme);
@@ -1306,16 +1331,15 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     load_preset_button->setLookAndFeel(&loadPresetButtonTheme);
     load_preset_button->repaint();
 
-
     type_box->setLookAndFeel(&comboBoxTheme);
     order_box->setLookAndFeel(&comboBoxTheme);
     shape_box->setLookAndFeel(&comboBoxTheme);
 
-    frequency_design_slider->setLookAndFeel(&magnitudeSlidersTheme);
+    frequency_design_slider->setLookAndFeel(&sliderTheme);
     frequency_design_slider->setSkewFactor(0.2);
-    transition_width_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    passbandAmplitude_slider->setLookAndFeel(&magnitudeSlidersTheme);
-    stopbandAmplitude_slider->setLookAndFeel(&magnitudeSlidersTheme);
+    transition_width_slider->setLookAndFeel(&sliderTheme);
+    passbandAmplitude_slider->setLookAndFeel(&sliderTheme);
+    stopbandAmplitude_slider->setLookAndFeel(&sliderTheme);
 
     double sampleRate = processor.getSampleRate();
 
@@ -1375,6 +1399,7 @@ PluginEditor::~PluginEditor()
     bypassAttachment.reset();
     //[/Destructor_pre]
 
+    e1_gain = nullptr;
     gaussian_plane = nullptr;
     e2 = nullptr;
     e3 = nullptr;
@@ -1415,7 +1440,7 @@ PluginEditor::~PluginEditor()
     e8_active = nullptr;
     gaussian_plane_label = nullptr;
     bypass = nullptr;
-    gain_slider = nullptr;
+    masterGain_slider = nullptr;
     linLog_switch = nullptr;
     m2_slider = nullptr;
     m3_slider = nullptr;
@@ -1461,21 +1486,8 @@ PluginEditor::~PluginEditor()
     redo_button = nullptr;
     save_preset_button = nullptr;
     load_preset_button = nullptr;
-    gain_label = nullptr;
-    gain_1 = nullptr;
-    gain_2 = nullptr;
-    gain_3 = nullptr;
-    gain_4 = nullptr;
-    gain_5 = nullptr;
-    gain_6 = nullptr;
-    gain_7 = nullptr;
-    gain_8 = nullptr;
-    autoGain_switch = nullptr;
-    autoGain_label = nullptr;
-
-
-    //[Destructor]. You can add your own custom destruction code here..
-    e1_gain = nullptr;
+    active_label2 = nullptr;
+    autoGain = nullptr;
     e2_gain = nullptr;
     e3_gain = nullptr;
     e4_gain = nullptr;
@@ -1483,6 +1495,17 @@ PluginEditor::~PluginEditor()
     e6_gain = nullptr;
     e7_gain = nullptr;
     e8_gain = nullptr;
+    gain1_label = nullptr;
+    gain2_label = nullptr;
+    gain3_label = nullptr;
+    gain4_label = nullptr;
+    gain5_label = nullptr;
+    gain6_label = nullptr;
+    gain7_label = nullptr;
+    gain8_label = nullptr;
+
+
+    //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
 }
 
@@ -1718,6 +1741,18 @@ void PluginEditor::paint (juce::Graphics& g)
                            false);
     }
 
+    {
+        int x = 402, y = 445, width = 56, height = 20;
+        juce::String text (TRANS ("AUTO GAIN"));
+        juce::Colour fillColour = juce::Colour (0xff383838);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (juce::Font ("Gill Sans", 10.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+        g.drawText (text, x, y, width, height,
+                    juce::Justification::centred, true);
+    }
+
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
@@ -1737,7 +1772,13 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     const double sampleRate = processor.getSampleRate();
     //[/UsersliderValueChanged_Pre]
 
-    if (sliderThatWasMoved == stopbandAmplitude_slider.get())
+    if (sliderThatWasMoved == e1_gain.get())
+    {
+        //[UserSliderCode_e1_gain] -- add your slider handling code here..
+        gain1_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
+        //[/UserSliderCode_e1_gain]
+    }
+    else if (sliderThatWasMoved == stopbandAmplitude_slider.get())
     {
         //[UserSliderCode_stopbandAmplitude_slider] -- add your slider handling code here..
         stopbandAmplitudedB = sliderThatWasMoved->getValue();
@@ -1756,16 +1797,24 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(1);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(1);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(1)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_m1_slider]
     }
     else if (sliderThatWasMoved == p1_slider.get())
     {
         //[UserSliderCode_p1_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(1);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(1);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(1)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_p1_slider]
     }
     else if (sliderThatWasMoved == m2_slider.get())
@@ -1777,8 +1826,12 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(2);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(2);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(2)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_m2_slider]
     }
     else if (sliderThatWasMoved == m3_slider.get())
@@ -1790,8 +1843,12 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(3);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(3);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(3)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_m3_slider]
     }
     else if (sliderThatWasMoved == m4_slider.get())
@@ -1803,8 +1860,12 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(4);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(4);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(4)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_m4_slider]
     }
     else if (sliderThatWasMoved == m5_slider.get())
@@ -1816,8 +1877,12 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(5);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(5);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(5)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_m5_slider]
     }
     else if (sliderThatWasMoved == m6_slider.get())
@@ -1829,8 +1894,12 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(6);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(6);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(6)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_m6_slider]
     }
     else if (sliderThatWasMoved == m7_slider.get())
@@ -1842,8 +1911,12 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(7);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(7);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(7)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_m7_slider]
     }
     else if (sliderThatWasMoved == m8_slider.get())
@@ -1855,64 +1928,96 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
         else
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(8);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(8);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(8)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_m8_slider]
     }
     else if (sliderThatWasMoved == p2_slider.get())
     {
         //[UserSliderCode_p2_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p2_slider.get(), p2_freq.get(), sampleRate);
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(2);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(2);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(2)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_p2_slider]
     }
     else if (sliderThatWasMoved == p3_slider.get())
     {
         //[UserSliderCode_p3_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p3_slider.get(), p3_freq.get(), sampleRate);
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(3);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(3);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(3)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_p3_slider]
     }
     else if (sliderThatWasMoved == p4_slider.get())
     {
         //[UserSliderCode_p4_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p4_slider.get(), p4_freq.get(), sampleRate);
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(4);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(4);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(4)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_p4_slider]
     }
     else if (sliderThatWasMoved == p5_slider.get())
     {
         //[UserSliderCode_p5_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p5_slider.get(), p5_freq.get(), sampleRate);
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(5);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(5);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(5)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_p5_slider]
     }
     else if (sliderThatWasMoved == p6_slider.get())
     {
         //[UserSliderCode_p6_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(6);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(6);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(6)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_p6_slider]
     }
     else if (sliderThatWasMoved == p7_slider.get())
     {
         //[UserSliderCode_p7_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(7);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(7);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(7)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_p7_slider]
     }
     else if (sliderThatWasMoved == p8_slider.get())
     {
         //[UserSliderCode_p8_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
-        if (autoGain_switch.get()->getToggleState())
-            processor.setGainFromMagnitudeAndPhase(8);
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(8);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(8)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserSliderCode_p8_slider]
     }
     else if (sliderThatWasMoved == frequency_design_slider.get())
@@ -1945,50 +2050,50 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             autoUpdateCheckAndSetup();
         //[/UserSliderCode_passbandAmplitude_slider]
     }
-
-    //[UsersliderValueChanged_Post]
-    else if (sliderThatWasMoved == e1_gain.get())
-    {
-        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
-        gain_1->setText(dbValue, juce::NotificationType::dontSendNotification);
-    }
     else if (sliderThatWasMoved == e2_gain.get())
     {
-        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
-        gain_2->setText(dbValue, juce::NotificationType::dontSendNotification);
+        //[UserSliderCode_e2_gain] -- add your slider handling code here..
+        gain2_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
+        //[/UserSliderCode_e2_gain]
     }
     else if (sliderThatWasMoved == e3_gain.get())
     {
-        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
-        gain_3->setText(dbValue, juce::NotificationType::dontSendNotification);
+        //[UserSliderCode_e3_gain] -- add your slider handling code here..
+        gain3_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
+        //[/UserSliderCode_e3_gain]
     }
     else if (sliderThatWasMoved == e4_gain.get())
     {
-        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
-        gain_4->setText(dbValue, juce::NotificationType::dontSendNotification);
+        //[UserSliderCode_e4_gain] -- add your slider handling code here..
+        gain4_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
+        //[/UserSliderCode_e4_gain]
     }
     else if (sliderThatWasMoved == e5_gain.get())
     {
-        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
-        gain_5->setText(dbValue, juce::NotificationType::dontSendNotification);
+        //[UserSliderCode_e5_gain] -- add your slider handling code here..
+        gain5_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
+        //[/UserSliderCode_e5_gain]
     }
     else if (sliderThatWasMoved == e6_gain.get())
     {
-        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
-        gain_6->setText(dbValue, juce::NotificationType::dontSendNotification);
+        //[UserSliderCode_e6_gain] -- add your slider handling code here..
+        gain6_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
+        //[/UserSliderCode_e6_gain]
     }
     else if (sliderThatWasMoved == e7_gain.get())
     {
-        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
-        gain_7->setText(dbValue, juce::NotificationType::dontSendNotification);
+        //[UserSliderCode_e7_gain] -- add your slider handling code here..
+        gain7_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
+        //[/UserSliderCode_e7_gain]
     }
     else if (sliderThatWasMoved == e8_gain.get())
     {
-        juce::String dbValue = juce::String::formatted("%.1f dB", Decibels::gainToDecibels(sliderThatWasMoved->getValue() * 0.5, -300.0));
-        gain_8->setText(dbValue, juce::NotificationType::dontSendNotification);
+        //[UserSliderCode_e8_gain] -- add your slider handling code here..
+        gain8_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
+        //[/UserSliderCode_e8_gain]
     }
 
-
+    //[UsersliderValueChanged_Post]
     //[/UsersliderValueChanged_Post]
 }
 
@@ -2013,6 +2118,12 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::POLE)
             m1_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         m1_slider->repaint();
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(1, true);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(1)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserButtonCode_e1_type]
     }
     else if (buttonThatWasClicked == e2_type.get())
@@ -2025,6 +2136,12 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::POLE)
             m2_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         m2_slider->repaint();
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(2, true);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(2)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserButtonCode_e2_type]
     }
     else if (buttonThatWasClicked == e3_type.get())
@@ -2037,6 +2154,12 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::POLE)
             m3_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         m3_slider->repaint();
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(3, true);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(3)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserButtonCode_e3_type]
     }
     else if (buttonThatWasClicked == e4_type.get())
@@ -2049,6 +2172,12 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::POLE)
             m4_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         m4_slider->repaint();
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(4, true);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(4)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserButtonCode_e4_type]
     }
     else if (buttonThatWasClicked == e5_type.get())
@@ -2061,6 +2190,12 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::POLE)
             m5_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         m5_slider->repaint();
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(5, true);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(5)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserButtonCode_e5_type]
     }
     else if (buttonThatWasClicked == e6_type.get())
@@ -2073,6 +2208,12 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::POLE)
             m6_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         m6_slider->repaint();
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(6, true);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(6)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserButtonCode_e6_type]
     }
     else if (buttonThatWasClicked == e7_type.get())
@@ -2085,6 +2226,12 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::POLE)
             m7_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         m7_slider->repaint();
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(7, true);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(7)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserButtonCode_e7_type]
     }
     else if (buttonThatWasClicked == e8_type.get())
@@ -2097,54 +2244,52 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::POLE)
             m8_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         m8_slider->repaint();
+        
+        if (autoGain.get()->getToggleState())
+        {
+            auto gain = calculateGain(8, true);
+            processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(8)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+        }
         //[/UserButtonCode_e8_type]
     }
     else if (buttonThatWasClicked == e1_active.get())
     {
         //[UserButtonCode_e1_active] -- add your button handler code here..
-        e1_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e1_active]
     }
     else if (buttonThatWasClicked == e2_active.get())
     {
         //[UserButtonCode_e2_active] -- add your button handler code here..
-        e2_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e2_active]
     }
     else if (buttonThatWasClicked == e3_active.get())
     {
         //[UserButtonCode_e3_active] -- add your button handler code here..
-        e3_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e3_active]
     }
     else if (buttonThatWasClicked == e4_active.get())
     {
         //[UserButtonCode_e4_active] -- add your button handler code here..
-        e4_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e4_active]
     }
     else if (buttonThatWasClicked == e5_active.get())
     {
         //[UserButtonCode_e5_active] -- add your button handler code here..
-        e5_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e5_active]
     }
     else if (buttonThatWasClicked == e6_active.get())
     {
         //[UserButtonCode_e6_active] -- add your button handler code here..
-        e6_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e6_active]
     }
     else if (buttonThatWasClicked == e7_active.get())
     {
         //[UserButtonCode_e7_active] -- add your button handler code here..
-        e7_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e7_active]
     }
     else if (buttonThatWasClicked == e8_active.get())
     {
         //[UserButtonCode_e8_active] -- add your button handler code here..
-        e8_gain->setVisible(buttonThatWasClicked->getToggleState());
         //[/UserButtonCode_e8_active]
     }
     else if (buttonThatWasClicked == linLog_switch.get())
@@ -2258,63 +2403,32 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         }
         //[/UserButtonCode_load_preset_button]
     }
-    else if (buttonThatWasClicked == autoGain_switch.get())
+    else if (buttonThatWasClicked == autoGain.get())
     {
-        //[UserButtonCode_autoGain_switch] -- add your button handler code here..
+        //[UserButtonCode_autoGain] -- add your button handler code here..
         if (buttonThatWasClicked->getToggleState())
         {
-            gain_1->setEditable(false);
-            gain_1->removeListener(this);
-
-            gain_2->setEditable(false);
-            gain_2->removeListener(this);
-
-            gain_3->setEditable(false);
-            gain_3->removeListener(this);
-
-            gain_4->setEditable(false);
-            gain_4->removeListener(this);
-
-            gain_5->setEditable(false);
-            gain_5->removeListener(this);
-
-            gain_6->setEditable(false);
-            gain_6->removeListener(this);
-
-            gain_7->setEditable(false);
-            gain_7->removeListener(this);
-
-            gain_8->setEditable(false);
-            gain_8->removeListener(this);
-
+            gain1_label->setEditable(false);
+            gain2_label->setEditable(false);
+            gain3_label->setEditable(false);
+            gain4_label->setEditable(false);
+            gain5_label->setEditable(false);
+            gain6_label->setEditable(false);
+            gain7_label->setEditable(false);
+            gain8_label->setEditable(false);
         }
         else
         {
-            gain_1->setEditable(true);
-            gain_1->addListener(this);
-
-            gain_2->setEditable(true);
-            gain_2->addListener(this);
-
-            gain_3->setEditable(true);
-            gain_3->addListener(this);
-
-            gain_4->setEditable(true);
-            gain_4->addListener(this);
-
-            gain_5->setEditable(true);
-            gain_5->addListener(this);
-
-            gain_6->setEditable(true);
-            gain_6->addListener(this);
-
-            gain_7->setEditable(true);
-            gain_7->addListener(this);
-
-            gain_8->setEditable(true);
-            gain_8->addListener(this);
+            gain1_label->setEditable(true);
+            gain2_label->setEditable(true);
+            gain3_label->setEditable(true);
+            gain4_label->setEditable(true);
+            gain5_label->setEditable(true);
+            gain6_label->setEditable(true);
+            gain7_label->setEditable(true);
+            gain8_label->setEditable(true);
         }
-        //[/UserButtonCode_autoGain_switch]
+        //[/UserButtonCode_autoGain]
     }
 
     //[UserbuttonClicked_Post]
@@ -2324,129 +2438,138 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
 void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
 {
     //[UserlabelTextChanged_Pre]
-    if (labelThatHasChanged == gain_1.get())
-    {
-        double newGain = labelThatHasChanged->getText().getDoubleValue();
-        auto linearGain = formatGainInput(newGain);
-        processor.setGainFromLabel(1, linearGain);
-        return;
-    }
-    else if (labelThatHasChanged == gain_2.get())
-    {
-        double newGain = labelThatHasChanged->getText().getDoubleValue();
-        auto linearGain = formatGainInput(newGain);
-        processor.setGainFromLabel(2, linearGain);
-        return;
-    }
-    else if (labelThatHasChanged == gain_3.get())
-    {
-        double newGain = labelThatHasChanged->getText().getDoubleValue();
-        auto linearGain = formatGainInput(newGain);
-        processor.setGainFromLabel(3, linearGain);
-        return;
-    }
-    else if (labelThatHasChanged == gain_4.get())
-    {
-        double newGain = labelThatHasChanged->getText().getDoubleValue();
-        auto linearGain = formatGainInput(newGain);
-        processor.setGainFromLabel(4, linearGain);
-        return;
-    }
-    else if (labelThatHasChanged == gain_5.get())
-    {
-        double newGain = labelThatHasChanged->getText().getDoubleValue();
-        auto linearGain = formatGainInput(newGain);
-        processor.setGainFromLabel(5, linearGain);
-        return;
-    }
-    else if (labelThatHasChanged == gain_6.get())
-    {
-        double newGain = labelThatHasChanged->getText().getDoubleValue();
-        auto linearGain = formatGainInput(newGain);
-        processor.setGainFromLabel(6, linearGain);
-        return;
-    }
-    else if (labelThatHasChanged == gain_7.get())
-    {
-        double newGain = labelThatHasChanged->getText().getDoubleValue();
-        auto linearGain = formatGainInput(newGain);
-        processor.setGainFromLabel(7, linearGain);
-        return;
-    }
-    else if (labelThatHasChanged == gain_8.get())
-    {
-        double newGain = labelThatHasChanged->getText().getDoubleValue();
-        auto linearGain = formatGainInput(newGain);
-        processor.setGainFromLabel(8, linearGain);
-        return;
-    }
-
-    
-    
     const double sampleRate = processor.getSampleRate();
     int newFrequency = labelThatHasChanged->getText().getIntValue();
+    
+    float newGain = formatGainInput(labelThatHasChanged->getText().getFloatValue());
 
     if (labelThatHasChanged == frequency_label.get())
         formatDesignFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
     else
-        formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
     //[/UserlabelTextChanged_Pre]
 
     if (labelThatHasChanged == p1_freq.get())
     {
         //[UserLabelCode_p1_freq] -- add your label text handling code here..
+        formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p1_slider.get(), sampleRate);
+        return;
         //[/UserLabelCode_p1_freq]
     }
     else if (labelThatHasChanged == p2_freq.get())
     {
         //[UserLabelCode_p2_freq] -- add your label text handling code here..
+        formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p2_slider.get(), sampleRate);
+        return;
         //[/UserLabelCode_p2_freq]
     }
     else if (labelThatHasChanged == p3_freq.get())
     {
         //[UserLabelCode_p3_freq] -- add your label text handling code here..
+        formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p3_slider.get(), sampleRate);
+        return;
         //[/UserLabelCode_p3_freq]
     }
     else if (labelThatHasChanged == p4_freq.get())
     {
         //[UserLabelCode_p4_freq] -- add your label text handling code here..
+        formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p4_slider.get(), sampleRate);
+        return;
         //[/UserLabelCode_p4_freq]
     }
     else if (labelThatHasChanged == p5_freq.get())
     {
         //[UserLabelCode_p5_freq] -- add your label text handling code here..
+        formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p5_slider.get(), sampleRate);
+        return;
         //[/UserLabelCode_p5_freq]
     }
     else if (labelThatHasChanged == p6_freq.get())
     {
         //[UserLabelCode_p6_freq] -- add your label text handling code here..
+        formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p6_slider.get(), sampleRate);
+        return;
         //[/UserLabelCode_p6_freq]
     }
     else if (labelThatHasChanged == p7_freq.get())
     {
         //[UserLabelCode_p7_freq] -- add your label text handling code here..
+        formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p7_slider.get(), sampleRate);
+        return;
         //[/UserLabelCode_p7_freq]
     }
     else if (labelThatHasChanged == p8_freq.get())
     {
         //[UserLabelCode_p8_freq] -- add your label text handling code here..
+        formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p8_slider.get(), sampleRate);
+        return;
         //[/UserLabelCode_p8_freq]
     }
     else if (labelThatHasChanged == frequency_label.get())
     {
         //[UserLabelCode_frequency_label] -- add your label text handling code here..
         design_frequency = updateDesignSliderFromFrequency(newFrequency, frequency_design_slider.get(), sampleRate);
+        return;
         //[/UserLabelCode_frequency_label]
     }
+    else if (labelThatHasChanged == gain1_label.get())
+    {
+        //[UserLabelCode_gain1_label] -- add your label text handling code here..
+        e1_gain->setValue(newGain);
+        //[/UserLabelCode_gain1_label]
+    }
+    else if (labelThatHasChanged == gain2_label.get())
+    {
+        //[UserLabelCode_gain2_label] -- add your label text handling code here..
+        e2_gain->setValue(newGain);
+        //[/UserLabelCode_gain2_label]
+    }
+    else if (labelThatHasChanged == gain3_label.get())
+    {
+        //[UserLabelCode_gain3_label] -- add your label text handling code here..
+        e3_gain->setValue(newGain);
+        //[/UserLabelCode_gain3_label]
+    }
+    else if (labelThatHasChanged == gain4_label.get())
+    {
+        //[UserLabelCode_gain4_label] -- add your label text handling code here..
+        e4_gain->setValue(newGain);
+        //[/UserLabelCode_gain4_label]
+    }
+    else if (labelThatHasChanged == gain5_label.get())
+    {
+        //[UserLabelCode_gain5_label] -- add your label text handling code here..
+        e5_gain->setValue(newGain);
+        //[/UserLabelCode_gain5_label]
+    }
+    else if (labelThatHasChanged == gain6_label.get())
+    {
+        //[UserLabelCode_gain6_label] -- add your label text handling code here..
+        e6_gain->setValue(newGain);
+        //[/UserLabelCode_gain6_label]
+    }
+    else if (labelThatHasChanged == gain7_label.get())
+    {
+        //[UserLabelCode_gain7_label] -- add your label text handling code here..
+        e7_gain->setValue(newGain);
+        //[/UserLabelCode_gain7_label]
+    }
+    else if (labelThatHasChanged == gain8_label.get())
+    {
+        //[UserLabelCode_gain8_label] -- add your label text handling code here..
+        e8_gain->setValue(newGain);
+        //[/UserLabelCode_gain8_label]
+    }
+
     //[UserlabelTextChanged_Post]
+    labelThatHasChanged->setText(juce::String(newGain, 2) + " dB", NotificationType::dontSendNotification);
     //[/UserlabelTextChanged_Post]
 }
 
@@ -2690,17 +2813,6 @@ void PluginEditor::setTransitionWidthRange ()
     normalisedTransitionWidth = transition_width_slider->getValue();
 }
 
-double PluginEditor::formatGainInput(double newGain)
-{
-    double linearGain = Decibels::decibelsToGain(newGain);
-    if (linearGain < GAIN_FLOOR)
-        linearGain = GAIN_FLOOR;
-    else if (linearGain > GAIN_CEILING)
-        linearGain = GAIN_CEILING;
-    
-    return linearGain;
-}
-
 void PluginEditor::updateGUIGivenShape()
 {
     if (!type_box->getSelectedId())
@@ -2773,6 +2885,35 @@ void PluginEditor::updateGUIEllipticChebyshevIandII()
     transition_width_slider->setBounds (1027, 375, 135, 25);
 
     calculate_button->setEnabled(true);
+}
+
+float PluginEditor::formatGainInput(float gain)
+{
+    if (gain < GAIN_FLOOR)
+        gain = GAIN_FLOOR;
+    else if (gain > GAIN_CEILING)
+        gain = GAIN_CEILING;
+
+    return gain;
+}
+
+float PluginEditor::calculateGain(const int elementNr, bool isChangingType)
+{
+    auto element = processor.getElementState(elementNr);
+    auto magnitude = element.getMagnitude();
+    auto type = element.getType();
+    
+    if (isChangingType)
+        type = (type == FilterElement::ZERO) ? FilterElement::POLE : FilterElement::ZERO;
+    
+    auto Re = element.getMagnitude() * std::cos(element.getPhase() * MathConstants<double>::pi);
+    
+    switch (type)
+    {
+        case FilterElement::ZERO: return static_cast<float>(Decibels::gainToDecibels(std::sqrt(1 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude)), GAIN_FLOOR - 1.0));
+            
+        case FilterElement::POLE: return static_cast<float>(Decibels::gainToDecibels(std::sqrt(1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude), GAIN_FLOOR - 1.0));
+    }
 }
 
 void PluginEditor::coefficientsNormalization (double& c0, double& c1, double& c2)
@@ -2887,7 +3028,8 @@ void PluginEditor::filterDesignAndSetup()
     for (; elementNr <= NUMBER_OF_FILTER_ELEMENTS; ++ elementNr)
             processor.setUnactive(elementNr);
     processor.setBypass(false);
-    autoGain_switch.get()->setToggleState(true, NotificationType::sendNotificationSync);
+
+    autoGain->setToggleState(true, NotificationType::sendNotificationSync);
 }
 
 void PluginEditor::autoUpdateCheckAndSetup ()
@@ -2955,7 +3097,16 @@ BEGIN_JUCER_METADATA
            mode="1"/>
     <IMAGE pos="1161 11 23 19" resource="load_icon_png" opacity="1.0" mode="1"/>
     <IMAGE pos="1047 15 17 12" resource="save_icon_png" opacity="1.0" mode="1"/>
+    <TEXT pos="402 445 56 20" fill="solid: ff383838" hasStroke="0" text="AUTO GAIN"
+          fontname="Gill Sans" fontsize="10.0" kerning="0.0" bold="0" italic="0"
+          justification="36" typefaceStyle="SemiBold"/>
   </BACKGROUND>
+  <SLIDER name="Element 1 gain" id="d741331d65d867d1" memberName="e1_gain"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="310 5 97 25"
+          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
+          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
+          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="30"
+          textBoxHeight="10" skewFactor="1.0" needsCallback="1"/>
   <GENERICCOMPONENT name="gaussianPlane" id="f84485816497c4e3" memberName="gaussian_plane"
                     virtualName="" explicitFocusOrder="0" pos="30 480 260 260" class="GaussianPlane"
                     params="processor.getFilterElementsChain()"/>
@@ -3000,7 +3151,7 @@ BEGIN_JUCER_METADATA
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
-                    virtualName="" explicitFocusOrder="0" pos="540 70 450 285" class="FrequencyResponse"
+                    virtualName="" explicitFocusOrder="0" pos="536 72 450 285" class="FrequencyResponse"
                     params="magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb"/>
   <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
          virtualName="" explicitFocusOrder="0" pos="695 360 140 24" textCol="ff383838"
@@ -3018,104 +3169,105 @@ BEGIN_JUCER_METADATA
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <SLIDER name="Element 1 magnitude" id="9107cda7959bc0ad" memberName="m1_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 95 120 25"
-          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
-          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
-          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 92 120 25"
+          bkgcol="ff383838" thumbcol="ff909497" trackcol="ff383838" textboxtext="ff383838"
+          textboxbkgd="0" textboxhighlight="66686868" textboxoutline="0"
+          min="0.0" max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="TextBoxRight"
+          textBoxEditable="1" textBoxWidth="50" textBoxHeight="20" skewFactor="1.0"
+          needsCallback="1"/>
   <SLIDER name="Element 1 phase" id="b9f95ed5c32caef9" memberName="p1_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 95 120 25"
-          bkgcol="ff383838" thumbcol="ffffffff" textboxtext="ff333333"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 92 120 25"
+          bkgcol="ff383838" thumbcol="ff909497" trackcol="ff383838" textboxtext="ff383838"
           textboxbkgd="0" textboxhighlight="66686868" textboxoutline="0"
           min="0.0" max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="TextBoxRight"
           textBoxEditable="1" textBoxWidth="50" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="Magnitudes" id="f2206057c7f672c6" memberName="magnitudes_label"
-         virtualName="" explicitFocusOrder="0" pos="33 60 90 24" textCol="ff383838"
+         virtualName="" explicitFocusOrder="0" pos="33 57 90 24" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="MAGNITUDE&#10;"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <LABEL name="Phases" id="e0e34f187bbbdcdc" memberName="phases_label"
-         virtualName="" explicitFocusOrder="0" pos="198 60 80 24" textCol="ff383838"
+         virtualName="" explicitFocusOrder="0" pos="198 57 80 24" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="FREQUENCY&#10;"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Gill Sans" fontsize="13.0" kerning="0.0" bold="0" italic="0"
          justification="36" typefaceStyle="SemiBold"/>
   <LABEL name="Filter Type" id="676532893526fbc7" memberName="zero_pole_label"
-         virtualName="" explicitFocusOrder="0" pos="310 60 91 24" textCol="ff383838"
+         virtualName="" explicitFocusOrder="0" pos="310 57 91 24" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="FILTER TYPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"
          typefaceStyle="SemiBold"/>
   <LABEL name="Active" id="e82d0bcbcd7af0" memberName="active_label" virtualName=""
-         explicitFocusOrder="0" pos="401 60 55 24" textCol="ff383838"
+         explicitFocusOrder="0" pos="401 57 55 24" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="ACTIVE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"
          typefaceStyle="SemiBold"/>
   <TOGGLEBUTTON name="Element 1 type" id="cb026ef1068db639" memberName="e1_type"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 96 52 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 93 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 2 type" id="56addf679899dfb" memberName="e2_type"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 141 52 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 138 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 3 type" id="5abda647a887dc8e" memberName="e3_type"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 186 52 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 183 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 4 type" id="3136ab6a98246edb" memberName="e4_type"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 231 52 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 228 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 5 type" id="4d6d7aa8e46a31c6" memberName="e5_type"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 276 52 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 273 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 6 type" id="6a190298ad04abf" memberName="e6_type"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 321 52 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 318 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 7 type" id="57fd1da9881e7a6a" memberName="e7_type"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 366 52 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 363 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 8 type" id="a0b1086b7f717581" memberName="e8_type"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 411 52 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="331 408 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 1 active" id="84bb86bdbd9ccede" memberName="e1_active"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 96 49 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 93 49 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 2 active" id="176e3fb309f12ef5" memberName="e2_active"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 141 49 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 138 49 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 3 active" id="d6d9c0542e41b9c3" memberName="e3_active"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 186 49 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 183 49 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 4 active" id="72d6ebba0023e28e" memberName="e4_active"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 231 49 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 228 49 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 5 active" id="d8c38a2ce324a73d" memberName="e5_active"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 276 49 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 273 49 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 6 active" id="1b42bda33e1c947c" memberName="e6_active"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 321 49 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 318 49 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 7 active" id="3405e0694e2b063d" memberName="e7_active"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 366 49 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 363 49 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="Element 8 active" id="b60e0b9c2104a2bd" memberName="e8_active"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 411 49 21"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="404 408 49 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <LABEL name="Gaussian plane" id="32980deccea32218" memberName="gaussian_plane_label"
@@ -3127,140 +3279,154 @@ BEGIN_JUCER_METADATA
   <TOGGLEBUTTON name="Bypass" id="4daf2a36bc47407c" memberName="bypass" virtualName="CustomToggleButton"
                 explicitFocusOrder="0" pos="1067 712 60 25" buttonText="" connectedEdges="0"
                 needsCallback="0" radioGroupId="0" state="0"/>
-  <SLIDER name="Gain" id="7e880f1fc774c2af" memberName="gain_slider" virtualName="CustomSlider"
-          explicitFocusOrder="0" pos="1074 540 45 160" thumbcol="ffffffff"
-          textboxtext="ff383838" textboxhighlight="66686868" textboxoutline="8e989b"
-          min="0.0" max="10.0" int="0.0" style="LinearVertical" textBoxPos="TextBoxBelow"
-          textBoxEditable="1" textBoxWidth="100" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="0"/>
+  <SLIDER name="Master Gain" id="7e880f1fc774c2af" memberName="masterGain_slider"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="1074 540 45 160"
+          thumbcol="ffffffff" textboxtext="ff383838" textboxhighlight="66686868"
+          textboxoutline="8e989b" min="0.0" max="10.0" int="0.0" style="LinearVertical"
+          textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="100"
+          textBoxHeight="20" skewFactor="1.0" needsCallback="0"/>
   <TOGGLEBUTTON name="Linear / Logarithmic" id="269b07022e58d862" memberName="linLog_switch"
                 virtualName="CustomToggleButton" explicitFocusOrder="0" pos="931 362 52 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <SLIDER name="Element 2 magnitude" id="e1a6d1b02cc8ab80" memberName="m2_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 140 120 25"
-          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
-          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
-          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 137 120 25"
+          bkgcol="ff383838" thumbcol="ff909497" trackcol="ff383838" textboxtext="ff383838"
+          textboxbkgd="0" textboxhighlight="66686868" textboxoutline="0"
+          min="0.0" max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="TextBoxRight"
+          textBoxEditable="1" textBoxWidth="50" textBoxHeight="20" skewFactor="1.0"
+          needsCallback="1"/>
   <SLIDER name="Element 3 magnitude" id="b0094bd01977f340" memberName="m3_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 185 120 25"
-          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
-          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
-          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 182 120 25"
+          bkgcol="ff383838" thumbcol="ff909497" trackcol="ff383838" textboxtext="ff383838"
+          textboxbkgd="0" textboxhighlight="66686868" textboxoutline="0"
+          min="0.0" max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="TextBoxRight"
+          textBoxEditable="1" textBoxWidth="50" textBoxHeight="20" skewFactor="1.0"
+          needsCallback="1"/>
   <SLIDER name="Element 4 magnitude" id="8f433acd768ec1d9" memberName="m4_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 230 120 25"
-          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
-          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
-          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 227 120 25"
+          bkgcol="ff383838" thumbcol="ff909497" trackcol="ff383838" textboxtext="ff383838"
+          textboxbkgd="0" textboxhighlight="66686868" textboxoutline="0"
+          min="0.0" max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="TextBoxRight"
+          textBoxEditable="1" textBoxWidth="50" textBoxHeight="20" skewFactor="1.0"
+          needsCallback="1"/>
   <SLIDER name="Element 5 magnitude" id="fe0864ae3596b10d" memberName="m5_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 275 120 25"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 272 120 25"
           thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 6 magnitude" id="e6371565d3e4bb47" memberName="m6_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 320 120 25"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 317 120 25"
           thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 7 magnitude" id="3661ca4111317400" memberName="m7_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 365 120 25"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 362 120 25"
           thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 8 magnitude" id="8e83a0a6b9d1e264" memberName="m8_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 410 120 25"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="20 407 120 25"
           thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 2 phase" id="60007c00fdd0e234" memberName="p2_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 140 120 25"
-          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
-          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
-          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 137 120 25"
+          bkgcol="ff383838" thumbcol="ff909497" trackcol="ff383838" textboxtext="ff383838"
+          textboxbkgd="0" textboxhighlight="66686868" textboxoutline="0"
+          min="0.0" max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="TextBoxRight"
+          textBoxEditable="1" textBoxWidth="50" textBoxHeight="20" skewFactor="1.0"
+          needsCallback="1"/>
   <SLIDER name="Element 3 phase" id="dad16f547c32eed" memberName="p3_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 185 120 25"
-          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
-          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
-          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 182 120 25"
+          bkgcol="ff383838" thumbcol="ff909497" trackcol="ff383838" textboxtext="ff383838"
+          textboxbkgd="0" textboxhighlight="66686868" textboxoutline="0"
+          min="0.0" max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="TextBoxRight"
+          textBoxEditable="1" textBoxWidth="50" textBoxHeight="20" skewFactor="1.0"
+          needsCallback="1"/>
   <SLIDER name="Element 4 phase" id="2baa73d9d72e7d2a" memberName="p4_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 230 120 25"
-          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
-          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
-          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
-          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 227 120 25"
+          bkgcol="ff383838" thumbcol="ff909497" trackcol="ff383838" textboxtext="ff383838"
+          textboxbkgd="0" textboxhighlight="66686868" textboxoutline="0"
+          min="0.0" max="10.0" int="0.0" style="LinearHorizontal" textBoxPos="TextBoxRight"
+          textBoxEditable="1" textBoxWidth="50" textBoxHeight="20" skewFactor="1.0"
+          needsCallback="1"/>
   <SLIDER name="Element 5 phase" id="6ba360671cfe4646" memberName="p5_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 275 120 25"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 272 120 25"
           thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 6 phase" id="6fb200ac73072a45" memberName="p6_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 320 120 25"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 317 120 25"
           thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 7 phase" id="481e9546dc440bf4" memberName="p7_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 365 120 25"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 362 120 25"
           thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="Element 8 phase" id="d587f0ce08864b4e" memberName="p8_slider"
-          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 410 120 25"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="144 407 120 25"
           thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
           textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
           textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="Element 1 frequency" id="79f5387b07d9c483" memberName="p1_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 95 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="265 92 60 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
   <LABEL name="Element 2 frequency" id="5b5fee371d8a9052" memberName="p2_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 140 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="265 137 60 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
   <LABEL name="Element 3 frequency" id="a15e9da2c1f0e36b" memberName="p3_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 185 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="265 182 60 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
   <LABEL name="Element 4 frequency" id="d6a7e59b3d26f91e" memberName="p4_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 230 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="265 227 60 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
   <LABEL name="Element 5 frequency" id="f0a2b500cc7bc03" memberName="p5_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 275 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="265 272 60 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
   <LABEL name="Element 6 frequency" id="5dfdb03e7a654b13" memberName="p6_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 320 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="265 317 60 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
   <LABEL name="Element 7 frequency" id="600a01c1726873b3" memberName="p7_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 365 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="265 362 60 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
   <LABEL name="Element 8 frequency" id="f85a4dea8bdf47f1" memberName="p8_freq"
-         virtualName="" explicitFocusOrder="0" pos="265 410 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="265 407 60 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
   <COMBOBOX name="Design type" id="5a16af79e3a09d2b" memberName="type_box"
             virtualName="CustomComboBox" explicitFocusOrder="0" pos="1025 150 140 25"
             editable="0" layout="33" items="" textWhenNonSelected="TYPE"
@@ -3314,10 +3480,11 @@ BEGIN_JUCER_METADATA
           textBoxPos="NoTextBox" textBoxEditable="0" textBoxWidth="50"
           textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="Frequency Label" id="bb3cf5d37607187f" memberName="frequency_label"
-         virtualName="" explicitFocusOrder="0" pos="1110 255 60 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="1110 255 60 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
   <LABEL name="Transition width" id="b5068a6d459942e" memberName="transition_width_label"
          virtualName="" explicitFocusOrder="0" pos="1031 296 129 20" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="TRANSITION WIDTH"
@@ -3360,62 +3527,106 @@ BEGIN_JUCER_METADATA
               virtualName="CustomButton" explicitFocusOrder="0" pos="1082 9 100 25"
               bgColOff="909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
-  <LABEL name="Gain" id="d1b48585f0499e3f" memberName="gain_label" virtualName=""
-         explicitFocusOrder="0" pos="464 60 55 24" textCol="ff383838"
+  <LABEL name="Active" id="d1b48585f0499e3f" memberName="active_label2"
+         virtualName="" explicitFocusOrder="0" pos="464 57 55 24" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="GAIN" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
          fontsize="13.0" kerning="0.0" bold="0" italic="0" justification="36"
          typefaceStyle="SemiBold"/>
-  <LABEL name="Gain 1 label" id="d2af3168bb3295ad" memberName="gain_1"
-         virtualName="" explicitFocusOrder="0" pos="470 95 45 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <LABEL name="Gain 2 label" id="a88f42871a57d930" memberName="gain_2"
-         virtualName="" explicitFocusOrder="0" pos="470 140 45 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <LABEL name="Gain 2 label" id="b82703d20aa7b910" memberName="gain_3"
-         virtualName="" explicitFocusOrder="0" pos="470 185 45 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <LABEL name="Gain 2 label" id="b879fa1c09d8070c" memberName="gain_4"
-         virtualName="" explicitFocusOrder="0" pos="470 230 45 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <LABEL name="Gain 2 label" id="c3065c046eecdd9f" memberName="gain_5"
-         virtualName="" explicitFocusOrder="0" pos="470 275 45 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <LABEL name="Gain 2 label" id="2b04579391c20b6b" memberName="gain_6"
-         virtualName="" explicitFocusOrder="0" pos="470 320 45 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <LABEL name="Gain 2 label" id="3d0555b13f6503a2" memberName="gain_7"
-         virtualName="" explicitFocusOrder="0" pos="470 365 45 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <LABEL name="Gain 2 label" id="967f80d9a172f0a7" memberName="gain_8"
-         virtualName="" explicitFocusOrder="0" pos="470 410 45 25" textCol="ff333333"
-         edTextCol="ff000000" edBkgCol="ff000000" labelText="" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="Auto Gain" id="e86e0ac9b8b3aca3" memberName="autoGain_switch"
-                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="453 444 52 21"
+  <TOGGLEBUTTON name="Auto Gain" id="90911b86576c8406" memberName="autoGain"
+                virtualName="CustomToggleButton" explicitFocusOrder="0" pos="462 445 49 21"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
-  <LABEL name="Auto Gain lbl" id="cf2e36a7122c519a" memberName="autoGain_label"
-         virtualName="" explicitFocusOrder="0" pos="386 443 68 24" textCol="ff383838"
-         edTextCol="ff000000" edBkgCol="0" labelText="AUTO GAIN" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Gill Sans"
-         fontsize="11.0" kerning="0.0" bold="0" italic="0" justification="36"
-         typefaceStyle="SemiBold"/>
+  <SLIDER name="Element 2 gain" id="a4ada05f7ffd7d3" memberName="e2_gain"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="310 5 97 25"
+          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
+          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
+          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+  <SLIDER name="Element 3 gain" id="958a3cfe5686df02" memberName="e3_gain"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="310 8 97 25"
+          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
+          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
+          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+  <SLIDER name="Element 4 gain" id="9a6c08a59a4a3368" memberName="e4_gain"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="310 8 97 25"
+          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
+          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
+          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+  <SLIDER name="Element 5 gain" id="4b84959a38db6ff1" memberName="e5_gain"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="310 8 97 25"
+          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
+          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
+          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+  <SLIDER name="Element 6 gain" id="814629cc690e6dca" memberName="e6_gain"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="310 8 97 25"
+          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
+          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
+          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+  <SLIDER name="Element 7 gain" id="d34f362f2ea94202" memberName="e7_gain"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="310 8 97 25"
+          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
+          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
+          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+  <SLIDER name="Element 8 gain" id="96723bac4463f16f" memberName="e8_gain"
+          virtualName="CustomSlider" explicitFocusOrder="0" pos="310 8 97 25"
+          thumbcol="ffffffff" textboxtext="ff333333" textboxbkgd="0" textboxhighlight="66686868"
+          textboxoutline="0" min="0.0" max="10.0" int="0.0" style="LinearHorizontal"
+          textBoxPos="TextBoxRight" textBoxEditable="1" textBoxWidth="50"
+          textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+  <LABEL name="Element 1 Gain" id="d3b3c84dbd820cb0" memberName="gain1_label"
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="467 92 50 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
+  <LABEL name="Element 2 Gain" id="8fb3eee154973f41" memberName="gain2_label"
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="467 137 50 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
+  <LABEL name="Element 3 Gain" id="42dedfd9cadd4d58" memberName="gain3_label"
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="467 182 50 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
+  <LABEL name="Element 4 Gain" id="2b3213a7dc1fa0a6" memberName="gain4_label"
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="467 227 50 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
+  <LABEL name="Element 5 Gain" id="9ec39126e0cb6ee0" memberName="gain5_label"
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="467 272 50 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
+  <LABEL name="Element 6 Gain" id="adac5f376d3d0dc3" memberName="gain6_label"
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="467 317 50 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
+  <LABEL name="Element 7 Gain" id="342ffb8ce4c00357" memberName="gain7_label"
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="467 362 50 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
+  <LABEL name="Element 8 Gain" id="ace3eac3aa495676" memberName="gain8_label"
+         virtualName="CustomLabel" explicitFocusOrder="0" pos="467 407 50 25"
+         textCol="ff333333" edTextCol="ff000000" edBkgCol="ff000000" labelText=""
+         editableSingleClick="1" editableDoubleClick="1" focusDiscardsChanges="0"
+         fontname="Gill Sans" fontsize="12.0" kerning="0.0" bold="0" italic="0"
+         justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

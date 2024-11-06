@@ -66,10 +66,7 @@ public:
     
     void turnOnOffAllElements(bool option);
     
-    void setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr, const double gain = 1.0);
-    
-    void setGainFromMagnitudeAndPhase(const int elementNr);
-    void setGainFromLabel(const int elementNr, double newGain);
+    void setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr, const double linearGain = 1.0);
     
     AudioProcessorValueTreeState parameters;
 
@@ -88,3 +85,4 @@ private:
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PolesAndZerosEQAudioProcessor);
 };
+

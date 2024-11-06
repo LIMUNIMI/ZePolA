@@ -118,6 +118,7 @@ class FrequencyResponse : public GraphicResponse
         
         g.setColour(juce::Colour(LINE_COLOUR));
         g.strokePath(responsePath, juce::PathStrokeType(1.5f));
+        g.setColour(juce::Colour(TEXT_COLOUR));
         g.drawText(formatFrequency(sampleRate * 0.5), bounds.getRight() - 20, bounds.getCentreY(), 20, 20, juce::Justification::centred);
     }
     
@@ -160,6 +161,7 @@ class PhaseResponse : public GraphicResponse
         
         g.setColour(juce::Colour(LINE_COLOUR));
         g.strokePath(responsePath, juce::PathStrokeType(1.5f));
+        g.setColour(juce::Colour(TEXT_COLOUR));
         g.drawText(formatFrequency(sampleRate * 0.5), bounds.getRight() - 20, bounds.getCentreY(), 20, 20, juce::Justification::centred);
     }
     
@@ -489,5 +491,6 @@ class DraggableElement : public juce::Component
         return std::complex<double>(realPart, imagPart);
     }
 };
+
 
 

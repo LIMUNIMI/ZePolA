@@ -78,7 +78,8 @@ class FilterElement
     // Sets the gain of the digital filter
     void setGain (double newValue)
     {
-        gain = newValue;
+        auto linearGain = Decibels::decibelsToGain(newValue, FILTER_ELEMENT_GAIN_FLOOR - 1.0);
+        gain = linearGain;
     }
     
     // Resets the memory of the digital filter to the initial state
