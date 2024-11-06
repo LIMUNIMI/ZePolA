@@ -51,7 +51,6 @@ class FilterElement
         
         magnitude = newValue;
         calculateCoefficients();
-        calculateGain();
     }
     
     // Sets the phase of the zero/pole of the digital filter
@@ -59,7 +58,6 @@ class FilterElement
     {
         phase = newValue;
         calculateCoefficients();
-        calculateGain();
     }
     
     // Sets the active statuts of the digital filter
@@ -77,6 +75,13 @@ class FilterElement
         memoryReset();
     }
     
+    // Sets the gain of the digital filter
+    void setGain (double newValue)
+    {
+        auto linearGain = Decibels::decibelsToGain(newValue, FILTER_ELEMENT_GAIN_FLOOR - 1.0);
+        gain = linearGain;
+    }
+    
     // Resets the memory of the digital filter to the initial state
     void memoryReset ()
     {
@@ -90,24 +95,6 @@ class FilterElement
         coeff1 = -2 * getRealPart();
         coeff2 = magnitude * magnitude;
     }
-    
-    // Calculates the gain to compensate for the increase in volume given by the filter
-    void calculateGain()
-    {
-        // IMPLEMENTAZIONE ATTUALE
-        auto Re = getRealPart();
-        switch (type)
-        {
-            case ZERO: gain = 1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude); break;
-                
-            case POLE: gain = 1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude); break;
-        }
-        
-        // VERSIONE ALTERNATIVA
-        // std::complex<double> j(0.0, 1.0);
-        // gain = std::abs((0.5) / (0.5 + coeff1 * (j / MathConstants<double>::pi)));
-    }
-    
     
     // Calculates the output sample given the input sample
     float processSample (double inputSample)
@@ -289,6 +276,11 @@ class PolesAndZerosCascade
     void setElementType (const int elementNr, bool isZero)
     {
         elements[elementNr - 1].setType(isZero ? FilterElement::ZERO : FilterElement::POLE);
+    }
+    
+    void setElementGain (const int elementNr, double newValue)
+    {
+        elements[elementNr - 1].setGain(newValue);
     }
     
     // Resets the memory of each element in the cascade

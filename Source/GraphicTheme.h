@@ -1,10 +1,9 @@
 #pragma once
 #include <JuceHeader.h>
 
-#define MAGNITUDE_SLIDERS_COLOUR            0xff1f1f1c
-#define PHASE_SLIDERS_COLOUR                0xff6f7071
+#define SLIDER_PIN_COLOUR                   0xff383838
 #define SLIDER_BAR_COLOUR                   0xff797d7f
-#define SLIDER_LABEL_COLOUR                 0xff333333
+#define SLIDER_LABEL_COLOUR                 0xff383838
 #define SWITCH_BACKGROUND                   0xffe7eaeb
 #define OFF_SWITCH_COLOUR                   0xffcacfd2
 #define ON_SWITCH_COLOUR                    0xff909497
@@ -73,6 +72,22 @@ class CustomSlider : public juce::Slider
     }
 };
 
+class CustomLabel : public juce::Label
+{
+    public:
+    CustomLabel(const juce::String& labelName, const juce::String& text) : juce::Label(labelName) {}
+    
+    void mouseEnter(const juce::MouseEvent&) override
+    {
+        setMouseCursor(juce::MouseCursor::PointingHandCursor);
+    }
+    
+    void mouseExit(const juce::MouseEvent&) override
+    {
+        setMouseCursor(juce::MouseCursor::NormalCursor);
+    }
+};
+
 class CustomComboBox : public juce::ComboBox
 {
     public:
@@ -89,10 +104,7 @@ class CustomComboBox : public juce::ComboBox
     }
 };
 
-/*
- The MagnitudeSliderTheme class implements a look and feel for magnitude sliders.
- */
-class MagnitudeSliderTheme : public LookAndFeel_V4
+class SliderTheme : public LookAndFeel_V4
 {
     public:
     
@@ -104,7 +116,7 @@ class MagnitudeSliderTheme : public LookAndFeel_V4
         g.setColour(juce::Colour(SLIDER_BAR_COLOUR));
         g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.0f, 0.08f);
         
-        g.setColour(juce::Colour(MAGNITUDE_SLIDERS_COLOUR));
+        g.setColour(juce::Colour(SLIDER_PIN_COLOUR));
         g.fillEllipse(sliderPos - 6.0f, y + height / 2 - 5.5f, 12, 12);
         
         g.setColour(juce::Colours::white);
@@ -118,37 +130,9 @@ class MagnitudeSliderTheme : public LookAndFeel_V4
 };
 
 /*
- The PhaseSliderTheme class implements a look and feel for magnitude sliders.
+ The MasterGainSliderTheme class implements a look and feel for phase sliders.
  */
-class PhaseSliderTheme : public LookAndFeel_V4
-{
-    public:
-    
-    void drawLinearSlider (juce::Graphics& g, int x, int y, int width,
-                           int height, float sliderPos, float minSliderPos,
-                           float maxSliderPos, const juce::Slider::SliderStyle,
-                           juce::Slider& slider) override
-    {
-        g.setColour(juce::Colour(SLIDER_BAR_COLOUR));
-        g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.0f, 0.08f);
-        
-        g.setColour(juce::Colour(PHASE_SLIDERS_COLOUR));
-        g.fillEllipse(sliderPos - 6.0f, y + height / 2 - 5.5f, 12, 12);
-        
-        g.setColour(juce::Colours::white);
-        g.drawEllipse(sliderPos - 6.0f, y + height / 2 - 5.5f, 12, 12, 1.0f);
-    }
-    
-    juce::Font getLabelFont(juce::Label& label) override
-    {
-        return juce::Font("Gill Sans", 13.0f, juce::Font::plain);
-    }
-};
-
-/*
- The GainSliderTheme class implements a look and feel for phase sliders.
- */
-class GainSliderTheme : public LookAndFeel_V4
+class MasterGainSliderTheme : public LookAndFeel_V4
 {
     public:
     

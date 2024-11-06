@@ -64,6 +64,7 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     void getSpectrum ();
     void updateReferenceFrequencies();
+    void updateElements();
 
     void updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate);
     void updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate);
@@ -79,6 +80,9 @@ public:
     void updateGUIGivenShape();
     void updateGUIButterworth();
     void updateGUIEllipticChebyshevIandII();
+
+    float formatGainInput(float gain);
+    float calculateGain (const int elementNr, bool isChangingType = false);
 
     void coefficientsNormalization(double& c0, double& c1, double& c2);
     void fromCoefficientsToMagnitudeAndPhase(double& mg, double& ph, double c1, double c2);
@@ -132,13 +136,13 @@ private:
     std::vector<std::unique_ptr<SliderAttachment>> phasesAttachments;
     std::vector<std::unique_ptr<ButtonAttachment>> typesAttachments;
     std::vector<std::unique_ptr<ButtonAttachment>> activeAttachments;
-    std::unique_ptr<SliderAttachment> gainAttachment;
+    std::vector<std::unique_ptr<SliderAttachment>> gainsAttachments;
+    std::unique_ptr<SliderAttachment> masterGainAttachment;
     std::unique_ptr<ButtonAttachment> bypassAttachment;
     std::unique_ptr<ButtonAttachment> linLogAttachment;
 
-    MagnitudeSliderTheme magnitudeSlidersTheme;
-    PhaseSliderTheme phaseSlidersTheme;
-    GainSliderTheme gainSliderTheme;
+    SliderTheme sliderTheme;
+    MasterGainSliderTheme masterGainSliderTheme;
 
     TypeSwitchTheme typeSwitchesTheme;
     LinLogSwitchTheme linLogTheme;
@@ -169,9 +173,18 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    std::unique_ptr<CustomSlider> e1_gain;
+    std::unique_ptr<GaussianPlane> gaussian_plane;
+    std::unique_ptr<DraggableElement> e2;
+    std::unique_ptr<DraggableElement> e3;
+    std::unique_ptr<DraggableElement> e4;
+    std::unique_ptr<DraggableElement> e5;
+    std::unique_ptr<DraggableElement> e6;
+    std::unique_ptr<DraggableElement> e7;
+    std::unique_ptr<DraggableElement> e8;
+    std::unique_ptr<DraggableElement> e1;
     std::unique_ptr<juce::Label> passbandAmplitude_label;
     std::unique_ptr<CustomSlider> stopbandAmplitude_slider;
-    std::unique_ptr<GaussianPlane> gaussian_plane;
     std::unique_ptr<CustomButton> reset_button;
     std::unique_ptr<FrequencyResponse> frequency_response;
     std::unique_ptr<juce::Label> freq_response_label;
@@ -201,7 +214,7 @@ private:
     std::unique_ptr<CustomToggleButton> e8_active;
     std::unique_ptr<juce::Label> gaussian_plane_label;
     std::unique_ptr<CustomToggleButton> bypass;
-    std::unique_ptr<CustomSlider> gain_slider;
+    std::unique_ptr<CustomSlider> masterGain_slider;
     std::unique_ptr<CustomToggleButton> linLog_switch;
     std::unique_ptr<CustomSlider> m2_slider;
     std::unique_ptr<CustomSlider> m3_slider;
@@ -217,14 +230,14 @@ private:
     std::unique_ptr<CustomSlider> p6_slider;
     std::unique_ptr<CustomSlider> p7_slider;
     std::unique_ptr<CustomSlider> p8_slider;
-    std::unique_ptr<juce::Label> p1_freq;
-    std::unique_ptr<juce::Label> p2_freq;
-    std::unique_ptr<juce::Label> p3_freq;
-    std::unique_ptr<juce::Label> p4_freq;
-    std::unique_ptr<juce::Label> p5_freq;
-    std::unique_ptr<juce::Label> p6_freq;
-    std::unique_ptr<juce::Label> p7_freq;
-    std::unique_ptr<juce::Label> p8_freq;
+    std::unique_ptr<CustomLabel> p1_freq;
+    std::unique_ptr<CustomLabel> p2_freq;
+    std::unique_ptr<CustomLabel> p3_freq;
+    std::unique_ptr<CustomLabel> p4_freq;
+    std::unique_ptr<CustomLabel> p5_freq;
+    std::unique_ptr<CustomLabel> p6_freq;
+    std::unique_ptr<CustomLabel> p7_freq;
+    std::unique_ptr<CustomLabel> p8_freq;
     std::unique_ptr<CustomComboBox> type_box;
     std::unique_ptr<CustomComboBox> shape_box;
     std::unique_ptr<CustomButton> calculate_button;
@@ -237,24 +250,33 @@ private:
     std::unique_ptr<juce::Label> design_frequency_label;
     std::unique_ptr<CustomToggleButton> ampDb_switch;
     std::unique_ptr<CustomSlider> frequency_design_slider;
-    std::unique_ptr<juce::Label> frequency_label;
+    std::unique_ptr<CustomLabel> frequency_label;
     std::unique_ptr<juce::Label> transition_width_label;
     std::unique_ptr<CustomSlider> transition_width_slider;
     std::unique_ptr<CustomSlider> passbandAmplitude_slider;
     std::unique_ptr<juce::Label> stopbandAmplitude_label;
     std::unique_ptr<CustomToggleButton> autoUpdate_button;
-    std::unique_ptr<juce::Label> gain_1;
-    std::unique_ptr<juce::Label> gain_2;
-    std::unique_ptr<juce::Label> gain_3;
-    std::unique_ptr<juce::Label> gain_4;
-    std::unique_ptr<juce::Label> gain_5;
-    std::unique_ptr<juce::Label> gain_6;
-    std::unique_ptr<juce::Label> gain_7;
-    std::unique_ptr<juce::Label> gain_8;
     std::unique_ptr<CustomButton> undo_button;
     std::unique_ptr<CustomButton> redo_button;
     std::unique_ptr<CustomButton> save_preset_button;
     std::unique_ptr<CustomButton> load_preset_button;
+    std::unique_ptr<juce::Label> active_label2;
+    std::unique_ptr<CustomToggleButton> autoGain;
+    std::unique_ptr<CustomSlider> e2_gain;
+    std::unique_ptr<CustomSlider> e3_gain;
+    std::unique_ptr<CustomSlider> e4_gain;
+    std::unique_ptr<CustomSlider> e5_gain;
+    std::unique_ptr<CustomSlider> e6_gain;
+    std::unique_ptr<CustomSlider> e7_gain;
+    std::unique_ptr<CustomSlider> e8_gain;
+    std::unique_ptr<CustomLabel> gain1_label;
+    std::unique_ptr<CustomLabel> gain2_label;
+    std::unique_ptr<CustomLabel> gain3_label;
+    std::unique_ptr<CustomLabel> gain4_label;
+    std::unique_ptr<CustomLabel> gain5_label;
+    std::unique_ptr<CustomLabel> gain6_label;
+    std::unique_ptr<CustomLabel> gain7_label;
+    std::unique_ptr<CustomLabel> gain8_label;
     juce::Image cachedImage_anticlockwise_arrow_png_1;
     juce::Image cachedImage_clockwise_arrow_png_2;
     juce::Image cachedImage_load_icon_png_3;
