@@ -104,7 +104,7 @@ class CustomComboBox : public juce::ComboBox
     }
 };
 
-class SliderTheme : public LookAndFeel_V4
+class ActiveSliderTheme : public LookAndFeel_V4
 {
     public:
     
@@ -117,6 +117,31 @@ class SliderTheme : public LookAndFeel_V4
         g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.0f, 0.08f);
         
         g.setColour(juce::Colour(SLIDER_PIN_COLOUR));
+        g.fillEllipse(sliderPos - 6.0f, y + height / 2 - 5.5f, 12, 12);
+        
+        g.setColour(juce::Colours::white);
+        g.drawEllipse(sliderPos - 6.0f, y + height / 2 - 5.5f, 12, 12, 1.0f);
+    }
+    
+    juce::Font getLabelFont(juce::Label& label) override
+    {
+        return juce::Font("Gill Sans", 13.0f, juce::Font::plain);
+    }
+};
+
+class UnactiveSliderTheme : public LookAndFeel_V4
+{
+    public:
+    
+    void drawLinearSlider (juce::Graphics& g, int x, int y, int width,
+                           int height, float sliderPos, float minSliderPos,
+                           float maxSliderPos, const juce::Slider::SliderStyle,
+                           juce::Slider& slider) override
+    {
+        g.setColour(juce::Colour(SLIDER_BAR_COLOUR).brighter(0.8));
+        g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.0f, 0.08f);
+        
+        g.setColour(juce::Colour(SLIDER_PIN_COLOUR).brighter(0.8));
         g.fillEllipse(sliderPos - 6.0f, y + height / 2 - 5.5f, 12, 12);
         
         g.setColour(juce::Colours::white);

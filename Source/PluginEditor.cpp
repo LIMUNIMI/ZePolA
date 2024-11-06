@@ -1239,23 +1239,23 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     masterGainAttachment.reset(new SliderAttachment(valueTreeState, MASTER_GAIN_NAME, *masterGain_slider));
     bypassAttachment.reset(new ButtonAttachment(valueTreeState, FILTER_BYPASS_NAME, *bypass));
 
-    m1_slider->setLookAndFeel(&sliderTheme);
-    m2_slider->setLookAndFeel(&sliderTheme);
-    m3_slider->setLookAndFeel(&sliderTheme);
-    m4_slider->setLookAndFeel(&sliderTheme);
-    m5_slider->setLookAndFeel(&sliderTheme);
-    m6_slider->setLookAndFeel(&sliderTheme);
-    m7_slider->setLookAndFeel(&sliderTheme);
-    m8_slider->setLookAndFeel(&sliderTheme);
+    m1_slider->setLookAndFeel(&activeSliderTheme);
+    m2_slider->setLookAndFeel(&activeSliderTheme);
+    m3_slider->setLookAndFeel(&activeSliderTheme);
+    m4_slider->setLookAndFeel(&activeSliderTheme);
+    m5_slider->setLookAndFeel(&activeSliderTheme);
+    m6_slider->setLookAndFeel(&activeSliderTheme);
+    m7_slider->setLookAndFeel(&activeSliderTheme);
+    m8_slider->setLookAndFeel(&activeSliderTheme);
 
-    p1_slider->setLookAndFeel(&sliderTheme);
-    p2_slider->setLookAndFeel(&sliderTheme);
-    p3_slider->setLookAndFeel(&sliderTheme);
-    p4_slider->setLookAndFeel(&sliderTheme);
-    p5_slider->setLookAndFeel(&sliderTheme);
-    p6_slider->setLookAndFeel(&sliderTheme);
-    p7_slider->setLookAndFeel(&sliderTheme);
-    p8_slider->setLookAndFeel(&sliderTheme);
+    p1_slider->setLookAndFeel(&activeSliderTheme);
+    p2_slider->setLookAndFeel(&activeSliderTheme);
+    p3_slider->setLookAndFeel(&activeSliderTheme);
+    p4_slider->setLookAndFeel(&activeSliderTheme);
+    p5_slider->setLookAndFeel(&activeSliderTheme);
+    p6_slider->setLookAndFeel(&activeSliderTheme);
+    p7_slider->setLookAndFeel(&activeSliderTheme);
+    p8_slider->setLookAndFeel(&activeSliderTheme);
 
     masterGain_slider->setLookAndFeel(&masterGainSliderTheme);
 
@@ -1335,11 +1335,11 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     order_box->setLookAndFeel(&comboBoxTheme);
     shape_box->setLookAndFeel(&comboBoxTheme);
 
-    frequency_design_slider->setLookAndFeel(&sliderTheme);
+    frequency_design_slider->setLookAndFeel(&activeSliderTheme);
     frequency_design_slider->setSkewFactor(0.2);
-    transition_width_slider->setLookAndFeel(&sliderTheme);
-    passbandAmplitude_slider->setLookAndFeel(&sliderTheme);
-    stopbandAmplitude_slider->setLookAndFeel(&sliderTheme);
+    transition_width_slider->setLookAndFeel(&activeSliderTheme);
+    passbandAmplitude_slider->setLookAndFeel(&activeSliderTheme);
+    stopbandAmplitude_slider->setLookAndFeel(&activeSliderTheme);
 
     double sampleRate = processor.getSampleRate();
 
@@ -1381,6 +1381,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     //[Constructor] You can add your own custom stuff here..
     updateElements();
+    slidersInit();
     //[/Constructor]
 }
 
@@ -2255,41 +2256,121 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == e1_active.get())
     {
         //[UserButtonCode_e1_active] -- add your button handler code here..
+        if (buttonThatWasClicked->getToggleState())
+        {
+            m1_slider->setLookAndFeel(&activeSliderTheme);
+            p1_slider->setLookAndFeel(&activeSliderTheme);
+        }
+        else
+        {
+            m1_slider->setLookAndFeel(&unactiveSliderTheme);
+            p1_slider->setLookAndFeel(&unactiveSliderTheme);
+        }
         //[/UserButtonCode_e1_active]
     }
     else if (buttonThatWasClicked == e2_active.get())
     {
         //[UserButtonCode_e2_active] -- add your button handler code here..
+        if (buttonThatWasClicked->getToggleState())
+        {
+            m2_slider->setLookAndFeel(&activeSliderTheme);
+            p2_slider->setLookAndFeel(&activeSliderTheme);
+        }
+        else
+        {
+            m2_slider->setLookAndFeel(&unactiveSliderTheme);
+            p2_slider->setLookAndFeel(&unactiveSliderTheme);
+        }
         //[/UserButtonCode_e2_active]
     }
     else if (buttonThatWasClicked == e3_active.get())
     {
         //[UserButtonCode_e3_active] -- add your button handler code here..
+        if (buttonThatWasClicked->getToggleState())
+        {
+            m3_slider->setLookAndFeel(&activeSliderTheme);
+            p3_slider->setLookAndFeel(&activeSliderTheme);
+        }
+        else
+        {
+            m3_slider->setLookAndFeel(&unactiveSliderTheme);
+            p3_slider->setLookAndFeel(&unactiveSliderTheme);
+        }
         //[/UserButtonCode_e3_active]
     }
     else if (buttonThatWasClicked == e4_active.get())
     {
         //[UserButtonCode_e4_active] -- add your button handler code here..
+        if (buttonThatWasClicked->getToggleState())
+        {
+            m4_slider->setLookAndFeel(&activeSliderTheme);
+            p4_slider->setLookAndFeel(&activeSliderTheme);
+        }
+        else
+        {
+            m4_slider->setLookAndFeel(&unactiveSliderTheme);
+            p4_slider->setLookAndFeel(&unactiveSliderTheme);
+        }
         //[/UserButtonCode_e4_active]
     }
     else if (buttonThatWasClicked == e5_active.get())
     {
         //[UserButtonCode_e5_active] -- add your button handler code here..
+        if (buttonThatWasClicked->getToggleState())
+        {
+            m5_slider->setLookAndFeel(&activeSliderTheme);
+            p5_slider->setLookAndFeel(&activeSliderTheme);
+        }
+        else
+        {
+            m5_slider->setLookAndFeel(&unactiveSliderTheme);
+            p5_slider->setLookAndFeel(&unactiveSliderTheme);
+        }
         //[/UserButtonCode_e5_active]
     }
     else if (buttonThatWasClicked == e6_active.get())
     {
         //[UserButtonCode_e6_active] -- add your button handler code here..
+        if (buttonThatWasClicked->getToggleState())
+        {
+            m6_slider->setLookAndFeel(&activeSliderTheme);
+            p6_slider->setLookAndFeel(&activeSliderTheme);
+        }
+        else
+        {
+            m6_slider->setLookAndFeel(&unactiveSliderTheme);
+            p6_slider->setLookAndFeel(&unactiveSliderTheme);
+        }
         //[/UserButtonCode_e6_active]
     }
     else if (buttonThatWasClicked == e7_active.get())
     {
         //[UserButtonCode_e7_active] -- add your button handler code here..
+        if (buttonThatWasClicked->getToggleState())
+        {
+            m7_slider->setLookAndFeel(&activeSliderTheme);
+            p7_slider->setLookAndFeel(&activeSliderTheme);
+        }
+        else
+        {
+            m7_slider->setLookAndFeel(&unactiveSliderTheme);
+            p7_slider->setLookAndFeel(&unactiveSliderTheme);
+        }
         //[/UserButtonCode_e7_active]
     }
     else if (buttonThatWasClicked == e8_active.get())
     {
         //[UserButtonCode_e8_active] -- add your button handler code here..
+        if (buttonThatWasClicked->getToggleState())
+        {
+            m8_slider->setLookAndFeel(&activeSliderTheme);
+            p8_slider->setLookAndFeel(&activeSliderTheme);
+        }
+        else
+        {
+            m8_slider->setLookAndFeel(&unactiveSliderTheme);
+            p8_slider->setLookAndFeel(&unactiveSliderTheme);
+        }
         //[/UserButtonCode_e8_active]
     }
     else if (buttonThatWasClicked == linLog_switch.get())
@@ -2445,7 +2526,6 @@ void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
 
     if (labelThatHasChanged == frequency_label.get())
         formatDesignFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
-    
     //[/UserlabelTextChanged_Pre]
 
     if (labelThatHasChanged == p1_freq.get())
@@ -2624,6 +2704,99 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void PluginEditor::slidersInit()
+{
+    auto elements = processor.getFilterElementsChain();
+    
+    if (elements[0].isActive())
+    {
+        m1_slider->setLookAndFeel(&activeSliderTheme);
+        p1_slider->setLookAndFeel(&activeSliderTheme);
+    }
+    else
+    {
+        m1_slider->setLookAndFeel(&unactiveSliderTheme);
+        p1_slider->setLookAndFeel(&unactiveSliderTheme);
+    }
+
+    if (elements[1].isActive())
+    {
+        m2_slider->setLookAndFeel(&activeSliderTheme);
+        p2_slider->setLookAndFeel(&activeSliderTheme);
+    }
+    else
+    {
+        m2_slider->setLookAndFeel(&unactiveSliderTheme);
+        p2_slider->setLookAndFeel(&unactiveSliderTheme);
+    }
+
+    if (elements[2].isActive())
+    {
+        m3_slider->setLookAndFeel(&activeSliderTheme);
+        p3_slider->setLookAndFeel(&activeSliderTheme);
+    }
+    else
+    {
+        m3_slider->setLookAndFeel(&unactiveSliderTheme);
+        p3_slider->setLookAndFeel(&unactiveSliderTheme);
+    }
+
+    if (elements[3].isActive())
+    {
+        m4_slider->setLookAndFeel(&activeSliderTheme);
+        p4_slider->setLookAndFeel(&activeSliderTheme);
+    }
+    else
+    {
+        m4_slider->setLookAndFeel(&unactiveSliderTheme);
+        p4_slider->setLookAndFeel(&unactiveSliderTheme);
+    }
+
+    if (elements[4].isActive())
+    {
+        m5_slider->setLookAndFeel(&activeSliderTheme);
+        p5_slider->setLookAndFeel(&activeSliderTheme);
+    }
+    else
+    {
+        m5_slider->setLookAndFeel(&unactiveSliderTheme);
+        p5_slider->setLookAndFeel(&unactiveSliderTheme);
+    }
+
+    if (elements[5].isActive())
+    {
+        m6_slider->setLookAndFeel(&activeSliderTheme);
+        p6_slider->setLookAndFeel(&activeSliderTheme);
+    }
+    else
+    {
+        m6_slider->setLookAndFeel(&unactiveSliderTheme);
+        p6_slider->setLookAndFeel(&unactiveSliderTheme);
+    }
+
+    if (elements[6].isActive())
+    {
+        m7_slider->setLookAndFeel(&activeSliderTheme);
+        p7_slider->setLookAndFeel(&activeSliderTheme);
+    }
+    else
+    {
+        m7_slider->setLookAndFeel(&unactiveSliderTheme);
+        p7_slider->setLookAndFeel(&unactiveSliderTheme);
+    }
+
+    if (elements[7].isActive())
+    {
+        m8_slider->setLookAndFeel(&activeSliderTheme);
+        p8_slider->setLookAndFeel(&activeSliderTheme);
+    }
+    else
+    {
+        m8_slider->setLookAndFeel(&unactiveSliderTheme);
+        p8_slider->setLookAndFeel(&unactiveSliderTheme);
+    }
+}
+
 void PluginEditor::getSpectrum()
 {
     double phi;

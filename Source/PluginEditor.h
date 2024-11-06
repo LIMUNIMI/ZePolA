@@ -62,6 +62,7 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    void slidersInit();
     void getSpectrum ();
     void updateReferenceFrequencies();
     void updateElements();
@@ -141,7 +142,8 @@ private:
     std::unique_ptr<ButtonAttachment> bypassAttachment;
     std::unique_ptr<ButtonAttachment> linLogAttachment;
 
-    SliderTheme sliderTheme;
+    ActiveSliderTheme activeSliderTheme;
+    UnactiveSliderTheme unactiveSliderTheme;
     MasterGainSliderTheme masterGainSliderTheme;
 
     TypeSwitchTheme typeSwitchesTheme;
