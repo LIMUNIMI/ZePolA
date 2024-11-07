@@ -7,6 +7,17 @@
 EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcessorValueTreeState& vts)
 : processor(p), valueTreeState(vts)
 {
+    warningLabel.reset(new juce::Label("Warning label", TRANS ("Caution! The current configuration of the filter may cause unexpected increase of volume. Check the gain of each filter before deactivating the bypass of the plugin.")));
+    addAndMakeVisible(warningLabel.get());
+    warningLabel->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    warningLabel->setJustificationType (juce::Justification::centred);
+    warningLabel->setEditable (false, false, false);
+    warningLabel->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    warningLabel->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    warningLabel->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    warningLabel->setBounds (720, 360, 140, 24);
+    warningLabel->setVisible(false);
+    
     p.setEditorCallback([this]()
                         {
         getSpectrum();
@@ -2552,25 +2563,31 @@ void EditorComponent::getSpectrum()
         magnitudes[i] = gain * std::abs(spectrum);
         phases[i] = (pi + std::arg(spectrum)) / twoPi;
     }
-    auto size = sizeof(magnitudes) / sizeof(magnitudes[0]);
-    double* maxPointer = std::max_element(magnitudes, magnitudes + size);
-    double maxLinearValue = *maxPointer;
-    double maxdBValue = Decibels::gainToDecibels(maxLinearValue, -128.0);
-    if (maxdBValue > WARNINGDBLEVEL)
+    auto arraySize = sizeof(magnitudes) / sizeof(magnitudes[0]);
+    double sum = 0.0;
+    double mean = 1.0;
+    
+    for (int i = 0; i < arraySize; ++ i)
+        sum += magnitudes[i];
+    
+    if (arraySize != 0)
+        mean = sum / static_cast<double>(arraySize);
+    
+    double dBMean = Decibels::gainToDecibels(mean, -128.0);
+    DBG(dBMean);
+    if (dBMean > WARNINGDBLEVEL)
     {
         if (!isSettingFilters && !isUserWarned)
         {
             processor.setBypass(true);
-            WarningWindowTheme warningWindowTheme;
-            juce::AlertWindow warningWindow("Caution!", "The current configuration of the filter may cause unexpected increase of volume. Check the gain of each filter before deactivating the bypass of the plugin.", juce::AlertWindow::WarningIcon);
-            warningWindow.setLookAndFeel(&warningWindowTheme);
-            warningWindow.addButton("Close", 1);
-            warningWindow.runModalLoop();
+            
+            warningLabel->setVisible(true);
             isUserWarned = true;
         }
     }
     else
     {
+        warningLabel->setVisible(false);
         isUserWarned = false;
     }
 }
@@ -2833,9 +2850,19 @@ float EditorComponent::calculateGain(const int elementNr, bool isChangingType)
 
     switch (type)
     {
-        case FilterElement::ZERO: return static_cast<float>(Decibels::gainToDecibels(std::sqrt(1 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude)), GAIN_FLOOR - 1.0));
+        case FilterElement::ZERO:
+        {
+            auto gainValue = std::sqrt(1.0 / (1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude));
+            return static_cast<float>(Decibels::gainToDecibels(gainValue, GAIN_FLOOR - 1.0));
+        }
 
-        case FilterElement::POLE: return static_cast<float>(Decibels::gainToDecibels(std::sqrt(1.0 + 4 * Re * Re + magnitude * magnitude * magnitude * magnitude), GAIN_FLOOR - 1.0));
+        case FilterElement::POLE:
+        {
+            auto Im = element.getMagnitude() * std::sin(element.getPhase() * MathConstants<double>::pi);
+            auto MSG = 1.0 / (std::abs(1.0 - magnitude * magnitude) * (Re * Re - 2 * std::abs(Re) + Im * Im + 1.0));
+            auto gainValue = 1.0 / std::sqrt(MSG);
+            return static_cast<float>(Decibels::gainToDecibels(gainValue, GAIN_FLOOR - 1.0));
+        }
     }
 }
 

@@ -240,6 +240,8 @@ private:
     juce::Image cachedImage_clockwise_arrow_png_2;
     juce::Image cachedImage_load_icon_png_3;
     juce::Image cachedImage_save_icon_png_4;
+    
+    std::unique_ptr<juce::Label> warningLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorComponent)
 };
