@@ -4,8 +4,6 @@
 #include "PluginEditor.h"
 #include "Filter.h"
 
-#define STEREO          2
-
 PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor()
 : parameters(*this, &undoManager, "PolesAndZero-EQ", Parameters::createParameterLayout())
 {
@@ -89,7 +87,7 @@ void PolesAndZerosEQAudioProcessor::processBlockBypassed(juce::AudioBuffer<float
 
 juce::AudioProcessorEditor* PolesAndZerosEQAudioProcessor::createEditor()
 {
-    return new PluginEditor(*this, parameters);
+    return new WrappedEditor (*this, parameters);
 }
 
 void PolesAndZerosEQAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
@@ -204,6 +202,11 @@ FilterElement PolesAndZerosEQAudioProcessor::getElementState(const int elementNr
         return elements[elementNr - 1];
 }
 
+void PolesAndZerosEQAudioProcessor::setEditorCallback(std::function<void()> callback)
+{
+    editorCallback = callback;
+}
+
 void PolesAndZerosEQAudioProcessor::resetFilter ()
 {
     for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++ i)
@@ -293,6 +296,7 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude, const doub
 {
     if (elementNr > NUMBER_OF_FILTER_ELEMENTS)
         return;
+    setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)), false);
     
     float gain = Decibels::gainToDecibels(linearGain, GAIN_FLOOR - 1.0);
     

@@ -49,10 +49,7 @@ public:
     std::vector<FilterElement> getFilterElementsChain();
     FilterElement getElementState(const int elementNr);
     
-    void setEditorCallback(std::function<void()> callback)
-    {
-        editorCallback = callback;
-    }
+    void setEditorCallback(std::function<void()> callback);
     
     void resetFilter ();
     

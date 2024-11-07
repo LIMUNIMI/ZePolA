@@ -1,28 +1,34 @@
 #pragma once
 #include <JuceHeader.h>
 
+// Sliders MACROS
 #define SLIDER_PIN_COLOUR                   0xff383838
 #define SLIDER_BAR_COLOUR                   0xff797d7f
 #define SLIDER_LABEL_COLOUR                 0xff383838
+#define BRIGHTER                            0.8
+#define GAIN_SLIDER_COLOUR                  0xff2e86c1
+#define GAIN_SLIDER_BORDER_COLOUR           0xff626567
+
+// Switches MACROS
 #define SWITCH_BACKGROUND                   0xffe7eaeb
 #define OFF_SWITCH_COLOUR                   0xffcacfd2
 #define ON_SWITCH_COLOUR                    0xff909497
-#define ZEROS_COLOUR                        0xd79b59b6
-#define POLES_COLOUR                        0xffffbc2e
-#define BYPASS_ON_COLOUR                    0xffe86d5c
-#define BYPASS_OFF_COLOUR                   0xff781a13
-#define GAIN_SLIDER_COLOUR                  0xff2e86c1
-#define GAIN_SLIDER_BORDER_COLOUR           0xff626567
 #define LIN_COLOUR                          0xcd3498d8
 #define LOG_COLOUR                          0xffe86d5c
 #define AMP_COLOUR                          0xffcacfd2
 #define DB_COLOUR                           0xff909497
-#define AUTO_UPDATE_ON_COLOUR               0xff73cc81
-#define AUTO_UPDATE_OFF_COLOUR              0xff558a6a
-
 #define LED_ON_COLOUR                       0xffff5f58
 #define LED_OFF_COLOUR                      0xff781a13
 #define LED_RADIUS                          4.5f
+#define ZEROS_COLOUR                        0xd79b59b6
+#define POLES_COLOUR                        0xffffbc2e
+
+// Button MACROS
+#define BYPASS_ON_COLOUR                    0xffe86d5c
+#define BYPASS_OFF_COLOUR                   0xff781a13
+#define AUTO_UPDATE_ON_COLOUR               0xff73cc81
+#define AUTO_UPDATE_OFF_COLOUR              0xff558a6a
+
 
 class CustomButton : public juce::TextButton
 {
@@ -138,10 +144,10 @@ class UnactiveSliderTheme : public LookAndFeel_V4
                            float maxSliderPos, const juce::Slider::SliderStyle,
                            juce::Slider& slider) override
     {
-        g.setColour(juce::Colour(SLIDER_BAR_COLOUR).brighter(0.8));
+        g.setColour(juce::Colour(SLIDER_BAR_COLOUR).brighter(BRIGHTER));
         g.fillRoundedRectangle(x, y + height / 2 - 1, width, 2.0f, 0.08f);
         
-        g.setColour(juce::Colour(SLIDER_PIN_COLOUR).brighter(0.8));
+        g.setColour(juce::Colour(SLIDER_PIN_COLOUR).brighter(BRIGHTER));
         g.fillEllipse(sliderPos - 6.0f, y + height / 2 - 5.5f, 12, 12);
         
         g.setColour(juce::Colours::white);
@@ -669,6 +675,17 @@ class AutoUpdateSwitchTheme : public juce::LookAndFeel_V4
         const float fontSize = isOn ? 11.5f : 12.0f;
         g.setFont(juce::Font("Gill Sans", fontSize, juce::Font::bold).withTypefaceStyle("SemiBold"));
         g.drawText("AUTO UPDATE", switchRect, juce::Justification::centred);
+    }
+};
+
+class WarningWindowTheme : public juce::LookAndFeel_V4
+{
+public:
+    WarningWindowTheme()
+    {
+        setColour(juce::AlertWindow::backgroundColourId, juce::Colours::darkgrey);
+        setColour(juce::AlertWindow::textColourId, juce::Colours::white);
+        setColour(juce::AlertWindow::outlineColourId, juce::Colours::orange);
     }
 };
 

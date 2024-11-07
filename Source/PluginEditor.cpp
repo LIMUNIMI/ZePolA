@@ -1,43 +1,16 @@
-/*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 7.0.12
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library.
-  Copyright (c) 2020 - Raw Material Software Limited.
-
-  ==============================================================================
-*/
-
-//[Headers] You can add your own extra header files here...
 #include "Parameters.h"
 #include <cmath>
 #include <JuceHeader.h>
-//[/Headers]
 
 #include "PluginEditor.h"
 
-
-//[MiscUserDefs] You can add your own user definitions and misc code here...
-//[/MiscUserDefs]
-
-//==============================================================================
-PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValueTreeState& vts)
-    : AudioProcessorEditor(&p), processor (p), valueTreeState (vts)
+EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcessorValueTreeState& vts)
+: processor(p), valueTreeState(vts)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
     p.setEditorCallback([this]()
                         {
         getSpectrum();
-        frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
+        magnitude_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate(), true);
         updateElements();
         gaussian_plane->updateConjugate(processor.getFilterElementsChain());
@@ -54,7 +27,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     typesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     activeAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
     gainsAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
-    //[/Constructor_pre]
 
     e1_gain.reset (new CustomSlider ("Element 1 gain"));
     addAndMakeVisible (e1_gain.get());
@@ -160,23 +132,23 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     reset_button->setBounds (421, 664, 80, 25);
 
-    frequency_response.reset (new FrequencyResponse (magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb));
-    addAndMakeVisible (frequency_response.get());
-    frequency_response->setName ("frequencyResponse");
+    magnitude_response.reset (new MagnitudeResponse (magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb));
+    addAndMakeVisible (magnitude_response.get());
+    magnitude_response->setName ("frequencyResponse");
 
-    frequency_response->setBounds (540, 70, 450, 285);
+    magnitude_response->setBounds (540, 70, 450, 285);
 
-    freq_response_label.reset (new juce::Label ("Frequency response",
-                                                TRANS ("SPECTRUM MAGNITUDE\n")));
-    addAndMakeVisible (freq_response_label.get());
-    freq_response_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    freq_response_label->setJustificationType (juce::Justification::centred);
-    freq_response_label->setEditable (false, false, false);
-    freq_response_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
-    freq_response_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    freq_response_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    mg_response_label.reset (new juce::Label ("Magnitude response",
+                                                TRANS ("MAGNITUDE RESPONSE\n")));
+    addAndMakeVisible (mg_response_label.get());
+    mg_response_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    mg_response_label->setJustificationType (juce::Justification::centred);
+    mg_response_label->setEditable (false, false, false);
+    mg_response_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    mg_response_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    mg_response_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    freq_response_label->setBounds (695, 360, 140, 24);
+    mg_response_label->setBounds (695, 360, 140, 24);
 
     phase_response.reset (new PhaseResponse (phases, referenceFrequencies, processor.getSampleRate(), ampDb));
     addAndMakeVisible (phase_response.get());
@@ -185,7 +157,7 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     phase_response->setBounds (540, 455, 450, 285);
 
     ph_response_label.reset (new juce::Label ("Phase response",
-                                              TRANS ("SPECTRUM PHASE")));
+                                              TRANS ("PHASE RESPONSE")));
     addAndMakeVisible (ph_response_label.get());
     ph_response_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
     ph_response_label->setJustificationType (juce::Justification::centred);
@@ -1190,7 +1162,6 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
     cachedImage_load_icon_png_3 = juce::ImageCache::getFromMemory (load_icon_png, load_icon_pngSize);
     cachedImage_save_icon_png_4 = juce::ImageCache::getFromMemory (save_icon_png, save_icon_pngSize);
 
-    //[UserPreSize]
     magnitudesAttachments[0].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
     magnitudesAttachments[1].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(2), *m2_slider));
     magnitudesAttachments[2].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(3), *m3_slider));
@@ -1374,20 +1345,14 @@ PluginEditor::PluginEditor (PolesAndZerosEQAudioProcessor& p, AudioProcessorValu
 
     autoUpdate_button->setLookAndFeel(&autoUpdateSwitchTheme);
 
-    //[/UserPreSize]
-
-    setSize (1200, 790);
-
-
-    //[Constructor] You can add your own custom stuff here..
     updateElements();
     slidersInit();
-    //[/Constructor]
+    autoGain->setToggleState(true, NotificationType::sendNotification);
+    gainsInit();
 }
 
-PluginEditor::~PluginEditor()
+EditorComponent::~EditorComponent()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
     for (int i = 0; i < NUMBER_OF_FILTER_ELEMENTS; ++ i)
     {
         magnitudesAttachments[i].reset();
@@ -1398,7 +1363,6 @@ PluginEditor::~PluginEditor()
     }
     masterGainAttachment.reset();
     bypassAttachment.reset();
-    //[/Destructor_pre]
 
     e1_gain = nullptr;
     gaussian_plane = nullptr;
@@ -1413,8 +1377,8 @@ PluginEditor::~PluginEditor()
     passbandAmplitude_label = nullptr;
     stopbandAmplitude_slider = nullptr;
     reset_button = nullptr;
-    frequency_response = nullptr;
-    freq_response_label = nullptr;
+    magnitude_response = nullptr;
+    mg_response_label = nullptr;
     phase_response = nullptr;
     ph_response_label = nullptr;
     m1_slider = nullptr;
@@ -1504,26 +1468,16 @@ PluginEditor::~PluginEditor()
     gain6_label = nullptr;
     gain7_label = nullptr;
     gain8_label = nullptr;
-
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
 }
 
-//==============================================================================
-void PluginEditor::paint (juce::Graphics& g)
+void EditorComponent::paint (juce::Graphics& g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
-    //[/UserPrePaint]
-
     g.fillAll (juce::Colour (0xffecf0f1));
 
     {
         float x = 15.0f, y = 55.0f, width = 510.0f, height = 720.0f;
         juce::Colour fillColour = juce::Colour (0x17b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRoundedRectangle (x, y, width, height, 14.500f);
         g.setColour (strokeColour);
@@ -1534,8 +1488,6 @@ void PluginEditor::paint (juce::Graphics& g)
         float x = 1005.0f, y = 55.0f, width = 180.0f, height = 720.0f;
         juce::Colour fillColour = juce::Colour (0x19656565);
         juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRoundedRectangle (x, y, width, height, 14.500f);
         g.setColour (strokeColour);
@@ -1546,8 +1498,6 @@ void PluginEditor::paint (juce::Graphics& g)
         float x = 525.0f, y = 55.0f, width = 480.0f, height = 720.0f;
         juce::Colour fillColour = juce::Colour (0x17b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRoundedRectangle (x, y, width, height, 14.500f);
         g.setColour (strokeColour);
@@ -1557,8 +1507,6 @@ void PluginEditor::paint (juce::Graphics& g)
     {
         int x = 15, y = 130, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRect (x, y, width, height);
     }
@@ -1566,8 +1514,6 @@ void PluginEditor::paint (juce::Graphics& g)
     {
         int x = 15, y = 175, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRect (x, y, width, height);
     }
@@ -1575,8 +1521,6 @@ void PluginEditor::paint (juce::Graphics& g)
     {
         int x = 15, y = 220, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRect (x, y, width, height);
     }
@@ -1584,8 +1528,6 @@ void PluginEditor::paint (juce::Graphics& g)
     {
         int x = 15, y = 265, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRect (x, y, width, height);
     }
@@ -1593,8 +1535,6 @@ void PluginEditor::paint (juce::Graphics& g)
     {
         int x = 15, y = 310, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRect (x, y, width, height);
     }
@@ -1602,8 +1542,6 @@ void PluginEditor::paint (juce::Graphics& g)
     {
         int x = 15, y = 400, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRect (x, y, width, height);
     }
@@ -1611,8 +1549,6 @@ void PluginEditor::paint (juce::Graphics& g)
     {
         int x = 15, y = 355, width = 510, height = 1;
         juce::Colour fillColour = juce::Colour (0x25909497);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRect (x, y, width, height);
     }
@@ -1621,8 +1557,6 @@ void PluginEditor::paint (juce::Graphics& g)
         int x = 1040, y = 60, width = 110, height = 24;
         juce::String text (TRANS ("FILTER DESIGN"));
         juce::Colour fillColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
@@ -1633,8 +1567,6 @@ void PluginEditor::paint (juce::Graphics& g)
         int x = 1075, y = 520, width = 40, height = 20;
         juce::String text (TRANS ("GAIN"));
         juce::Colour fillColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.setFont (juce::Font ("Gill Sans", 10.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
@@ -1645,8 +1577,6 @@ void PluginEditor::paint (juce::Graphics& g)
         float x = 320.0f, y = 480.0f, width = 190.0f, height = 260.0f;
         juce::Colour fillColour = juce::Colour (0x11b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRoundedRectangle (x, y, width, height, 14.500f);
         g.setColour (strokeColour);
@@ -1657,8 +1587,6 @@ void PluginEditor::paint (juce::Graphics& g)
         int x = 365, y = 485, width = 100, height = 20;
         juce::String text (TRANS ("SETUP SHORTCUTS"));
         juce::Colour fillColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
@@ -1669,8 +1597,6 @@ void PluginEditor::paint (juce::Graphics& g)
         int x = 1120, y = 681, width = 23, height = 20;
         juce::String text (TRANS ("dB"));
         juce::Colour fillColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
@@ -1681,8 +1607,6 @@ void PluginEditor::paint (juce::Graphics& g)
         int x = 495, y = 8, width = 210, height = 25;
         juce::String text (TRANS ("POLES AND ZEROS - EQ"));
         juce::Colour fillColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.setFont (juce::Font ("Gill Sans", 20.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
@@ -1692,16 +1616,12 @@ void PluginEditor::paint (juce::Graphics& g)
     {
         int x = 0, y = 40, width = 1200, height = 1;
         juce::Colour fillColour = juce::Colour (0x91383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRect (x, y, width, height);
     }
 
     {
         int x = 59, y = 16, width = 10, height = 10;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (juce::Colours::black);
         g.drawImageWithin (cachedImage_anticlockwise_arrow_png_1,
                            x, y, width, height,
@@ -1711,8 +1631,6 @@ void PluginEditor::paint (juce::Graphics& g)
 
     {
         int x = 128, y = 16, width = 10, height = 10;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (juce::Colours::black);
         g.drawImageWithin (cachedImage_clockwise_arrow_png_2,
                            x, y, width, height,
@@ -1722,8 +1640,7 @@ void PluginEditor::paint (juce::Graphics& g)
 
     {
         int x = 1161, y = 11, width = 23, height = 19;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setColour (juce::Colours::black);
         g.drawImageWithin (cachedImage_load_icon_png_3,
                            x, y, width, height,
@@ -1733,8 +1650,6 @@ void PluginEditor::paint (juce::Graphics& g)
 
     {
         int x = 1047, y = 15, width = 17, height = 12;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (juce::Colours::black);
         g.drawImageWithin (cachedImage_save_icon_png_4,
                            x, y, width, height,
@@ -1746,52 +1661,31 @@ void PluginEditor::paint (juce::Graphics& g)
         int x = 402, y = 445, width = 56, height = 20;
         juce::String text (TRANS ("AUTO GAIN"));
         juce::Colour fillColour = juce::Colour (0xff383838);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.setFont (juce::Font ("Gill Sans", 10.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
                     juce::Justification::centred, true);
     }
-
-    //[UserPaint] Add your own custom painting code here..
-    //[/UserPaint]
 }
 
-void PluginEditor::resized()
+void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
 {
-    //[UserPreResize] Add your own custom resize code here..
-    //[/UserPreResize]
-
-    //[UserResized] Add your own custom resize handling here..
-    //[/UserResized]
-}
-
-void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
-{
-    //[UsersliderValueChanged_Pre]
     const double sampleRate = processor.getSampleRate();
-    //[/UsersliderValueChanged_Pre]
 
     if (sliderThatWasMoved == e1_gain.get())
     {
-        //[UserSliderCode_e1_gain] -- add your slider handling code here..
         gain1_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
-        //[/UserSliderCode_e1_gain]
     }
     else if (sliderThatWasMoved == stopbandAmplitude_slider.get())
     {
-        //[UserSliderCode_stopbandAmplitude_slider] -- add your slider handling code here..
         stopbandAmplitudedB = sliderThatWasMoved->getValue();
         setTransitionWidthRange();
 
         if (autoUpdate)
             autoUpdateCheckAndSetup();
-        //[/UserSliderCode_stopbandAmplitude_slider]
     }
     else if (sliderThatWasMoved == m1_slider.get())
     {
-        //[UserSliderCode_m1_slider] -- add your slider handling code here..
         auto element = processor.getElementState(1);
         if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
@@ -1804,11 +1698,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(1);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(1)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_m1_slider]
     }
     else if (sliderThatWasMoved == p1_slider.get())
     {
-        //[UserSliderCode_p1_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState())
@@ -1816,11 +1708,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(1);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(1)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_p1_slider]
     }
     else if (sliderThatWasMoved == m2_slider.get())
     {
-        //[UserSliderCode_m2_slider] -- add your slider handling code here..
         auto element = processor.getElementState(2);
         if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
@@ -1833,11 +1723,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(2);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(2)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_m2_slider]
     }
     else if (sliderThatWasMoved == m3_slider.get())
     {
-        //[UserSliderCode_m3_slider] -- add your slider handling code here..
         auto element = processor.getElementState(3);
         if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
@@ -1850,11 +1738,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(3);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(3)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_m3_slider]
     }
     else if (sliderThatWasMoved == m4_slider.get())
     {
-        //[UserSliderCode_m4_slider] -- add your slider handling code here..
         auto element = processor.getElementState(4);
         if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
@@ -1867,11 +1753,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(4);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(4)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_m4_slider]
     }
     else if (sliderThatWasMoved == m5_slider.get())
     {
-        //[UserSliderCode_m5_slider] -- add your slider handling code here..
         auto element = processor.getElementState(5);
         if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
@@ -1884,11 +1768,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(5);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(5)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_m5_slider]
     }
     else if (sliderThatWasMoved == m6_slider.get())
     {
-        //[UserSliderCode_m6_slider] -- add your slider handling code here..
         auto element = processor.getElementState(6);
         if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
@@ -1901,11 +1783,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(6);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(6)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_m6_slider]
     }
     else if (sliderThatWasMoved == m7_slider.get())
     {
-        //[UserSliderCode_m7_slider] -- add your slider handling code here..
         auto element = processor.getElementState(7);
         if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
@@ -1918,11 +1798,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(7);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(7)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_m7_slider]
     }
     else if (sliderThatWasMoved == m8_slider.get())
     {
-        //[UserSliderCode_m8_slider] -- add your slider handling code here..
         auto element = processor.getElementState(8);
         if (element.getType() == FilterElement::POLE && sliderThatWasMoved->getValue() == sliderThatWasMoved->getMaximum())
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xffe86d5c));
@@ -1935,11 +1813,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(8);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(8)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_m8_slider]
     }
     else if (sliderThatWasMoved == p2_slider.get())
     {
-        //[UserSliderCode_p2_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p2_slider.get(), p2_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState())
@@ -1947,11 +1823,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(2);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(2)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_p2_slider]
     }
     else if (sliderThatWasMoved == p3_slider.get())
     {
-        //[UserSliderCode_p3_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p3_slider.get(), p3_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState())
@@ -1959,11 +1833,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(3);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(3)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_p3_slider]
     }
     else if (sliderThatWasMoved == p4_slider.get())
     {
-        //[UserSliderCode_p4_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p4_slider.get(), p4_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState())
@@ -1971,11 +1843,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(4);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(4)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_p4_slider]
     }
     else if (sliderThatWasMoved == p5_slider.get())
     {
-        //[UserSliderCode_p5_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p5_slider.get(), p5_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState())
@@ -1983,11 +1853,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(5);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(5)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_p5_slider]
     }
     else if (sliderThatWasMoved == p6_slider.get())
     {
-        //[UserSliderCode_p6_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState())
@@ -1995,11 +1863,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(6);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(6)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_p6_slider]
     }
     else if (sliderThatWasMoved == p7_slider.get())
     {
-        //[UserSliderCode_p7_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState())
@@ -2007,11 +1873,9 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(7);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(7)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_p7_slider]
     }
     else if (sliderThatWasMoved == p8_slider.get())
     {
-        //[UserSliderCode_p8_slider] -- add your slider handling code here..
         updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState())
@@ -2019,99 +1883,69 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             auto gain = calculateGain(8);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(8)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserSliderCode_p8_slider]
     }
     else if (sliderThatWasMoved == frequency_design_slider.get())
     {
-        //[UserSliderCode_frequency_design_slider] -- add your slider handling code here..
         design_frequency = updateFrequencyFromDesignSlider(frequency_design_slider.get(), frequency_label.get(), sampleRate);
         if (type_box->getSelectedId() > 1)
             setTransitionWidthRange();
 
         if (autoUpdate)
             autoUpdateCheckAndSetup();
-        //[/UserSliderCode_frequency_design_slider]
     }
     else if (sliderThatWasMoved == transition_width_slider.get())
     {
-        //[UserSliderCode_transition_width_slider] -- add your slider handling code here..
         normalisedTransitionWidth = sliderThatWasMoved->getValue();
 
         if (autoUpdate)
             autoUpdateCheckAndSetup();
-        //[/UserSliderCode_transition_width_slider]
     }
     else if (sliderThatWasMoved == passbandAmplitude_slider.get())
     {
-        //[UserSliderCode_passbandAmplitude_slider] -- add your slider handling code here..
         passbandAmplitudedB = sliderThatWasMoved->getValue();
         setTransitionWidthRange();
 
         if (autoUpdate)
             autoUpdateCheckAndSetup();
-        //[/UserSliderCode_passbandAmplitude_slider]
     }
     else if (sliderThatWasMoved == e2_gain.get())
     {
-        //[UserSliderCode_e2_gain] -- add your slider handling code here..
         gain2_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
-        //[/UserSliderCode_e2_gain]
     }
     else if (sliderThatWasMoved == e3_gain.get())
     {
-        //[UserSliderCode_e3_gain] -- add your slider handling code here..
         gain3_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
-        //[/UserSliderCode_e3_gain]
     }
     else if (sliderThatWasMoved == e4_gain.get())
     {
-        //[UserSliderCode_e4_gain] -- add your slider handling code here..
         gain4_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
-        //[/UserSliderCode_e4_gain]
     }
     else if (sliderThatWasMoved == e5_gain.get())
     {
-        //[UserSliderCode_e5_gain] -- add your slider handling code here..
         gain5_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
-        //[/UserSliderCode_e5_gain]
     }
     else if (sliderThatWasMoved == e6_gain.get())
     {
-        //[UserSliderCode_e6_gain] -- add your slider handling code here..
         gain6_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
-        //[/UserSliderCode_e6_gain]
     }
     else if (sliderThatWasMoved == e7_gain.get())
     {
-        //[UserSliderCode_e7_gain] -- add your slider handling code here..
         gain7_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
-        //[/UserSliderCode_e7_gain]
     }
     else if (sliderThatWasMoved == e8_gain.get())
     {
-        //[UserSliderCode_e8_gain] -- add your slider handling code here..
         gain8_label->setText(juce::String(sliderThatWasMoved->getValue(), 1) + " dB", NotificationType::dontSendNotification);
-        //[/UserSliderCode_e8_gain]
     }
-
-    //[UsersliderValueChanged_Post]
-    //[/UsersliderValueChanged_Post]
 }
 
-void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
+void EditorComponent::buttonClicked (juce::Button* buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
     if (buttonThatWasClicked == reset_button.get())
     {
-        //[UserButtonCode_reset_button] -- add your button handler code here..
         processor.resetFilter();
-        //[/UserButtonCode_reset_button]
     }
     else if (buttonThatWasClicked == e1_type.get())
     {
-        //[UserButtonCode_e1_type] -- add your button handler code here..
         auto element = processor.getElementState(1);
         if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
             processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(1)), POLE_MAX_MAGNITUDE);
@@ -2125,11 +1959,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             auto gain = calculateGain(1, true);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(1)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserButtonCode_e1_type]
     }
     else if (buttonThatWasClicked == e2_type.get())
     {
-        //[UserButtonCode_e2_type] -- add your button handler code here..
         auto element = processor.getElementState(2);
         if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
             processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(2)), POLE_MAX_MAGNITUDE);
@@ -2143,11 +1975,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             auto gain = calculateGain(2, true);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(2)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserButtonCode_e2_type]
     }
     else if (buttonThatWasClicked == e3_type.get())
     {
-        //[UserButtonCode_e3_type] -- add your button handler code here..
         auto element = processor.getElementState(3);
         if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
             processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(3)), POLE_MAX_MAGNITUDE);
@@ -2161,11 +1991,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             auto gain = calculateGain(3, true);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(3)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserButtonCode_e3_type]
     }
     else if (buttonThatWasClicked == e4_type.get())
     {
-        //[UserButtonCode_e4_type] -- add your button handler code here..
         auto element = processor.getElementState(4);
         if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
             processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(4)), POLE_MAX_MAGNITUDE);
@@ -2179,11 +2007,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             auto gain = calculateGain(4, true);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(4)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserButtonCode_e4_type]
     }
     else if (buttonThatWasClicked == e5_type.get())
     {
-        //[UserButtonCode_e5_type] -- add your button handler code here..
         auto element = processor.getElementState(5);
         if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
             processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(5)), POLE_MAX_MAGNITUDE);
@@ -2197,11 +2023,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             auto gain = calculateGain(5, true);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(5)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserButtonCode_e5_type]
     }
     else if (buttonThatWasClicked == e6_type.get())
     {
-        //[UserButtonCode_e6_type] -- add your button handler code here..
         auto element = processor.getElementState(6);
         if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
             processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(6)), POLE_MAX_MAGNITUDE);
@@ -2215,11 +2039,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             auto gain = calculateGain(6, true);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(6)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserButtonCode_e6_type]
     }
     else if (buttonThatWasClicked == e7_type.get())
     {
-        //[UserButtonCode_e7_type] -- add your button handler code here..
         auto element = processor.getElementState(7);
         if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
             processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(7)), POLE_MAX_MAGNITUDE);
@@ -2233,11 +2055,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             auto gain = calculateGain(7, true);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(7)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserButtonCode_e7_type]
     }
     else if (buttonThatWasClicked == e8_type.get())
     {
-        //[UserButtonCode_e8_type] -- add your button handler code here..
         auto element = processor.getElementState(8);
         if (element.getType() == FilterElement::ZERO && element.getMagnitude() == 1.0)
             processor.setParameterValue(processor.parameters.getParameter(MAGNITUDE_NAME + std::to_string(8)), POLE_MAX_MAGNITUDE);
@@ -2251,11 +2071,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             auto gain = calculateGain(8, true);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(8)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
         }
-        //[/UserButtonCode_e8_type]
     }
     else if (buttonThatWasClicked == e1_active.get())
     {
-        //[UserButtonCode_e1_active] -- add your button handler code here..
         if (buttonThatWasClicked->getToggleState())
         {
             m1_slider->setLookAndFeel(&activeSliderTheme);
@@ -2266,11 +2084,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             m1_slider->setLookAndFeel(&unactiveSliderTheme);
             p1_slider->setLookAndFeel(&unactiveSliderTheme);
         }
-        //[/UserButtonCode_e1_active]
     }
     else if (buttonThatWasClicked == e2_active.get())
     {
-        //[UserButtonCode_e2_active] -- add your button handler code here..
         if (buttonThatWasClicked->getToggleState())
         {
             m2_slider->setLookAndFeel(&activeSliderTheme);
@@ -2281,11 +2097,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             m2_slider->setLookAndFeel(&unactiveSliderTheme);
             p2_slider->setLookAndFeel(&unactiveSliderTheme);
         }
-        //[/UserButtonCode_e2_active]
     }
     else if (buttonThatWasClicked == e3_active.get())
     {
-        //[UserButtonCode_e3_active] -- add your button handler code here..
         if (buttonThatWasClicked->getToggleState())
         {
             m3_slider->setLookAndFeel(&activeSliderTheme);
@@ -2296,11 +2110,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             m3_slider->setLookAndFeel(&unactiveSliderTheme);
             p3_slider->setLookAndFeel(&unactiveSliderTheme);
         }
-        //[/UserButtonCode_e3_active]
     }
     else if (buttonThatWasClicked == e4_active.get())
     {
-        //[UserButtonCode_e4_active] -- add your button handler code here..
         if (buttonThatWasClicked->getToggleState())
         {
             m4_slider->setLookAndFeel(&activeSliderTheme);
@@ -2311,11 +2123,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             m4_slider->setLookAndFeel(&unactiveSliderTheme);
             p4_slider->setLookAndFeel(&unactiveSliderTheme);
         }
-        //[/UserButtonCode_e4_active]
     }
     else if (buttonThatWasClicked == e5_active.get())
     {
-        //[UserButtonCode_e5_active] -- add your button handler code here..
         if (buttonThatWasClicked->getToggleState())
         {
             m5_slider->setLookAndFeel(&activeSliderTheme);
@@ -2326,11 +2136,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             m5_slider->setLookAndFeel(&unactiveSliderTheme);
             p5_slider->setLookAndFeel(&unactiveSliderTheme);
         }
-        //[/UserButtonCode_e5_active]
     }
     else if (buttonThatWasClicked == e6_active.get())
     {
-        //[UserButtonCode_e6_active] -- add your button handler code here..
         if (buttonThatWasClicked->getToggleState())
         {
             m6_slider->setLookAndFeel(&activeSliderTheme);
@@ -2341,11 +2149,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             m6_slider->setLookAndFeel(&unactiveSliderTheme);
             p6_slider->setLookAndFeel(&unactiveSliderTheme);
         }
-        //[/UserButtonCode_e6_active]
     }
     else if (buttonThatWasClicked == e7_active.get())
     {
-        //[UserButtonCode_e7_active] -- add your button handler code here..
         if (buttonThatWasClicked->getToggleState())
         {
             m7_slider->setLookAndFeel(&activeSliderTheme);
@@ -2356,11 +2162,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             m7_slider->setLookAndFeel(&unactiveSliderTheme);
             p7_slider->setLookAndFeel(&unactiveSliderTheme);
         }
-        //[/UserButtonCode_e7_active]
     }
     else if (buttonThatWasClicked == e8_active.get())
     {
-        //[UserButtonCode_e8_active] -- add your button handler code here..
         if (buttonThatWasClicked->getToggleState())
         {
             m8_slider->setLookAndFeel(&activeSliderTheme);
@@ -2371,64 +2175,46 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             m8_slider->setLookAndFeel(&unactiveSliderTheme);
             p8_slider->setLookAndFeel(&unactiveSliderTheme);
         }
-        //[/UserButtonCode_e8_active]
     }
     else if (buttonThatWasClicked == linLog_switch.get())
     {
-        //[UserButtonCode_linLog_switch] -- add your button handler code here..
         linLog = linLog_switch->getToggleState();
         getSpectrum();
         updateReferenceFrequencies();
-        frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
+        magnitude_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate(), true);
-        //[/UserButtonCode_linLog_switch]
     }
     else if (buttonThatWasClicked == calculate_button.get())
     {
-        //[UserButtonCode_calculate_button] -- add your button handler code here..
         filterDesignAndSetup();
-        //[/UserButtonCode_calculate_button]
     }
     else if (buttonThatWasClicked == multiply_phases_button.get())
     {
-        //[UserButtonCode_multiply_phases_button] -- add your button handler code here..
         processor.doublePhases();
-        //[/UserButtonCode_multiply_phases_button]
     }
     else if (buttonThatWasClicked == divide_phases_button.get())
     {
-        //[UserButtonCode_divide_phases_button] -- add your button handler code here..
         processor.halfPhases();
-        //[/UserButtonCode_divide_phases_button]
     }
     else if (buttonThatWasClicked == swap_button.get())
     {
-        //[UserButtonCode_swap_button] -- add your button handler code here..
         processor.swapPolesAndZeros();
-        //[/UserButtonCode_swap_button]
     }
     else if (buttonThatWasClicked == turn_on_button.get())
     {
-        //[UserButtonCode_turn_on_button] -- add your button handler code here..
         processor.turnOnOffAllElements(1);
-        //[/UserButtonCode_turn_on_button]
     }
     else if (buttonThatWasClicked == turn_off_button.get())
     {
-        //[UserButtonCode_turn_off_button] -- add your button handler code here..
         processor.turnOnOffAllElements(0);
-        //[/UserButtonCode_turn_off_button]
     }
     else if (buttonThatWasClicked == ampDb_switch.get())
     {
-        //[UserButtonCode_ampDb_switch] -- add your button handler code here..
         ampDb = ampDb_switch->getToggleState();
-        frequency_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
-        //[/UserButtonCode_ampDb_switch]
+        magnitude_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
     }
     else if (buttonThatWasClicked == autoUpdate_button.get())
     {
-        //[UserButtonCode_autoUpdate_button] -- add your button handler code here..
         if (autoUpdate_button->getToggleState())
         {
             autoUpdate = true;
@@ -2436,23 +2222,17 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
         }
         else
             autoUpdate = false;
-        //[/UserButtonCode_autoUpdate_button]
     }
     else if (buttonThatWasClicked == undo_button.get())
     {
-        //[UserButtonCode_undo_button] -- add your button handler code here..
         valueTreeState.undoManager->undo();
-        //[/UserButtonCode_undo_button]
     }
     else if (buttonThatWasClicked == redo_button.get())
     {
-        //[UserButtonCode_redo_button] -- add your button handler code here..
         valueTreeState.undoManager->redo();
-        //[/UserButtonCode_redo_button]
     }
     else if (buttonThatWasClicked == save_preset_button.get())
     {
-        //[UserButtonCode_save_preset_button] -- add your button handler code here..
         auto defaultPresetLocation = File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory);
         juce::FileChooser chooser("Select the save location...", defaultPresetLocation, "*.xml");
         if (chooser.browseForFileToSave(true))
@@ -2468,11 +2248,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
                 outputStream.write(destData.getData(), destData.getSize());
             }
         }
-        //[/UserButtonCode_save_preset_button]
     }
     else if (buttonThatWasClicked == load_preset_button.get())
     {
-        //[UserButtonCode_load_preset_button] -- add your button handler code here..
         auto defaultPresetLocation = File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory);
         juce::FileChooser chooser("Select the preset to load...", defaultPresetLocation, "*.xml");
         if (chooser.browseForFileToOpen())
@@ -2482,11 +2260,9 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             file.loadFileAsData(sourceData);
             processor.setStateInformation(sourceData.getData(), sourceData.getSize());
         }
-        //[/UserButtonCode_load_preset_button]
     }
     else if (buttonThatWasClicked == autoGain.get())
     {
-        //[UserButtonCode_autoGain] -- add your button handler code here..
         if (buttonThatWasClicked->getToggleState())
         {
             gain1_label->setEditable(false);
@@ -2497,6 +2273,7 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             gain6_label->setEditable(false);
             gain7_label->setEditable(false);
             gain8_label->setEditable(false);
+            gainsInit();
         }
         else
         {
@@ -2509,16 +2286,11 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
             gain7_label->setEditable(true);
             gain8_label->setEditable(true);
         }
-        //[/UserButtonCode_autoGain]
     }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
-void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
+void EditorComponent::labelTextChanged (juce::Label* labelThatHasChanged)
 {
-    //[UserlabelTextChanged_Pre]
     const double sampleRate = processor.getSampleRate();
     int newFrequency = labelThatHasChanged->getText().getIntValue();
 
@@ -2526,141 +2298,100 @@ void PluginEditor::labelTextChanged (juce::Label* labelThatHasChanged)
 
     if (labelThatHasChanged == frequency_label.get())
         formatDesignFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
-    //[/UserlabelTextChanged_Pre]
 
     if (labelThatHasChanged == p1_freq.get())
     {
-        //[UserLabelCode_p1_freq] -- add your label text handling code here..
         formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p1_slider.get(), sampleRate);
         return;
-        //[/UserLabelCode_p1_freq]
     }
     else if (labelThatHasChanged == p2_freq.get())
     {
-        //[UserLabelCode_p2_freq] -- add your label text handling code here..
         formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p2_slider.get(), sampleRate);
         return;
-        //[/UserLabelCode_p2_freq]
     }
     else if (labelThatHasChanged == p3_freq.get())
     {
-        //[UserLabelCode_p3_freq] -- add your label text handling code here..
         formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p3_slider.get(), sampleRate);
         return;
-        //[/UserLabelCode_p3_freq]
     }
     else if (labelThatHasChanged == p4_freq.get())
     {
-        //[UserLabelCode_p4_freq] -- add your label text handling code here..
         formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p4_slider.get(), sampleRate);
         return;
-        //[/UserLabelCode_p4_freq]
     }
     else if (labelThatHasChanged == p5_freq.get())
     {
-        //[UserLabelCode_p5_freq] -- add your label text handling code here..
         formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p5_slider.get(), sampleRate);
         return;
-        //[/UserLabelCode_p5_freq]
     }
     else if (labelThatHasChanged == p6_freq.get())
     {
-        //[UserLabelCode_p6_freq] -- add your label text handling code here..
         formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p6_slider.get(), sampleRate);
         return;
-        //[/UserLabelCode_p6_freq]
     }
     else if (labelThatHasChanged == p7_freq.get())
     {
-        //[UserLabelCode_p7_freq] -- add your label text handling code here..
         formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p7_slider.get(), sampleRate);
         return;
-        //[/UserLabelCode_p7_freq]
     }
     else if (labelThatHasChanged == p8_freq.get())
     {
-        //[UserLabelCode_p8_freq] -- add your label text handling code here..
         formatFrequencyInput(newFrequency, labelThatHasChanged, sampleRate);
         updateSliderFromFrequency(newFrequency, p8_slider.get(), sampleRate);
         return;
-        //[/UserLabelCode_p8_freq]
     }
     else if (labelThatHasChanged == frequency_label.get())
     {
-        //[UserLabelCode_frequency_label] -- add your label text handling code here..
         design_frequency = updateDesignSliderFromFrequency(newFrequency, frequency_design_slider.get(), sampleRate);
         return;
-        //[/UserLabelCode_frequency_label]
     }
     else if (labelThatHasChanged == gain1_label.get())
     {
-        //[UserLabelCode_gain1_label] -- add your label text handling code here..
         e1_gain->setValue(newGain);
-        //[/UserLabelCode_gain1_label]
     }
     else if (labelThatHasChanged == gain2_label.get())
     {
-        //[UserLabelCode_gain2_label] -- add your label text handling code here..
         e2_gain->setValue(newGain);
-        //[/UserLabelCode_gain2_label]
     }
     else if (labelThatHasChanged == gain3_label.get())
     {
-        //[UserLabelCode_gain3_label] -- add your label text handling code here..
         e3_gain->setValue(newGain);
-        //[/UserLabelCode_gain3_label]
     }
     else if (labelThatHasChanged == gain4_label.get())
     {
-        //[UserLabelCode_gain4_label] -- add your label text handling code here..
         e4_gain->setValue(newGain);
-        //[/UserLabelCode_gain4_label]
     }
     else if (labelThatHasChanged == gain5_label.get())
     {
-        //[UserLabelCode_gain5_label] -- add your label text handling code here..
         e5_gain->setValue(newGain);
-        //[/UserLabelCode_gain5_label]
     }
     else if (labelThatHasChanged == gain6_label.get())
     {
-        //[UserLabelCode_gain6_label] -- add your label text handling code here..
         e6_gain->setValue(newGain);
-        //[/UserLabelCode_gain6_label]
     }
     else if (labelThatHasChanged == gain7_label.get())
     {
-        //[UserLabelCode_gain7_label] -- add your label text handling code here..
         e7_gain->setValue(newGain);
-        //[/UserLabelCode_gain7_label]
     }
     else if (labelThatHasChanged == gain8_label.get())
     {
-        //[UserLabelCode_gain8_label] -- add your label text handling code here..
         e8_gain->setValue(newGain);
-        //[/UserLabelCode_gain8_label]
     }
-
-    //[UserlabelTextChanged_Post]
+    
     labelThatHasChanged->setText(juce::String(newGain, 2) + " dB", NotificationType::dontSendNotification);
-    //[/UserlabelTextChanged_Post]
 }
 
-void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
+void EditorComponent::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
 {
-    //[UsercomboBoxChanged_Pre]
-    //[/UsercomboBoxChanged_Pre]
-
     if (comboBoxThatHasChanged == type_box.get())
     {
-        //[UserComboBoxCode_type_box] -- add your combo box handling code here..
         design_type = comboBoxThatHasChanged->getSelectedId();
         calculate_button->setEnabled(false);
         if (!design_type)
@@ -2673,20 +2404,16 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
             if (autoUpdate)
                 autoUpdateCheckAndSetup();
         }
-        //[/UserComboBoxCode_type_box]
     }
     else if (comboBoxThatHasChanged == shape_box.get())
     {
-        //[UserComboBoxCode_shape_box] -- add your combo box handling code here..
         design_shape = comboBoxThatHasChanged->getSelectedId();
         updateGUIGivenShape();
         if (autoUpdate)
             autoUpdateCheckAndSetup();
-        //[/UserComboBoxCode_shape_box]
     }
     else if (comboBoxThatHasChanged == order_box.get())
     {
-        //[UserComboBoxCode_order_box] -- add your combo box handling code here..
         design_filters_to_activate = comboBoxThatHasChanged->getSelectedId();
         if (design_filters_to_activate)
         {
@@ -2694,20 +2421,13 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
             if (autoUpdate)
                 autoUpdateCheckAndSetup();
         }
-        //[/UserComboBoxCode_order_box]
     }
-
-    //[UsercomboBoxChanged_Post]
-    //[/UsercomboBoxChanged_Post]
 }
 
-
-
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void PluginEditor::slidersInit()
+void EditorComponent::slidersInit()
 {
     auto elements = processor.getFilterElementsChain();
-    
+
     if (elements[0].isActive())
     {
         m1_slider->setLookAndFeel(&activeSliderTheme);
@@ -2797,7 +2517,16 @@ void PluginEditor::slidersInit()
     }
 }
 
-void PluginEditor::getSpectrum()
+void EditorComponent::gainsInit()
+{
+    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++ i)
+    {
+        auto gain = calculateGain(i);
+        processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(i)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+    }
+}
+
+void EditorComponent::getSpectrum()
 {
     double phi;
     const auto sampleRate = processor.getSampleRate();
@@ -2823,9 +2552,30 @@ void PluginEditor::getSpectrum()
         magnitudes[i] = gain * std::abs(spectrum);
         phases[i] = (pi + std::arg(spectrum)) / twoPi;
     }
+    auto size = sizeof(magnitudes) / sizeof(magnitudes[0]);
+    double* maxPointer = std::max_element(magnitudes, magnitudes + size);
+    double maxLinearValue = *maxPointer;
+    double maxdBValue = Decibels::gainToDecibels(maxLinearValue, -128.0);
+    if (maxdBValue > WARNINGDBLEVEL)
+    {
+        if (!isSettingFilters && !isUserWarned)
+        {
+            processor.setBypass(true);
+            WarningWindowTheme warningWindowTheme;
+            juce::AlertWindow warningWindow("Caution!", "The current configuration of the filter may cause unexpected increase of volume. Check the gain of each filter before deactivating the bypass of the plugin.", juce::AlertWindow::WarningIcon);
+            warningWindow.setLookAndFeel(&warningWindowTheme);
+            warningWindow.addButton("Close", 1);
+            warningWindow.runModalLoop();
+            isUserWarned = true;
+        }
+    }
+    else
+    {
+        isUserWarned = false;
+    }
 }
 
-void PluginEditor::updateReferenceFrequencies()
+void EditorComponent::updateReferenceFrequencies()
 {
     double phi;
     const auto sampleRate = processor.getSampleRate();
@@ -2850,7 +2600,7 @@ void PluginEditor::updateReferenceFrequencies()
     }
 }
 
-void PluginEditor::updateElements ()
+void EditorComponent::updateElements ()
 {
     e1->updateElement(processor.getElementState(1), 1, gaussian_plane.get(), &processor);
     e2->updateElement(processor.getElementState(2), 2, gaussian_plane.get(), &processor);
@@ -2862,7 +2612,7 @@ void PluginEditor::updateElements ()
     e8->updateElement(processor.getElementState(8), 8, gaussian_plane.get(), &processor);
 }
 
-void PluginEditor::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
+void EditorComponent::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
 {
     double sliderValue = slider->getValue();
     int frequency = std::ceil((sliderValue * sampleRate) / 2.0);
@@ -2870,13 +2620,13 @@ void PluginEditor::updateFrequencyFromSlider(juce::Slider* slider, juce::Label* 
     label->setText(juce::String(frequency) + " Hz", juce::dontSendNotification);
 }
 
-void PluginEditor::updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate)
+void EditorComponent::updateSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate)
 {
     double sliderValue = (frequency * 2.0) / sampleRate;
     slider->setValue(sliderValue, juce::sendNotificationSync);
 }
 
-double PluginEditor::updateFrequencyFromDesignSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
+double EditorComponent::updateFrequencyFromDesignSlider(juce::Slider* slider, juce::Label* label, double sampleRate)
 {
     double sliderValue = slider->getValue();
     int frequency = std::ceil((sliderValue * sampleRate) / 2000.0);
@@ -2885,7 +2635,7 @@ double PluginEditor::updateFrequencyFromDesignSlider(juce::Slider* slider, juce:
     return frequency;
 }
 
-double PluginEditor::updateDesignSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate)
+double EditorComponent::updateDesignSliderFromFrequency(int frequency, juce::Slider* slider, double sampleRate)
 {
     double sliderValue = (frequency * 2000.0) / sampleRate;
     slider->setValue(sliderValue, juce::sendNotificationSync);
@@ -2893,7 +2643,7 @@ double PluginEditor::updateDesignSliderFromFrequency(int frequency, juce::Slider
     return std::ceil((slider->getValue() * sampleRate) / 2000.0);
 }
 
-void PluginEditor::formatFrequencyInput(int& frequency, juce::Label *label, double sampleRate)
+void EditorComponent::formatFrequencyInput(int& frequency, juce::Label *label, double sampleRate)
 {
     double maxFrequency = sampleRate / 2.0;
 
@@ -2908,7 +2658,7 @@ void PluginEditor::formatFrequencyInput(int& frequency, juce::Label *label, doub
     label->setText(juce::String(frequency) + " Hz", juce::dontSendNotification);
 }
 
-void PluginEditor::formatDesignFrequencyInput(int& frequency, juce::Label *label, double sampleRate)
+void EditorComponent::formatDesignFrequencyInput(int& frequency, juce::Label *label, double sampleRate)
 {
     double maxFrequency = sampleRate / 2.0;
 
@@ -2923,7 +2673,7 @@ void PluginEditor::formatDesignFrequencyInput(int& frequency, juce::Label *label
     label->setText(juce::String(frequency) + " Hz", juce::dontSendNotification);
 }
 
-void PluginEditor::updateDesignFrequencySlider(short int option)
+void EditorComponent::updateDesignFrequencySlider(short int option)
 {
     const double sampleRate = processor.getSampleRate();
     switch (option)
@@ -2958,7 +2708,7 @@ void PluginEditor::updateDesignFrequencySlider(short int option)
     }
 }
 
-void PluginEditor::setTransitionWidthRange ()
+void EditorComponent::setTransitionWidthRange ()
 {
     double sampleRate = processor.getSampleRate();
     double normalisedFrequency = design_frequency / sampleRate;
@@ -2986,7 +2736,7 @@ void PluginEditor::setTransitionWidthRange ()
     normalisedTransitionWidth = transition_width_slider->getValue();
 }
 
-void PluginEditor::updateGUIGivenShape()
+void EditorComponent::updateGUIGivenShape()
 {
     if (!type_box->getSelectedId())
     {
@@ -3000,7 +2750,7 @@ void PluginEditor::updateGUIGivenShape()
     }
 }
 
-void PluginEditor::updateGUIButterworth()
+void EditorComponent::updateGUIButterworth()
 {
     calculate_button->setEnabled(false);
 
@@ -3027,7 +2777,7 @@ void PluginEditor::updateGUIButterworth()
     }
 }
 
-void PluginEditor::updateGUIEllipticChebyshevIandII()
+void EditorComponent::updateGUIEllipticChebyshevIandII()
 {
     order_box->setVisible(false);
 
@@ -3060,7 +2810,7 @@ void PluginEditor::updateGUIEllipticChebyshevIandII()
     calculate_button->setEnabled(true);
 }
 
-float PluginEditor::formatGainInput(float gain)
+float EditorComponent::formatGainInput(float gain)
 {
     if (gain < GAIN_FLOOR)
         gain = GAIN_FLOOR;
@@ -3070,7 +2820,7 @@ float PluginEditor::formatGainInput(float gain)
     return gain;
 }
 
-float PluginEditor::calculateGain(const int elementNr, bool isChangingType)
+float EditorComponent::calculateGain(const int elementNr, bool isChangingType)
 {
     auto element = processor.getElementState(elementNr);
     auto magnitude = element.getMagnitude();
@@ -3089,19 +2839,19 @@ float PluginEditor::calculateGain(const int elementNr, bool isChangingType)
     }
 }
 
-void PluginEditor::coefficientsNormalization (double& c0, double& c1, double& c2)
+void EditorComponent::coefficientsNormalization (double& c0, double& c1, double& c2)
 {
     c1 /= c0;
     c2 /= c0;
 }
 
-void PluginEditor::fromCoefficientsToMagnitudeAndPhase (double& mg, double& ph, double c1, double c2)
+void EditorComponent::fromCoefficientsToMagnitudeAndPhase (double& mg, double& ph, double c1, double c2)
 {
     mg = sqrt(c2);
     ph = (1 / MathConstants<double>::pi) * acos(-c1 / (2 * mg));
 }
 
-void PluginEditor::filterDesignAndSetup()
+void EditorComponent::filterDesignAndSetup()
 {
     const double sampleRate = processor.getSampleRate();
     const int order = design_filters_to_activate;
@@ -3141,6 +2891,7 @@ void PluginEditor::filterDesignAndSetup()
     int elementNr = 1;
 
     processor.setBypass(true);
+    isSettingFilters = true;
 
     for (int i = 0; i < iirCoefficients.size(); ++ i)
     {
@@ -3203,9 +2954,10 @@ void PluginEditor::filterDesignAndSetup()
     processor.setBypass(false);
 
     autoGain->setToggleState(true, NotificationType::sendNotificationSync);
+    isSettingFilters = false;
 }
 
-void PluginEditor::autoUpdateCheckAndSetup ()
+void EditorComponent::autoUpdateCheckAndSetup ()
 {
     if (design_type == 1)
         if (order_box->getSelectedId() != 0)
@@ -3215,7 +2967,6 @@ void PluginEditor::autoUpdateCheckAndSetup ()
     else
         filterDesignAndSetup();
 }
-//[/MiscUserCode]
 
 
 //==============================================================================
@@ -3227,7 +2978,7 @@ void PluginEditor::autoUpdateCheckAndSetup ()
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="PluginEditor" componentName=""
+<JUCER_COMPONENT documentType="Component" className="EditorComponent" componentName=""
                  parentClasses="public juce::AudioProcessorEditor" constructorParams="PolesAndZerosEQAudioProcessor&amp; p, AudioProcessorValueTreeState&amp; vts"
                  variableInitialisers="AudioProcessorEditor(&amp;p), processor (p), valueTreeState (vts)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
@@ -3323,10 +3074,10 @@ BEGIN_JUCER_METADATA
               virtualName="CustomButton" explicitFocusOrder="0" pos="421 664 80 25"
               bgColOff="ff909497" bgColOn="ff505050" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="frequency_response"
+  <GENERICCOMPONENT name="frequencyResponse" id="161cb81e63dc8e46" memberName="magnitude_response"
                     virtualName="" explicitFocusOrder="0" pos="540 70 450 285" class="FrequencyResponse"
                     params="magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb"/>
-  <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="freq_response_label"
+  <LABEL name="Frequency response" id="4c8fffb65e845bfc" memberName="mg_response_label"
          virtualName="" explicitFocusOrder="0" pos="695 360 140 24" textCol="ff383838"
          edTextCol="ff000000" edBkgCol="0" labelText="SPECTRUM MAGNITUDE&#10;"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
@@ -3806,9 +3557,6 @@ END_JUCER_METADATA
 */
 #endif
 
-//==============================================================================
-// Binary resources - be careful not to edit any of these sections!
-
 // JUCER_RESOURCE: anticlockwise_arrow_png, 22421, "../GUI/anticlockwise_arrow.png"
 static const unsigned char resource_PluginEditor_anticlockwise_arrow_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,3,72,0,0,3,118,8,6,0,0,0,195,151,169,6,0,0,0,9,112,72,89,115,0,0,11,19,
 0,0,11,19,1,0,154,156,24,0,0,87,71,73,68,65,84,120,156,237,253,123,204,109,231,125,31,118,126,207,161,14,47,34,45,17,242,97,29,178,182,69,37,14,233,212,54,17,84,35,170,158,56,100,28,212,54,101,23,141,
@@ -4201,8 +3949,8 @@ static const unsigned char resource_PluginEditor_anticlockwise_arrow_png[] = { 1
 24,40,72,0,0,0,3,5,9,0,0,96,160,32,1,0,0,12,20,36,0,0,128,129,130,4,0,0,48,80,144,0,0,0,6,10,18,0,0,192,64,65,2,0,0,24,40,72,0,0,0,3,5,9,0,0,96,160,32,1,0,0,12,20,36,0,0,128,129,130,4,0,0,48,80,144,0,
 0,0,6,10,18,0,0,192,224,255,15,141,103,45,253,203,30,20,123,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
 
-const char* PluginEditor::anticlockwise_arrow_png = (const char*) resource_PluginEditor_anticlockwise_arrow_png;
-const int PluginEditor::anticlockwise_arrow_pngSize = 22421;
+const char* EditorComponent::anticlockwise_arrow_png = (const char*) resource_PluginEditor_anticlockwise_arrow_png;
+const int EditorComponent::anticlockwise_arrow_pngSize = 22421;
 
 // JUCER_RESOURCE: clockwise_arrow_png, 22647, "../GUI/clockwise_arrow.png"
 static const unsigned char resource_PluginEditor_clockwise_arrow_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,3,72,0,0,3,118,8,6,0,0,0,195,151,169,6,0,0,0,9,112,72,89,115,0,0,11,19,0,0,
@@ -4600,8 +4348,8 @@ static const unsigned char resource_PluginEditor_clockwise_arrow_png[] = { 137,8
 129,130,4,0,0,48,80,144,0,0,0,6,10,18,0,0,192,64,65,2,0,0,24,40,72,0,0,0,3,5,9,0,0,96,160,32,1,0,0,12,20,36,0,0,128,129,130,4,0,0,48,80,144,0,0,0,6,10,18,0,0,192,224,255,15,131,107,116,19,230,127,174,
 90,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
 
-const char* PluginEditor::clockwise_arrow_png = (const char*) resource_PluginEditor_clockwise_arrow_png;
-const int PluginEditor::clockwise_arrow_pngSize = 22647;
+const char* EditorComponent::clockwise_arrow_png = (const char*) resource_PluginEditor_clockwise_arrow_png;
+const int EditorComponent::clockwise_arrow_pngSize = 22647;
 
 // JUCER_RESOURCE: load_icon_png, 3825, "../GUI/load_icon.png"
 static const unsigned char resource_PluginEditor_load_icon_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,3,152,0,0,2,0,4,3,0,0,0,21,164,222,20,0,0,0,18,80,76,84,69,230,230,230,255,255,255,
@@ -4673,8 +4421,8 @@ static const unsigned char resource_PluginEditor_load_icon_png[] = { 137,80,78,7
 245,22,246,218,152,95,239,8,63,219,22,227,183,166,197,182,53,28,157,99,50,18,147,145,152,196,100,36,38,35,49,25,137,201,72,76,98,50,18,147,145,152,140,196,100,172,93,133,99,52,90,156,102,36,38,35,49,137,
 201,72,76,70,98,50,18,147,145,152,196,100,36,38,35,49,25,137,201,72,76,98,50,110,21,147,197,64,22,167,25,55,24,255,11,211,41,245,221,150,37,75,200,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
 
-const char* PluginEditor::load_icon_png = (const char*) resource_PluginEditor_load_icon_png;
-const int PluginEditor::load_icon_pngSize = 3825;
+const char* EditorComponent::load_icon_png = (const char*) resource_PluginEditor_load_icon_png;
+const int EditorComponent::load_icon_pngSize = 3825;
 
 // JUCER_RESOURCE: save_icon_png, 2362, "../GUI/save_icon.png"
 static const unsigned char resource_PluginEditor_save_icon_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,200,0,0,0,200,8,6,0,0,0,173,88,174,158,0,0,0,4,115,66,73,84,8,8,8,8,124,8,100,136,
@@ -4719,10 +4467,42 @@ static const unsigned char resource_PluginEditor_save_icon_png[] = { 137,80,78,7
 9,56,158,171,195,156,223,32,0,167,104,78,202,47,6,54,102,238,91,138,124,7,216,10,156,40,92,199,162,93,11,252,154,242,243,81,219,116,183,157,192,53,140,73,27,107,66,189,131,102,61,220,141,192,107,104,46,
 249,186,22,149,134,49,75,243,87,27,251,129,223,208,76,231,127,87,180,34,73,146,36,73,146,212,142,255,3,17,204,81,113,83,66,1,127,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
 
-const char* PluginEditor::save_icon_png = (const char*) resource_PluginEditor_save_icon_png;
-const int PluginEditor::save_icon_pngSize = 2362;
+const char* EditorComponent::save_icon_png = (const char*) resource_PluginEditor_save_icon_png;
+const int EditorComponent::save_icon_pngSize = 2362;
 
+WrappedEditor::WrappedEditor(PolesAndZerosEQAudioProcessor& p, AudioProcessorValueTreeState& vts)
+: AudioProcessorEditor(p), editorComponent(p, vts)
+{
+    addAndMakeVisible(editorComponent);
+    
+    PropertiesFile::Options options;
+    options.applicationName = ProjectInfo::projectName;
+    options.commonToAllUsers = true;
+    options.filenameSuffix = "settings";
+    options.osxLibrarySubFolder = "Application Support";
+    
+    applicationProperties.setStorageParameters(options);
+    
+    if(auto* constrainer = getConstrainer())
+    {
+        constrainer->setFixedAspectRatio(static_cast<double>(originalWidth) / static_cast<double>(originalHeight));
+        constrainer->setSizeLimits(originalWidth * 0.25, originalHeight * 0.25, originalWidth, originalHeight);
+    }
+    
+    auto sizeRatio = 1.0;
+    if (auto* properties = applicationProperties.getCommonSettings(true))
+        sizeRatio = properties->getDoubleValue("sizeRatio", 1.0);
+    
+    setResizable(true, true);
+    setSize(static_cast<int>(originalWidth * sizeRatio), static_cast<int>(originalHeight * sizeRatio));
+}
 
-//[EndFile] You can add extra defines here...
-//[/EndFile]
-
+void WrappedEditor::resized()
+{
+    const auto scaleFactor = static_cast<float> (getWidth()) / originalWidth;
+    if (auto* properties = applicationProperties.getCommonSettings(true))
+        properties->setValue("sizeRatio", scaleFactor);
+    
+    editorComponent.setTransform(AffineTransform::scale(scaleFactor));
+    editorComponent.setBounds(0, 0, originalWidth, originalHeight);
+}

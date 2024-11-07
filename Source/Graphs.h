@@ -1,9 +1,14 @@
 #pragma once
 #include <JuceHeader.h>
 
+// Magnitude & phase response MACROS
 #define GRAPHS_BACKGROUND                   0x45979a9a
 #define GRID_COLOUR                         0x28979a9a
 #define TEXT_COLOUR                         0xff797d7f
+#define GRAPHS_QUALITY                      2048
+#define NUMBER_OF_REFERENCE_FREQUENCIES     8
+
+// Gaussian plane MACROS
 #define ZEROS_COLOUR                        0xff9b59b6
 #define CONJ_ZEROS_COLOUR                   0x709b59b6
 #define POLES_COLOUR                        0xffffbc2e
@@ -14,20 +19,15 @@
 #define PLANE_LINE_THICKNESS                1.0f
 #define CIRCLE_LINE_THICKNESS               1.5f
 #define REFERENCE_ANGLES                    {0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360}
-
 #define GAUSSIAN_PLANE_RECTANGLE            juce::Rectangle<float>(30, 455, 260, 260)
-
-#define GRAPHS_QUALITY                      2048
-#define NUMBER_OF_REFERENCE_FREQUENCIES     8
-
 #define ELEMENT_WIDTH                       16
 #define ELEMENT_HEIGHT                      16
 #define ELEMENT_LINE_THICKNESS              2.0f
 
-class GraphicResponse : public juce::Component
+class FrequencyResponse : public juce::Component
 {
     public:
-    GraphicResponse (double* vls, double* rf, const double sr, bool yType)
+    FrequencyResponse (double* vls, double* rf, const double sr, bool yType)
     {
         updateValues(vls, rf, sr, yType);
     }
@@ -87,10 +87,10 @@ class GraphicResponse : public juce::Component
     bool ampDb = false;
 };
 
-class FrequencyResponse : public GraphicResponse
+class MagnitudeResponse : public FrequencyResponse
 {
     public:
-    using GraphicResponse::GraphicResponse;
+    using FrequencyResponse::FrequencyResponse;
     
     void drawResponse(juce::Graphics& g, bool linLog) override
     {
@@ -130,10 +130,10 @@ class FrequencyResponse : public GraphicResponse
     }
 };
 
-class PhaseResponse : public GraphicResponse
+class PhaseResponse : public FrequencyResponse
 {
     public:
-    using GraphicResponse::GraphicResponse;
+    using FrequencyResponse::FrequencyResponse;
     
     void drawResponse(juce::Graphics& g, bool /*linLog*/) override
     {
@@ -328,7 +328,7 @@ class DraggableElement : public juce::Component
 {
     public:
     
-    DraggableElement(FilterElement e, int elNr, GaussianPlane *gp, PolesAndZerosEQAudioProcessor *p)
+    DraggableElement(FilterElement e, int elNr, GaussianPlane* gp, PolesAndZerosEQAudioProcessor* p)
     {
         updateElement(e, elNr, gp, p);
     }

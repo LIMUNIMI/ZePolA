@@ -1,14 +1,26 @@
 #pragma once
 #include <JuceHeader.h>
 
-// Generic constants
+// Generic constants & macros
 #define NUMBER_OF_FILTER_ELEMENTS               8
+#define STEREO                                  2
 #define SLIDERS_FLOOR                           0.0f
 #define SLIDERS_CEILING                         1.0f
+#define WARNINGDBLEVEL                          20.0
 
-// FilterElement constants & ids
+// GUI constants and macros
+#define NUMBER_OF_REFERENCE_FREQUENCIES         8
+#define FREQUENCY_FLOOR                         10.0
+
+#define DESIGN_FREQUENCY_FLOOR                  1.0
+
+#define SELECTABLE_FILTER_TYPES                 {"BUTTERWORTH", "CHEBYSHEV I", "CHEBYSHEV II", "ELLIPTIC"}
+#define SELECTABLE_ORDERS_BUTTERWORTH           {"2", "4", "6", "8"}
+
+// Filter Element macros
 #define FILTER_ELEMENT_GAIN_FLOOR               -128.0
 
+// Plugin parameters macros
 #define MAGNITUDE_NAME                          "M"
 #define MAGNITUDE_FLOOR                         0.0f
 #define MAGNITUDE_CEILING                       1.0f
@@ -34,7 +46,6 @@
 #define GAIN_INTERVAL                           0.1f
 #define GAIN_DEFAULT                            0.0f
 
-// Plugin constants & ids
 #define MASTER_GAIN_NAME                        "MSTR_GAIN"
 #define MASTER_GAIN_FLOOR                       -24.0f
 #define MASTER_GAIN_CEILING                     24.0f
@@ -44,12 +55,10 @@
 #define FILTER_BYPASS_NAME                      "BYPASS"
 #define BYPASS_DEFAULT                          false
 
-
 namespace Parameters
 {
-
     static AudioProcessorValueTreeState::ParameterLayout createParameterLayout ()
-{
+    {
         std::vector<std::unique_ptr<RangedAudioParameter>> params;
         
         juce::NormalisableRange<float> masterGainRange(MASTER_GAIN_FLOOR, MASTER_GAIN_CEILING, MASTER_GAIN_INTERVAL);
