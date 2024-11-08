@@ -1,0 +1,565 @@
+% Tesi Informatica Musicale, basato sul modello di:
+% Tesi D.S.I., basato sul modello di:
+% Stanford University PhD thesis style, basato sul modello:
+% Report style
+% Revisori: G.Presti; L.A.Ludovico; F. Avanzini; M. Tiraboschi
+\ProvidesPackage{tesi}[2024/04/30]
+
+% --- Opzioni -----------------------------------------------------------------
+\newif\iftesi@customfont
+\tesi@customfonttrue
+\newif\iftesi@notminimal
+\tesi@notminimaltrue
+\newif\iftesi@phd
+\tesi@phdfalse
+
+\DeclareOption{defaultfont}{\tesi@customfontfalse}
+\DeclareOption{minimal}{\tesi@notminimalfalse}
+\DeclareOption{phd}{\tesi@phdtrue}
+\ProcessOptions\relax
+% -----------------------------------------------------------------------------
+
+% --- Required Packages -------------------------------------------------------
+\PassOptionsToPackage{hidelinks,pdfencoding=unicode}{hyperref}
+\PassOptionsToPackage{a-1b,mathxmp}{pdfx}
+\PassOptionsToPackage{a4paper}{geometry}
+
+\RequirePackage{geometry}
+\RequirePackage{newfile}  % Output to file
+\RequirePackage{currfile}  % Get current filename
+\RequirePackage{graphicx}
+\RequirePackage{etoolbox}
+\RequirePackage{iflang}  % language switch
+\RequirePackage{fp}  % calculations
+\RequirePackage{calc}
+\RequirePackage{xparse}  % multiple optional arguments
+\iftesi@notminimal
+\PassOptionsToPackage{utf8}{inputenc}
+% \PassOptionsToPackage{hyperref}{xcolor}  % Package xcolor: Package option `hyperref' is obsolete and ignored.
+
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{hologo}  % Bibtex logo with \hologo{BibTeX}
+\RequirePackage{listings}  % Scrittura di codice
+\RequirePackage{url}  % Visualizza e rende interattivi gli URL
+\RequirePackage{epsfig}  % Permette immagini in EPS
+\RequirePackage{xcolor}  % Gestione avanzata dei colori
+\fi
+
+\RequirePackage{pdfx}  % File conforme allo standard PDF-A (obbligatorio per la consegna)
+% Keep this last
+\RequirePackage{hyperref}
+% -----------------------------------------------------------------------------
+
+% --- Font choice -------------------------------------------------------------
+\iftesi@customfont
+% ACM-like fonts
+% https://tex.stackexchange.com/a/540068
+\PassOptionsToPackage{T1}{fontenc}
+\PassOptionsToPackage{tt=false, type1=true}{libertine}
+\PassOptionsToPackage{varqu}{zi4}
+\PassOptionsToPackage{libertine}{newtxmath}
+
+\RequirePackage{fontenc}
+\RequirePackage{libertine}
+\RequirePackage{zi4}
+\RequirePackage{newtxmath}
+\else
+% Simboli matematici default
+\RequirePackage{amssymb}
+\RequirePackage{amsmath}
+\RequirePackage{amsthm}
+\fi
+% -----------------------------------------------------------------------------
+
+% --- Page format -------------------------------------------------------------
+\iftesi@phd
+% Settings from https://www.guitex.org/home/en/forum/12-tipografia/111664-margini-formato-17-x-24
+\geometry{
+	paperheight=24cm,
+	paperwidth=17cm,
+	top=3cm,
+	bottom=3.1cm,
+	headsep=1.03cm,
+	% headheight=10pt,
+	% headsep=\dimexpr 1.3cm-10pt\relax,
+	% footskip=1.2cm,
+	heightrounded,
+    % Apparently 3.5/2.5 is standard
+	left=3.5cm,
+	right=2.5cm
+}
+\else
+% \oddsidemargin 0.5in
+% \evensidemargin 0in
+% \marginparwidth 40pt
+% \marginparsep 10pt
+% \topmargin 0pt
+% \headsep .5in
+% \textheight 8.1in
+% \textwidth 6in
+\geometry{
+	left=1.5in,
+	marginparwidth=40pt,
+	marginparsep=10pt,
+	top=1.52in,
+	headsep=.5in,
+	textheight=8.1in,
+	textwidth=6in
+}
+\fi
+\savegeometry{thethesisgeometry}
+\newlength\avghm
+\newlength\avgvm
+\setlength\avghm{(\paperwidth - \textwidth) / 2}
+\setlength\avgvm{(\paperheight - \textheight) / 2}
+
+% Disallow page breaks at hyphens (this will give some underfull vbox's,
+% so an alternative is to use \brokenpenalty=100 and manually search
+% for and fix such page breaks)
+\brokenpenalty=10000
+
+% Baseline-to-baseline skip
+\renewcommand{\baselinestretch}{1.0}  % ERA 1.3
+
+% Figures and tables are to be numbered sequentially throughout the
+% thesis, rather than within chapters; for style consistency, do
+% equations the same.  The following \def of \cl@chapter is a kludge:
+% really there should be a \removefromreset, to stop figure numbers, etc.,
+% from being reset at chapter beginnings
+\def\cl@chapter{\@elt{section}\@elt{footnote}}
+\def\thefigure{\@arabic\c@figure}
+\def\thetable{\@arabic\c@table}
+\def\theequation{\arabic{equation}}
+
+\newif\iffigurespage
+\newif\iftablespage
+\newif\iftocintoc
+\newif\ifprefaceintoc
+\figurespagefalse
+\tablespagefalse
+\tocintocfalse
+\prefaceintocfalse
+% -----------------------------------------------------------------------------
+
+% --- Metadata commands -------------------------------------------------------
+% Relatori
+\newcommand\makesupervisorlines\relax
+\newcommand\supervisor[2][Supervisor]{%
+\appto\makesupervisorlines{{\large{}#1:} & #2\\\relax}%
+}
+\newcommand\relatore[1]{\supervisor[\IfLanguageName{italian}{Relatore}{Supervisor}]{#1}}
+\newcommand\correlatore[1]{\supervisor[\IfLanguageName{italian}{Correlatore}{Co-supervisor}]{#1}}
+
+% Università
+\newcommand\makeuniversity\relax
+\newcommand\theuniversity\relax
+\newcommand{\university}[1]{%
+\renewcommand\theuniversity{#1}%
+\renewcommand\makeuniversity{{\LARGE \uppercase{\theuniversity}\\\relax}}%
+}
+
+\newcommand\makeunilogo\relax
+\newcommand{\unilogo}[2][height=30mm]{%
+\renewcommand\makeunilogo{\centerline{\includegraphics[#1]{#2}}}%
+}
+
+\newcommand\makefaculty\relax
+\newcommand{\faculty}[1]{\renewcommand\makefaculty{\uppercase{#1}\\}}
+
+\newcommand\makedepartment\relax
+\newcommand{\department}[1]{\renewcommand\makedepartment{\uppercase{#1}\\}}
+
+\newcommand\makecdl\relax
+\newcommand{\cdl}[1]{\renewcommand\makecdl{\uppercase{#1}}}
+
+% Matricola
+\newcommand\makematricola\relax
+\newcommand{\matricola}[2][\IfLanguageName{italian}{Matr. Nr.}{Matr. No.}]{\renewcommand\makematricola{#1 #2}}
+
+% Tesi
+\newcommand\maketypeofthesis\relax
+\newcommand\thetypeofthesis\relax
+\newcommand{\typeofthesis}[2][ \IfLanguageName{italian}{di}{by}:]{%
+\renewcommand\thetypeofthesis{#2}%
+\renewcommand\maketypeofthesis{\thetypeofthesis #1\\\relax}%
+}
+
+% Anno
+\newcommand\makeacademicyear\relax
+\newcommand\academicyears[2]{\renewcommand\makeacademicyear{\sc{}#1 #2}}
+\newcommand\academicyear[2][\IfLanguageName{italian}{Anno Accademico}{Academic Year}]{%
+\FPeval{\nextyear}{clip(#2+1)}%
+\academicyears{#1}{#2-\nextyear}%
+}
+
+% Laboratorio
+\newcommand\logospacer{\quad}
+\newcommand\thelabs{}
+\newcommand\makelablines\relax
+\newcommand\makelaburllines\relax
+\newcommand\makelablogosline\logospacer\relax
+
+\newcommand{\labprefix}{%
+  \IfLanguageName{italian}{%
+	  Progetto sviluppato presso il\ }{%
+		Project developed at the\ }}
+\newcommand{\llabprefix}{%
+	\IfLanguageName{italian}{%
+		Progetto sviluppato presso l'}{%
+		Project developed at\ }}
+\NewDocumentCommand{\lab}{ O{\labprefix} O{\small} m }{%
+\appto\makelablines{{#2\selectfont{{#1}{#3}}}\\\relax}%
+\appto\thelabs{, #3}%
+}
+\NewDocumentCommand{\llab}{ O{\small} m }{%
+	\lab[\llabprefix][#1]{#2}%
+}
+
+\newcommand\laburl[1]{%
+\appto\makelaburllines{\url{#1}\\\relax}%
+}
+
+\newcommand\lablogo[2][width=25mm]{%
+\appto\makelablogosline{\includegraphics[#1]{#2}\logospacer\relax}%
+}
+
+% Titolo
+\newcommand\makeprintedtitle{\@title}
+\newcommand\printedtitle[1]{\renewcommand\makeprintedtitle{#1}}
+\title{}
+
+% PDF-A Metadata
+\let\Author\relax
+\let\Title\relax
+\let\Keywords\relax
+\let\Subject\relax
+\let\Org\relax
+\let\Copyright\relax
+\let\CopyrightURL\relax
+\let\Copyrighted\relax
+\let\PublicationType\relax
+\let\Journaltitle\relax
+\let\Journalnumber\relax
+\let\Volume\relax
+\let\Issue\relax
+\let\Firstpage\relax
+\let\Lastpage\relax
+\let\Doi\relax
+\let\CoverDisplayDate\relax
+\let\CoverDate\relax
+\let\Title\relax
+\let\Author\relax
+\let\Copyright\relax
+\let\Keywords\relax
+\let\Subject\relax
+
+\newcommand\tesixmpbody{%
+% Replace the following information with your document's actual
+% metadata. If you do not want to set a value for a certain parameter,
+% just omit it.
+%
+% Symbols permitted in metadata
+% =============================
+% 
+% Within the metadata, all printable ASCII characters except
+% '\', '{', '}', and '%' represent themselves. Also, all printable
+% Unicode characters from the basic multilingual plane (i.e., up to
+% code point U+FFFF) can be used directly with the UTF-8 encoding. 
+% Consecutive whitespace characters are combined into a single
+% space. Whitespace after a macro such as \copyright, \backslash, or
+% \sep is ignored. Blank lines are not permitted. Moreover, the
+% following markup can be used:
+%
+%  '\ '         - a literal space  (for example after a macro)                  
+%   \%          - a literal '%'                                                 
+%   \{          - a literal '{'                                                 
+%   \}          - a literal '}'                                                 
+%   \backslash  - a literal '\'                                                 
+%   \copyright  - the (c) copyright symbol                                      
+%
+% The macro \sep is only permitted within \Author, \Keywords, and
+% \Org.  It is used to separate multiple authors, keywords, etc.
+% 
+% List of supported metadata fields
+% =================================
+% 
+% Here is a complete list of user-definable metadata fields currently
+% supported, and their meanings. More may be added in the future.
+% 
+% General information:
+%
+%  \Author           - the document's human author. Separate multiple
+%                      authors with \sep.
+   \Author{\@author}
+%  \Title            - the document's title.
+   \Title{\@title}
+%  \Keywords         - list of keywords, separated with \sep.
+%  \Subject          - the abstract. 
+%  \Org              - publishers.
+   \Org{Università degli Studi di Milano, Dipartimento di Informatica ``Giovanni degli Antoni''\thelabs}
+% 
+% Copyright information:
+%
+%  \Copyright        - a copyright statement.
+%  \CopyrightURL     - location of a web page describing the owner
+%                      and/or rights statement for this document.
+%  \Copyrighted      - 'True' if the document is copyrighted, and
+%                      'False' if it isn't. This is automatically set
+%                      to 'True' if either \Copyright or \CopyrightURL
+%                      is specified, but can be overridden. For
+%                      example, if the copyright statement is "Public
+%                      Domain", this should be set to 'False'.
+%
+% Publication information:
+%
+% \PublicationType   - The type of publication. If defined, must be
+%                      one of book, catalog, feed, journal, magazine,
+%                      manual, newsletter, pamphlet. This is
+%                      automatically set to "journal" if \Journaltitle
+%                      is specified, but can be overridden.
+  \PublicationType{\thetypeofthesis}
+% \Journaltitle      - The title of the journal in which the document
+%                      was published. 
+% \Journalnumber     - The ISSN for the publication in which the
+%                      document was published.
+% \Volume            - Journal volume.
+% \Issue             - Journal issue/number.
+% \Firstpage         - First page number of the published version of
+%                      the document.
+% \Lastpage          - Last page number of the published version of
+%                      the document.
+% \Doi               - Digital Object Identifier (DOI) for the
+%                      document, without the leading "doi:".
+% \CoverDisplayDate  - Date on the cover of the journal issue, as a
+%                      human-readable text string.
+% \CoverDate         - Date on the cover of the journal issue, in a
+%                      format suitable for storing in a database field
+%                      with a 'date' data type.
+}
+
+\newcommand{\metadatitesi}{%
+\ifcsdef{atstreamopentesixmpstream}{%
+  \closeoutputstream{tesixmpstream}}{%
+  \newoutputstream{tesixmpstream}}
+\openoutputfile{\currfilebase.xmpdata}{tesixmpstream}
+\addtostream{tesixmpstream}{\tesixmpbody}
+}
+% -----------------------------------------------------------------------------
+
+% --- Page generation ---------------------------------------------------------
+% Front page
+\newcommand\makefrontpage{
+  \metadatitesi\relax%
+	\pagestyle{headings}%
+	\pagenumbering{gobble}%
+	\begin{center}%
+		\makeuniversity\relax
+		\makefaculty\relax
+		\vskip 0.0135\paperheight
+		\makedepartment\relax
+		\vskip 0.02\paperheight
+		\makeunilogo\relax
+		\vskip 0.0135\paperheight
+		\makecdl\relax
+	\end{center}
+
+	\vskip 0.0168\paperheight
+	\vfill
+
+	\begin{center}\Large\MakeUppercase{\makeprintedtitle}\end{center}
+
+	\vfill
+	\vskip 0.0673\paperheight
+	
+	\begin{tabular}{ll}\makesupervisorlines\relax\end{tabular}
+
+	\vskip 0.0168\paperheight
+
+	\begin{flushright}\large
+		\begin{tabular}{l}
+			\maketypeofthesis\relax
+			\@author\ifx\@author\empty\else\\\fi
+			\makematricola\relax
+		\end{tabular}
+	\end{flushright}
+
+	\vskip 0.0337\paperheight
+
+	\begin{center}\makeacademicyear\relax\end{center}
+	\newpage
+}
+
+\newcommand\makecenteredfrontpage{
+	\newgeometry{%
+		left=\avghm,%
+		right=\avghm,%
+		top=\avgvm,%
+		bottom=\avgvm}%
+	\makefrontpage\relax%
+	\loadgeometry{thethesisgeometry}
+}
+
+% Last page
+\newcommand\closingpage{%
+	\newpage
+	\pagestyle{plain}
+	\pagenumbering{gobble}
+	\vspace*{\fill}
+	\begin{center}
+		\makelablogosline
+		\vskip 0.4 cm
+		\makelablines
+		\makelaburllines
+	\end{center}
+}
+
+\def\beforepreface{
+	\pagenumbering{roman}
+	\pagestyle{plain}}
+
+\def\prefacesection#1{%
+	\chapter*{#1}
+	\ifprefaceintoc\relax%
+		\addcontentsline{toc}{chapter}{#1}%
+	\fi}
+
+\def\afterpreface{%
+	\clearpage
+	\iftocintoc\relax
+		\phantomsection
+		\addcontentsline{toc}{chapter}{\contentsname}
+	\fi\relax
+	\tableofcontents
+	\newpage
+	\iftablespage
+		{\addvspace{10pt}
+		\let\saveaddvspace=\addvspace
+		\def\addvspace##1{}
+		\phantomsection
+		\addcontentsline{toc}{chapter}{%
+		  \IfLanguageName{italian}{Elenco delle tabelle}{Table Index}}
+		\listoftables
+		\let\addvspace=\saveaddvspace}
+		\newpage
+	\fi
+	\iffigurespage
+		{\addvspace{10pt}
+		\let\saveaddvspace=\addvspace
+		\def\addvspace##1{}
+		\phantomsection
+		\addcontentsline{toc}{chapter}{%
+		  \IfLanguageName{italian}{Elenco delle figure}{Figure Index}}
+		\listoffigures
+		\let\addvspace=\saveaddvspace}
+		\newpage
+	\fi
+	\pagenumbering{arabic}
+	\pagestyle{headings}}
+
+\newcommand\beforebibliography[1][chapter]{%
+	\clearpage\relax%
+	\phantomsection\relax%
+	\addcontentsline{toc}{#1}{\bibname}}
+% -----------------------------------------------------------------------------
+
+% --- Laboratori Predefiniti --------------------------------------------------
+%   ADAPT Lab
+\newcommand\adaptlab{%
+	\llab{ADAPT Lab}%
+	\laburl{https://cazzola.di.unimi.it/adapt-lab.html}%
+}
+%   AIS Lab - Sistemi Intelligenti Applicati
+\newcommand\aislab{%
+	\lab{Laboratorio di Sistemi Intelligenti Applicati (AIS Lab)}
+	\laburl{http://ais-lab.di.unimi.it}
+}
+%   AnacletoLab - Laboratorio di Biologia Computazionale e Bioinformatica
+\newcommand\anacletolab{%
+	\llab{AnacletoLab}%
+	\laburl{http://anacletolab.di.unimi.it}%
+}
+%  BiSP Lab - Biomedical Image and Signal Processing Lab
+\newcommand\bisplab{%
+	\lab{Biomedical Image and Signal Processing (BiSP) Lab}%
+}
+%  CONNETS - Computer Networks and Network Science Lab
+\newcommand\connetslab{%
+	\lab{Computer Networks and Network Science (CONNETS) Lab}%
+	\laburl{https://connets.di.unimi.it}%
+}
+%  EveryWare Lab - Data Management for Mobile and Pervasive Computing
+\newcommand\everywarelab{%
+	\llab{EveryWare Lab}%
+	\laburl{http://everywarelab.di.unimi.it}%
+}
+%  FALSE Lab - Metodi Formali ed Algoritmi per Sistemi Large-Scale
+\newcommand\falselab{%
+	\lab[\labprefix][\footnotesize]{Formal methods and Algorithms for Large-Scale systEms (FALSE) Lab}%
+	\laburl{http://false.di.unimi.it}%
+}
+%  IEBI Lab - Industrial, Environmental and Biometric Informatics Laboratory
+\newcommand\iebilab{%
+	\llab[\footnotesize]{Industrial, Environmental and Biometric Informatics (IEBI) Laboratory}%
+	\laburl{http://iebil.di.unimi.it}%
+}
+%  ISLab - Information Systems and Knowledge Management
+\newcommand\islab{%
+	\llab[\footnotesize]{Information Systems and Knowledge Management Laboratory (ISLab)}%
+	\laburl{http://islab.di.unimi.it}%
+}
+%  LAILA - Laboratory of Artificial Intelligence and Learning Algorithms
+\newcommand\lailalab{%
+	\lab[\labprefix][\footnotesize]{Laboratory of Artificial Intelligence and Learning Algorithms (LAILA)}%
+	\laburl{https://sites.google.com/view/lailaunimi}%
+}
+%  LALALab - Linguaggi, Automi, Logica Algebrica
+\newcommand\lalalab{%
+	\lab{Laboratorio di Linguaggi, Automi, Logica Algebrica (LALALab)}%
+}
+%  LAW - Laboratorio di Algoritmica per il Web
+\newcommand\lawlab{%
+	\lab{Laboratorio di Algoritmica per il Web (LAW)}%
+	\laburl{http://law.di.unimi.it}%
+}
+%  LaSER - System security and cryptography Lab
+\newcommand\laserlab{%
+	\lab{System security and cryptography Lab (LaSER)}%
+	\laburl{https://security.di.unimi.it/}%
+}
+%  LIM - Laboratorio di Informatica Musicale
+\newcommand\limlab{%
+	\lab{Laboratorio di Informatica Musicale (LIM)}%
+	\laburl{https://www.lim.di.unimi.it}%
+	\lablogo{immagini/lim}%
+}
+%  MIPS Lab - Multimedia Interaction Perception and Social Lab
+\newcommand\mipslab{%
+	\lab{Multimedia Interaction Perception and Social (MIPS) Lab}%
+	\laburl{http://mips.di.unimi.it}%
+}
+%  OptLab - Laboratorio di Ricerca Operativa
+\newcommand\optlab{%
+	\lab{Laboratorio di Ricerca Operativa (OptLab)}%
+	\laburl{http://optlab.di.unimi.it}%
+}
+%  PHuSe - Perceptual Computing and Human Sensing Lab
+\newcommand\phuselab{%
+	\lab{Perceptual Computing and Human Sensing (PHuSe) Lab}%
+	\laburl{http://phuselab.di.unimi.it}%
+}
+%  PONG - Playlab for innovation in games
+\newcommand\ponglab{%
+	\lab{Playlab for innovation in games (PONG)}%
+	\laburl{https://pong.di.unimi.it}%
+}
+%  SESAR Lab - SEcure Service-oriented Architectures Research Lab
+\newcommand\sesarlab{%
+	\lab{SEcure Service-oriented Architectures Research (SESAR) Lab}%
+	\laburl{http://sesar.di.unimi.it}%
+}
+%  SPDP - Security, Privacy and Data Protection
+\newcommand\spdplab{%
+	\lab{Security, Privacy and Data Protection (SPDP) Lab}%
+	\laburl{http://spdp.di.unimi.it}%
+}
+% -----------------------------------------------------------------------------
