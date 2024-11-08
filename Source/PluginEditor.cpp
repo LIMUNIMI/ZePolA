@@ -15,7 +15,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     warningLabel->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
     warningLabel->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     warningLabel->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-    warningLabel->setBounds (720, 360, 140, 24);
+    warningLabel->setBounds (635, 355, 260, 120);
     warningLabel->setVisible(false);
     
     p.setEditorCallback([this]()
@@ -1704,7 +1704,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(1);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(1)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1714,7 +1714,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     {
         updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(1);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(1)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1729,7 +1729,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(2);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(2)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1744,7 +1744,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(3);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(3)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1759,7 +1759,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(4);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(4)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1774,7 +1774,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(5);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(5)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1789,7 +1789,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(6);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(6)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1804,7 +1804,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(7);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(7)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1819,7 +1819,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
             sliderThatWasMoved->setColour (juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
         sliderThatWasMoved->repaint();
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(8);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(8)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1829,7 +1829,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     {
         updateFrequencyFromSlider(p2_slider.get(), p2_freq.get(), sampleRate);
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(2);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(2)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1839,7 +1839,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     {
         updateFrequencyFromSlider(p3_slider.get(), p3_freq.get(), sampleRate);
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(3);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(3)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1849,7 +1849,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     {
         updateFrequencyFromSlider(p4_slider.get(), p4_freq.get(), sampleRate);
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(4);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(4)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1869,7 +1869,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     {
         updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(6);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(6)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1879,7 +1879,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     {
         updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(7);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(7)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -1889,7 +1889,7 @@ void EditorComponent::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     {
         updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
 
-        if (autoGain.get()->getToggleState())
+        if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(8);
             processor.setParameterValue(processor.parameters.getParameter(GAIN_NAME + std::to_string(8)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2541,46 +2541,45 @@ void EditorComponent::getSpectrum()
 {
     double phi;
     const auto sampleRate = processor.getSampleRate();
-
     const double pi = MathConstants<double>::pi;
-    const double twoPi = MathConstants<double>::twoPi;
 
     auto n1 = log(FREQUENCY_FLOOR / sampleRate);
     auto n2 = log(0.5) - n1;
 
     std::complex<double> spectrum;
-
+    
     const double gain = processor.getCurrentGain();
+    
+    double linearSum = 0.0;
+    double linearPhi;
 
     for (int i = 0; i < GRAPHS_QUALITY; ++ i)
     {
         if (linLog)
-            phi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1)); // Linear spectrum
+            phi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1));
         else
-            phi = exp(n1 + (n2 * (static_cast<double>(i) / (static_cast<double>(GRAPHS_QUALITY - 1))))); // Log spectrum
-
+        {
+            phi = exp(n1 + (n2 * (static_cast<double>(i) / (static_cast<double>(GRAPHS_QUALITY - 1)))));
+            linearPhi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1));
+        }
+        
         spectrum = processor.getPhiSpectrum(phi);
         magnitudes[i] = gain * std::abs(spectrum);
-        phases[i] = (pi + std::arg(spectrum)) / twoPi;
+        phases[i] = (pi + std::arg(spectrum)) / (2.0 * pi);
+        
+        if (linLog)
+            linearSum += magnitudes[i];
+        else
+            linearSum += gain * std::abs(processor.getPhiSpectrum(linearPhi));
     }
-    auto arraySize = sizeof(magnitudes) / sizeof(magnitudes[0]);
-    double sum = 0.0;
-    double mean = 1.0;
     
-    for (int i = 0; i < arraySize; ++ i)
-        sum += magnitudes[i];
-    
-    if (arraySize != 0)
-        mean = sum / static_cast<double>(arraySize);
-    
-    double dBMean = Decibels::gainToDecibels(mean, -128.0);
-    DBG(dBMean);
+    auto dBMean = Decibels::gainToDecibels(linearSum / GRAPHS_QUALITY, FILTER_ELEMENT_GAIN_FLOOR);
+
     if (dBMean > WARNINGDBLEVEL)
     {
         if (!isSettingFilters && !isUserWarned)
         {
             processor.setBypass(true);
-            
             warningLabel->setVisible(true);
             isUserWarned = true;
         }

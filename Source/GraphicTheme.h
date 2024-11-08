@@ -677,15 +677,3 @@ class AutoUpdateSwitchTheme : public juce::LookAndFeel_V4
         g.drawText("AUTO UPDATE", switchRect, juce::Justification::centred);
     }
 };
-
-class WarningWindowTheme : public juce::LookAndFeel_V4
-{
-public:
-    WarningWindowTheme()
-    {
-        setColour(juce::AlertWindow::backgroundColourId, juce::Colours::darkgrey);
-        setColour(juce::AlertWindow::textColourId, juce::Colours::white);
-        setColour(juce::AlertWindow::outlineColourId, juce::Colours::orange);
-    }
-};
-
