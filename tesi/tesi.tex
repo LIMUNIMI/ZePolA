@@ -221,6 +221,7 @@ Gran parte delle applicazioni di elaborazione dei segnali riguarda l'attenuazion
 Un equalizzatore parametrico, come già accennato, è caratterizzato da frequenza centrale \(\omega_c\) e larghezza di banda (intervallo di frequenze attorno alla frequenza centrale su cui il filtro ha effetto) detta bandwidth \textit{B}, da cui deriva il Q-factor \textit{Q} calcolato come:
 \begin{equation}
     \textit{Q}=\frac{\omega_c}{\textit{B}}
+    \label{eq:q-factor}
 \end{equation}
 In ambito audio, questo obiettivo viene spesso raggiunto attraverso l’uso di filtri biquadratici, che consentono di attenuare o amplificare una specifica banda di frequenze attorno a una frequenza centrale \parencite{reiss2010design}.
 In gran parte delle applicazioni audio infatti è sufficiente l'utilizzo di filtri del secondo ordine in quanto sono necessari valori di \textit{Q}-factor moderati. Nelle implementazioni digitali in generale possono essere utilizzati sia filtri FIR che filtri IIR. Sebbene i filtri FIR siano intrinsecamente stabili e permettano una fase lineare, ottenere una risposta in frequenza desiderata può richiedere ordini elevati, aumentando di conseguenza la capacità computazionale necessaria, il che rende questo tipo di filtri inadatti per performance live e processamento real-time.
@@ -231,6 +232,17 @@ Nel dominio digitale, è possibile ottenere qualsiasi risposta in frequenza attr
 L'approccio più utilizzato per la creazione di filtri digitali è partendo dal prototipo analogico da realizzare per poi mappare, tramite la trasformazione bilineare, l'asse delle frequenze analogiche \([0,1)\) sull'asse delle frequenze digitali \([0,\frac{\omega_s}{2}]\), dove \(\omega_s\) è la frequenza di campionamento in radianti.
 La progettazione del filtro analogico prototipo e le conseguenti trasformazioni consentono di ottenere, a partire dalla frequenza centrale \(\omega_c\), dal guadagno (o attenuazione) e dalla larghezza di banda \textit{B}, i valori dei coefficienti dei filtri biquadratici digitali in catena \parencite{reiss2010design}.
 
+La funzione di trasferimento di un filtro biquadratico nel dominio \( s \) analogico è:
+\begin{equation}
+    H(s)=\frac{\beta s^2 + \frac{s\omega_c}{Q_z} + \alpha \omega_c^2}{s^2 + \frac{s\omega_c}{Q_p} + \omega_c^2}
+    \label{eq:analog_biquad}
+\end{equation}
+\parencite{shpak1991analytical}
+Nel dominio digitale la funzione di trasferimento di un filtro biquadratico è la seguente:
+\begin{equation}
+    H(z)=c\frac{(z-z_1)(z-z_2)}{(z-p_1)(z-p_2)} = c\frac{1-(z_1+z_2)z^{-1} + z_1z_2z^{-2}}{1-(p_1+p_2)z^{-1} + p_1p_2z^{-2}}
+\end{equation}
+\parencite{reiss2010design}
 
 
 \section{Poli e zeri nei filtri digitali}
