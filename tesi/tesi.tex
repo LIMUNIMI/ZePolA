@@ -9,9 +9,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass[12pt]{report}
+\usepackage[backend=biber, style=apa]{biblatex}
+\addbibresource{bibliografia.bib}
 
 % --- PREAMBOLO ---------------------------------------------------------------
-% Inserire qui eventuali package da includere o 
+% Inserire qui eventuali package da includere o
 % definizioni di comandi personalizzati
 
 % Selezione lingua
@@ -93,7 +95,7 @@
 % per specificare manualmente un anno accademico
 % NON inserire nel formato 1970-1971, ma
 % inserire solo 1970
-\academicyear{\the\year} 
+\academicyear{\the\year}
 
 %   INDICI:
 % elenco delle figure (facoltativo)
@@ -114,9 +116,9 @@
 % Copertina allineata alle altre pagine: usa questo comando per la copertina interna
 \makefrontpage
 
-% 
-%			PAGINA DI DEDICA E/O CITAZIONE
-%			facoltativa, questa è l'unica cosa che dovete formattare a mano, un po' come vi pare
+%
+%            PAGINA DI DEDICA E/O CITAZIONE
+%            facoltativa, questa è l'unica cosa che dovete formattare a mano, un po' come vi pare
 %
 
 {\raggedleft \large \sl Questo lavoro \`{e} dedicato ai miei genitori\\}
@@ -124,29 +126,29 @@
 \clearpage
 \beforepreface
 
-% 
-%			PREFAZIONE (facoltativa)
+%
+%            PREFAZIONE (facoltativa)
 %
 
 % \prefacesection{Prefazione}
 % Le prefazioni non sono molto comuni, tuttavia a volte capita che qualcuno voglia dire qualcosa che esuli dal lavoro in sé (come un meta-commento sull'elaborato), o voglia fornire informazioni riguardanti l'eventuale progetto entro cui la tesi si colloca (in questo caso è probabile che sia il relatore a scrivere questa parte).
 
 %
-%			RINGRAZIAMENTI (facoltativi)
+%            RINGRAZIAMENTI (facoltativi)
 %
 
 \prefacesection{Ringraziamenti}
 Questa sezione, facoltativa, contiene i ringraziamenti.
 
 %
-%			Creazione automatica dell'indice
+%            Creazione automatica dell'indice
 %
 
 \afterpreface
 
-% 
-%			CAPITOLO 1: Introduzione o Abstract
-% 
+%
+%            CAPITOLO 1: Introduzione o Abstract
+%
 
 \chapter{Introduzione}
 \label{cap:introduzione}
@@ -159,13 +161,13 @@ Questa sezione, facoltativa, contiene i ringraziamenti.
 
 \section{Stile e forma}
 
-% 
-%			CAPITOLO 2: Stato dell'arte
-% 
+%
+%            CAPITOLO 2: Stato dell'arte
+%
 
 \chapter{Stato dell'arte}
 \label{chap:stato_arte}
-La crescita della ricerca e sviluppo nel filtraggio digitale è iniziata negli anni Sessanta, quando l'uso del filtraggio digitale ricorsivo ha aperto la strada alla simulazione di filtri analogici nel dominio digitale. 
+La ricerca e lo sviluppo nel filtraggio digitale ebbero inizio negli anni Sessanta, quando l’introduzione del filtraggio digitale ricorsivo aprì la strada alla simulazione di filtri analogici nel dominio digitale.
 
 I primi studi sul filtraggio digitale sono stati incentivati dalla necessità di creare tecnologie capaci di simulare dispositivi per la modifica della larghezza di banda della voce. L'uso dei filtri analogici per il trattamento dei segnali vocali, infatti, comportava varie difficoltà, tra cui costi elevati, peso e ingombro dell'hardware.
 
@@ -180,32 +182,54 @@ I passaggi successivi riguardarono la mappatura del piano \( s \) (tramite la tr
 
 Fin dall'inizio, l'elaborazione numerica digitale dei segnali ha mostrato vantaggi rispetto alla controparte analogica: mentre l’elaborazione analogica può dimostrarsi effimera, quella digitale permette il salvataggio dell'ingresso, dello stato di un filtro e dell'uscita.
 
-Nel corso degli anni, in particolare dagli anni Settanta (periodo delle prime applicazioni pratiche dei filtri digitali) fino a oggi, le proprietà e gli utilizzi dei filtri digitali non ricorsivi FIR (con risposta all’impulso finita) e ricorsivi IIR (con risposta all’impulso infinita) sono cambiati significativamente. Nella decade 1970-1980, l’applicazione principale dei filtri digitali è stata il filtraggio selettivo, contesto in cui l’uso dei filtri digitali ricorsivi ha dimostrato di essere più vantaggioso.
+Nel corso degli anni, in particolare dagli anni Settanta (periodo delle prime applicazioni pratiche dei filtri digitali) fino a oggi, le proprietà e gli utilizzi dei filtri digitali non ricorsivi FIR (con risposta all’impulso finita) e ricorsivi IIR (con risposta all’impulso infinita) sono cambiati significativamente.
 
-Negli anni successivi, i filtri digitali sono stati impiegati anche per altri scopi, oltre al filtraggio selettivo, come il filtraggio adattativo e il filtraggio adattato (utilizzato nelle telecomunicazioni). In questi contesti, i filtri FIR si sono rivelati particolarmente efficaci. Durante gli anni Ottanta, quindi, i filtri digitali FIR sono diventati preferibili per questi diversi utilizzi.
+Negli anni successivi, i filtri digitali sono stati impiegati anche per altri scopi, oltre al filtraggio selettivo, come il matched-filtering e adaptive-filtering (utilizzato nelle telecomunicazioni). In questi contesti, i filtri FIR si sono rivelati particolarmente efficaci. Durante gli anni Ottanta, quindi, i filtri digitali FIR sono diventati preferibili per questi diversi utilizzi.
 
 Con il progresso degli anni Novanta e la possibilità di rendere stabili i filtri digitali IIR e a fase lineare, questi ultimi hanno ritrovato un ruolo importante nelle applicazioni digitali.
 
-Oggi i filtri digitali ricorsivi sono considerati un metodo efficace per approssimare una risposta all’impulso infinita. In teoria, la risposta all’impulso di un filtro ricorsivo è infinita nel tempo, ma in pratica essa decresce esponenzialmente verso lo zero. Nel dominio digitale, infatti, l’errore di approssimazione diventa trascurabile già dopo poche centinaia di campioni.
+Oggi i filtri digitali ricorsivi sono considerati un metodo efficace per approssimare una risposta all’impulso infinita. In teoria infatti, la risposta all’impulso di un filtro ricorsivo è infinita nel tempo, ma in pratica essa decresce esponenzialmente verso lo zero. Nel dominio digitale, quindi, l’errore di approssimazione diventa trascurabile già dopo poche centinaia di campioni \parencite{rader2006rise}.
 
 \section{Equalizzazione audio digitale}
 \subsection{Equalizzazione nell'elaborazione di segnali}
-La manipolazione dei segnali analogici e digitali ha origini che risalgono agli inizi della produzione audio e di altre applicazioni, e in questo contesto l’equalizzazione, sia in ambito analogico che digitale, rappresenta un passaggio fondamentale.
-Il termine equalizzazione ha origine nell'ingegneria telefonica dei primi tempi, settore in cui era necessario correggere i segnali telefonici degradati, soprattutto a causa della perdita delle alte frequenze nei lunghi tragitti, per ripristinare il segnale originale all'arrivo a destinazione.
-L'equalizzazione è quindi un processo cruciale nell'elaborazione audio: consente infatti di enfatizzare o attenuare specifiche bande di frequenza, migliorando la chiarezza, l'intelligibilità o il carattere sonoro di un segnale audio. Dagli studi di registrazione alle applicazioni di live sound e produzione musicale, gli equalizzatori digitali sono utilizzati per adattare il suono a contesti acustici diversi, correggere problematiche sonore o migliorare il contenuto audio in base ai gusti estetici e alle esigenze del mixaggio.
+Il concetto di manipolazione delle frequenze nei segnali risale all’avvento del telegrafo e delle comunicazioni degli anni Settanta dell'Ottocento. I primi usi riguardano il filtraggio dei segnali del telegrafo armonico, in cui ciascun tasto, una volta premuto, attivava la vibrazione di un’ancia elettromeccanica associata a una specifica frequenza. Lo strumento ricevente, per decodificare correttamente il segnale, doveva sintonizzare i propri tasti sulle frequenze corrispondenti a quelle inviate.
 
-Con l’avvento dei filtri digitali, l’equalizzazione in questo dominio ha raggiunto un alto livello di flessibilità, permettendo sia la riproduzione e simulazione di strumenti analogici, sia la creazione di strumenti e software innovativi che superano le 
+Il termine equalizzazione ha origine nell'ingegneria telefonica dei primi tempi, settore in cui era necessario correggere i segnali telefonici degradati, soprattutto a causa della perdita delle alte frequenze nei lunghi tragitti, per ripristinare il segnale originale all'arrivo a destinazione.
+
+I primi prototipi di equalizzatori variabili, dotati di controlli per modificare la risposta in frequenza, nacquero con il cinema sonoro. I controlli di tono, guadagno e attenuazione delle alte e basse frequenze furono poi introdotti con il grammofono tra gli anni Quaranta e Cinquanta del Novecento.
+
+Già negli anni Cinquanta del Novecento i circuiti di equalizzazione divennero degli standard nella produzione musicale, specialmente nella produzione e riproduzione di dischi LP.
+
+Nella decade Cinquanta-Sessanta del ventesimo secolo, gli equalizzatori acquisirono popolarità anche nella post-produzione audio musicale: furono sviluppati nuovi modelli e strumenti, dagli equalizzatori grafici fino ai primi equalizzatori parametrici degli anni Settanta.
+
+L'avvento dell'equalizzazione digitale avvenne a cavallo tra gli anni Settanta e Ottanta del secolo scorso: il primo equalizzatore parametrico digitale basato su DSP in commercio fu il DEQ7 della Yamaha, uscito sul mercato nel 1987 \parencite{reiss2016all}.
+
+L'equalizzazione è quindi divenuto un processo cruciale nell'elaborazione audio: consente infatti di enfatizzare o attenuare specifiche bande di frequenza, migliorando la chiarezza, l'intelligibilità o il carattere sonoro di un segnale audio. Dagli studi di registrazione alle applicazioni di live sound e produzione musicale, gli equalizzatori digitali sono utilizzati per adattare il suono a contesti acustici diversi, correggere problematiche sonore o migliorare il contenuto audio in base ai gusti estetici e alle esigenze del mixaggio.
+
+Con l’avvento dei filtri digitali, l’equalizzazione ha raggiunto un alto livello di flessibilità, permettendo sia la riproduzione e simulazione di strumenti analogici, sia la creazione di strumenti e software innovativi che superano le
 più classiche e tradizionali implementazioni.
 
 Gli equalizzatori digitali si dividono in categorie:
 \begin{itemize}
-    \item Equalizzatori grafici: strumenti per la manipolazione della risposta in frequenza, che offrono un controllo di volume (attenuazione e guadagno) su bande di frequenza specifiche, stabilite in fase di progettazione (solitamente rispettando le frequenze presenti nelle tabelle standard ISO). Ogni banda è regolabile tramite cursori o controlli dedicati, che agiscono su filtri passa-banda per modellare lo spettro audio secondo le preferenze dell'utente.
-    \item Equalizzatori parametrici: strumenti per la manipolazione della risposta in frequenza che offrono un controllo adattabile su ogni banda di frequenza. Consentono di regolare non solo il guadagno o l'attenuazione, ma anche la frequenza centrale e la larghezza di banda (o Q factor) di ogni singolo filtro. Questi parametri permettono una modellazione precisa dello spettro audio, adattandosi meglio alle esigenze specifiche dell'utente.
-    \item Equalizzatori dinamici: strumenti per la manipolazione della risposta in frequenza che offrono un controllo basato sul principio degli equalizzatori parametrici. Tuttavia, a differenza di questi ultimi, l'attenuazione o il guadagno di specifiche bande dipende dal superamento di una soglia di volume nello spettro della stessa banda di frequenza. La risposta del filtro cambia quindi a seconda della variazione dinamica dello spettro del segnale.
+    \item Equalizzatori grafici: strumenti per la manipolazione della risposta in frequenza, che offrono un controllo di volume (attenuazione e guadagno) su bande di frequenza specifiche, stabilite in fase di progettazione (solitamente rispettando le frequenze presenti nelle tabelle standard ISO). Ogni banda è regolabile tramite cursori o controlli dedicati, che agiscono su filtri passa-banda per modellare lo spettro audio secondo le preferenze dell'utente \parencite{liski2017quest}.
+    \item Equalizzatori parametrici: strumenti per la manipolazione della risposta in frequenza che offrono un controllo adattabile su ogni banda di frequenza. Consentono di regolare non solo il guadagno o l'attenuazione, ma anche la frequenza centrale e la larghezza di banda (o Q factor) di ogni singolo filtro. Questi parametri permettono una modellazione precisa dello spettro audio, adattandosi meglio alle esigenze specifiche dell'utente \parencite{massenburg1972parametric}.
+    \item Equalizzatori dinamici: strumenti per la manipolazione della risposta in frequenza che offrono un controllo basato sul principio degli equalizzatori parametrici. Tuttavia, a differenza di questi ultimi, l'attenuazione o il guadagno di specifiche bande dipende dal superamento di una soglia di volume nello spettro della stessa banda di frequenza. La risposta del filtro cambia quindi a seconda della variazione dinamica dello spettro del segnale \parencite{martignon2023dynamic}.
 \end{itemize}
 
-\subsection{Metodi di progettazione di equalizzatori digitali}
-Gran parte delle applicazioni di elaborazione dei segnali riguarda l'attenuazione o l'accentuazione di una porzione specifica dello spettro del segnale. In ambito audio, questo obiettivo viene spesso raggiunto attraverso l’uso di filtri biquadratici, che consentono di attenuare o amplificare una specifica banda di frequenze attorno a una frequenza centrale. Nel dominio digitale, è possibile ottenere qualsiasi risposta in frequenza tramite una cascata di filtri biquadratici disposti in serie.
+\subsection{Metodi di progettazione di equalizzatori digitali: catena di filtri biquadratici}
+Gran parte delle applicazioni di elaborazione dei segnali riguarda l'attenuazione o l'accentuazione di una porzione specifica dello spettro del segnale.
+Un equalizzatore parametrico, come già accennato, è caratterizzato da frequenza centrale \(\omega_c\) e larghezza di banda (intervallo di frequenze attorno alla frequenza centrale su cui il filtro ha effetto) detta bandwidth \textit{B}, da cui deriva il Q-factor \textit{Q} calcolato come:
+\begin{equation}
+    \textit{Q}=\frac{\omega_c}{\textit{B}}
+\end{equation}
+In ambito audio, questo obiettivo viene spesso raggiunto attraverso l’uso di filtri biquadratici, che consentono di attenuare o amplificare una specifica banda di frequenze attorno a una frequenza centrale \parencite{reiss2010design}.
+In gran parte delle applicazioni audio infatti è sufficiente l'utilizzo di filtri del secondo ordine in quanto sono necessari valori di \textit{Q}-factor moderati. Nelle implementazioni digitali in generale possono essere utilizzati sia filtri FIR che filtri IIR. Sebbene i filtri FIR siano intrinsecamente stabili e permettano una fase lineare, ottenere una risposta in frequenza desiderata può richiedere ordini elevati, aumentando di conseguenza la capacità computazionale necessaria, il che rende questo tipo di filtri inadatti per performance live e processamento real-time.
+I filtri IIR, al contrario, permettono di mantenere un ordine del filtro più basso, richiedendo così una minore capacità computazionale, ma spesso presentano una fase non lineare. Inoltre, con questo tipo di filtri è necessario prestare particolare attenzione alla precisione numerica \parencite{shpak1991analytical}.
+
+Nel dominio digitale, è possibile ottenere qualsiasi risposta in frequenza attraverso una cascata di filtri biquadratici disposti in serie \parencite{reiss2010design}. Per un equalizzatore parametrico, nel quale l'utente ha la possibilità di modificare il valore della frequenza centrale \(\omega_c\), la larghezza di banda \textit{B} (e quindi il fattore \textit{Q}) e il guadagno (o attenuazione), la scelta di filtri \textit{"semplici"} in cascata è da preferire, rispetto a una configurazione in parallelo (come nel caso di equalizzatori grafici) in quanto la risposta in ampiezza del filtro è data dal prodotto delle risposte in ampiezza dei singoli filtri \parencite{shpak1991analytical}.
+
+L'approccio più utilizzato per la creazione di filtri digitali è partendo dal prototipo analogico da realizzare per poi mappare, tramite la trasformazione bilineare, l'asse delle frequenze analogiche \([0,1)\) sull'asse delle frequenze digitali \([0,\frac{\omega_s}{2}]\), dove \(\omega_s\) è la frequenza di campionamento in radianti.
+La progettazione del filtro analogico prototipo e le conseguenti trasformazioni consentono di ottenere, a partire dalla frequenza centrale \(\omega_c\), dal guadagno (o attenuazione) e dalla larghezza di banda \textit{B}, i valori dei coefficienti dei filtri biquadratici digitali in catena \parencite{reiss2010design}.
 
 
 
@@ -220,11 +244,14 @@ BIBLIOGRAFIA: Digital filter design techniques in the frequency domain
 
 \section{Sintesi e gap da colmare}
 
+\section{Bibliografia}
+\printbibliography
 
-% 
-%			CAPITOLO 3: Tecnologie utilizzate
-%			(omettere questo capitolo se non necessario)
-% 
+
+%
+%            CAPITOLO 3: Tecnologie utilizzate
+%            (omettere questo capitolo se non necessario)
+%
 
 \chapter{Tecnologie utilizzate}
 \label{cap3}
@@ -240,7 +267,7 @@ L'acronimo WYSIWYG sta per ``What You See is What You Get'', e si riferisce al c
 
 L'acronimo WYSIWYM sta per ``What You See is What You Mean'', ed è il paradigma per la creazione di testi strutturati. \LaTeX\ è un ambiente che supporta tale paradigma. In realtà, anche Microsoft Word avrebbe la possibilità di strutturare il testo, principalmente attraverso il meccanismo degli stili, ma pochissimi utenti sfruttano tale funzionalità (ovviamente se sceglierete di scrivere la tesi in Word raccomandiamo caldamente l'uso di tali funzioni).
 
-I principali svantaggi di un sistema WYSIWYM sono il tempo di apprendimento, dovuto a una minore intuitività degli strumenti software, e la necessità di invocare la compilazione del documento per vederne l'aspetto definitivo. Ad esempio, in \LaTeX\ l'intero documento viene scritto in testo semplice, che all'interno contiene ambienti e comandi con informazioni di layout, e solo la compilazione permette di scoprire eventuali errori di sintassi e giungere, infine, alla creazione del PDF. 
+I principali svantaggi di un sistema WYSIWYM sono il tempo di apprendimento, dovuto a una minore intuitività degli strumenti software, e la necessità di invocare la compilazione del documento per vederne l'aspetto definitivo. Ad esempio, in \LaTeX\ l'intero documento viene scritto in testo semplice, che all'interno contiene ambienti e comandi con informazioni di layout, e solo la compilazione permette di scoprire eventuali errori di sintassi e giungere, infine, alla creazione del PDF.
 
 Le difficoltà iniziali, però, sono ampiamente compensate dai vantaggi a medio e lungo termine. Infatti, il lavoro risulterà perfettamente impaginato e strutturato, e dunque avrà un aspetto professionale. Questo riguarda non solo gli stili, che vengono applicati al testo in modo coerente con il template prescelto, ma anche problemi tipicamente spinosi di Word, quali il posizionamento delle immagini e delle tabelle, la creazione di una bibliografia con relative citazioni nel testo, la creazione di un sommario (per cui esistono funzioni automatiche, ma sono piuttosto macchinose). Diventa automatico e molto semplice, ad esempio, aggiungere un indice delle figure o delle tabelle, oppure numerare le formule espresse nel testo. Un altro aspetto su cui \LaTeX\ è nettamente superiore a Word è proprio la scrittura di formule matematiche, come mostrato nell'esempio qui riportato:
 \begin{equation}
@@ -291,7 +318,7 @@ In molti stili di \LaTeX, un nuovo paragrafo (dopo un doppio a capo) crea un rie
 
 \subsection{Accenti}
 
-Scrivendo la tesi in italiano, l'uso di lettere accentate \`e frequente. I caratteri accentati immessi da tastiera non vengono per\`o riconosciuti nativamente. Invece l'accento grave e acuto in \LaTeX\ si ottengono rispettivamente con i comandi \verb|\`{a}| e \verb|\'{a}.| 
+Scrivendo la tesi in italiano, l'uso di lettere accentate \`e frequente. I caratteri accentati immessi da tastiera non vengono per\`o riconosciuti nativamente. Invece l'accento grave e acuto in \LaTeX\ si ottengono rispettivamente con i comandi \verb|\`{a}| e \verb|\'{a}.|
 
 In alternativa \`e possibile specificare che si usa la codifica UTF-8, usando il comando \verb|\usepackage[utf8]{inputenc}| nel preambolo del documento (già incluso in questo template). In questo modo i caratteri accentati immessi da tastiera verranno riconosciuti.
 
@@ -325,18 +352,18 @@ Tra le alternative, si segnala l'ambiente lstlisting, che richiede innanzi tutto
 
 \begin{lstlisting}
 def MCD(a,b):
-	while b != 0:
-		a, b = b, a % b
-	return a
+    while b != 0:
+        a, b = b, a % b
+    return a
 \end{lstlisting}
 
 Se dopo l'apertura dell'ambiente si specifica tra parentesi quadrate il linguaggio adottato, ad esempio con la sintassi \verb|\begin{lstlisting}[language=Python]|, si ottiene automaticamente l'evidenziazione del codice:
 
 \begin{lstlisting}[language=Python]
 def MCD(a,b):
-	while b != 0:
-		a, b = b, a % b
-	return a
+    while b != 0:
+        a, b = b, a % b
+    return a
 \end{lstlisting}
 
 L'elenco dei linguaggi supportati e le opzioni avanzate per personalizzare la visualizzazione del codice si trovano all'indirizzo \url{https://www.overleaf.com/learn/latex/Code_listing#Reference_guide}.
@@ -368,7 +395,7 @@ In caso si preferisca commentare il codice nel sorgente invece che usare le funz
 
 Esistono più modi per inserire una bibliografia in \LaTeX. Si consiglia fortemente l'utilizzo del sistema \hologo{BibTeX}. Questo consente di aggiungere, rimuovere e modificare voci di bibliografia in maniera efficiente, di formattarle, di riordinarle a piacere e aggiornare automaticamente i corrispondenti riferimenti nel testo, ecc.
 
-Una guida introduttiva e completa \`e ``Tame the BeaST''.\footnote{Accessibile da \url{http://www.tug.org/interest.html}} 
+Una guida introduttiva e completa \`e ``Tame the BeaST''.\footnote{Accessibile da \url{http://www.tug.org/interest.html}}
 In estrema sintesi, i passi per gestire una bibliografia tramite \hologo{BibTeX} sono essenzialmente tre.
 \begin{enumerate}
 \item Salvare i riferimenti bibliografici come entry di uno o pi\`u file con l'estensione .bib (si veda ad esempio il file \texttt{bibliografia.bib}, parte di questo template). Gli entry sono scritti in un formato specifico, in particolare ogni entry ha una propria etichetta testuale che lo identifica univocamente.
@@ -393,9 +420,9 @@ Esiste anche il pacchetto \texttt{biblatex}, che fornisce una reimplementazione 
 
 
 
-% 
-%			CAPITOLO 4: Il lavoro svolto
-% 
+%
+%            CAPITOLO 4: Il lavoro svolto
+%
 
 \chapter{Nome del Progetto}
 \label{cap4}
@@ -412,9 +439,9 @@ Una volta fornita una panoramica, è possibile addentrarsi nei dettagli, ricorda
 
 Vale la pena riportare nel testo solo le parti di codice più importanti, demandando all'appendice il codice completo e altri extra come il manuale utente.
 
-% 
-%			CAPITOLO 5: Test
-% 
+%
+%            CAPITOLO 5: Test
+%
 
 \chapter{Test}
 \label{chap:test}
@@ -428,10 +455,10 @@ Progettare e condurre un test soggettivo con utenti \`e un lavoro complesso e lu
 Uno degli errori più comuni è sottovalutare lo studio di un \textit{protocollo} sperimentale. Affinché i risultati dei test siano significativi è necessario non trascurare i seguenti aspetti:
 
 \begin{itemize}
-	\item eliminare distorsioni sistematiche involontarie;
-	\item isolare le variabili oggetto dello studio;
-	\item garantire una numerosità sufficiente del campione;
-	\item confrontare gli effetti con un gruppo di controllo.
+    \item eliminare distorsioni sistematiche involontarie;
+    \item isolare le variabili oggetto dello studio;
+    \item garantire una numerosità sufficiente del campione;
+    \item confrontare gli effetti con un gruppo di controllo.
 \end{itemize}
 
 \section{Risultati}
@@ -443,16 +470,16 @@ I risultati dei test vanno presentati in modo chiaro e completo, possibilmente i
 \`E inoltre consigliato riportare in appendice i dati grezzi completi, in modo da permettere al lettore di ripetere eventuali test statistici.
 
 \begin{table}
-	\centering
+    \centering
     \begin{tabular}{|l|l|l|}
-	\hline
-	Colonna 1 & Colonna 2 & Colonna 3 \\ \hline
-	5         & 8         & 1         \\
-	6         & 9         & 2         \\
-	7         & 0         & 3         \\ \hline
+    \hline
+    Colonna 1 & Colonna 2 & Colonna 3 \\ \hline
+    5         & 8         & 1         \\
+    6         & 9         & 2         \\
+    7         & 0         & 3         \\ \hline
 \end{tabular}
-	\caption{Tabella di esempio.}
-	\label{tab:sample}
+    \caption{Tabella di esempio.}
+    \label{tab:sample}
 \end{table}
 
 \section{Osservazioni}
@@ -461,9 +488,9 @@ Quando si traggono conclusioni dai dati bisogna prestare attenzione a non confon
 
 Per queste ragioni è necessario esporre le proprie osservazioni in maniera cauta, senza andare oltre ciò che suggeriscono i dati. \`E certamente possibile speculare sulle cause, ma va esplicitato chiaramente, e tali speculazioni vanno supportate dalla bibliografia.
 
-% 
-%			CAPITOLO 6: Conclusioni e sviluppi futuri
-% 
+%
+%            CAPITOLO 6: Conclusioni e sviluppi futuri
+%
 
 \chapter{Conclusioni}
 \label{cap6}
@@ -477,9 +504,9 @@ Nelle conclusioni si tirano le somme di quanto realizzato, facendo un riassunto 
 Tra gli sviluppi futuri in genere trovano posto quelle migliorie non realizzate per mancanza di tempo, la cui necessità è emersa solo dopo i test, e che riguardano il progetto ad un livello di astrazione più alto (nel caso di tesi che si inquadrano in una linea di ricerca).
 
 
-% 
-%			APENDICE: materiali aggiuntivi e dimostrazioni
-% 
+%
+%            APENDICE: materiali aggiuntivi e dimostrazioni
+%
 
 \appendix
 
@@ -507,7 +534,7 @@ Solitamente l'attività di tirocinio interno per la triennale si articola nei se
     \item Il tirocinio deve durare almeno 14 settimane. Durante questo tempo si dovrebbe svolgere il grosso del lavoro
     \item A tirocinio ultimato, se e solo se il relatore è d'accordo, si procede con la chiusura formale del tirocinio. Questa consiste da un lato nell'iscrizione all'appello apposito sul SIFA/UniMIA a carico dello studente, e dall'altro nell'inoltro della richiesta di chiusura a carico del relatore
     \item Iscrizione alla sessione di laurea sul sito del Corso di Laurea\\ \texttt{https://<nome\_cdl>.cdl.unimi.it/it/studiare/laurearsi}\\ (es. \url{https://informaticamusicale.cdl.unimi.it/it/studiare/laurearsi})
-    \item Consegna di elaborato e riassunto in formato PDF-A (questo template produce già il formato richiesto) non superiore a 10MB 
+    \item Consegna di elaborato e riassunto in formato PDF-A (questo template produce già il formato richiesto) non superiore a 10MB
     \item Discussione pubblica, che in quanto tale è aperta a spettatori esterni
     \item Festeggiamenti (si ricorda che questi devono essere svolti nel rispetto dei luoghi e delle istituzioni rappresentate)
 \end{enumerate}
@@ -536,11 +563,11 @@ Nel caso di utilizzo di git (con qualsiasi remoto, sia esso GitHub, GitLab, Bitb
 I membri del LIM in generale non richiedono agli studenti di consegnare una copia cartacea del proprio lavoro. In altri casi, si invita lo studente a concordare questo punto con il proprio relatore.
 In prossimità della discussione viene richiesto loro di condividere in formato digitale:
 \begin{itemize}
-	\item la versione finale dell'elaborato;
-	\item il riassunto caricato in piattaforma;
-	\item il codice sviluppato;
-	\item tutti i materiali di supporto utilizzati e/o prodotti;
-	\item la presentazione predisposta per la discussione.
+    \item la versione finale dell'elaborato;
+    \item il riassunto caricato in piattaforma;
+    \item il codice sviluppato;
+    \item tutti i materiali di supporto utilizzati e/o prodotti;
+    \item la presentazione predisposta per la discussione.
 \end{itemize}
 
 La consegna può avvenire su supporto ottico, via chiavetta USB o attraverso i sistemi di condivisione dei file (WeTransfer, Dropbox, Google Drive, ecc.).
@@ -553,33 +580,33 @@ L'estensione di tale documento non dovrebbe superare le due pagine, e spesso una
 Visto lo scopo del documento, è buona prassi bilanciare il testo in modo da dedicare poche righe allo stato dell'arte, in favore delle parti originali dell'elaborato.
 
 \section{Presentazione}
-Gli studenti delle lauree triennali hanno a disposizione al massimo 10 minuti per presentare il proprio elaborato, che diventano 15 per le lauree magistrali. 
+Gli studenti delle lauree triennali hanno a disposizione al massimo 10 minuti per presentare il proprio elaborato, che diventano 15 per le lauree magistrali.
 
 Si raccomanda di provare ripetutamente il discorso cronometrandosi e considerando i tempi morti per l'accensione del PC, l'avvio dei software, il passaggio da un'applicazione a un'altra, e via dicendo. Si segnala inoltre la possibilità di prenotare l'aula della discussione per provare in anticipo i collegamenti e verificare che immagini e audio vengano correttamente riprodotti.
 
 Per via degli stringenti vincoli temporali, difficilmente una presentazione multimediale può superare la soglia di 15 slide. Questo valore è puramente indicativo, perché dipende dalla densità di informazioni della slide e dal tempo dedicato a ciascuna slide mentre si sta presentando.
 
-La scelta tecnologica più comune è Microsoft PowerPoint, ma qualsiasi alternativa (Prezi, Acrobat PDF, \LaTeX, ecc.) è ammissibile. 
+La scelta tecnologica più comune è Microsoft PowerPoint, ma qualsiasi alternativa (Prezi, Acrobat PDF, \LaTeX, ecc.) è ammissibile.
 
 Gli errori più comuni da evitare sono:
 \begin{itemize}
-	\item slide dal contenuto testuale troppo ricco;
-	\item slide che verranno lette parola per parola in fase di presentazione.
+    \item slide dal contenuto testuale troppo ricco;
+    \item slide che verranno lette parola per parola in fase di presentazione.
 \end{itemize}
 
-Entrambi i problemi si risolvono impostando il testo in maniera estremamente schematica, tendenzialmente per elenchi puntati. Si presti attenzione, però, a usare una forma omogenea. 
+Entrambi i problemi si risolvono impostando il testo in maniera estremamente schematica, tendenzialmente per elenchi puntati. Si presti attenzione, però, a usare una forma omogenea.
 Ad esempio, sarebbe poco elegante il seguente elenco, che include aggettivi, sostantivi e frasi di senso compiuto, e non fa un uso corretto di iniziali maiuscole:
 \begin{itemize}
-	\item applicativo esteticamente molto gradevole;
-	\item C'è la possibilità di interagire con altri utenti;
-	\item l'utente può esportare file in formato XML.
+    \item applicativo esteticamente molto gradevole;
+    \item C'è la possibilità di interagire con altri utenti;
+    \item l'utente può esportare file in formato XML.
 \end{itemize}
 
-Una possibile revisione, basata solo sui sostantivi, è: 
+Una possibile revisione, basata solo sui sostantivi, è:
 \begin{itemize}
-	\item qualità estetica;
-	\item interazione tra utenti;
-	\item supporto dell'XML.
+    \item qualità estetica;
+    \item interazione tra utenti;
+    \item supporto dell'XML.
 \end{itemize}
 
 Un altro consiglio per rendere la presentazione cognitivamente più gestibile da parte del pubblico è quello di aggiungere in calce ad ogni slide un indicatore dello stato di avanzamento (ad esempio ``Slide 3 di 15''). In questo modo, in caso di esaurimento del tempo concesso la commissione saprà se dare modo di concludere (``Slide 14 di 15'') o se fermare il candidato (``Slide 14 di 138''). In assenza di un indicatore la commissione tende a presupporre il secondo caso.
@@ -590,7 +617,7 @@ Video dimostrativi e \textit{live demo} sono gradite, ma è sconsigliabile dedic
 
 
 %
-%			BIBLIOGRAFIA
+%            BIBLIOGRAFIA
 %
 
 % Si può specificare a che livello della TOC deve essere la bibliografia.
@@ -604,3 +631,4 @@ Video dimostrativi e \textit{live demo} sono gradite, ma è sconsigliabile dedic
 \closingpage
 
 \end{document}
+
