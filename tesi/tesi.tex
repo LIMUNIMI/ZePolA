@@ -161,7 +161,7 @@ Questa sezione, facoltativa, contiene i ringraziamenti.
 
 \chapter{Stato dell'arte}
 \label{chap:stato_arte}
-La ricerca e lo sviluppo nel filtraggio digitale ebbero inizio negli anni Sessanta, quando l’introduzione del filtraggio digitale ricorsivo aprì la strada alla simulazione di filtri analogici nel dominio digitale.
+La ricerca e lo sviluppo nel settore dei filtri digitali ebbero inizio negli anni Sessanta, quando l’introduzione del filtraggio digitale ricorsivo aprì la strada alla simulazione di filtri analogici nel dominio digitale.
 
 I primi studi sul filtraggio digitale sono stati incentivati dalla necessità di creare tecnologie capaci di simulare dispositivi per la modifica della larghezza di banda della voce. L'uso dei filtri analogici per il trattamento dei segnali vocali, infatti, comportava varie difficoltà, tra cui costi elevati, peso e ingombro dell'hardware.
 
@@ -300,8 +300,55 @@ Per realizzare un filtro digitale è necessario partire dal prototipo analogico,
     \item Design del prototipo lowpass analogico
     \item Conversione della funzione di trasferimento \(H_a(s)\) del prototipo nell'equivalente funzione di trasferimento digitale \(H(z)\) mediante una trasformazione bilineare che mappa i valori del piano \(s\) nei valori del piano \(z\)
 \end{enumerate}
+\parencite{orfanidis2006lecture}
 
+I filtri analogici di tipo Butterworth, Čebyšëv ed ellittico si basano su formulazioni matematiche specifiche per il posizionamento di poli e zeri, con l’obiettivo di ottenere particolari funzioni di trasferimento. Ciascun tipo di filtro presenta caratteristiche distintive. I filtri Butterworth offrono una fase più lineare nella banda passante ma richiedono un ordine maggiore per ottenere transizioni più ripide in frequenza. I filtri ellittici, al contrario, permettono transizioni più nette a scapito di una fase meno lineare nella banda passante. In generale, passando dai filtri Butterworth ai Čebyšëv e poi agli ellittici, la fase diventa progressivamente meno lineare nella banda passante, mentre la transizione in frequenza si fa via via più marcata \parencite{orfanidis2006lecture}.
 
+Considerando \(G_p\) e \(G_s\) i guadagni rispettivamente della banda passante e della banda di stop, e quindi i corrispondenti guadagni in dB \(A_p = -20\log_{10}{G_p}\) e \(A_s= -20\log_{10}{G_s}\), i parametri "ripple" sono così definiti:
+\begin{equation}
+    \varepsilon_p=\sqrt{G_p^{-2}-1}=\sqrt{10^{\frac{A_p}{10}}-1}
+\end{equation}
+\begin{equation}
+    \varepsilon_s=\sqrt{G_s^{-2}-1}=\sqrt{10^{\frac{A_s}{10}}-1}
+\end{equation}
+
+È consuetudine, per fare design di filtri, partire dai valori di ripple, ovvero le oscillazioni in ampiezza di banda passante e banda di stop. Di conseguenza i valori di \(G_s\) e \(G_p\) sono definiti:
+\begin{equation}
+    G_p=\frac{1}{\sqrt{1+\varepsilon_p^2}}
+\end{equation}
+\begin{equation}
+    G_s=\frac{1}{\sqrt{1+\varepsilon_s^2}}
+\end{equation}
+
+Si definiscono inoltre i parametri \(k\) e \(k_1\) chiamati rispettivamente parametro di selettività e parametro di discriminazione.
+\begin{equation}
+    k=\frac{\Omega_p}{\Omega_s}
+\end{equation}
+\begin{equation}
+    k_1=\frac{\varepsilon_p}{\varepsilon_s}
+\end{equation}
+dove \(\Omega_p = 2\pi f_p\) e \(\Omega_s = 2\pi f_s\) definiscono la bandwidth di azione del filtro.
+
+La risposta in ampiezza di un filtro lowpass Butterworth, Čebyšëv ed ellittico è definita come:
+\begin{equation}
+    |H(\Omega)|^2= \frac{1}{1+\varepsilon_p^2F_N^2(w)}, \quad w=\frac{\Omega}{\Omega_p}
+\end{equation}
+\(F_N\) è una funzione della frequenza normalizzata \(w\), dove \(N\) è l'ordine del filtro, così definita:
+\begin{equation}
+    F_N(w)=\begin{cases}
+    w^N \hspace{5cm} \text{Butterworth} \\
+    C_N(w) \hspace{4.3cm} \text{Čebyšëv-1} \\
+    [k_1C_N(k^{-1}w^{-1})]^{-1} \hspace{2.4cm} \text{Čebyšëv-2} \\
+    \text{cd}(NuK_1, k_1), \quad w = cd(uK, k) \hspace{0.55cm} \text{Elliptic}
+    \end{cases}
+\end{equation}
+dove \(C_N(\chi)\) è il polinomio di Čebyšëv di ordine \(N\) che è dato da \(C_N(\chi)=\cos(N\cos^{-1}{\chi})\) e \(cd(\chi,k)\) indica la funzione ellittica Jacobiana con modulo \(k\) e quarter-period \(K\).
+
+L'ordine del filtro corrispondente a partire dai valori di ripple e di bandwidth è:
+\begin{equation}
+    N=\frac{\ln{(k_1^{-1})}}{\ln{(k^{-1})}} = \frac{\ln{\bigl(\frac{\varepsilon_s}{\varepsilon_p}}\bigr)}{\ln{\bigl(\frac{\Omega_s}{\Omega_p}}\bigr)}
+\end{equation}
+per i filtri Butterworth
 %
 %            CAPITOLO 3: Il lavoro svolto
 %
