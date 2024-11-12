@@ -191,6 +191,7 @@ Con il progresso degli anni Novanta e la possibilità di rendere stabili i filtr
 Oggi i filtri digitali ricorsivi sono considerati un metodo efficace per approssimare una risposta all’impulso infinita. In teoria infatti, la risposta all’impulso di un filtro ricorsivo è infinita nel tempo, ma in pratica essa decresce esponenzialmente verso lo zero. Nel dominio digitale, quindi, l’errore di approssimazione diventa trascurabile già dopo poche centinaia di campioni \parencite{rader2006rise}.
 
 \section{Equalizzazione audio digitale}
+L’equalizzazione è una tecnica di elaborazione del segnale utilizzata per modificare la risposta in frequenza di un segnale audio, enfatizzando o attenuando determinate bande di frequenza. Questa pratica ha radici storiche profonde e ha subito una continua evoluzione grazie ai progressi della tecnologia audio e del trattamento digitale dei segnali. Inizialmente sviluppata per esigenze di comunicazione e successivamente affinata in contesti musicali e cinematografici, l’equalizzazione è diventata una componente essenziale nell’ingegneria audio moderna. Con l’avvento dei filtri digitali, è ora possibile modellare il suono con una precisione e una flessibilità impensabili con le sole tecnologie analogiche, permettendo non solo la riproduzione fedele ma anche la sperimentazione sonora in contesti di mixaggio, registrazione e produzione.
 \subsection{Equalizzazione nell'elaborazione di segnali}
 Il concetto di manipolazione delle frequenze nei segnali risale all’avvento del telegrafo e delle comunicazioni degli anni Settanta dell'Ottocento. I primi usi riguardano il filtraggio dei segnali del telegrafo armonico, in cui ciascun tasto, una volta premuto, attivava la vibrazione di un’ancia elettromeccanica associata a una specifica frequenza. Lo strumento ricevente, per decodificare correttamente il segnale, doveva sintonizzare i propri tasti sulle frequenze corrispondenti a quelle inviate.
 
@@ -216,6 +217,8 @@ Gli equalizzatori digitali si dividono in categorie:
     \item Equalizzatori dinamici: strumenti per la manipolazione della risposta in frequenza che offrono un controllo basato sul principio degli equalizzatori parametrici. Tuttavia, a differenza di questi ultimi, l'attenuazione o il guadagno di specifiche bande dipende dal superamento di una soglia di volume nello spettro della stessa banda di frequenza. La risposta del filtro cambia quindi a seconda della variazione dinamica dello spettro del segnale \parencite{martignon2023dynamic}.
 \end{itemize}
 
+\subsection{Filtri digitali: una panoramica introduttiva}
+
 \subsection{Metodi di progettazione di equalizzatori digitali: catena di filtri biquadratici}
 Gran parte delle applicazioni di elaborazione dei segnali riguarda l'attenuazione o l'accentuazione di una porzione specifica dello spettro del segnale.
 Un equalizzatore parametrico, come già accennato, è caratterizzato da frequenza centrale \(\omega_c\) e larghezza di banda (intervallo di frequenze attorno alla frequenza centrale su cui il filtro ha effetto) detta bandwidth \textit{B}, da cui deriva il Q-factor \textit{Q} calcolato come:
@@ -225,7 +228,7 @@ Un equalizzatore parametrico, come già accennato, è caratterizzato da frequenz
 \end{equation}
 In ambito audio, questo obiettivo viene spesso raggiunto attraverso l’uso di filtri biquadratici, che consentono di attenuare o amplificare una specifica banda di frequenze attorno a una frequenza centrale \parencite{reiss2010design}.
 In gran parte delle applicazioni audio infatti è sufficiente l'utilizzo di filtri del secondo ordine in quanto sono necessari valori di \textit{Q}-factor moderati. Nelle implementazioni digitali in generale possono essere utilizzati sia filtri FIR che filtri IIR. Sebbene i filtri FIR siano intrinsecamente stabili e permettano una fase lineare, ottenere una risposta in frequenza desiderata può richiedere ordini elevati, aumentando di conseguenza la capacità computazionale necessaria, il che rende questo tipo di filtri inadatti per performance live e processamento real-time.
-I filtri IIR, al contrario, permettono di mantenere un ordine del filtro più basso, richiedendo così una minore capacità computazionale, ma spesso presentano una fase non lineare. Inoltre, con questo tipo di filtri è necessario prestare particolare attenzione alla precisione numerica \parencite{shpak1991analytical}.
+I filtri IIR, al contrario, permettono di mantenere un ordine del filtro più basso, richiedendo così una minore capacità computazionale, ma spesso presentano una fase non lineare e possono essere instabili. Inoltre, con questo tipo di filtri è necessario prestare particolare attenzione alla precisione numerica \parencite{shpak1991analytical}.
 
 Nel dominio digitale, è possibile ottenere qualsiasi risposta in frequenza attraverso una cascata di filtri biquadratici disposti in serie \parencite{reiss2010design}. Per un equalizzatore parametrico, nel quale l'utente ha la possibilità di modificare il valore della frequenza centrale \(\omega_c\), la larghezza di banda \textit{B} (e quindi il fattore \textit{Q}) e il guadagno (o attenuazione), la scelta di filtri \textit{"semplici"} in cascata è da preferire, rispetto a una configurazione in parallelo (come nel caso di equalizzatori grafici) in quanto la risposta in ampiezza del filtro è data dal prodotto delle risposte in ampiezza dei singoli filtri \parencite{shpak1991analytical}.
 
@@ -234,18 +237,23 @@ La progettazione del filtro analogico prototipo e le conseguenti trasformazioni 
 
 La funzione di trasferimento di un filtro biquadratico nel dominio \( s \) analogico è:
 \begin{equation}
-    H(s)=\frac{\beta s^2 + \frac{s\omega_c}{Q_z} + \alpha \omega_c^2}{s^2 + \frac{s\omega_c}{Q_p} + \omega_c^2}
+    H(s)=g_\infty\frac{s^2 + \frac{\omega_z}{Q_z}s + \omega_z^2}{s^2 + \frac{\omega_p}{Q_p}s + \omega_p^2}
     \label{eq:analog_biquad}
 \end{equation}
-\parencite{shpak1991analytical}
+
+definita da:
+\begin{itemize}
+    \item \(g_\infty: \) guadagno complessivo dato dal valore di \(\displaystyle \lim_{\omega \to \infty} H(j\omega) \)
+    \item una frequenza per lo zero \(\omega_z\) e il fattore \(Q_z\) per la larghezza di banda
+    \item una frequenza per il polo \(\omega_p\) e il fattore \(Q_p\) per la larghezza di banda
+\end{itemize}
+\parencite{christensen2003generalization}
+
 Nel dominio digitale la funzione di trasferimento di un filtro biquadratico è la seguente:
 \begin{equation}
     H(z)=c\frac{(z-z_1)(z-z_2)}{(z-p_1)(z-p_2)} = c\frac{1-(z_1+z_2)z^{-1} + z_1z_2z^{-2}}{1-(p_1+p_2)z^{-1} + p_1p_2z^{-2}}
 \end{equation}
 \parencite{reiss2010design}
-
-
-\section{Poli e zeri nei filtri digitali}
 
 \section{Prototipi di filtri analogici per il design di filtri digitali}
 BIBLIOGRAFIA: Digital filter design techniques in the frequency domain
