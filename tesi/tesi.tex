@@ -161,8 +161,11 @@ Questa sezione, facoltativa, contiene i ringraziamenti.
 
 \section{Stile e forma}
 
+\chapter{Filtri digitali: una panoramica teorica introduttiva}
+\label{cap:panoramica_introduttiva}
+
 %
-%            CAPITOLO 2: Stato dell'arte
+%            CAPITOLO 3: Stato dell'arte
 %
 
 \chapter{Stato dell'arte}
@@ -216,9 +219,6 @@ Gli equalizzatori digitali si dividono in categorie:
     \item Equalizzatori parametrici: strumenti per la manipolazione della risposta in frequenza che offrono un controllo adattabile su ogni banda di frequenza. Consentono di regolare non solo il guadagno o l'attenuazione, ma anche la frequenza centrale e la larghezza di banda (o Q factor) di ogni singolo filtro. Questi parametri permettono una modellazione precisa dello spettro audio, adattandosi meglio alle esigenze specifiche dell'utente \parencite{massenburg1972parametric}.
     \item Equalizzatori dinamici: strumenti per la manipolazione della risposta in frequenza che offrono un controllo basato sul principio degli equalizzatori parametrici. Tuttavia, a differenza di questi ultimi, l'attenuazione o il guadagno di specifiche bande dipende dal superamento di una soglia di volume nello spettro della stessa banda di frequenza. La risposta del filtro cambia quindi a seconda della variazione dinamica dello spettro del segnale \parencite{martignon2023dynamic}.
 \end{itemize}
-
-\subsection{Filtri digitali: una panoramica introduttiva}
-
 \subsection{Metodi di progettazione di equalizzatori digitali: catena di filtri biquadratici}
 Gran parte delle applicazioni di elaborazione dei segnali riguarda l'attenuazione o l'accentuazione di una porzione specifica dello spettro del segnale.
 Un equalizzatore parametrico, come già accennato, è caratterizzato da frequenza centrale \(\omega_c\) e larghezza di banda (intervallo di frequenze attorno alla frequenza centrale su cui il filtro ha effetto) detta bandwidth \textit{B}, da cui deriva il Q-factor \textit{Q} calcolato come:
@@ -252,8 +252,55 @@ definita da:
 Nel dominio digitale la funzione di trasferimento di un filtro biquadratico è la seguente:
 \begin{equation}
     H(z)=c\frac{(z-z_1)(z-z_2)}{(z-p_1)(z-p_2)} = c\frac{1-(z_1+z_2)z^{-1} + z_1z_2z^{-2}}{1-(p_1+p_2)z^{-1} + p_1p_2z^{-2}}
+    \label{eq:non_simmetric_digital_biquad}
 \end{equation}
 \parencite{reiss2010design}
+
+Considerando \( H(z) \) la funzione di trasferimento del filtro e \( z = e^{j2\pi \phi} \), dove \( \phi \) è la frequenza normalizzata rispetto alla frequenza di campionamento \( f_s \), per mantenere la simmetria hermitiana della funzione di trasferimento (\( H(\phi) = H(-\phi) \)) è necessario che i due zeri e i due poli del filtro biquadratico siano coppie di complessi coniugati. Mantenere la simmetria hermitiana della funzione di trasferimento di un filtro digitale consente di ottenere un'uscita reale quando il segnale in ingresso è reale, una condizione essenziale nell’elaborazione di segnali audio \parencite{pedersini2020elementi}.
+
+La funzione di trasferimento di un filtro biquadratico con uscita reale è quindi:
+\begin{equation}
+    H(z)=\frac{(1-z_1z^{-1})(1-\overline{z_1}z^{-1})}{(1-p_1z^{-1})(1-\overline{p_1}z^{-1})}
+    \label{eq:simmetric_digital_biquad}
+\end{equation}
+dove:
+\begin{itemize}
+    \item \(z_1\) e \(\overline{z_1}\) sono gli zeri coniugati del filtro e \(z_1=\rho_{z_1} e^{-j2\pi \phi_{z_1}} \)
+    \item \(p_1\) e \(\overline{p_1}\) sono i poli coniugati del filtro e \(p_1=\rho_{p_1} e^{-j2\pi \phi_{p_1}} \)
+\end{itemize}
+In questo caso il guadagno del filtro è pari a 1.
+Nel caso di zeri e poli coniugati la funzione di trasferimento \(H(z)\) è esprimibile come:
+\begin{equation}
+    H(z) = \frac{1 - 2\Re[z_1]z^{-1}+|z_1|^2z^{-2}}{1 - 2\Re[p_1]z^{-1}+|p_1|^2z^{-2}}=\frac{1 - 2\cos(2\pi \phi_{z_1})z^{-1}+\rho_{z_1}^2z^{-2}}{1 - 2\cos(2\pi \phi_{p_1})z^{-1}+\rho_{p_1}^2z^{-2}}
+    \label{eq: digital_biquad_H}
+\end{equation}
+A partire dalla funzione di trasferimento del filtro è possibile ottenere, mediante l'antitrasformata \(Z\) l'equazione alle differenze di un filtro biquadratico, che descrive l'uscita dal filtro a partire dell'ingresso del campione \(n\).
+\begin{equation}
+    y(n)=b_0x(n)+b_1x(n-1)+b_2x(n-2) - a_1y(n-1) - a_2y(n-2)
+    \label{eq:eq_differenze_generale}
+\end{equation}
+
+Per lo sviluppo dell'antitrasformata:
+\begin{itemize}
+    \item \(b_0 = 1\)
+    \item \(b_1=\Re[z_1]=- 2\cos(2\pi \phi_{z_1}) \)
+    \item \(b_2=|z_1|^2= \rho_{z_1}^2\)
+    \item \(a_1=\Re[p_1]=- 2\cos(2\pi \phi_{p_1}) \)
+    \item \(a_2=|p_1|^2= \rho_{p_1}^2\)
+\end{itemize}
+L'equazione alle differenze diventa quindi:
+\begin{equation}
+    \mathcal{Z}^{-1}\{H(z)\} =  y(n)=b_0x(n)+b_1x(n-1)+b_2x(n-2) - a_1y(n-1) - a_2y(n-2)
+    \label{eq:biquad_eq_differenze}
+\end{equation}
+\begin{equation}
+    y(n) = x(n) - 2\cos(2\pi \phi_{z_1})x(n-1) + \rho_{z_1}^2x(n-2) + 2\cos(2\pi \phi_{p_1})y(n-1) + \rho_{z_1}^2y(n-2)
+    \label{eq:biquad_eq_differenze_risolta}
+\end{equation}
+
+È possibile inoltre applicare un guadagno all'intero filtro, in modo da compensare la differenza di ampiezza tra l'ingresso e l'uscita semplicemente moltiplicando per un valore (di guadagno lineare) l'ingresso \(x(n)\). Si tratta quindi di assegnare un valore diverso da 1 al coefficiente \(b_0\).
+
+Un filtro digitale biquadratico è, in sintesi, un filtro del secondo ordine versatile e particolarmente adatto, grazie alla sua semplicità di implementazione, per la composizione in cascata con altri filtri biquadratici per formare un equalizzatore parametrico.
 
 \section{Prototipi di filtri analogici per il design di filtri digitali}
 BIBLIOGRAFIA: Digital filter design techniques in the frequency domain
