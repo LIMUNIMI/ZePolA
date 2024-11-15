@@ -7,16 +7,27 @@
 EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcessorValueTreeState& vts)
 : processor(p), valueTreeState(vts)
 {
-    warningLabel.reset(new juce::Label("Warning label", TRANS ("Caution! The current configuration of the filter may cause unexpected increase of volume. Check the gain of each filter before deactivating the bypass of the plugin.")));
-    addAndMakeVisible(warningLabel.get());
-    warningLabel->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    warningLabel->setJustificationType (juce::Justification::centred);
-    warningLabel->setEditable (false, false, false);
-    warningLabel->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
-    warningLabel->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    warningLabel->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-    warningLabel->setBounds (635, 355, 260, 120);
-    warningLabel->setVisible(false);
+    warning_label.reset(new juce::Label("Warning label", TRANS ("Caution! The current configuration of the filter may cause unexpected increase of volume. Check the gain of each filter before deactivating the bypass of the plugin.")));
+    addAndMakeVisible(warning_label.get());
+    warning_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    warning_label->setJustificationType (juce::Justification::centred);
+    warning_label->setEditable (false, false, false);
+    warning_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    warning_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    warning_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    warning_label->setBounds (635, 355, 260, 120);
+    warning_label->setVisible(false);
+    
+    odd_order_label.reset(new juce::Label("Odd order label", TRANS ("The current parameter configuration generates an odd-order filter, which cannot be implemented with this plugin. It is recommended to adjust the design parameters..")));
+    addAndMakeVisible(odd_order_label.get());
+    odd_order_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    odd_order_label->setJustificationType (juce::Justification::centred);
+    odd_order_label->setEditable (false, false, false);
+    odd_order_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    odd_order_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    odd_order_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    odd_order_label->setBounds (1000, 375, 200, 120);
+    odd_order_label->setVisible(false);
     
     p.setEditorCallback([this]()
                         {
@@ -728,7 +739,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     type_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
     type_box->addListener (this);
 
-    type_box->setBounds (1025, 150, 140, 25);
+    type_box->setBounds (1025, 145, 140, 25);
 
     shape_box.reset (new CustomComboBox ("Design shape"));
     addAndMakeVisible (shape_box.get());
@@ -740,7 +751,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     shape_box->addItem (TRANS ("HIGHPASS"), 2);
     shape_box->addListener (this);
 
-    shape_box->setBounds (1025, 105, 140, 25);
+    shape_box->setBounds (1025, 100, 140, 25);
 
     calculate_button.reset (new CustomButton ("Calculate"));
     addAndMakeVisible (calculate_button.get());
@@ -749,7 +760,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     calculate_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     calculate_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    calculate_button->setBounds (1098, 430, 80, 30);
+    calculate_button->setBounds (1098, 482, 80, 30);
 
     multiply_phases_button.reset (new CustomButton ("Multiply phases"));
     addAndMakeVisible (multiply_phases_button.get());
@@ -804,7 +815,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     order_box->setTextWhenNoChoicesAvailable (TRANS ("(no choices)"));
     order_box->addListener (this);
 
-    order_box->setBounds (1025, 195, 140, 25);
+    order_box->setBounds (1025, 190, 140, 25);
 
     design_frequency_label.reset (new juce::Label ("Design frequency",
                                                    TRANS ("FREQUENCY\n")));
@@ -816,7 +827,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     design_frequency_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     design_frequency_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    design_frequency_label->setBounds (1063, 233, 72, 20);
+    design_frequency_label->setBounds (1063, 228, 72, 20);
 
     ampDb_switch.reset (new CustomToggleButton ("Amplitude / dB"));
     addAndMakeVisible (ampDb_switch.get());
@@ -837,7 +848,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     frequency_design_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     frequency_design_slider->addListener (this);
 
-    frequency_design_slider->setBounds (1022, 255, 83, 25);
+    frequency_design_slider->setBounds (1022, 250, 83, 25);
 
     frequency_label.reset (new CustomLabel ("Frequency Label",
                                             juce::String()));
@@ -850,7 +861,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     frequency_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     frequency_label->addListener (this);
 
-    frequency_label->setBounds (1110, 255, 60, 25);
+    frequency_label->setBounds (1110, 250, 60, 25);
 
     transition_width_label.reset (new juce::Label ("Transition width",
                                                    TRANS ("TRANSITION WIDTH")));
@@ -862,7 +873,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     transition_width_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     transition_width_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    transition_width_label->setBounds (1031, 296, 129, 20);
+    transition_width_label->setBounds (1031, 291, 129, 20);
 
     transition_width_slider.reset (new CustomSlider ("Transition width slider"));
     addAndMakeVisible (transition_width_slider.get());
@@ -876,7 +887,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     transition_width_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     transition_width_slider->addListener (this);
 
-    transition_width_slider->setBounds (1022, 320, 135, 25);
+    transition_width_slider->setBounds (1022, 315, 135, 25);
 
     passbandAmplitude_slider.reset (new CustomSlider ("Passband Amplitude"));
     addAndMakeVisible (passbandAmplitude_slider.get());
@@ -890,7 +901,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     passbandAmplitude_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x00000000));
     passbandAmplitude_slider->addListener (this);
 
-    passbandAmplitude_slider->setBounds (1022, 384, 135, 25);
+    passbandAmplitude_slider->setBounds (1022, 379, 135, 25);
 
     stopbandAmplitude_label.reset (new juce::Label ("Stopband Amplitude",
                                                     TRANS ("STOPBAND AMPLITUDE (DB)")));
@@ -902,14 +913,14 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     stopbandAmplitude_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     stopbandAmplitude_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    stopbandAmplitude_label->setBounds (1020, 342, 159, 20);
+    stopbandAmplitude_label->setBounds (1020, 337, 159, 20);
 
     autoUpdate_button.reset (new CustomToggleButton ("Auto update"));
     addAndMakeVisible (autoUpdate_button.get());
     autoUpdate_button->setButtonText (juce::String());
     autoUpdate_button->addListener (this);
 
-    autoUpdate_button->setBounds (1013, 430, 80, 30);
+    autoUpdate_button->setBounds (1013, 482, 80, 30);
 
     undo_button.reset (new CustomButton ("Undo"));
     addAndMakeVisible (undo_button.get());
@@ -947,17 +958,17 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     load_preset_button->setBounds (1082, 9, 100, 25);
 
-    active_label2.reset (new juce::Label ("Active",
+    gain_label.reset (new juce::Label ("Gain",
                                           TRANS ("GAIN")));
-    addAndMakeVisible (active_label2.get());
-    active_label2->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    active_label2->setJustificationType (juce::Justification::centred);
-    active_label2->setEditable (false, false, false);
-    active_label2->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
-    active_label2->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    active_label2->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    addAndMakeVisible (gain_label.get());
+    gain_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    gain_label->setJustificationType (juce::Justification::centred);
+    gain_label->setEditable (false, false, false);
+    gain_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    gain_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    gain_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    active_label2->setBounds (464, 57, 55, 24);
+    gain_label->setBounds (464, 57, 55, 24);
 
     autoGain.reset (new CustomToggleButton ("Auto Gain"));
     addAndMakeVisible (autoGain.get());
@@ -1171,7 +1182,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     cachedImage_anticlockwise_arrow_png_1 = juce::ImageCache::getFromMemory (anticlockwise_arrow_png, anticlockwise_arrow_pngSize);
     cachedImage_clockwise_arrow_png_2 = juce::ImageCache::getFromMemory (clockwise_arrow_png, clockwise_arrow_pngSize);
     cachedImage_load_icon_png_3 = juce::ImageCache::getFromMemory (load_icon_png, load_icon_pngSize);
-    cachedImage_save_icon_png_4 = juce::ImageCache::getFromMemory (save_icon_png, save_icon_pngSize);
+    cachedImage_save_icon_png_4 = juce::ImageCache::getFromMemory (save_icon_png, save_icon_pngSize);  
 
     magnitudesAttachments[0].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
     magnitudesAttachments[1].reset(new SliderAttachment(valueTreeState, MAGNITUDE_NAME + std::to_string(2), *m2_slider));
@@ -1462,7 +1473,7 @@ EditorComponent::~EditorComponent()
     redo_button = nullptr;
     save_preset_button = nullptr;
     load_preset_button = nullptr;
-    active_label2 = nullptr;
+    gain_label = nullptr;
     autoGain = nullptr;
     e2_gain = nullptr;
     e3_gain = nullptr;
@@ -2580,13 +2591,13 @@ void EditorComponent::getSpectrum()
         if (!isSettingFilters && !isUserWarned)
         {
             processor.setBypass(true);
-            warningLabel->setVisible(true);
+            warning_label->setVisible(true);
             isUserWarned = true;
         }
     }
     else
     {
-        warningLabel->setVisible(false);
+        warning_label->setVisible(false);
         isUserWarned = false;
     }
 }
@@ -2696,17 +2707,17 @@ void EditorComponent::updateDesignFrequencySlider(short int option)
     {
         case 1:
         {
-            design_frequency_label->setBounds (1058, 248, 72, 20);
-            frequency_design_slider->setBounds (1027, 270, 83, 25);
+            design_frequency_label->setBounds (1058, 243, 72, 20);
+            frequency_design_slider->setBounds (1027, 265, 83, 25);
             frequency_design_slider->setRange (0.0001, 999, 0.0001);
             updateDesignSliderFromFrequency(design_frequency, frequency_design_slider.get(), sampleRate);
-            frequency_label->setBounds (1110, 270, 60, 25);
+            frequency_label->setBounds (1110, 265, 60, 25);
         } break;
 
         case 2:
         {
-            design_frequency_label->setBounds (1058, 188, 72, 20);
-            frequency_design_slider->setBounds (1027, 210, 83, 25);
+            design_frequency_label->setBounds (1058, 183, 72, 20);
+            frequency_design_slider->setBounds (1027, 205, 83, 25);
             auto minValue = std::ceil(0.00005 * 2000.0);
             auto maxValue = std::floor(0.499945 * 2000.0);
             frequency_design_slider->setRange(minValue, maxValue);
@@ -2735,15 +2746,39 @@ void EditorComponent::setTransitionWidthRange ()
 
     auto Gp = Decibels::decibelsToGain (passbandAmplitudedB, -300.0);
     auto Gs = Decibels::decibelsToGain (stopbandAmplitudedB, -300.0);
-
-    double X = acosh( sqrt(1 / (Gs * Gs) - 1.0)  /  sqrt(1 / (Gp * Gp) - 1.0));
-
-    double Y = acosh( tan(MathConstants<double>::pi * (normalisedFrequency + minValue / 2)) / tan(MathConstants<double>::pi * (normalisedFrequency - minValue / 2)));
-
-    while (roundToInt(std::ceil(X / Y)) > maxOrder)
+    
+    auto epsp = std::sqrt (1.0 / (Gp * Gp) - 1.0);
+    auto epss = std::sqrt (1.0 / (Gs * Gs) - 1.0);
+    
+    if (design_type == 2 || design_type == 3)
     {
-        minValue += interval;
-        Y = acosh( tan(MathConstants<double>::pi * (normalisedFrequency + minValue / 2)) / tan(MathConstants<double>::pi * (normalisedFrequency - minValue / 2)));
+        
+        double X = std::acosh( epss  /  epsp);
+        
+        double Y = std::acosh( std::tan(MathConstants<double>::pi * (normalisedFrequency + minValue / 2)) / std::tan(MathConstants<double>::pi * (normalisedFrequency - minValue / 2)));
+        
+        while (roundToInt(std::ceil(X / Y)) > maxOrder)
+        {
+            minValue += interval;
+            Y = acosh( std::tan(MathConstants<double>::pi * (normalisedFrequency + minValue / 2)) / std::tan(MathConstants<double>::pi * (normalisedFrequency - minValue / 2)));
+        }
+    }
+    else
+    {
+        double K, Kp, K1, K1p;
+        
+        auto k1 = epsp / epss;
+        juce::dsp::SpecialFunctions::ellipticIntegralK (k1, K1, K1p); // Rimane fisso
+        
+        auto k = std::tan (MathConstants<double>::pi * std::tan(MathConstants<double>::pi * (normalisedFrequency - minValue / 2))) / std::tan (MathConstants<double>::pi * std::tan(MathConstants<double>::pi * (normalisedFrequency + minValue / 2)));
+        juce::dsp::SpecialFunctions::ellipticIntegralK (k, K, Kp);
+        
+        while (roundToInt (std::ceil ((K1p * K) / (K1 * Kp))) > maxOrder)
+        {
+            minValue += interval;
+            auto k = std::tan (MathConstants<double>::pi * std::tan(MathConstants<double>::pi * (normalisedFrequency - minValue / 2))) / std::tan (MathConstants<double>::pi * std::tan(MathConstants<double>::pi * (normalisedFrequency + minValue / 2)));
+            juce::dsp::SpecialFunctions::ellipticIntegralK (k, K, Kp);
+        }
     }
 
     transition_width_slider->setRange(minValue, maxValue);
@@ -2803,25 +2838,25 @@ void EditorComponent::updateGUIEllipticChebyshevIandII()
     stopbandAmplitude_slider->setValue(stopbandAmplitudedB);
     setTransitionWidthRange();
 
-    frequency_label->setBounds (1110, 210, 60, 25);
+    frequency_label->setBounds (1110, 205, 60, 25);
 
     passbandAmplitude_label->setVisible(true);
-    passbandAmplitude_label->setBounds (1020, 241, 159, 20);
+    passbandAmplitude_label->setBounds (1020, 236, 159, 20);
 
     passbandAmplitude_slider->setVisible(true);
-    passbandAmplitude_slider->setBounds (1027, 265, 135, 25);
+    passbandAmplitude_slider->setBounds (1027, 260, 135, 25);
 
     stopbandAmplitude_label->setVisible(true);
-    stopbandAmplitude_label->setBounds(1022, 296, 159, 20);
+    stopbandAmplitude_label->setBounds(1022, 291, 159, 20);
 
     stopbandAmplitude_slider->setVisible(true);
-    stopbandAmplitude_slider->setBounds(1027, 320, 135, 25);
+    stopbandAmplitude_slider->setBounds(1027, 315, 135, 25);
 
     transition_width_label->setVisible(true);
-    transition_width_label->setBounds(1030, 351, 129, 20);
+    transition_width_label->setBounds(1030, 346, 129, 20);
 
     transition_width_slider->setVisible(true);
-    transition_width_slider->setBounds (1027, 375, 135, 25);
+    transition_width_slider->setBounds (1027, 370, 135, 25);
 
     calculate_button->setEnabled(true);
 }
@@ -2918,6 +2953,11 @@ void EditorComponent::filterDesignAndSetup()
 
     processor.setBypass(true);
     isSettingFilters = true;
+    
+    if (iirCoefficients.size() % 2 != 0)
+        odd_order_label->setVisible(true);
+    else
+        odd_order_label->setVisible(false);
 
     for (int i = 0; i < iirCoefficients.size(); ++ i)
     {

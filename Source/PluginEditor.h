@@ -9,7 +9,7 @@
 typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 typedef AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
-class EditorComponent  :   public juce::Component,
+class EditorComponent  :            public juce::Component,
                                     public juce::Slider::Listener,
                                     public juce::Button::Listener,
                                     public juce::Label::Listener,
@@ -22,6 +22,7 @@ public:
 
     void slidersInit();
     void gainsInit();
+    
     void getSpectrum ();
     void updateReferenceFrequencies();
     void updateElements();
@@ -67,20 +68,18 @@ public:
 
 
 private:
+    // Generic variables
     PolesAndZerosEQAudioProcessor& processor;
     AudioProcessorValueTreeState& valueTreeState;
 
+    // Frequency response variables
     double magnitudes[GRAPHS_QUALITY];
     double phases[GRAPHS_QUALITY];
     double referenceFrequencies[NUMBER_OF_REFERENCE_FREQUENCIES];
-
     bool linLog = false;
     bool ampDb = false;
-    bool autoUpdate = false;
     
-    bool isSettingFilters = false;
-    bool isUserWarned = false;
-
+    // Filter design variables
     int design_type = -1;
     int design_shape;
     int design_filters_to_activate;
@@ -88,9 +87,13 @@ private:
     double normalisedTransitionWidth;
     double passbandAmplitudedB = -0.1;
     double stopbandAmplitudedB = -21;
-
+    bool autoUpdate = false;
     std::vector<juce::String> selectable_filter_types;
     std::vector<juce::String> selectable_orders_butterworth;
+    
+    // Warning and protection variables
+    bool isSettingFilters = false;
+    bool isUserWarned = false;
 
     std::vector<std::unique_ptr<SliderAttachment>> magnitudesAttachments;
     std::vector<std::unique_ptr<SliderAttachment>> phasesAttachments;
@@ -131,57 +134,19 @@ private:
     ComboBoxTheme comboBoxTheme;
 
     AutoUpdateSwitchTheme autoUpdateSwitchTheme;
-
-    std::unique_ptr<CustomSlider> e1_gain;
-    std::unique_ptr<GaussianPlane> gaussian_plane;
-    std::unique_ptr<DraggableElement> e2;
-    std::unique_ptr<DraggableElement> e3;
-    std::unique_ptr<DraggableElement> e4;
-    std::unique_ptr<DraggableElement> e5;
-    std::unique_ptr<DraggableElement> e6;
-    std::unique_ptr<DraggableElement> e7;
-    std::unique_ptr<DraggableElement> e8;
-    std::unique_ptr<DraggableElement> e1;
-    std::unique_ptr<juce::Label> passbandAmplitude_label;
-    std::unique_ptr<CustomSlider> stopbandAmplitude_slider;
-    std::unique_ptr<CustomButton> reset_button;
-    std::unique_ptr<MagnitudeResponse> magnitude_response;
-    std::unique_ptr<juce::Label> mg_response_label;
-    std::unique_ptr<PhaseResponse> phase_response;
-    std::unique_ptr<juce::Label> ph_response_label;
-    std::unique_ptr<CustomSlider> m1_slider;
+    
+    // Magnitude sliders
+    std::shared_ptr<CustomSlider> m1_slider;
+    std::shared_ptr<CustomSlider> m2_slider;
+    std::shared_ptr<CustomSlider> m3_slider;
+    std::shared_ptr<CustomSlider> m4_slider;
+    std::shared_ptr<CustomSlider> m5_slider;
+    std::shared_ptr<CustomSlider> m6_slider;
+    std::shared_ptr<CustomSlider> m7_slider;
+    std::shared_ptr<CustomSlider> m8_slider;
+    
+    // Phase sliders
     std::unique_ptr<CustomSlider> p1_slider;
-    std::unique_ptr<juce::Label> magnitudes_label;
-    std::unique_ptr<juce::Label> phases_label;
-    std::unique_ptr<juce::Label> zero_pole_label;
-    std::unique_ptr<juce::Label> active_label;
-    std::unique_ptr<CustomToggleButton> e1_type;
-    std::unique_ptr<CustomToggleButton> e2_type;
-    std::unique_ptr<CustomToggleButton> e3_type;
-    std::unique_ptr<CustomToggleButton> e4_type;
-    std::unique_ptr<CustomToggleButton> e5_type;
-    std::unique_ptr<CustomToggleButton> e6_type;
-    std::unique_ptr<CustomToggleButton> e7_type;
-    std::unique_ptr<CustomToggleButton> e8_type;
-    std::unique_ptr<CustomToggleButton> e1_active;
-    std::unique_ptr<CustomToggleButton> e2_active;
-    std::unique_ptr<CustomToggleButton> e3_active;
-    std::unique_ptr<CustomToggleButton> e4_active;
-    std::unique_ptr<CustomToggleButton> e5_active;
-    std::unique_ptr<CustomToggleButton> e6_active;
-    std::unique_ptr<CustomToggleButton> e7_active;
-    std::unique_ptr<CustomToggleButton> e8_active;
-    std::unique_ptr<juce::Label> gaussian_plane_label;
-    std::unique_ptr<CustomToggleButton> bypass;
-    std::unique_ptr<CustomSlider> masterGain_slider;
-    std::unique_ptr<CustomToggleButton> linLog_switch;
-    std::unique_ptr<CustomSlider> m2_slider;
-    std::unique_ptr<CustomSlider> m3_slider;
-    std::unique_ptr<CustomSlider> m4_slider;
-    std::unique_ptr<CustomSlider> m5_slider;
-    std::unique_ptr<CustomSlider> m6_slider;
-    std::unique_ptr<CustomSlider> m7_slider;
-    std::unique_ptr<CustomSlider> m8_slider;
     std::unique_ptr<CustomSlider> p2_slider;
     std::unique_ptr<CustomSlider> p3_slider;
     std::unique_ptr<CustomSlider> p4_slider;
@@ -189,6 +154,8 @@ private:
     std::unique_ptr<CustomSlider> p6_slider;
     std::unique_ptr<CustomSlider> p7_slider;
     std::unique_ptr<CustomSlider> p8_slider;
+    
+    // Frequency labels
     std::unique_ptr<CustomLabel> p1_freq;
     std::unique_ptr<CustomLabel> p2_freq;
     std::unique_ptr<CustomLabel> p3_freq;
@@ -197,30 +164,29 @@ private:
     std::unique_ptr<CustomLabel> p6_freq;
     std::unique_ptr<CustomLabel> p7_freq;
     std::unique_ptr<CustomLabel> p8_freq;
-    std::unique_ptr<CustomComboBox> type_box;
-    std::unique_ptr<CustomComboBox> shape_box;
-    std::unique_ptr<CustomButton> calculate_button;
-    std::unique_ptr<CustomButton> multiply_phases_button;
-    std::unique_ptr<CustomButton> divide_phases_button;
-    std::unique_ptr<CustomButton> swap_button;
-    std::unique_ptr<CustomButton> turn_on_button;
-    std::unique_ptr<CustomButton> turn_off_button;
-    std::unique_ptr<CustomComboBox> order_box;
-    std::unique_ptr<juce::Label> design_frequency_label;
-    std::unique_ptr<CustomToggleButton> ampDb_switch;
-    std::unique_ptr<CustomSlider> frequency_design_slider;
-    std::unique_ptr<CustomLabel> frequency_label;
-    std::unique_ptr<juce::Label> transition_width_label;
-    std::unique_ptr<CustomSlider> transition_width_slider;
-    std::unique_ptr<CustomSlider> passbandAmplitude_slider;
-    std::unique_ptr<juce::Label> stopbandAmplitude_label;
-    std::unique_ptr<CustomToggleButton> autoUpdate_button;
-    std::unique_ptr<CustomButton> undo_button;
-    std::unique_ptr<CustomButton> redo_button;
-    std::unique_ptr<CustomButton> save_preset_button;
-    std::unique_ptr<CustomButton> load_preset_button;
-    std::unique_ptr<juce::Label> active_label2;
-    std::unique_ptr<CustomToggleButton> autoGain;
+    
+    // Type switches
+    std::unique_ptr<CustomToggleButton> e1_type;
+    std::unique_ptr<CustomToggleButton> e2_type;
+    std::unique_ptr<CustomToggleButton> e3_type;
+    std::unique_ptr<CustomToggleButton> e4_type;
+    std::unique_ptr<CustomToggleButton> e5_type;
+    std::unique_ptr<CustomToggleButton> e6_type;
+    std::unique_ptr<CustomToggleButton> e7_type;
+    std::unique_ptr<CustomToggleButton> e8_type;
+    
+    // Active switches
+    std::unique_ptr<CustomToggleButton> e1_active;
+    std::unique_ptr<CustomToggleButton> e2_active;
+    std::unique_ptr<CustomToggleButton> e3_active;
+    std::unique_ptr<CustomToggleButton> e4_active;
+    std::unique_ptr<CustomToggleButton> e5_active;
+    std::unique_ptr<CustomToggleButton> e6_active;
+    std::unique_ptr<CustomToggleButton> e7_active;
+    std::unique_ptr<CustomToggleButton> e8_active;
+    
+    // Gain sliders & labels
+    std::unique_ptr<CustomSlider> e1_gain;
     std::unique_ptr<CustomSlider> e2_gain;
     std::unique_ptr<CustomSlider> e3_gain;
     std::unique_ptr<CustomSlider> e4_gain;
@@ -228,6 +194,7 @@ private:
     std::unique_ptr<CustomSlider> e6_gain;
     std::unique_ptr<CustomSlider> e7_gain;
     std::unique_ptr<CustomSlider> e8_gain;
+    
     std::unique_ptr<CustomLabel> gain1_label;
     std::unique_ptr<CustomLabel> gain2_label;
     std::unique_ptr<CustomLabel> gain3_label;
@@ -236,12 +203,83 @@ private:
     std::unique_ptr<CustomLabel> gain6_label;
     std::unique_ptr<CustomLabel> gain7_label;
     std::unique_ptr<CustomLabel> gain8_label;
+    
+    // Labels
+    std::unique_ptr<juce::Label> magnitudes_label;
+    std::unique_ptr<juce::Label> phases_label;
+    std::unique_ptr<juce::Label> zero_pole_label;
+    std::unique_ptr<juce::Label> active_label;
+    std::unique_ptr<juce::Label> gain_label;
+    
+    // Gaussian plane & draggable elements
+    std::unique_ptr<GaussianPlane> gaussian_plane;
+    std::unique_ptr<juce::Label> gaussian_plane_label;
+    std::unique_ptr<DraggableElement> e1;
+    std::unique_ptr<DraggableElement> e2;
+    std::unique_ptr<DraggableElement> e3;
+    std::unique_ptr<DraggableElement> e4;
+    std::unique_ptr<DraggableElement> e5;
+    std::unique_ptr<DraggableElement> e6;
+    std::unique_ptr<DraggableElement> e7;
+    std::unique_ptr<DraggableElement> e8;
+    
+    // Setup shortchuts & controls
+    std::unique_ptr<CustomToggleButton> autoGain;
+    std::unique_ptr<CustomButton> turn_on_button;
+    std::unique_ptr<CustomButton> turn_off_button;
+    std::unique_ptr<CustomButton> multiply_phases_button;
+    std::unique_ptr<CustomButton> divide_phases_button;
+    std::unique_ptr<CustomButton> swap_button;
+    std::unique_ptr<CustomButton> reset_button;
+    
+    // Frequency response
+    std::unique_ptr<MagnitudeResponse> magnitude_response;
+    std::unique_ptr<juce::Label> mg_response_label;
+    
+    std::unique_ptr<CustomToggleButton> ampDb_switch;
+    std::unique_ptr<CustomToggleButton> linLog_switch;
+    
+    std::unique_ptr<PhaseResponse> phase_response;
+    std::unique_ptr<juce::Label> ph_response_label;
+    
+    // Filter design
+    std::unique_ptr<CustomComboBox> shape_box;
+    std::unique_ptr<CustomComboBox> type_box;
+    std::unique_ptr<CustomComboBox> order_box;
+    
+    std::unique_ptr<juce::Label> design_frequency_label;
+    std::unique_ptr<CustomSlider> frequency_design_slider;
+    std::unique_ptr<CustomLabel> frequency_label;
+    
+    std::unique_ptr<juce::Label> passbandAmplitude_label;
+    std::unique_ptr<CustomSlider> passbandAmplitude_slider;
+    
+    std::unique_ptr<juce::Label> stopbandAmplitude_label;
+    std::unique_ptr<CustomSlider> stopbandAmplitude_slider;
+    
+    std::unique_ptr<juce::Label> transition_width_label;
+    std::unique_ptr<CustomSlider> transition_width_slider;
+    
+    std::unique_ptr<CustomToggleButton> autoUpdate_button;
+    std::unique_ptr<CustomButton> calculate_button;
+    std::unique_ptr<juce::Label> odd_order_label;
+
+    // Controls
+    std::unique_ptr<CustomSlider> masterGain_slider;
+    std::unique_ptr<CustomToggleButton> bypass;
+    
+    std::unique_ptr<juce::Label> warning_label;
+    
+    // Menu
+    std::unique_ptr<CustomButton> undo_button;
+    std::unique_ptr<CustomButton> redo_button;
+    std::unique_ptr<CustomButton> save_preset_button;
+    std::unique_ptr<CustomButton> load_preset_button;
+
     juce::Image cachedImage_anticlockwise_arrow_png_1;
     juce::Image cachedImage_clockwise_arrow_png_2;
     juce::Image cachedImage_load_icon_png_3;
     juce::Image cachedImage_save_icon_png_4;
-    
-    std::unique_ptr<juce::Label> warningLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorComponent)
 };
