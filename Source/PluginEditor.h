@@ -23,7 +23,8 @@ public:
     void slidersInit();
     void gainsInit();
     
-    void getSpectrum ();
+    void getFrequencyResponse ();
+    void checkOutputVolume();
     void updateReferenceFrequencies();
     void updateElements();
 

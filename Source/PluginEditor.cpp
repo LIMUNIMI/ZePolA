@@ -31,7 +31,8 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     
     p.setEditorCallback([this]()
                         {
-        getSpectrum();
+        getFrequencyResponse();
+        checkOutputVolume();
         magnitude_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate(), true);
         updateElements();
@@ -41,7 +42,8 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     selectable_filter_types = SELECTABLE_FILTER_TYPES;
     selectable_orders_butterworth = SELECTABLE_ORDERS_BUTTERWORTH;
 
-    getSpectrum();
+    getFrequencyResponse();
+    checkOutputVolume();
     updateReferenceFrequencies();
 
     magnitudesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
@@ -2201,7 +2203,8 @@ void EditorComponent::buttonClicked (juce::Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == linLog_switch.get())
     {
         linLog = linLog_switch->getToggleState();
-        getSpectrum();
+        getFrequencyResponse();
+        checkOutputVolume();
         updateReferenceFrequencies();
         magnitude_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate(), true);
@@ -2548,7 +2551,7 @@ void EditorComponent::gainsInit()
     }
 }
 
-void EditorComponent::getSpectrum()
+void EditorComponent::getFrequencyResponse()
 {
     double phi;
     const auto sampleRate = processor.getSampleRate();
@@ -2560,28 +2563,35 @@ void EditorComponent::getSpectrum()
     std::complex<double> spectrum;
     
     const double gain = processor.getCurrentGain();
-    
-    double linearSum = 0.0;
-    double linearPhi;
 
     for (int i = 0; i < GRAPHS_QUALITY; ++ i)
     {
         if (linLog)
             phi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1));
         else
-        {
             phi = exp(n1 + (n2 * (static_cast<double>(i) / (static_cast<double>(GRAPHS_QUALITY - 1)))));
-            linearPhi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1));
-        }
         
-        spectrum = processor.getPhiSpectrum(phi);
+        spectrum = processor.getFrequencyResponseAtPhi(phi);
         magnitudes[i] = gain * std::abs(spectrum);
         phases[i] = (pi + std::arg(spectrum)) / (2.0 * pi);
-        
+    }
+}
+
+void EditorComponent::checkOutputVolume()
+{
+    double linearSum = 0.0;
+    double linearPhi;
+    const double gain = processor.getCurrentGain();
+    
+    for (int i = 0; i < GRAPHS_QUALITY; ++ i)
+    {
         if (linLog)
             linearSum += magnitudes[i];
         else
-            linearSum += gain * std::abs(processor.getPhiSpectrum(linearPhi));
+        {
+            linearPhi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1));
+            linearSum += gain * std::abs(processor.getFrequencyResponseAtPhi(linearPhi));
+        }
     }
     
     auto dBMean = Decibels::gainToDecibels(linearSum / GRAPHS_QUALITY, FILTER_ELEMENT_GAIN_FLOOR);
@@ -3021,6 +3031,8 @@ void EditorComponent::filterDesignAndSetup()
 
     autoGain->setToggleState(true, NotificationType::sendNotificationSync);
     isSettingFilters = false;
+    
+    checkOutputVolume();
 }
 
 void EditorComponent::autoUpdateCheckAndSetup ()

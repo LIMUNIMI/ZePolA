@@ -179,9 +179,9 @@ void PolesAndZerosEQAudioProcessor::setUnactive (const int elementNr)
     setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)), ACTIVE_DEFAULT);
 }
 
-std::complex<double> PolesAndZerosEQAudioProcessor::getPhiSpectrum (const double phi)
+std::complex<double> PolesAndZerosEQAudioProcessor::getFrequencyResponseAtPhi (const double phi)
 {
-    return multiChannelCascade[0].getPhiSpectrum(phi);
+    return multiChannelCascade[0].getFrequencyResponseAtPhi(phi);
 }
 
 double PolesAndZerosEQAudioProcessor::getElementGain (const int elementNr)

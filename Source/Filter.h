@@ -127,7 +127,7 @@ class FilterElement
     }
     
     // Returns the value of the frequency response at the given phi
-    std::complex<double> getPhiSpectrum (const double phi)
+    std::complex<double> getFrequencyResponseAtPhi (const double phi)
     {
         std::complex<double> z1 = std::polar(1.0, -2 * MathConstants<double>::pi * phi);
         std::complex<double> z2 = std::polar(1.0, -4 * MathConstants<double>::pi * phi);
@@ -195,13 +195,13 @@ class PolesAndZerosCascade
     // Returns the value of the frequency response at the given phi. It is
     // calculated as the multiplication between the spectrum of each 2-nd order
     // filter.
-    std::complex<double> getPhiSpectrum (const double phi)
+    std::complex<double> getFrequencyResponseAtPhi (const double phi)
     {
         std::complex<double> spectrum(1.0, 0.0);
         
         for (auto& element : elements)
             if (element.isActive())
-                spectrum *= element.getPhiSpectrum(phi);
+                spectrum *= element.getFrequencyResponseAtPhi(phi);
         
         return spectrum;
     }
