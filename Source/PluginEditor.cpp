@@ -2971,21 +2971,22 @@ void EditorComponent::filterDesignAndSetup()
             a1=coeffs->coefficients[2];
             
             coefficientsNormalization(&b0, &b1);
-
+            
             if (design_shape == 2)
             {
-                zero = - (b0 / (- b1));
-                pole = - (1.0 / (-a1));
+                zero = - ((- b1) / b0);
+                pole = a1;
             }
             else
             {
-                zero = - (b0 / b1);
-                pole = - (1.0 / a1);
+                zero = - (b1 / b0);
+                pole = - a1;
             }
+            
             
             DBG("\nZero: " << std::abs(zero) << " " << std::arg(zero) << " " << elementNr);
 
-            processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr);
+            processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr, b0);
             ++ elementNr;
             
             DBG("\nPole: " << std::abs(pole) << " " << std::arg(pole) << " " << elementNr);
