@@ -70,7 +70,7 @@ public:
 private:
     void parameterChanged(const String& parameterID, float newValue) override;
     
-    std::vector<PolesAndZerosCascade> multiChannelCascade;
+    std::vector<FilterElementCascade> multiChannelCascade;
     
     juce::dsp::Gain<double> gainProcessor;
     

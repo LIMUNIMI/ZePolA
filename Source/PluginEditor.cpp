@@ -18,17 +18,6 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     warning_label->setBounds (635, 355, 260, 120);
     warning_label->setVisible(false);
     
-    odd_order_label.reset(new juce::Label("Odd order label", TRANS ("The current parameter configuration generates an odd-order filter, which cannot be implemented with this plugin. It is recommended to adjust the design parameters..")));
-    addAndMakeVisible(odd_order_label.get());
-    odd_order_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    odd_order_label->setJustificationType (juce::Justification::centred);
-    odd_order_label->setEditable (false, false, false);
-    odd_order_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
-    odd_order_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    odd_order_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-    odd_order_label->setBounds (1000, 375, 200, 120);
-    odd_order_label->setVisible(false);
-    
     p.setEditorCallback([this]()
                         {
         getFrequencyResponse();
@@ -418,9 +407,8 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     addAndMakeVisible (linLog_switch.get());
     linLog_switch->setButtonText (juce::String());
     linLog_switch->addListener (this);
-
     linLog_switch->setBounds (931, 362, 52, 21);
-
+    
     m2_slider.reset (new CustomSlider ("Element 2 magnitude"));
     addAndMakeVisible (m2_slider.get());
     m2_slider->setRange (0, 10, 0);
@@ -2560,7 +2548,7 @@ void EditorComponent::getFrequencyResponse()
     auto n1 = log(FREQUENCY_FLOOR / sampleRate);
     auto n2 = log(0.5) - n1;
 
-    std::complex<double> spectrum;
+    std::complex<double> frequencyResponse;
     
     const double gain = processor.getCurrentGain();
 
@@ -2571,9 +2559,9 @@ void EditorComponent::getFrequencyResponse()
         else
             phi = exp(n1 + (n2 * (static_cast<double>(i) / (static_cast<double>(GRAPHS_QUALITY - 1)))));
         
-        spectrum = processor.getFrequencyResponseAtPhi(phi);
-        magnitudes[i] = gain * std::abs(spectrum);
-        phases[i] = (pi + std::arg(spectrum)) / (2.0 * pi);
+        frequencyResponse = processor.getFrequencyResponseAtPhi(phi);
+        magnitudes[i] = gain * std::abs(frequencyResponse);
+        phases[i] = (pi + std::arg(frequencyResponse)) / (2.0 * pi);
     }
 }
 
@@ -2910,10 +2898,11 @@ float EditorComponent::calculateGain(const int elementNr, bool isChangingType)
     }
 }
 
-void EditorComponent::coefficientsNormalization (double& c0, double& c1, double& c2)
+void EditorComponent::coefficientsNormalization (double* c0, double* c1, double* c2)
 {
-    c1 /= c0;
-    c2 /= c0;
+    *c1 /= (*c0);
+    if (c2 != nullptr)
+        *c2 /= (*c0);
 }
 
 void EditorComponent::fromCoefficientsToMagnitudeAndPhase (double& mg, double& ph, double c1, double c2)
@@ -2963,11 +2952,6 @@ void EditorComponent::filterDesignAndSetup()
 
     processor.setBypass(true);
     isSettingFilters = true;
-    
-    if (iirCoefficients.size() % 2 != 0)
-        odd_order_label->setVisible(true);
-    else
-        odd_order_label->setVisible(false);
 
     for (int i = 0; i < iirCoefficients.size(); ++ i)
     {
@@ -2977,20 +2961,34 @@ void EditorComponent::filterDesignAndSetup()
         {
             std::complex<double> zero;
             std::complex<double> pole;
+            
+            DBG("Coefficienti: ");
+            for(auto& c : coeffs->coefficients)
+                DBG(c);
+            
+            b0=coeffs->coefficients[0];
+            b1=coeffs->coefficients[1];
+            a1=coeffs->coefficients[2];
+            
+            coefficientsNormalization(&b0, &b1);
 
             if (design_shape == 2)
             {
-                zero = - (- coeffs->coefficients[1]) / coeffs->coefficients[0];
-                pole = - (- coeffs->coefficients[2]);
+                zero = - (b0 / (- b1));
+                pole = - (1.0 / (-a1));
             }
             else
             {
-                zero = - coeffs->coefficients[1] / coeffs->coefficients[0];
-                pole = - coeffs->coefficients[2];
+                zero = - (b0 / b1);
+                pole = - (1.0 / a1);
             }
+            
+            DBG("\nZero: " << std::abs(zero) << " " << std::arg(zero) << " " << elementNr);
 
             processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr);
             ++ elementNr;
+            
+            DBG("\nPole: " << std::abs(pole) << " " << std::arg(pole) << " " << elementNr);
 
             processor.setFilter(std::abs(pole), std::arg(pole), FilterElement::POLE, elementNr);
             ++ elementNr;
@@ -3010,7 +3008,7 @@ void EditorComponent::filterDesignAndSetup()
                 a1 = - a1;
             }
 
-            coefficientsNormalization(b0, b1, b2);
+            coefficientsNormalization(&b0, &b1, &b2);
 
             fromCoefficientsToMagnitudeAndPhase(magnitude, phase, b1, b2);
             std::complex<double> zero = std::polar(magnitude, phase);

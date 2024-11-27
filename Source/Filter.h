@@ -166,14 +166,14 @@ class FilterElement
 
 // -----------------------------------------------------------------------------
 /*
- The PolesAndZerosCascade class represent a digital filter as a chain of 2-nd
+ The FilterElementCascade class represent a digital filter as a chain of 2-nd
  order only FIR or only IIR filters (FilterElement).
- A PolesAndZerosCascade is basically an std::vector<FilterElement>.
+ A FilterElementCascade is basically an std::vector<FilterElement>.
 */
-class PolesAndZerosCascade
+class FilterElementCascade
 {
     public:
-    PolesAndZerosCascade (PolesAndZerosCascade* cascade = nullptr, int nElements = NUMBER_OF_FILTER_ELEMENTS)
+    FilterElementCascade (FilterElementCascade* cascade = nullptr, int nElements = NUMBER_OF_FILTER_ELEMENTS)
     {
         if (cascade == nullptr)
             for (int i = 0; i < nElements; ++ i)
@@ -190,24 +190,24 @@ class PolesAndZerosCascade
         }
     }
     
-    ~PolesAndZerosCascade () {}
+    ~FilterElementCascade () {}
     
     // Returns the value of the frequency response at the given phi. It is
     // calculated as the multiplication between the spectrum of each 2-nd order
     // filter.
     std::complex<double> getFrequencyResponseAtPhi (const double phi)
     {
-        std::complex<double> spectrum(1.0, 0.0);
+        std::complex<double> frequencyResponse(1.0, 0.0);
         
         for (auto& element : elements)
             if (element.isActive())
-                spectrum *= element.getFrequencyResponseAtPhi(phi);
+                frequencyResponse *= element.getFrequencyResponseAtPhi(phi);
         
-        return spectrum;
+        return frequencyResponse;
     }
     
     // Returns the cascade
-    inline PolesAndZerosCascade* getCascade ()
+    inline FilterElementCascade* getCascade ()
     {
         return this;
     }

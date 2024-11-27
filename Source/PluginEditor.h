@@ -46,7 +46,7 @@ public:
     float formatGainInput(float gain);
     float calculateGain (const int elementNr, bool isChangingType = false);
 
-    void coefficientsNormalization(double& c0, double& c1, double& c2);
+    void coefficientsNormalization(double* c0, double* c1, double* c2 = nullptr);
     void fromCoefficientsToMagnitudeAndPhase(double& mg, double& ph, double c1, double c2);
     void filterDesignAndSetup();
     void autoUpdateCheckAndSetup();
@@ -263,7 +263,6 @@ private:
     
     std::unique_ptr<CustomToggleButton> autoUpdate_button;
     std::unique_ptr<CustomButton> calculate_button;
-    std::unique_ptr<juce::Label> odd_order_label;
 
     // Controls
     std::unique_ptr<CustomSlider> masterGain_slider;

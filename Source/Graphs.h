@@ -185,7 +185,11 @@ class PhaseResponse : public FrequencyResponse
             }
             
             g.setColour(juce::Colour(TEXT_COLOUR));
-            g.drawText(referencePhases[i], 6, y + offsetY, 20, 20, juce::Justification::centredLeft);
+            
+            if(!i)
+                g.drawText(referencePhases[i], 6, y, 20, 20, juce::Justification::centredLeft);
+            else
+                g.drawText(referencePhases[i], 6, y + offsetY, 20, 20, juce::Justification::centredLeft);
         }
     }
 };
