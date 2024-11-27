@@ -77,6 +77,11 @@ void PolesAndZerosEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
     gainProcessor.process(juce::dsp::ProcessContextReplacing<double> (block));
     
     castBuffer(buffer, doubleBuffer, numChannels, numSamples);
+    
+    safetyFlag |= buffer.getMagnitude(0, numSamples) > 4;
+     
+    if (safetyFlag)
+        buffer.clear();
 }
 
 void PolesAndZerosEQAudioProcessor::processBlockBypassed(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -305,6 +310,16 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude, const doub
     setParameterValue(parameters.getParameter(TYPE_NAME + std::to_string(elementNr)), !type);
     setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)), true);
     setParameterValue(parameters.getParameter(GAIN_NAME + std::to_string(elementNr)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+}
+
+bool PolesAndZerosEQAudioProcessor::getSafetyFlag ()
+{
+    return safetyFlag;
+}
+
+void PolesAndZerosEQAudioProcessor::resetSafetyFlag ()
+{
+    safetyFlag = false;
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()

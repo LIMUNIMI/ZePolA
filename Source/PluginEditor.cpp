@@ -7,7 +7,7 @@
 EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcessorValueTreeState& vts)
 : processor(p), valueTreeState(vts)
 {
-    warning_label.reset(new juce::Label("Warning label", TRANS ("Caution! The current configuration of the filter may cause unexpected increase of volume. Check the gain of each filter before deactivating the bypass of the plugin.")));
+    warning_label.reset(new juce::Label("Warning label", TRANS ("Caution! The current configuration of the plug-in may cause unexpected increase of volume. Check the gain of each filter and the master gain.")));
     addAndMakeVisible(warning_label.get());
     warning_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
     warning_label->setJustificationType (juce::Justification::centred);
@@ -21,18 +21,28 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     p.setEditorCallback([this]()
                         {
         getFrequencyResponse();
-        checkOutputVolume();
         magnitude_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate(), true);
         updateElements();
         gaussian_plane->updateConjugate(processor.getFilterElementsChain());
     });
+    
+    resetSafetyFlag_button.reset (new CustomButton ("Reset safety flag"));
+    addAndMakeVisible (resetSafetyFlag_button.get());
+    resetSafetyFlag_button->setButtonText (juce::String());
+    resetSafetyFlag_button->addListener (this);
+    resetSafetyFlag_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff73cc81));
+    resetSafetyFlag_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    resetSafetyFlag_button->setBounds (900, 402, 90, 25);
+    resetSafetyFlag_button->setVisible(false);
+    
+    startTimer(100);
 
     selectable_filter_types = SELECTABLE_FILTER_TYPES;
     selectable_orders_butterworth = SELECTABLE_ORDERS_BUTTERWORTH;
 
     getFrequencyResponse();
-    checkOutputVolume();
     updateReferenceFrequencies();
 
     magnitudesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
@@ -1297,6 +1307,9 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     turnAllOffTheme.setTextToDisplay("ALL OFF");
     turn_off_button->setLookAndFeel(&turnAllOffTheme);
+    
+    resetSafetyFlagButtonTheme.setTextToDisplay("REACTIVATE AUDIO");
+    resetSafetyFlag_button->setLookAndFeel(&resetSafetyFlagButtonTheme);
 
     undoButtonTheme.setButtonFunction(MenuButtonTheme::buttonFunction::UNDO);
     undo_button->setLookAndFeel(&undoButtonTheme);
@@ -1375,6 +1388,8 @@ EditorComponent::~EditorComponent()
     }
     masterGainAttachment.reset();
     bypassAttachment.reset();
+    
+    stopTimer();
 
     e1_gain = nullptr;
     gaussian_plane = nullptr;
@@ -2192,7 +2207,6 @@ void EditorComponent::buttonClicked (juce::Button* buttonThatWasClicked)
     {
         linLog = linLog_switch->getToggleState();
         getFrequencyResponse();
-        checkOutputVolume();
         updateReferenceFrequencies();
         magnitude_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate(), true);
@@ -2299,6 +2313,10 @@ void EditorComponent::buttonClicked (juce::Button* buttonThatWasClicked)
             gain7_label->setEditable(true);
             gain8_label->setEditable(true);
         }
+    }
+    else if (buttonThatWasClicked == resetSafetyFlag_button.get())
+    {
+        processor.resetSafetyFlag();
     }
 }
 
@@ -2562,41 +2580,6 @@ void EditorComponent::getFrequencyResponse()
         frequencyResponse = processor.getFrequencyResponseAtPhi(phi);
         magnitudes[i] = gain * std::abs(frequencyResponse);
         phases[i] = (pi + std::arg(frequencyResponse)) / (2.0 * pi);
-    }
-}
-
-void EditorComponent::checkOutputVolume()
-{
-    double linearSum = 0.0;
-    double linearPhi;
-    const double gain = processor.getCurrentGain();
-    
-    for (int i = 0; i < GRAPHS_QUALITY; ++ i)
-    {
-        if (linLog)
-            linearSum += magnitudes[i];
-        else
-        {
-            linearPhi = static_cast<double>(i) / static_cast<double>(2 * (GRAPHS_QUALITY - 1));
-            linearSum += gain * std::abs(processor.getFrequencyResponseAtPhi(linearPhi));
-        }
-    }
-    
-    auto dBMean = Decibels::gainToDecibels(linearSum / GRAPHS_QUALITY, FILTER_ELEMENT_GAIN_FLOOR);
-
-    if (dBMean > WARNINGDBLEVEL)
-    {
-        if (!isSettingFilters && !isUserWarned)
-        {
-            processor.setBypass(true);
-            warning_label->setVisible(true);
-            isUserWarned = true;
-        }
-    }
-    else
-    {
-        warning_label->setVisible(false);
-        isUserWarned = false;
     }
 }
 
@@ -3031,8 +3014,6 @@ void EditorComponent::filterDesignAndSetup()
 
     autoGain->setToggleState(true, NotificationType::sendNotificationSync);
     isSettingFilters = false;
-    
-    checkOutputVolume();
 }
 
 void EditorComponent::autoUpdateCheckAndSetup ()
@@ -3044,6 +3025,20 @@ void EditorComponent::autoUpdateCheckAndSetup ()
             return;
     else
         filterDesignAndSetup();
+}
+
+void EditorComponent::timerCallback()
+{
+    if (processor.getSafetyFlag())
+    {
+        warning_label->setVisible(true);
+        resetSafetyFlag_button->setVisible(true);
+    }
+    else
+    {
+        warning_label->setVisible(false);
+        resetSafetyFlag_button->setVisible(false);
+    }
 }
 
 

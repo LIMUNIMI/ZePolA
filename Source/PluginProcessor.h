@@ -65,6 +65,9 @@ public:
     
     void setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr, const double linearGain = 1.0);
     
+    bool getSafetyFlag();
+    void resetSafetyFlag();
+    
     AudioProcessorValueTreeState parameters;
 
 private:
@@ -75,6 +78,7 @@ private:
     juce::dsp::Gain<double> gainProcessor;
     
     bool active = true;
+    bool safetyFlag = false;
     
     std::function<void()> editorCallback;
     

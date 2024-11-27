@@ -13,7 +13,8 @@ class EditorComponent  :            public juce::Component,
                                     public juce::Slider::Listener,
                                     public juce::Button::Listener,
                                     public juce::Label::Listener,
-                                    public juce::ComboBox::Listener
+                                    public juce::ComboBox::Listener,
+                                    public juce::Timer
 {
 public:
     
@@ -24,7 +25,6 @@ public:
     void gainsInit();
     
     void getFrequencyResponse ();
-    void checkOutputVolume();
     void updateReferenceFrequencies();
     void updateElements();
 
@@ -56,6 +56,8 @@ public:
     void buttonClicked (juce::Button* buttonThatWasClicked) override;
     void labelTextChanged (juce::Label* labelThatHasChanged) override;
     void comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged) override;
+    
+    void timerCallback() override;
 
     // Binary resources:
     static const char* anticlockwise_arrow_png;
@@ -135,6 +137,8 @@ private:
     ComboBoxTheme comboBoxTheme;
 
     AutoUpdateSwitchTheme autoUpdateSwitchTheme;
+    
+    GenericButtonTheme resetSafetyFlagButtonTheme;
     
     // Magnitude sliders
     std::shared_ptr<CustomSlider> m1_slider;
@@ -269,6 +273,8 @@ private:
     std::unique_ptr<CustomToggleButton> bypass;
     
     std::unique_ptr<juce::Label> warning_label;
+    
+    std::unique_ptr<CustomButton> resetSafetyFlag_button;
     
     // Menu
     std::unique_ptr<CustomButton> undo_button;
