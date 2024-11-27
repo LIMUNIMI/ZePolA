@@ -2970,8 +2970,6 @@ void EditorComponent::filterDesignAndSetup()
             b1=coeffs->coefficients[1];
             a1=coeffs->coefficients[2];
             
-            coefficientsNormalization(&b0, &b1);
-            
             if (design_shape == 2)
             {
                 zero = - ((- b1) / b0);
@@ -2991,11 +2989,14 @@ void EditorComponent::filterDesignAndSetup()
             
             DBG("\nPole: " << std::abs(pole) << " " << std::arg(pole) << " " << elementNr);
 
-            processor.setFilter(std::abs(pole), std::arg(pole), FilterElement::POLE, elementNr);
+            processor.setFilter(std::abs(pole), std::arg(pole), FilterElement::POLE, elementNr, b0);
             ++ elementNr;
         }
         else
         {
+            DBG("Coefficienti: ");
+            for(auto& c : coeffs->coefficients)
+                DBG(c);
             b0 = coeffs->coefficients[0];
             b1 = coeffs->coefficients[1];
             b2 = coeffs->coefficients[2];
