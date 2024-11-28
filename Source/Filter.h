@@ -37,6 +37,12 @@ class FilterElement
     // Returns true if the filter is active or false if it is not
     inline bool isActive() const { return active; }
     
+    // Returns a pointer to an array with the current coefficients of the filter
+    inline std::vector<double> getCoefficients() const
+    {
+        return { gain, coeff1, coeff2 };
+    }
+    
     // Returns the real part of the digital filter
     double getRealPart ()
     {
@@ -252,6 +258,19 @@ class FilterElementCascade
     inline FilterElement getElement(int elementNr) const
     {
         return elements[elementNr - 1];
+    }
+    
+    inline std::vector<double> getCoefficients () const
+    {
+        std::vector<double> coefficients;
+        for (auto& element : elements)
+        {
+            auto coeffs = element.getCoefficients();
+            for (auto& c : coeffs)
+                coefficients.push_back(c);
+        }
+        
+        return coefficients;
     }
     
     // Sets the magnitude of the elementNr element in the cascade

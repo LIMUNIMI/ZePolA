@@ -7,15 +7,15 @@
 EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcessorValueTreeState& vts)
 : processor(p), valueTreeState(vts)
 {
-    warning_label.reset(new juce::Label("Warning label", TRANS ("Caution! The current configuration of the plug-in may cause unexpected increase of volume. Check the gain of each filter and the master gain.")));
+    warning_label.reset(new juce::Label("Warning label", TRANS ("Caution! The current plugin configuration has caused an excessively high output, resulting in the audio stream being stopped. Please reset the plugin parameters to values that allow for a lower output volume.")));
     addAndMakeVisible(warning_label.get());
-    warning_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    warning_label->setFont (juce::Font ("Gill Sans", 18.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
     warning_label->setJustificationType (juce::Justification::centred);
     warning_label->setEditable (false, false, false);
     warning_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
     warning_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     warning_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-    warning_label->setBounds (635, 355, 260, 120);
+    warning_label->setBounds (595, 370, 340, 120);
     warning_label->setVisible(false);
     
     p.setEditorCallback([this]()
@@ -27,17 +27,12 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
         gaussian_plane->updateConjugate(processor.getFilterElementsChain());
     });
     
-    resetSafetyFlag_button.reset (new CustomButton ("Reset safety flag"));
-    addAndMakeVisible (resetSafetyFlag_button.get());
-    resetSafetyFlag_button->setButtonText (juce::String());
-    resetSafetyFlag_button->addListener (this);
-    resetSafetyFlag_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff73cc81));
-    resetSafetyFlag_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
-
-    resetSafetyFlag_button->setBounds (900, 402, 90, 25);
-    resetSafetyFlag_button->setVisible(false);
+    warningRectangle.reset (new WarningRectangle());
+    addAndMakeVisible(warningRectangle.get());
+    warningRectangle->setBounds(525, 55, 480, 720);
+    warningRectangle->setVisible(false);
     
-    startTimer(100);
+    startTimer(50);
 
     selectable_filter_types = SELECTABLE_FILTER_TYPES;
     selectable_orders_butterworth = SELECTABLE_ORDERS_BUTTERWORTH;
@@ -223,41 +218,41 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     p1_slider->setBounds (144, 92, 120, 25);
 
-    magnitudes_label.reset (new juce::Label ("Magnitudes",
-                                             TRANS ("MAGNITUDE\n")));
-    addAndMakeVisible (magnitudes_label.get());
-    magnitudes_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    magnitudes_label->setJustificationType (juce::Justification::centred);
-    magnitudes_label->setEditable (false, false, false);
-    magnitudes_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
-    magnitudes_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    magnitudes_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    radius_label.reset (new juce::Label ("Radius",
+                                             TRANS ("RADIUS\n")));
+    addAndMakeVisible (radius_label.get());
+    radius_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    radius_label->setJustificationType (juce::Justification::centred);
+    radius_label->setEditable (false, false, false);
+    radius_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    radius_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    radius_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    magnitudes_label->setBounds (33, 57, 90, 24);
+    radius_label->setBounds (35, 57, 90, 24);
 
-    phases_label.reset (new juce::Label ("Phases",
-                                         TRANS ("FREQUENCY\n")));
-    addAndMakeVisible (phases_label.get());
-    phases_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    phases_label->setJustificationType (juce::Justification::centred);
-    phases_label->setEditable (false, false, false);
-    phases_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
-    phases_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    phases_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    angles_label.reset (new juce::Label ("Angle",
+                                         TRANS ("ANGLE\n")));
+    addAndMakeVisible (angles_label.get());
+    angles_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    angles_label->setJustificationType (juce::Justification::centred);
+    angles_label->setEditable (false, false, false);
+    angles_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    angles_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    angles_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    phases_label->setBounds (198, 57, 80, 24);
+    angles_label->setBounds (195, 57, 80, 24);
 
-    zero_pole_label.reset (new juce::Label ("Filter Type",
-                                            TRANS ("FILTER TYPE")));
-    addAndMakeVisible (zero_pole_label.get());
-    zero_pole_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    zero_pole_label->setJustificationType (juce::Justification::centred);
-    zero_pole_label->setEditable (false, false, false);
-    zero_pole_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
-    zero_pole_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    zero_pole_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    type_label.reset (new juce::Label ("Type",
+                                            TRANS ("TYPE")));
+    addAndMakeVisible (type_label.get());
+    type_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+    type_label->setJustificationType (juce::Justification::centred);
+    type_label->setEditable (false, false, false);
+    type_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+    type_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+    type_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    zero_pole_label->setBounds (310, 57, 91, 24);
+    type_label->setBounds (310, 57, 91, 24);
 
     active_label.reset (new juce::Label ("Active",
                                          TRANS ("ACTIVE")));
@@ -940,6 +935,15 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     redo_button->setBounds (91, 9, 60, 25);
 
+    saveCoefficients_button.reset (new CustomButton ("Save coefficients"));
+    addAndMakeVisible (saveCoefficients_button.get());
+    saveCoefficients_button->setButtonText (juce::String());
+    saveCoefficients_button->addListener (this);
+    saveCoefficients_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0x00909497));
+    saveCoefficients_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    saveCoefficients_button->setBounds (830, 9, 130, 25);
+    
     save_preset_button.reset (new CustomButton ("Save preset"));
     addAndMakeVisible (save_preset_button.get());
     save_preset_button->setButtonText (juce::String());
@@ -1307,9 +1311,6 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     turnAllOffTheme.setTextToDisplay("ALL OFF");
     turn_off_button->setLookAndFeel(&turnAllOffTheme);
-    
-    resetSafetyFlagButtonTheme.setTextToDisplay("REACTIVATE AUDIO");
-    resetSafetyFlag_button->setLookAndFeel(&resetSafetyFlagButtonTheme);
 
     undoButtonTheme.setButtonFunction(MenuButtonTheme::buttonFunction::UNDO);
     undo_button->setLookAndFeel(&undoButtonTheme);
@@ -1318,6 +1319,10 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     redoButtonTheme.setButtonFunction(MenuButtonTheme::buttonFunction::REDO);
     redo_button->setLookAndFeel(&redoButtonTheme);
     redo_button->repaint();
+    
+    saveCoefficientsButtonTheme.setButtonFunction(MenuButtonTheme::buttonFunction::SAVE_COEFFS);
+    saveCoefficients_button->setLookAndFeel(&saveCoefficientsButtonTheme);
+    saveCoefficients_button->repaint();
 
     savePresetButtonTheme.setButtonFunction(MenuButtonTheme::buttonFunction::SAVE_PRST);
     save_preset_button->setLookAndFeel(&savePresetButtonTheme);
@@ -1410,9 +1415,9 @@ EditorComponent::~EditorComponent()
     ph_response_label = nullptr;
     m1_slider = nullptr;
     p1_slider = nullptr;
-    magnitudes_label = nullptr;
-    phases_label = nullptr;
-    zero_pole_label = nullptr;
+    radius_label = nullptr;
+    angles_label = nullptr;
+    type_label = nullptr;
     active_label = nullptr;
     e1_type = nullptr;
     e2_type = nullptr;
@@ -1476,6 +1481,7 @@ EditorComponent::~EditorComponent()
     autoUpdate_button = nullptr;
     undo_button = nullptr;
     redo_button = nullptr;
+    saveCoefficients_button = nullptr;
     save_preset_button = nullptr;
     load_preset_button = nullptr;
     gain_label = nullptr;
@@ -1495,6 +1501,8 @@ EditorComponent::~EditorComponent()
     gain6_label = nullptr;
     gain7_label = nullptr;
     gain8_label = nullptr;
+    
+    warningRectangle = nullptr;
 }
 
 void EditorComponent::paint (juce::Graphics& g)
@@ -1510,10 +1518,10 @@ void EditorComponent::paint (juce::Graphics& g)
         g.setColour (strokeColour);
         g.drawRoundedRectangle (x, y, width, height, 14.500f, 1.500f);
     }
-
+    
     {
-        float x = 1005.0f, y = 55.0f, width = 180.0f, height = 720.0f;
-        juce::Colour fillColour = juce::Colour (0x19656565);
+        float x = 525.0f, y = 55.0f, width = 480.0f, height = 720.0f;
+        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         g.setColour (fillColour);
         g.fillRoundedRectangle (x, y, width, height, 14.500f);
@@ -1522,8 +1530,8 @@ void EditorComponent::paint (juce::Graphics& g)
     }
 
     {
-        float x = 525.0f, y = 55.0f, width = 480.0f, height = 720.0f;
-        juce::Colour fillColour = juce::Colour (0x17b1b1b1);
+        float x = 1005.0f, y = 55.0f, width = 180.0f, height = 720.0f;
+        juce::Colour fillColour = juce::Colour (0x19656565);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         g.setColour (fillColour);
         g.fillRoundedRectangle (x, y, width, height, 14.500f);
@@ -1612,7 +1620,7 @@ void EditorComponent::paint (juce::Graphics& g)
 
     {
         int x = 365, y = 485, width = 100, height = 20;
-        juce::String text (TRANS ("SETUP SHORTCUTS"));
+        juce::String text (TRANS ("SHORTCUTS"));
         juce::Colour fillColour = juce::Colour (0xff383838);
         g.setColour (fillColour);
         g.setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
@@ -1626,16 +1634,6 @@ void EditorComponent::paint (juce::Graphics& g)
         juce::Colour fillColour = juce::Colour (0xff383838);
         g.setColour (fillColour);
         g.setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centred, true);
-    }
-
-    {
-        int x = 495, y = 8, width = 210, height = 25;
-        juce::String text (TRANS ("POLES AND ZEROS - EQ"));
-        juce::Colour fillColour = juce::Colour (0xff383838);
-        g.setColour (fillColour);
-        g.setFont (juce::Font ("Gill Sans", 20.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
                     juce::Justification::centred, true);
     }
@@ -2258,6 +2256,37 @@ void EditorComponent::buttonClicked (juce::Button* buttonThatWasClicked)
     {
         valueTreeState.undoManager->redo();
     }
+    else if (buttonThatWasClicked == saveCoefficients_button.get())
+    {
+        auto coefficients = processor.getCoefficients();
+        
+        auto defaultPresetLocation = File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory);
+        juce::FileChooser chooser("Select the save location...", defaultPresetLocation, "*.txt");
+        if (chooser.browseForFileToSave(true))
+        {
+            auto file = chooser.getResult();
+            if (file.exists())
+                file.deleteFile();
+            juce::FileOutputStream outputStream(file);
+            if (outputStream.openedOk())
+            {
+                juce::String content;
+                
+                content += "Sample rate: " + juce::String(processor.getSampleRate()) + "\n\n";
+                
+                int i = 0;
+                for (const auto& coeff : coefficients)
+                {
+                    content += juce::String(coeff) + "\n";
+                    ++ i;
+                    if (i % 3 == 0)
+                        content += "\n";
+                }
+                
+                file.replaceWithText(content);
+            }
+        }
+    }
     else if (buttonThatWasClicked == save_preset_button.get())
     {
         auto defaultPresetLocation = File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory);
@@ -2313,10 +2342,6 @@ void EditorComponent::buttonClicked (juce::Button* buttonThatWasClicked)
             gain7_label->setEditable(true);
             gain8_label->setEditable(true);
         }
-    }
-    else if (buttonThatWasClicked == resetSafetyFlag_button.get())
-    {
-        processor.resetSafetyFlag();
     }
 }
 
@@ -2945,10 +2970,6 @@ void EditorComponent::filterDesignAndSetup()
             std::complex<double> zero;
             std::complex<double> pole;
             
-            DBG("Coefficienti: ");
-            for(auto& c : coeffs->coefficients)
-                DBG(c);
-            
             b0=coeffs->coefficients[0];
             b1=coeffs->coefficients[1];
             a1=coeffs->coefficients[2];
@@ -2963,23 +2984,16 @@ void EditorComponent::filterDesignAndSetup()
                 zero = - (b1 / b0);
                 pole = - a1;
             }
-            
-            
-            DBG("\nZero: " << std::abs(zero) << " " << std::arg(zero) << " " << elementNr);
 
             processor.setFilter(std::abs(zero), std::arg(zero), FilterElement::ZERO, elementNr, b0);
             ++ elementNr;
-            
-            DBG("\nPole: " << std::abs(pole) << " " << std::arg(pole) << " " << elementNr);
+
 
             processor.setFilter(std::abs(pole), std::arg(pole), FilterElement::POLE, elementNr, b0);
             ++ elementNr;
         }
         else
         {
-            DBG("Coefficienti: ");
-            for(auto& c : coeffs->coefficients)
-                DBG(c);
             b0 = coeffs->coefficients[0];
             b1 = coeffs->coefficients[1];
             b2 = coeffs->coefficients[2];
@@ -3031,13 +3045,18 @@ void EditorComponent::timerCallback()
 {
     if (processor.getSafetyFlag())
     {
+        warningRectangle->setVisible(true);
+        warningRectangle->toFront(true);
+        
         warning_label->setVisible(true);
-        resetSafetyFlag_button->setVisible(true);
+        warning_label->toFront(true);
     }
     else
     {
         warning_label->setVisible(false);
-        resetSafetyFlag_button->setVisible(false);
+        warningRectangle->setVisible(false);
+        warningRectangle->toBack();
+        warning_label->toBack();
     }
 }
 
@@ -4559,7 +4578,7 @@ WrappedEditor::WrappedEditor(PolesAndZerosEQAudioProcessor& p, AudioProcessorVal
     if(auto* constrainer = getConstrainer())
     {
         constrainer->setFixedAspectRatio(static_cast<double>(originalWidth) / static_cast<double>(originalHeight));
-        constrainer->setSizeLimits(originalWidth * 0.25, originalHeight * 0.25, originalWidth, originalHeight);
+        constrainer->setSizeLimits(originalWidth * 0.25, originalHeight * 0.25, originalWidth + originalWidth * 0.20, originalHeight + originalHeight * 0.20);
     }
     
     auto sizeRatio = 1.0;

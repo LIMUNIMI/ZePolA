@@ -170,6 +170,8 @@ void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID,
     {
         editorCallback();
     }
+    
+    resetSafetyFlag();
 }
 
 void PolesAndZerosEQAudioProcessor::setParameterValue(juce::RangedAudioParameter *parameter, float value)
@@ -320,6 +322,11 @@ bool PolesAndZerosEQAudioProcessor::getSafetyFlag ()
 void PolesAndZerosEQAudioProcessor::resetSafetyFlag ()
 {
     safetyFlag = false;
+}
+
+std::vector<double> PolesAndZerosEQAudioProcessor::getCoefficients()
+{
+    return multiChannelCascade[0].getCoefficients();
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()

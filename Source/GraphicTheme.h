@@ -29,6 +29,8 @@
 #define AUTO_UPDATE_ON_COLOUR               0xff73cc81
 #define AUTO_UPDATE_OFF_COLOUR              0xff558a6a
 
+#define WARNING_COLOUR                      0x99ff5f58
+
 
 class CustomButton : public juce::TextButton
 {
@@ -487,7 +489,7 @@ class GenericButtonTheme : public LookAndFeel_V4
 class MenuButtonTheme : public LookAndFeel_V4
 {
     public:
-    enum buttonFunction { UNDO, REDO, SAVE_PRST, LOAD_PRST };
+    enum buttonFunction { UNDO, REDO, SAVE_COEFFS, SAVE_PRST, LOAD_PRST };
     
     void drawButtonBackground(juce::Graphics& g, juce::Button& button,
                               const juce::Colour& backgroundColour,
@@ -524,6 +526,7 @@ class MenuButtonTheme : public LookAndFeel_V4
         {
             case UNDO: text = "UNDO"; break;
             case REDO: text = "REDO"; break;
+            case SAVE_COEFFS: text = "SAVE COEFFICIENTS"; break;
             case SAVE_PRST: text = "SAVE PRESET"; break;
             case LOAD_PRST: text = "LOAD PRESET"; break;
         }
@@ -675,5 +678,22 @@ class AutoUpdateSwitchTheme : public juce::LookAndFeel_V4
         const float fontSize = isOn ? 11.5f : 12.0f;
         g.setFont(juce::Font("Gill Sans", fontSize, juce::Font::bold).withTypefaceStyle("SemiBold"));
         g.drawText("AUTO UPDATE", switchRect, juce::Justification::centred);
+    }
+};
+
+class WarningRectangle : public juce::Component
+{
+public:
+    WarningRectangle() {}
+
+    void paint(juce::Graphics& g) override
+    {        
+        juce::Colour fillColour = juce::Colour(WARNING_COLOUR);
+        juce::Colour strokeColour = juce::Colour (WARNING_COLOUR);
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 14.500f);
+        
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (0, 0, getWidth(), getHeight(), 14.500f, 1.500f);
     }
 };

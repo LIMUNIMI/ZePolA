@@ -62,15 +62,19 @@ class FrequencyResponse : public juce::Component
         std::vector<float> levels = linLog ? std::vector<float>{0.1f, 0.5f, 1.0f, 1.5f, 2.0f}
         : std::vector<float>{-50.0f, -30.0f, -20.0f, -10.0f, -5.0f, 0.0f, 5.0f, 10.0f, 20.0f, 30.0f, 50.0f};
         g.setFont(juce::Font("Gill Sans", 10.0f, juce::Font::plain));
-        
+            
         for (auto level : levels)
         {
             float yPos = juce::jmap<float>(level, linLog ? 0.0f : -60.0f, linLog ? 2.0f : 60.0f, bounds.getBottom(), bounds.getY());
-            g.setColour(juce::Colour(GRID_COLOUR));
-            g.drawHorizontalLine(static_cast<int>(yPos), bounds.getX(), bounds.getRight());
             
             g.setColour(juce::Colour(TEXT_COLOUR));
-            g.drawText(linLog ? juce::String(level) : juce::String(level) + " dB", 5, yPos - 10, 40, 20, juce::Justification::left);
+            g.drawText(linLog ? juce::String(level) : juce::String(level) + " dB", 5, yPos - (level == 2 ? 0 : 10), 40, 20, juce::Justification::left);
+            
+            if (level != 2)
+            {
+                g.setColour(juce::Colour(GRID_COLOUR));
+                g.drawHorizontalLine(static_cast<int>(yPos), bounds.getX(), bounds.getRight());
+            }
         }
     }
     
@@ -120,6 +124,9 @@ class MagnitudeResponse : public FrequencyResponse
         g.strokePath(responsePath, juce::PathStrokeType(1.5f));
         g.setColour(juce::Colour(TEXT_COLOUR));
         g.drawText(formatFrequency(sampleRate * 0.5), bounds.getRight() - 20, bounds.getCentreY(), 20, 20, juce::Justification::centred);
+        
+        g.setFont(juce::Font("Gill Sans", 11.0f, juce::Font::plain));
+        g.drawText("Sample rate: " + juce::String(sampleRate) + " Hz", bounds.getRight() - 100, 2, 90, 20, juce::Justification::centred);
     }
     
     private:

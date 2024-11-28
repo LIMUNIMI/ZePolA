@@ -133,6 +133,7 @@ private:
 
     MenuButtonTheme savePresetButtonTheme;
     MenuButtonTheme loadPresetButtonTheme;
+    MenuButtonTheme saveCoefficientsButtonTheme;
 
     ComboBoxTheme comboBoxTheme;
 
@@ -210,9 +211,9 @@ private:
     std::unique_ptr<CustomLabel> gain8_label;
     
     // Labels
-    std::unique_ptr<juce::Label> magnitudes_label;
-    std::unique_ptr<juce::Label> phases_label;
-    std::unique_ptr<juce::Label> zero_pole_label;
+    std::unique_ptr<juce::Label> radius_label;
+    std::unique_ptr<juce::Label> angles_label;
+    std::unique_ptr<juce::Label> type_label;
     std::unique_ptr<juce::Label> active_label;
     std::unique_ptr<juce::Label> gain_label;
     
@@ -273,14 +274,15 @@ private:
     std::unique_ptr<CustomToggleButton> bypass;
     
     std::unique_ptr<juce::Label> warning_label;
-    
-    std::unique_ptr<CustomButton> resetSafetyFlag_button;
+    std::unique_ptr<WarningRectangle> warningRectangle;
     
     // Menu
     std::unique_ptr<CustomButton> undo_button;
     std::unique_ptr<CustomButton> redo_button;
+    std::unique_ptr<CustomButton> saveCoefficients_button;
     std::unique_ptr<CustomButton> save_preset_button;
     std::unique_ptr<CustomButton> load_preset_button;
+    
 
     juce::Image cachedImage_anticlockwise_arrow_png_1;
     juce::Image cachedImage_clockwise_arrow_png_2;

@@ -6,7 +6,6 @@
 #define STEREO                                  2
 #define SLIDERS_FLOOR                           0.0f
 #define SLIDERS_CEILING                         1.0f
-#define WARNINGDBLEVEL                          7.0
 
 // GUI constants and macros
 #define NUMBER_OF_REFERENCE_FREQUENCIES         8
