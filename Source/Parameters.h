@@ -10,7 +10,7 @@
 
 // GUI constants and macros
 #define NUMBER_OF_REFERENCE_FREQUENCIES         8
-#define FREQUENCY_FLOOR                         10.0
+#define FREQUENCY_FLOOR                         20.0
 
 #define DESIGN_FREQUENCY_FLOOR                  1.0
 
