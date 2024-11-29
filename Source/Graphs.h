@@ -15,11 +15,11 @@
 #define CONJ_POLES_COLOUR                   0x70ffbc2e
 #define LINE_COLOUR                         0xff000000
 #define PLANE_GRID_COLOUR                   0x67383838
-#define PLANE_PADDING                       1.0 / 13.0
+#define PLANE_PADDING                       2.0 / 31.0
 #define PLANE_LINE_THICKNESS                1.0f
 #define CIRCLE_LINE_THICKNESS               1.5f
 #define REFERENCE_ANGLES                    {0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360}
-#define GAUSSIAN_PLANE_RECTANGLE            juce::Rectangle<float>(30, 455, 260, 260)
+#define GAUSSIAN_PLANE_RECTANGLE            juce::Rectangle<float>(30, 430, 310, 310)
 #define ELEMENT_WIDTH                       16
 #define ELEMENT_HEIGHT                      16
 #define ELEMENT_LINE_THICKNESS              2.0f
@@ -215,6 +215,8 @@ class GaussianPlane : public juce::Component
         auto componentBounds = GAUSSIAN_PLANE_RECTANGLE;
         bounds = componentBounds.reduced(componentBounds.getWidth() * PLANE_PADDING, componentBounds.getHeight() * PLANE_PADDING);
         updateConjugate(elements);
+        
+        DBG(getCentreX() << " " << getCentreY());
     }
     
     void updateConjugate (const std::vector<FilterElement>& elements)
@@ -255,12 +257,12 @@ class GaussianPlane : public juce::Component
     
     float getCentreX ()
     {
-        return bounds.getWidth() * 0.5 + 50;
+        return bounds.getWidth() * 0.5 + 30 + 20;
     }
     
     float getCentreY ()
     {
-        return bounds.getHeight() * 0.5 + 500;
+        return bounds.getHeight() * 0.5 + 430 + 20;
     }
     
     float getWidth ()
@@ -317,7 +319,7 @@ class GaussianPlane : public juce::Component
         auto height = bounds.getHeight();
         auto centerX = bounds.getCentreX();
         auto centerY = bounds.getCentreY();
-        float radius = 5.0f;
+        float radius = 6.0f;
         
         for (const auto& zero : zeros)
         {
@@ -448,14 +450,14 @@ class DraggableElement : public juce::Component
     
     void paint (juce::Graphics& g) override
     {
-        float radius = 5.0f;
+        float radius = 6.0f;
         
         switch (type)
         {
             case FilterElement::ZERO:
             {
                 g.setColour(juce::Colour(ZEROS_COLOUR));
-                g.drawEllipse(3, 3, radius * 2.0f, radius * 2.0f, ELEMENT_LINE_THICKNESS);
+                g.drawEllipse(2.5, 2.5, radius * 2.0f, radius * 2.0f, ELEMENT_LINE_THICKNESS);
             } break;
                 
             case FilterElement::POLE:
@@ -464,7 +466,7 @@ class DraggableElement : public juce::Component
                 int centerX = getWidth() * 0.5;
                 int centerY = getWidth() * 0.5;
                 
-                float radius = 5.0f;
+                float radius = 6.0f;
                 g.drawLine(centerX - radius, centerY - radius, centerX + radius, centerY + radius, ELEMENT_LINE_THICKNESS);
                 g.drawLine(centerX + radius, centerY - radius, centerX - radius, centerY + radius, ELEMENT_LINE_THICKNESS);
             } break;

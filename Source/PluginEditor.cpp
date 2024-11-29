@@ -64,7 +64,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     addAndMakeVisible (gaussian_plane.get());
     gaussian_plane->setName ("gaussianPlane");
 
-    gaussian_plane->setBounds (30, 480, 260, 260);
+    gaussian_plane->setBounds (30, 430, 310, 310);
 
     e2.reset (new DraggableElement (processor.getElementState(2), 2, gaussian_plane.get(), &processor
                                     ));
@@ -145,7 +145,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     addAndMakeVisible (magnitude_response.get());
     magnitude_response->setName ("frequencyResponse");
 
-    magnitude_response->setBounds (540, 70, 450, 285);
+    magnitude_response->setBounds (540, 70, 450, 310);
 
     mg_response_label.reset (new juce::Label ("Magnitude response",
                                                 TRANS ("MAGNITUDE RESPONSE\n")));
@@ -157,13 +157,13 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     mg_response_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     mg_response_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    mg_response_label->setBounds (695, 360, 140, 24);
+    mg_response_label->setBounds (695, 385, 140, 24);
 
     phase_response.reset (new PhaseResponse (phases, referenceFrequencies, processor.getSampleRate(), ampDb));
     addAndMakeVisible (phase_response.get());
     phase_response->setName ("phaseResponse");
 
-    phase_response->setBounds (540, 455, 450, 285);
+    phase_response->setBounds (540, 430, 450, 310);
 
     ph_response_label.reset (new juce::Label ("Phase response",
                                               TRANS ("PHASE RESPONSE")));
@@ -243,7 +243,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     type_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     type_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    type_label->setBounds (310, 57, 91, 24);
+    type_label->setBounds (305, 57, 91, 24);
 
     active_label.reset (new juce::Label ("Active",
                                          TRANS ("ACTIVE")));
@@ -255,119 +255,119 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     active_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
     active_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
 
-    active_label->setBounds (401, 57, 55, 24);
+    active_label->setBounds (395, 57, 55, 24);
 
     e1_type.reset (new CustomToggleButton ("Element 1 type"));
     addAndMakeVisible (e1_type.get());
     e1_type->setButtonText (juce::String());
     e1_type->addListener (this);
 
-    e1_type->setBounds (331, 90, 52, 21);
+    e1_type->setBounds (326, 90, 52, 21);
 
     e2_type.reset (new CustomToggleButton ("Element 2 type"));
     addAndMakeVisible (e2_type.get());
     e2_type->setButtonText (juce::String());
     e2_type->addListener (this);
 
-    e2_type->setBounds (331, 130, 52, 21);
+    e2_type->setBounds (326, 130, 52, 21);
 
     e3_type.reset (new CustomToggleButton ("Element 3 type"));
     addAndMakeVisible (e3_type.get());
     e3_type->setButtonText (juce::String());
     e3_type->addListener (this);
 
-    e3_type->setBounds (331, 170, 52, 21);
+    e3_type->setBounds (326, 170, 52, 21);
 
     e4_type.reset (new CustomToggleButton ("Element 4 type"));
     addAndMakeVisible (e4_type.get());
     e4_type->setButtonText (juce::String());
     e4_type->addListener (this);
 
-    e4_type->setBounds (331, 210, 52, 21);
+    e4_type->setBounds (326, 210, 52, 21);
 
     e5_type.reset (new CustomToggleButton ("Element 5 type"));
     addAndMakeVisible (e5_type.get());
     e5_type->setButtonText (juce::String());
     e5_type->addListener (this);
 
-    e5_type->setBounds (331, 250, 52, 21);
+    e5_type->setBounds (326, 250, 52, 21);
 
     e6_type.reset (new CustomToggleButton ("Element 6 type"));
     addAndMakeVisible (e6_type.get());
     e6_type->setButtonText (juce::String());
     e6_type->addListener (this);
 
-    e6_type->setBounds (331, 290, 52, 21);
+    e6_type->setBounds (326, 290, 52, 21);
 
     e7_type.reset (new CustomToggleButton ("Element 7 type"));
     addAndMakeVisible (e7_type.get());
     e7_type->setButtonText (juce::String());
     e7_type->addListener (this);
 
-    e7_type->setBounds (331, 330, 52, 21);
+    e7_type->setBounds (326, 330, 52, 21);
 
     e8_type.reset (new CustomToggleButton ("Element 8 type"));
     addAndMakeVisible (e8_type.get());
     e8_type->setButtonText (juce::String());
     e8_type->addListener (this);
 
-    e8_type->setBounds (331, 370, 52, 21);
+    e8_type->setBounds (326, 370, 52, 21);
 
     e1_active.reset (new CustomToggleButton ("Element 1 active"));
     addAndMakeVisible (e1_active.get());
     e1_active->setButtonText (juce::String());
     e1_active->addListener (this);
 
-    e1_active->setBounds (404, 90, 49, 21);
+    e1_active->setBounds (393, 90, 49, 21);
 
     e2_active.reset (new CustomToggleButton ("Element 2 active"));
     addAndMakeVisible (e2_active.get());
     e2_active->setButtonText (juce::String());
     e2_active->addListener (this);
 
-    e2_active->setBounds (404, 130, 49, 21);
+    e2_active->setBounds (393, 130, 49, 21);
 
     e3_active.reset (new CustomToggleButton ("Element 3 active"));
     addAndMakeVisible (e3_active.get());
     e3_active->setButtonText (juce::String());
     e3_active->addListener (this);
 
-    e3_active->setBounds (404, 170, 49, 21);
+    e3_active->setBounds (393, 170, 49, 21);
 
     e4_active.reset (new CustomToggleButton ("Element 4 active"));
     addAndMakeVisible (e4_active.get());
     e4_active->setButtonText (juce::String());
     e4_active->addListener (this);
 
-    e4_active->setBounds (404, 210, 49, 21);
+    e4_active->setBounds (393, 210, 49, 21);
 
     e5_active.reset (new CustomToggleButton ("Element 5 active"));
     addAndMakeVisible (e5_active.get());
     e5_active->setButtonText (juce::String());
     e5_active->addListener (this);
 
-    e5_active->setBounds (404, 250, 49, 21);
+    e5_active->setBounds (393, 250, 49, 21);
 
     e6_active.reset (new CustomToggleButton ("Element 6 active"));
     addAndMakeVisible (e6_active.get());
     e6_active->setButtonText (juce::String());
     e6_active->addListener (this);
 
-    e6_active->setBounds (404, 290, 49, 21);
+    e6_active->setBounds (393, 290, 49, 21);
 
     e7_active.reset (new CustomToggleButton ("Element 7 active"));
     addAndMakeVisible (e7_active.get());
     e7_active->setButtonText (juce::String());
     e7_active->addListener (this);
 
-    e7_active->setBounds (404, 330, 49, 21);
+    e7_active->setBounds (393, 330, 49, 21);
 
     e8_active.reset (new CustomToggleButton ("Element 8 active"));
     addAndMakeVisible (e8_active.get());
     e8_active->setButtonText (juce::String());
     e8_active->addListener (this);
 
-    e8_active->setBounds (404, 370, 49, 21);
+    e8_active->setBounds (393, 370, 49, 21);
 
     gaussian_plane_label.reset (new juce::Label ("Gaussian plane",
                                                  TRANS ("GAUSSIAN PLANE")));
@@ -390,7 +390,6 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     masterGain_slider.reset (new CustomSlider ("Master Gain"));
     addAndMakeVisible (masterGain_slider.get());
     masterGain_slider->setRange (0, 10, 0);
-    masterGain_slider->setSkewFactor(9000, true);
     masterGain_slider->setSliderStyle (juce::Slider::LinearVertical);
     masterGain_slider->setTextBoxStyle (juce::Slider::TextBoxBelow, false, 100, 20);
     masterGain_slider->setColour (juce::Slider::thumbColourId, juce::Colours::orange);
@@ -404,7 +403,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     addAndMakeVisible (linLog_switch.get());
     linLog_switch->setButtonText (juce::String());
     linLog_switch->addListener (this);
-    linLog_switch->setBounds (931, 362, 52, 21);
+    linLog_switch->setBounds (931, 387, 52, 21);
     
     m2_slider.reset (new CustomSlider ("Element 2 magnitude"));
     addAndMakeVisible (m2_slider.get());
@@ -756,7 +755,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     multiply_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     multiply_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    multiply_phases_button->setBounds (328, 594, 80, 25);
+    multiply_phases_button->setBounds (392, 575, 80, 25);
 
     divide_phases_button.reset (new CustomButton ("Divide phases"));
     addAndMakeVisible (divide_phases_button.get());
@@ -765,7 +764,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     divide_phases_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     divide_phases_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff727272));
 
-    divide_phases_button->setBounds (421, 594, 80, 25);
+    divide_phases_button->setBounds (392, 625, 80, 25);
 
     swap_button.reset (new CustomButton ("Swap poles/zeros"));
     addAndMakeVisible (swap_button.get());
@@ -774,7 +773,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     swap_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
     swap_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    swap_button->setBounds (328, 664, 80, 25);
+    swap_button->setBounds (392, 675, 80, 25);
 
     turn_on_button.reset (new CustomButton ("Turn on all the elements"));
     addAndMakeVisible (turn_on_button.get());
@@ -783,7 +782,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     turn_on_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff73cc81));
     turn_on_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_on_button->setBounds (328, 531, 80, 25);
+    turn_on_button->setBounds (392, 475, 80, 25);
 
     turn_off_button.reset (new CustomButton ("Turn off all the elements"));
     addAndMakeVisible (turn_off_button.get());
@@ -792,7 +791,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     turn_off_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xffe86d5c));
     turn_off_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    turn_off_button->setBounds (421, 531, 80, 25);
+    turn_off_button->setBounds (392, 525, 80, 25);
 
     order_box.reset (new CustomComboBox ("Design order"));
     addAndMakeVisible (order_box.get());
@@ -821,7 +820,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     ampDb_switch->setButtonText (juce::String());
     ampDb_switch->addListener (this);
 
-    ampDb_switch->setBounds (543, 362, 52, 21);
+    ampDb_switch->setBounds (543, 387, 52, 21);
 
     frequency_design_slider.reset (new CustomSlider ("Frequency design slider"));
     addAndMakeVisible (frequency_design_slider.get());
@@ -936,14 +935,14 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     reset_button->setBounds (166, 9, 120, 25);
 
-    saveCoefficients_button.reset (new CustomButton ("Save coefficients"));
+    saveCoefficients_button.reset (new CustomButton ("Export coefficients"));
     addAndMakeVisible (saveCoefficients_button.get());
     saveCoefficients_button->setButtonText (juce::String());
     saveCoefficients_button->addListener (this);
     saveCoefficients_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0x00909497));
     saveCoefficients_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    saveCoefficients_button->setBounds (830, 9, 130, 25);
+    saveCoefficients_button->setBounds (820, 9, 150, 25);
     
     save_preset_button.reset (new CustomButton ("Save preset"));
     addAndMakeVisible (save_preset_button.get());
@@ -963,24 +962,24 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     load_preset_button->setBounds (1082, 9, 100, 25);
 
-    gain_label.reset (new juce::Label ("Gain",
-                                          TRANS ("GAIN")));
-    addAndMakeVisible (gain_label.get());
-    gain_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-    gain_label->setJustificationType (juce::Justification::centred);
-    gain_label->setEditable (false, false, false);
-    gain_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
-    gain_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
-    gain_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
-
-    gain_label->setBounds (464, 57, 55, 24);
+//    gain_label.reset (new juce::Label ("Gain",
+//                                          TRANS ("GAIN")));
+//    addAndMakeVisible (gain_label.get());
+//    gain_label->setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+//    gain_label->setJustificationType (juce::Justification::centred);
+//    gain_label->setEditable (false, false, false);
+//    gain_label->setColour (juce::Label::textColourId, juce::Colour (0xff383838));
+//    gain_label->setColour (juce::TextEditor::textColourId, juce::Colours::black);
+//    gain_label->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+//
+//    gain_label->setBounds (464, 57, 55, 24);
 
     autoGain.reset (new CustomToggleButton ("Auto Gain"));
     addAndMakeVisible (autoGain.get());
     autoGain->setButtonText (juce::String());
     autoGain->addListener (this);
 
-    autoGain->setBounds (462, 445, 49, 21);
+    autoGain->setBounds (462, 9, 49, 21);
 
     e2_gain.reset (new CustomSlider ("Element 2 gain"));
     addAndMakeVisible (e2_gain.get());
@@ -1117,7 +1116,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     gain3_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     gain3_label->addListener (this);
 
-    gain3_label->setBounds (470, 182, 50, 25);
+    gain3_label->setBounds (470, 169, 50, 25);
 
     gain4_label.reset (new DraggableGainLabel ("Element 4 Gain",
                                         juce::String()));
@@ -1130,7 +1129,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     gain4_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     gain4_label->addListener (this);
 
-    gain4_label->setBounds (470, 227, 50, 25);
+    gain4_label->setBounds (470, 209, 50, 25);
 
     gain5_label.reset (new DraggableGainLabel ("Element 5 Gain",
                                         juce::String()));
@@ -1143,7 +1142,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     gain5_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     gain5_label->addListener (this);
 
-    gain5_label->setBounds (470, 272, 50, 25);
+    gain5_label->setBounds (470, 249, 50, 25);
 
     gain6_label.reset (new DraggableGainLabel ("Element 6 Gain",
                                         juce::String()));
@@ -1156,7 +1155,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     gain6_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     gain6_label->addListener (this);
 
-    gain6_label->setBounds (470, 317, 50, 25);
+    gain6_label->setBounds (470, 289, 50, 25);
 
     gain7_label.reset (new DraggableGainLabel ("Element 7 Gain",
                                         juce::String()));
@@ -1169,7 +1168,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     gain7_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     gain7_label->addListener (this);
 
-    gain7_label->setBounds (470, 362, 50, 25);
+    gain7_label->setBounds (470, 329, 50, 25);
 
     gain8_label.reset (new DraggableGainLabel ("Element 8 Gain",
                                         juce::String()));
@@ -1182,7 +1181,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     gain8_label->setColour (juce::TextEditor::backgroundColourId, juce::Colours::black);
     gain8_label->addListener (this);
 
-    gain8_label->setBounds (470, 407, 50, 25);
+    gain8_label->setBounds (470, 369, 50, 25);
 
     cachedImage_anticlockwise_arrow_png_1 = juce::ImageCache::getFromMemory (anticlockwise_arrow_png, anticlockwise_arrow_pngSize);
     cachedImage_clockwise_arrow_png_2 = juce::ImageCache::getFromMemory (clockwise_arrow_png, clockwise_arrow_pngSize);
@@ -1293,10 +1292,10 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     swapButtonTheme.setTextToDisplay("SWAP Ps/Zs");
     swap_button->setLookAndFeel(&swapButtonTheme);
 
-    multiplyPhasesTheme.setTextToDisplay("DOUBLE PHASES");
+    multiplyPhasesTheme.setTextToDisplay("PHASES x 2");
     multiply_phases_button->setLookAndFeel(&multiplyPhasesTheme);
 
-    dividePhasesTheme.setTextToDisplay("HALF PHASES");
+    dividePhasesTheme.setTextToDisplay("PHASES / 2");
     divide_phases_button->setLookAndFeel(&dividePhasesTheme);
 
     turnAllOnTheme.setTextToDisplay("ALL ON");
@@ -1677,7 +1676,7 @@ void EditorComponent::paint (juce::Graphics& g)
     }
 
     {
-        float x = 320.0f, y = 480.0f, width = 190.0f, height = 260.0f;
+        float x = 355, y = 430, width = 155, height = 310;
         juce::Colour fillColour = juce::Colour (0x11b1b1b1);
         juce::Colour strokeColour = juce::Colour (0xff383838);
         g.setColour (fillColour);
@@ -1687,7 +1686,7 @@ void EditorComponent::paint (juce::Graphics& g)
     }
 
     {
-        int x = 365, y = 485, width = 100, height = 20;
+        int x = 382, y = 435, width = 100, height = 20;
         juce::String text (TRANS ("SHORTCUTS"));
         juce::Colour fillColour = juce::Colour (0xff383838);
         g.setColour (fillColour);
@@ -1751,7 +1750,7 @@ void EditorComponent::paint (juce::Graphics& g)
     }
 
     {
-        int x = 402, y = 445, width = 56, height = 20;
+        int x = 402, y = 9, width = 56, height = 20;
         juce::String text (TRANS ("AUTO GAIN"));
         juce::Colour fillColour = juce::Colour (0xff383838);
         g.setColour (fillColour);

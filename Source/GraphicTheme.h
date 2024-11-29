@@ -13,10 +13,10 @@
 #define SWITCH_BACKGROUND                   0xffe7eaeb
 #define OFF_SWITCH_COLOUR                   0xffcacfd2
 #define ON_SWITCH_COLOUR                    0xff909497
-#define LIN_COLOUR                          0xcd3498d8
-#define LOG_COLOUR                          0xffe86d5c
-#define AMP_COLOUR                          0xffcacfd2
-#define DB_COLOUR                           0xff909497
+#define LIN_COLOUR                          0xff73cc81
+#define LOG_COLOUR                          0xcde86d5c
+#define AMP_COLOUR                          0xff73cc81
+#define DB_COLOUR                           0xcde86d5c
 #define LED_ON_COLOUR                       0xffff5f58
 #define LED_OFF_COLOUR                      0xff781a13
 #define LED_RADIUS                          4.5f
@@ -378,7 +378,9 @@ class LinLogSwitchTheme : public juce::LookAndFeel_V4
         
         auto xOffset = 7.0f;
         if (isOn)
+        {
             xOffset = -7.0f;
+        }
         
         switchRect.translate(xOffset, 0.0f);
         g.drawText(text, switchRect, juce::Justification::centred);
@@ -420,7 +422,7 @@ class AmpDbSwitchTheme : public juce::LookAndFeel_V4
         g.setColour(indicatorColor);
         g.fillEllipse(indicatorX, indicatorY, indicatorDiameter, indicatorDiameter);
         
-        g.setColour(juce::Colours::white);
+        g.setColour(juce::Colours::black);
         g.setFont(juce::Font(10.0f, juce::Font::bold));
         
         juce::String text = isOn ? "AMP" : "DB";
@@ -429,7 +431,6 @@ class AmpDbSwitchTheme : public juce::LookAndFeel_V4
         auto xOffset = 7.0f;
         if (isOn)
         {
-            g.setColour(juce::Colours::black);
             xOffset = -7.0f;
         }
         
@@ -527,7 +528,7 @@ class MenuButtonTheme : public LookAndFeel_V4
             case UNDO: text = "UNDO"; break;
             case REDO: text = "REDO"; break;
             case RESET: text = "RESET TO DEFAULT"; break;
-            case SAVE_COEFFS: text = "SAVE COEFFICIENTS"; break;
+            case SAVE_COEFFS: text = "EXPORT COEFFICIENTS"; break;
             case SAVE_PRST: text = "SAVE PRESET"; break;
             case LOAD_PRST: text = "LOAD PRESET"; break;
         }
