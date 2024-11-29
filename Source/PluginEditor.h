@@ -201,14 +201,14 @@ private:
     std::unique_ptr<CustomSlider> e7_gain;
     std::unique_ptr<CustomSlider> e8_gain;
     
-    std::unique_ptr<CustomLabel> gain1_label;
-    std::unique_ptr<CustomLabel> gain2_label;
-    std::unique_ptr<CustomLabel> gain3_label;
-    std::unique_ptr<CustomLabel> gain4_label;
-    std::unique_ptr<CustomLabel> gain5_label;
-    std::unique_ptr<CustomLabel> gain6_label;
-    std::unique_ptr<CustomLabel> gain7_label;
-    std::unique_ptr<CustomLabel> gain8_label;
+    std::unique_ptr<DraggableLabel> gain1_label;
+    std::unique_ptr<DraggableLabel> gain2_label;
+    std::unique_ptr<DraggableLabel> gain3_label;
+    std::unique_ptr<DraggableLabel> gain4_label;
+    std::unique_ptr<DraggableLabel> gain5_label;
+    std::unique_ptr<DraggableLabel> gain6_label;
+    std::unique_ptr<DraggableLabel> gain7_label;
+    std::unique_ptr<DraggableLabel> gain8_label;
     
     // Labels
     std::unique_ptr<juce::Label> radius_label;

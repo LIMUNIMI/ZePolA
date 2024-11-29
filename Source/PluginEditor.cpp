@@ -1079,7 +1079,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     e8_gain->setBounds (310, 8, 97, 25);
 
-    gain1_label.reset (new CustomLabel ("Element 1 Gain",
+    gain1_label.reset (new DraggableLabel ("Element 1 Gain",
                                         juce::String()));
     addAndMakeVisible (gain1_label.get());
     gain1_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1092,7 +1092,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain1_label->setBounds (467, 92, 50, 25);
 
-    gain2_label.reset (new CustomLabel ("Element 2 Gain",
+    gain2_label.reset (new DraggableLabel ("Element 2 Gain",
                                         juce::String()));
     addAndMakeVisible (gain2_label.get());
     gain2_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1105,7 +1105,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain2_label->setBounds (467, 137, 50, 25);
 
-    gain3_label.reset (new CustomLabel ("Element 3 Gain",
+    gain3_label.reset (new DraggableLabel ("Element 3 Gain",
                                         juce::String()));
     addAndMakeVisible (gain3_label.get());
     gain3_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1118,7 +1118,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain3_label->setBounds (467, 182, 50, 25);
 
-    gain4_label.reset (new CustomLabel ("Element 4 Gain",
+    gain4_label.reset (new DraggableLabel ("Element 4 Gain",
                                         juce::String()));
     addAndMakeVisible (gain4_label.get());
     gain4_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1131,7 +1131,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain4_label->setBounds (467, 227, 50, 25);
 
-    gain5_label.reset (new CustomLabel ("Element 5 Gain",
+    gain5_label.reset (new DraggableLabel ("Element 5 Gain",
                                         juce::String()));
     addAndMakeVisible (gain5_label.get());
     gain5_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1144,7 +1144,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain5_label->setBounds (467, 272, 50, 25);
 
-    gain6_label.reset (new CustomLabel ("Element 6 Gain",
+    gain6_label.reset (new DraggableLabel ("Element 6 Gain",
                                         juce::String()));
     addAndMakeVisible (gain6_label.get());
     gain6_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1157,7 +1157,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain6_label->setBounds (467, 317, 50, 25);
 
-    gain7_label.reset (new CustomLabel ("Element 7 Gain",
+    gain7_label.reset (new DraggableLabel ("Element 7 Gain",
                                         juce::String()));
     addAndMakeVisible (gain7_label.get());
     gain7_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1170,7 +1170,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain7_label->setBounds (467, 362, 50, 25);
 
-    gain8_label.reset (new CustomLabel ("Element 8 Gain",
+    gain8_label.reset (new DraggableLabel ("Element 8 Gain",
                                         juce::String()));
     addAndMakeVisible (gain8_label.get());
     gain8_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -2386,25 +2386,56 @@ void EditorComponent::buttonClicked (juce::Button* buttonThatWasClicked)
         if (buttonThatWasClicked->getToggleState())
         {
             gain1_label->setEditable(false);
+            gain1_label->setDraggable(false);
+            
             gain2_label->setEditable(false);
+            gain2_label->setDraggable(false);
+            
             gain3_label->setEditable(false);
+            gain3_label->setDraggable(false);
+            
             gain4_label->setEditable(false);
+            gain4_label->setDraggable(false);
+            
             gain5_label->setEditable(false);
+            gain5_label->setDraggable(false);
+            
             gain6_label->setEditable(false);
+            gain6_label->setDraggable(false);
+            
             gain7_label->setEditable(false);
+            gain7_label->setDraggable(false);
+            
             gain8_label->setEditable(false);
+            gain8_label->setDraggable(false);
+            
             gainsInit();
         }
         else
         {
             gain1_label->setEditable(true);
+            gain1_label->setDraggable(true);
+            
             gain2_label->setEditable(true);
+            gain2_label->setDraggable(true);
+            
             gain3_label->setEditable(true);
+            gain3_label->setDraggable(true);
+            
             gain4_label->setEditable(true);
+            gain4_label->setDraggable(true);
+            
             gain5_label->setEditable(true);
+            gain5_label->setDraggable(true);
+            
             gain6_label->setEditable(true);
+            gain6_label->setDraggable(true);
+            
             gain7_label->setEditable(true);
+            gain7_label->setDraggable(true);
+            
             gain8_label->setEditable(true);
+            gain8_label->setDraggable(true);
         }
     }
 }
@@ -3024,6 +3055,7 @@ void EditorComponent::filterDesignAndSetup()
 
     processor.setBypass(true);
     isSettingFilters = true;
+    autoGain->setToggleState(false, NotificationType::sendNotificationSync);
 
     for (int i = 0; i < iirCoefficients.size(); ++ i)
     {
@@ -3088,9 +3120,8 @@ void EditorComponent::filterDesignAndSetup()
 
     for (; elementNr <= NUMBER_OF_FILTER_ELEMENTS; ++ elementNr)
             processor.setUnactive(elementNr);
+    
     processor.setBypass(false);
-
-    autoGain->setToggleState(true, NotificationType::sendNotificationSync);
     isSettingFilters = false;
 }
 

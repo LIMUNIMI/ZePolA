@@ -697,3 +697,56 @@ public:
         g.drawRoundedRectangle (0, 0, getWidth(), getHeight(), 14.500f, 1.500f);
     }
 };
+
+class DraggableLabel : public juce::Label
+{
+public:
+    DraggableLabel(const juce::String& name, const juce::String& text)
+    : juce::Label(name, text)
+    {
+        
+    }
+    
+    void mouseEnter(const juce::MouseEvent&) override
+    {
+        setMouseCursor(juce::MouseCursor::PointingHandCursor);
+    }
+    
+    void mouseExit(const juce::MouseEvent&) override
+    {
+        setMouseCursor(juce::MouseCursor::NormalCursor);
+    }
+    
+    void mouseDown(const juce::MouseEvent& event) override
+    {
+        if (!isDraggable)
+            return;
+        yOrigin = event.getPosition().getY();
+        initialValue = getText().getDoubleValue();
+    }
+    
+    void mouseDrag(const juce::MouseEvent& event) override
+    {
+        if (!isDraggable)
+            return;
+        
+        
+        auto yCurrent = event.getPosition().y;
+        auto yOffset = yOrigin - yCurrent;
+        double skewFactor = juce::jmap<double>(std::abs(yOffset), 0.0, 10000, 0.1, 4.0);
+        auto newValue = initialValue + yOffset * skewFactor;
+        
+        setText(juce::String(newValue, 1) + " dB", NotificationType::sendNotification);
+    }
+    
+    void setDraggable(bool shouldBeDraggable)
+    {
+        isDraggable = shouldBeDraggable;
+    }
+    
+private:
+    bool isDraggable;
+    
+    double initialValue;
+    int yOrigin;
+};

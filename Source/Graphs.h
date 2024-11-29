@@ -150,7 +150,7 @@ class PhaseResponse : public FrequencyResponse
         drawPhaseGrid(g, bounds);
         
         responsePath.startNewSubPath(bounds.getX(), bounds.getBottom() - values[0] * bounds.getHeight());
-        
+
         for (int i = 1; i < GRAPHS_QUALITY; ++i)
         {
             float x = bounds.getX() + i * (bounds.getWidth() / GRAPHS_QUALITY);
