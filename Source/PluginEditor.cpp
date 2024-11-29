@@ -1395,6 +1395,69 @@ EditorComponent::~EditorComponent()
     bypassAttachment.reset();
     
     stopTimer();
+    
+    juce::Slider* sliders[] =
+    {
+        m1_slider.get(), m2_slider.get(), m3_slider.get(), m4_slider.get(), m5_slider.get(), m6_slider.get(), m7_slider.get(), m8_slider.get(),
+        p1_slider.get(), p2_slider.get(), p3_slider.get(), p4_slider.get(), p5_slider.get(), p6_slider.get(), p7_slider.get(), p8_slider.get(),
+        e1_gain.get(), e2_gain.get(), e3_gain.get(), e4_gain.get(), e5_gain.get(), e6_gain.get(), e7_gain.get(), e8_gain.get(),
+        frequency_design_slider.get(),
+        stopbandAmplitude_slider.get(),
+        passbandAmplitude_slider.get(),
+        masterGain_slider.get(),
+        transition_width_slider.get()
+    };
+
+    for (auto* slider : sliders)
+    {
+        slider->removeListener(this);
+    }
+    
+    juce::Button* buttons[]=
+    {
+        reset_button.get(), calculate_button.get(), multiply_phases_button.get(), divide_phases_button.get(), swap_button.get(), turn_on_button.get(), turn_off_button.get(),
+        undo_button.get(), redo_button.get(), saveCoefficients_button.get(), save_preset_button.get(), load_preset_button.get()
+    };
+    
+    for (auto* button : buttons)
+    {
+        button->removeListener(this);
+    }
+    
+    juce::ToggleButton* toggButtons[]=
+    {
+        e1_type.get(), e2_type.get(), e3_type.get(), e4_type.get(), e5_type.get(), e6_type.get(), e7_type.get(), e8_type.get(),
+        e1_active.get(), e2_active.get(), e3_active.get(), e4_active.get(), e5_active.get(), e6_active.get(), e7_active.get(), e8_active.get(),
+        linLog_switch.get(), ampDb_switch.get(), autoUpdate_button.get(),
+        autoGain.get()
+    };
+    
+    for (auto* toggButton : toggButtons)
+    {
+        toggButton->removeListener(this);
+    }
+    
+    juce::Label* labels[]=
+    {
+        p1_freq.get(), p2_freq.get(), p3_freq.get(), p4_freq.get(), p5_freq.get(), p6_freq.get(), p7_freq.get(), p8_freq.get(),
+        frequency_label.get(),
+        gain1_label.get(), gain2_label.get(), gain3_label.get(), gain4_label.get(), gain5_label.get(), gain6_label.get(), gain7_label.get(), gain8_label.get()
+    };
+    
+    for (auto* label : labels)
+    {
+        label->removeListener(this);
+    }
+    
+    juce::ComboBox* boxes[]=
+    {
+        type_box.get(), shape_box.get(), order_box.get()
+    };
+    
+    for (auto* box : boxes)
+    {
+        box->removeListener(this);
+    }
 
     e1_gain = nullptr;
     gaussian_plane = nullptr;
@@ -1503,6 +1566,7 @@ EditorComponent::~EditorComponent()
     gain8_label = nullptr;
     
     warningRectangle = nullptr;
+    warning_label = nullptr;
 }
 
 void EditorComponent::paint (juce::Graphics& g)
@@ -2829,7 +2893,7 @@ void EditorComponent::updateGUIButterworth()
     {
         int int_order = order.getIntValue();
         int attenuation = 6 * int_order;
-        juce::String stringToVisualize = order + "  (-" + juce::String(attenuation) + " db / octave";
+        juce::String stringToVisualize = order + "  (-" + juce::String(attenuation) + " db / octave)";
         order_box->addItem(stringToVisualize, int_order);
     }
 }

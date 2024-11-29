@@ -151,11 +151,24 @@ class PhaseResponse : public FrequencyResponse
         
         responsePath.startNewSubPath(bounds.getX(), bounds.getBottom() - values[0] * bounds.getHeight());
         
+        float max;
+        
         for (int i = 1; i < GRAPHS_QUALITY; ++i)
         {
             float x = bounds.getX() + i * (bounds.getWidth() / GRAPHS_QUALITY);
             float y = bounds.getBottom() - values[i] * bounds.getHeight();
-            responsePath.lineTo(x, y);
+            float deltaPhase = std::abs(values[i] - values[i - 1]);
+            
+            // Se il salto è maggiore di π, creo un nuovo subpath
+            if (deltaPhase >= 0.5)
+            {
+                responsePath.startNewSubPath(x, y);
+            }
+            else
+            {
+                responsePath.lineTo(x, y);
+            }
+            
             
             if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
             {
