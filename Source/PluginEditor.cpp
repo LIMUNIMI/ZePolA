@@ -399,9 +399,10 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     masterGain_slider.reset (new CustomSlider ("Master Gain"));
     addAndMakeVisible (masterGain_slider.get());
     masterGain_slider->setRange (0, 10, 0);
+    masterGain_slider->setSkewFactor(9000, true);
     masterGain_slider->setSliderStyle (juce::Slider::LinearVertical);
     masterGain_slider->setTextBoxStyle (juce::Slider::TextBoxBelow, false, 100, 20);
-    masterGain_slider->setColour (juce::Slider::thumbColourId, juce::Colours::white);
+    masterGain_slider->setColour (juce::Slider::thumbColourId, juce::Colours::orange);
     masterGain_slider->setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xff383838));
     masterGain_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     masterGain_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x008e989b));
@@ -1277,14 +1278,9 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     e7_active->setLookAndFeel(&activeSwitchesTheme);
     e8_active->setLookAndFeel(&activeSwitchesTheme);
 
-    e1_gain->setVisible(false);
-    e2_gain->setVisible(false);
-    e3_gain->setVisible(false);
-    e4_gain->setVisible(false);
-    e5_gain->setVisible(false);
-    e6_gain->setVisible(false);
-    e7_gain->setVisible(false);
-    e8_gain->setVisible(false);
+    juce::Slider* sliders[]={e1_gain.get(), e2_gain.get(), e3_gain.get(), e4_gain.get(), e5_gain.get(), e6_gain.get(), e7_gain.get(), e8_gain.get()};
+    for (auto& slider : sliders)
+        slider->setVisible(false);
 
     bypass->setLookAndFeel(&bypassSwitchTheme);
 

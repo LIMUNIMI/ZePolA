@@ -46,8 +46,8 @@
 #define GAIN_DEFAULT                            0.0f
 
 #define MASTER_GAIN_NAME                        "MSTR_GAIN"
-#define MASTER_GAIN_FLOOR                       -24.0f
-#define MASTER_GAIN_CEILING                     24.0f
+#define MASTER_GAIN_FLOOR                       -48.0f
+#define MASTER_GAIN_CEILING                     48.0f
 #define MASTER_GAIN_INTERVAL                    0.01f
 #define MASTER_GAIN_DEFAULT                     0.0f
 
