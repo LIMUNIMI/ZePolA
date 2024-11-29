@@ -215,8 +215,6 @@ class GaussianPlane : public juce::Component
         auto componentBounds = GAUSSIAN_PLANE_RECTANGLE;
         bounds = componentBounds.reduced(componentBounds.getWidth() * PLANE_PADDING, componentBounds.getHeight() * PLANE_PADDING);
         updateConjugate(elements);
-        
-        DBG(getCentreX() << " " << getCentreY());
     }
     
     void updateConjugate (const std::vector<FilterElement>& elements)
