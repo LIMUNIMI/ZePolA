@@ -141,15 +141,6 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     stopbandAmplitude_slider->setBounds (1022, 366, 135, 25);
 
-    reset_button.reset (new CustomButton ("Reset"));
-    addAndMakeVisible (reset_button.get());
-    reset_button->setButtonText (juce::String());
-    reset_button->addListener (this);
-    reset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
-    reset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
-
-    reset_button->setBounds (421, 664, 80, 25);
-
     magnitude_response.reset (new MagnitudeResponse (magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb));
     addAndMakeVisible (magnitude_response.get());
     magnitude_response->setName ("frequencyResponse");
@@ -935,6 +926,15 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     redo_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
     redo_button->setBounds (91, 9, 60, 25);
+    
+    reset_button.reset (new CustomButton ("Reset"));
+    addAndMakeVisible (reset_button.get());
+    reset_button->setButtonText (juce::String());
+    reset_button->addListener (this);
+    reset_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0x00909497));
+    reset_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+
+    reset_button->setBounds (166, 9, 120, 25);
 
     saveCoefficients_button.reset (new CustomButton ("Save coefficients"));
     addAndMakeVisible (saveCoefficients_button.get());
@@ -1080,7 +1080,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     e8_gain->setBounds (310, 8, 97, 25);
 
-    gain1_label.reset (new DraggableLabel ("Element 1 Gain",
+    gain1_label.reset (new DraggableGainLabel ("Element 1 Gain",
                                         juce::String()));
     addAndMakeVisible (gain1_label.get());
     gain1_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1093,7 +1093,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain1_label->setBounds (467, 92, 50, 25);
 
-    gain2_label.reset (new DraggableLabel ("Element 2 Gain",
+    gain2_label.reset (new DraggableGainLabel ("Element 2 Gain",
                                         juce::String()));
     addAndMakeVisible (gain2_label.get());
     gain2_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1106,7 +1106,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain2_label->setBounds (467, 137, 50, 25);
 
-    gain3_label.reset (new DraggableLabel ("Element 3 Gain",
+    gain3_label.reset (new DraggableGainLabel ("Element 3 Gain",
                                         juce::String()));
     addAndMakeVisible (gain3_label.get());
     gain3_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1119,7 +1119,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain3_label->setBounds (467, 182, 50, 25);
 
-    gain4_label.reset (new DraggableLabel ("Element 4 Gain",
+    gain4_label.reset (new DraggableGainLabel ("Element 4 Gain",
                                         juce::String()));
     addAndMakeVisible (gain4_label.get());
     gain4_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1132,7 +1132,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain4_label->setBounds (467, 227, 50, 25);
 
-    gain5_label.reset (new DraggableLabel ("Element 5 Gain",
+    gain5_label.reset (new DraggableGainLabel ("Element 5 Gain",
                                         juce::String()));
     addAndMakeVisible (gain5_label.get());
     gain5_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1145,7 +1145,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain5_label->setBounds (467, 272, 50, 25);
 
-    gain6_label.reset (new DraggableLabel ("Element 6 Gain",
+    gain6_label.reset (new DraggableGainLabel ("Element 6 Gain",
                                         juce::String()));
     addAndMakeVisible (gain6_label.get());
     gain6_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1158,7 +1158,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain6_label->setBounds (467, 317, 50, 25);
 
-    gain7_label.reset (new DraggableLabel ("Element 7 Gain",
+    gain7_label.reset (new DraggableGainLabel ("Element 7 Gain",
                                         juce::String()));
     addAndMakeVisible (gain7_label.get());
     gain7_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1171,7 +1171,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     gain7_label->setBounds (467, 362, 50, 25);
 
-    gain8_label.reset (new DraggableLabel ("Element 8 Gain",
+    gain8_label.reset (new DraggableGainLabel ("Element 8 Gain",
                                         juce::String()));
     addAndMakeVisible (gain8_label.get());
     gain8_label->setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
@@ -1286,9 +1286,6 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     autoGain->setLookAndFeel(&activeSwitchesTheme);
 
-    resetButtonTheme.setTextToDisplay("RESET");
-    reset_button->setLookAndFeel(&resetButtonTheme);
-
     calculateButtonTheme.setTextToDisplay("CALCULATE");
     calculateButtonTheme.setFontSize(12.0f);
     calculate_button->setLookAndFeel(&calculateButtonTheme);
@@ -1315,6 +1312,10 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     redoButtonTheme.setButtonFunction(MenuButtonTheme::buttonFunction::REDO);
     redo_button->setLookAndFeel(&redoButtonTheme);
     redo_button->repaint();
+    
+    resetButtonTheme.setButtonFunction(MenuButtonTheme::buttonFunction::RESET);
+    reset_button->setLookAndFeel(&resetButtonTheme);
+    reset_button->repaint();
     
     saveCoefficientsButtonTheme.setButtonFunction(MenuButtonTheme::buttonFunction::SAVE_COEFFS);
     saveCoefficients_button->setLookAndFeel(&saveCoefficientsButtonTheme);

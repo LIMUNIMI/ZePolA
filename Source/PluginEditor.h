@@ -118,7 +118,6 @@ private:
     ActiveSwitchTheme activeSwitchesTheme;
     BypassSwitchTheme bypassSwitchTheme;
 
-    GenericButtonTheme resetButtonTheme;
     GenericButtonTheme calculateButtonTheme;
 
     GenericButtonTheme autoGainButtonTheme;
@@ -130,10 +129,11 @@ private:
 
     MenuButtonTheme undoButtonTheme;
     MenuButtonTheme redoButtonTheme;
+    MenuButtonTheme resetButtonTheme;
 
+    MenuButtonTheme saveCoefficientsButtonTheme;
     MenuButtonTheme savePresetButtonTheme;
     MenuButtonTheme loadPresetButtonTheme;
-    MenuButtonTheme saveCoefficientsButtonTheme;
 
     ComboBoxTheme comboBoxTheme;
 
@@ -201,14 +201,14 @@ private:
     std::unique_ptr<CustomSlider> e7_gain;
     std::unique_ptr<CustomSlider> e8_gain;
     
-    std::unique_ptr<DraggableLabel> gain1_label;
-    std::unique_ptr<DraggableLabel> gain2_label;
-    std::unique_ptr<DraggableLabel> gain3_label;
-    std::unique_ptr<DraggableLabel> gain4_label;
-    std::unique_ptr<DraggableLabel> gain5_label;
-    std::unique_ptr<DraggableLabel> gain6_label;
-    std::unique_ptr<DraggableLabel> gain7_label;
-    std::unique_ptr<DraggableLabel> gain8_label;
+    std::unique_ptr<DraggableGainLabel> gain1_label;
+    std::unique_ptr<DraggableGainLabel> gain2_label;
+    std::unique_ptr<DraggableGainLabel> gain3_label;
+    std::unique_ptr<DraggableGainLabel> gain4_label;
+    std::unique_ptr<DraggableGainLabel> gain5_label;
+    std::unique_ptr<DraggableGainLabel> gain6_label;
+    std::unique_ptr<DraggableGainLabel> gain7_label;
+    std::unique_ptr<DraggableGainLabel> gain8_label;
     
     // Labels
     std::unique_ptr<juce::Label> radius_label;
@@ -236,7 +236,6 @@ private:
     std::unique_ptr<CustomButton> multiply_phases_button;
     std::unique_ptr<CustomButton> divide_phases_button;
     std::unique_ptr<CustomButton> swap_button;
-    std::unique_ptr<CustomButton> reset_button;
     
     // Frequency response
     std::unique_ptr<MagnitudeResponse> magnitude_response;
@@ -279,6 +278,7 @@ private:
     // Menu
     std::unique_ptr<CustomButton> undo_button;
     std::unique_ptr<CustomButton> redo_button;
+    std::unique_ptr<CustomButton> reset_button;
     std::unique_ptr<CustomButton> saveCoefficients_button;
     std::unique_ptr<CustomButton> save_preset_button;
     std::unique_ptr<CustomButton> load_preset_button;

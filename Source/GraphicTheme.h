@@ -489,7 +489,7 @@ class GenericButtonTheme : public LookAndFeel_V4
 class MenuButtonTheme : public LookAndFeel_V4
 {
     public:
-    enum buttonFunction { UNDO, REDO, SAVE_COEFFS, SAVE_PRST, LOAD_PRST };
+    enum buttonFunction { UNDO, REDO, RESET, SAVE_COEFFS, SAVE_PRST, LOAD_PRST };
     
     void drawButtonBackground(juce::Graphics& g, juce::Button& button,
                               const juce::Colour& backgroundColour,
@@ -526,6 +526,7 @@ class MenuButtonTheme : public LookAndFeel_V4
         {
             case UNDO: text = "UNDO"; break;
             case REDO: text = "REDO"; break;
+            case RESET: text = "RESET TO DEFAULT"; break;
             case SAVE_COEFFS: text = "SAVE COEFFICIENTS"; break;
             case SAVE_PRST: text = "SAVE PRESET"; break;
             case LOAD_PRST: text = "LOAD PRESET"; break;
@@ -698,10 +699,10 @@ public:
     }
 };
 
-class DraggableLabel : public juce::Label
+class DraggableGainLabel : public juce::Label
 {
 public:
-    DraggableLabel(const juce::String& name, const juce::String& text)
+    DraggableGainLabel(const juce::String& name, const juce::String& text)
     : juce::Label(name, text)
     {
         
