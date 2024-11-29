@@ -7,6 +7,7 @@
 EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcessorValueTreeState& vts)
 : processor(p), valueTreeState(vts)
 {
+    backgroundColour = juce::Colour(0xffecf0f1);
     warning_label.reset(new juce::Label("Warning label", TRANS ("Caution! The current plugin configuration has caused an excessively high output, resulting in the audio stream being stopped. Please reset the plugin parameters to values that allow for a lower output volume.")));
     addAndMakeVisible(warning_label.get());
     warning_label->setFont (juce::Font ("Gill Sans", 18.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
@@ -384,8 +385,9 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     bypass.reset (new CustomToggleButton ("Bypass"));
     addAndMakeVisible (bypass.get());
     bypass->setButtonText (juce::String());
+    bypass->addListener(this);
 
-    bypass->setBounds (1067, 712, 60, 25);
+    bypass->setBounds (1073, 718, 49, 22);
 
     masterGain_slider.reset (new CustomSlider ("Master Gain"));
     addAndMakeVisible (masterGain_slider.get());
@@ -397,7 +399,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     masterGain_slider->setColour (juce::Slider::textBoxHighlightColourId, juce::Colour (0x66686868));
     masterGain_slider->setColour (juce::Slider::textBoxOutlineColourId, juce::Colour (0x008e989b));
 
-    masterGain_slider->setBounds (1074, 540, 45, 160);
+    masterGain_slider->setBounds (1074, 480, 45, 200);
 
     linLog_switch.reset (new CustomToggleButton ("Linear / Logarithmic"));
     addAndMakeVisible (linLog_switch.get());
@@ -739,14 +741,14 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
 
     shape_box->setBounds (1025, 100, 140, 25);
 
-    calculate_button.reset (new CustomButton ("Calculate"));
-    addAndMakeVisible (calculate_button.get());
-    calculate_button->setButtonText (juce::String());
-    calculate_button->addListener (this);
-    calculate_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
-    calculate_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
+    update_button.reset (new CustomButton ("Calculate"));
+    addAndMakeVisible (update_button.get());
+    update_button->setButtonText (juce::String());
+    update_button->addListener (this);
+    update_button->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff909497));
+    update_button->setColour (juce::TextButton::buttonOnColourId, juce::Colour (0xff505050));
 
-    calculate_button->setBounds (1098, 482, 80, 30);
+    update_button->setBounds (1091, 405, 75, 25);
 
     multiply_phases_button.reset (new CustomButton ("Multiply phases"));
     addAndMakeVisible (multiply_phases_button.get());
@@ -906,7 +908,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     autoUpdate_button->setButtonText (juce::String());
     autoUpdate_button->addListener (this);
 
-    autoUpdate_button->setBounds (1013, 482, 80, 30);
+    autoUpdate_button->setBounds (1024, 405, 55, 25);
 
     undo_button.reset (new CustomButton ("Undo"));
     addAndMakeVisible (undo_button.get());
@@ -1281,13 +1283,13 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     for (auto& slider : sliders)
         slider->setVisible(false);
 
-    bypass->setLookAndFeel(&bypassSwitchTheme);
+    bypass->setLookAndFeel(&activeSwitchesTheme);
 
     autoGain->setLookAndFeel(&activeSwitchesTheme);
 
-    calculateButtonTheme.setTextToDisplay("CALCULATE");
-    calculateButtonTheme.setFontSize(12.0f);
-    calculate_button->setLookAndFeel(&calculateButtonTheme);
+    updateButtonTheme.setTextToDisplay("UPDATE");
+    updateButtonTheme.setFontSize(12.0f);
+    update_button->setLookAndFeel(&updateButtonTheme);
 
     swapButtonTheme.setTextToDisplay("SWAP Ps/Zs");
     swap_button->setLookAndFeel(&swapButtonTheme);
@@ -1365,7 +1367,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p, AudioProcesso
     stopbandAmplitude_label->setVisible(false);
     stopbandAmplitude_slider->setVisible(false);
 
-    calculate_button->setEnabled(false);
+    update_button->setEnabled(false);
 
     updateDesignSliderFromFrequency(DESIGN_FREQUENCY_FLOOR, frequency_design_slider.get(), sampleRate);
 
@@ -1411,7 +1413,7 @@ EditorComponent::~EditorComponent()
     
     juce::Button* buttons[]=
     {
-        reset_button.get(), calculate_button.get(), multiply_phases_button.get(), divide_phases_button.get(), swap_button.get(), turn_on_button.get(), turn_off_button.get(),
+        reset_button.get(), update_button.get(), multiply_phases_button.get(), divide_phases_button.get(), swap_button.get(), turn_on_button.get(), turn_off_button.get(),
         undo_button.get(), redo_button.get(), saveCoefficients_button.get(), save_preset_button.get(), load_preset_button.get()
     };
     
@@ -1425,7 +1427,7 @@ EditorComponent::~EditorComponent()
         e1_type.get(), e2_type.get(), e3_type.get(), e4_type.get(), e5_type.get(), e6_type.get(), e7_type.get(), e8_type.get(),
         e1_active.get(), e2_active.get(), e3_active.get(), e4_active.get(), e5_active.get(), e6_active.get(), e7_active.get(), e8_active.get(),
         linLog_switch.get(), ampDb_switch.get(), autoUpdate_button.get(),
-        autoGain.get()
+        autoGain.get(), bypass.get()
     };
     
     for (auto* toggButton : toggButtons)
@@ -1522,7 +1524,7 @@ EditorComponent::~EditorComponent()
     p8_freq = nullptr;
     type_box = nullptr;
     shape_box = nullptr;
-    calculate_button = nullptr;
+    update_button = nullptr;
     multiply_phases_button = nullptr;
     divide_phases_button = nullptr;
     swap_button = nullptr;
@@ -1567,7 +1569,7 @@ EditorComponent::~EditorComponent()
 
 void EditorComponent::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colour (0xffecf0f1));
+    g.fillAll (backgroundColour);
 
     {
         float x = 15.0f, y = 55.0f, width = 510.0f, height = 720.0f;
@@ -1666,11 +1668,11 @@ void EditorComponent::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1075, y = 520, width = 40, height = 20;
-        juce::String text (TRANS ("GAIN"));
+        int x = 1055, y = 460, width = 80, height = 20;
+        juce::String text (TRANS ("OUTPUT GAIN"));
         juce::Colour fillColour = juce::Colour (0xff383838);
         g.setColour (fillColour);
-        g.setFont (juce::Font ("Gill Sans", 10.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+        g.setFont (juce::Font ("Gill Sans", 11.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
                     juce::Justification::centred, true);
     }
@@ -1691,16 +1693,6 @@ void EditorComponent::paint (juce::Graphics& g)
         juce::Colour fillColour = juce::Colour (0xff383838);
         g.setColour (fillColour);
         g.setFont (juce::Font ("Gill Sans", 12.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centred, true);
-    }
-
-    {
-        int x = 1120, y = 681, width = 23, height = 20;
-        juce::String text (TRANS ("dB"));
-        juce::Colour fillColour = juce::Colour (0xff383838);
-        g.setColour (fillColour);
-        g.setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
                     juce::Justification::centred, true);
     }
@@ -1755,6 +1747,26 @@ void EditorComponent::paint (juce::Graphics& g)
         juce::Colour fillColour = juce::Colour (0xff383838);
         g.setColour (fillColour);
         g.setFont (juce::Font ("Gill Sans", 10.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+        g.drawText (text, x, y, width, height,
+                    juce::Justification::centred, true);
+    }
+    
+    {
+        int x = 1115, y = 661, width = 35, height = 20;
+        juce::String text (TRANS ("dB"));
+        juce::Colour fillColour = juce::Colour (0xff383838);
+        g.setColour (fillColour);
+        g.setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
+        g.drawText (text, x, y, width, height,
+                    juce::Justification::centred, true);
+    }
+    
+    {
+        int x = 1058, y = 695, width = 80, height = 20;
+        juce::String text (TRANS ("BYPASS"));
+        juce::Colour fillColour = juce::Colour (0xff383838);
+        g.setColour (fillColour);
+        g.setFont (juce::Font ("Gill Sans", 13.00f, juce::Font::plain).withTypefaceStyle ("SemiBold"));
         g.drawText (text, x, y, width, height,
                     juce::Justification::centred, true);
     }
@@ -2276,7 +2288,7 @@ void EditorComponent::buttonClicked (juce::Button* buttonThatWasClicked)
         magnitude_response->updateValues(magnitudes, referenceFrequencies, processor.getSampleRate(), ampDb);
         phase_response->updateValues(phases, referenceFrequencies, processor.getSampleRate(), true);
     }
-    else if (buttonThatWasClicked == calculate_button.get())
+    else if (buttonThatWasClicked == update_button.get())
     {
         filterDesignAndSetup();
     }
@@ -2314,6 +2326,24 @@ void EditorComponent::buttonClicked (juce::Button* buttonThatWasClicked)
         }
         else
             autoUpdate = false;
+    }
+    else if (buttonThatWasClicked == bypass.get())
+    {
+        if (bypass->getToggleState())
+        {
+            backgroundColour = juce::Colour(0xffbdc0c1);
+            activeSwitchesTheme.setBackgroundColour(juce::Colour(0xffbdc0c1));
+            autoUpdateSwitchTheme.setBackgroundColour(juce::Colour(0xffbdc0c1));
+            repaint();
+            
+        }
+        else
+        {
+            backgroundColour = juce::Colour(0xffecf0f1);
+            activeSwitchesTheme.setBackgroundColour(juce::Colour(SWITCH_BACKGROUND));
+            autoUpdateSwitchTheme.setBackgroundColour(juce::Colour(SWITCH_BACKGROUND));
+            repaint();
+        }
     }
     else if (buttonThatWasClicked == undo_button.get())
     {
@@ -2547,7 +2577,7 @@ void EditorComponent::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == type_box.get())
     {
         design_type = comboBoxThatHasChanged->getSelectedId();
-        calculate_button->setEnabled(false);
+        update_button->setEnabled(false);
         if (!design_type)
             return;
         if (design_type == 1)
@@ -2571,7 +2601,7 @@ void EditorComponent::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
         design_filters_to_activate = comboBoxThatHasChanged->getSelectedId();
         if (design_filters_to_activate)
         {
-            calculate_button->setEnabled(true);
+            update_button->setEnabled(true);
             if (autoUpdate)
                 autoUpdateCheckAndSetup();
         }
@@ -2907,7 +2937,7 @@ void EditorComponent::updateGUIGivenShape()
 
 void EditorComponent::updateGUIButterworth()
 {
-    calculate_button->setEnabled(false);
+    update_button->setEnabled(false);
 
     order_box->clear();
     order_box->setVisible(true);
@@ -2962,7 +2992,7 @@ void EditorComponent::updateGUIEllipticChebyshevIandII()
     transition_width_slider->setVisible(true);
     transition_width_slider->setBounds (1027, 370, 135, 25);
 
-    calculate_button->setEnabled(true);
+    update_button->setEnabled(true);
 }
 
 float EditorComponent::formatGainInput(float gain)

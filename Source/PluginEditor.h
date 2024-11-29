@@ -116,9 +116,7 @@ private:
     AmpDbSwitchTheme ampDbTheme;
 
     ActiveSwitchTheme activeSwitchesTheme;
-    BypassSwitchTheme bypassSwitchTheme;
-
-    GenericButtonTheme calculateButtonTheme;
+    GenericButtonTheme updateButtonTheme;
 
     GenericButtonTheme autoGainButtonTheme;
     GenericButtonTheme turnAllOnTheme;
@@ -266,7 +264,7 @@ private:
     std::unique_ptr<CustomSlider> transition_width_slider;
     
     std::unique_ptr<CustomToggleButton> autoUpdate_button;
-    std::unique_ptr<CustomButton> calculate_button;
+    std::unique_ptr<CustomButton> update_button;
 
     // Controls
     std::unique_ptr<CustomSlider> masterGain_slider;
@@ -288,6 +286,8 @@ private:
     juce::Image cachedImage_clockwise_arrow_png_2;
     juce::Image cachedImage_load_icon_png_3;
     juce::Image cachedImage_save_icon_png_4;
+    
+    juce::Colour backgroundColour;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorComponent)
 };

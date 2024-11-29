@@ -24,8 +24,6 @@
 #define POLES_COLOUR                        0xffffbc2e
 
 // Button MACROS
-#define BYPASS_ON_COLOUR                    0xffe86d5c
-#define BYPASS_OFF_COLOUR                   0xff781a13
 #define AUTO_UPDATE_ON_COLOUR               0xff73cc81
 #define AUTO_UPDATE_OFF_COLOUR              0xff558a6a
 
@@ -228,6 +226,8 @@ class TypeSwitchTheme : public juce::LookAndFeel_V4
         auto switchRect = bounds.toFloat();
         switchRect.translate(button.getToggleState() ? -7.0f : 7.0f, 0.0f);
         
+        switchRect.setY(switchRect.getY() - 0.5);
+        
         g.setColour(borderColor);
         g.setFont(juce::Font(10.0f, juce::Font::bold));
         g.drawText(text, switchRect, juce::Justification::centred);
@@ -240,6 +240,11 @@ class TypeSwitchTheme : public juce::LookAndFeel_V4
 class ActiveSwitchTheme : public juce::LookAndFeel_V4
 {
     public:
+    
+    ActiveSwitchTheme ()
+    {
+        backgroundColour = juce::Colour(SWITCH_BACKGROUND);
+    }
     
     void drawToggleButton(Graphics& g, ToggleButton& button,
                           bool shouldDrawButtonAsHighlighted,
@@ -254,7 +259,7 @@ class ActiveSwitchTheme : public juce::LookAndFeel_V4
         const float switchWidth = button.getWidth() - 4.0f;
         const float switchHeight = button.getHeight() - 4.0f;
         
-        g.fillAll(juce::Colour(SWITCH_BACKGROUND));
+        g.fillAll(backgroundColour);
         
         juce::Rectangle<float> switchRect(xOffset, yOffset, switchWidth, switchHeight);
         g.setColour(juce::Colours::black);
@@ -274,7 +279,7 @@ class ActiveSwitchTheme : public juce::LookAndFeel_V4
         g.setColour(isOn ? juce::Colours::white : juce::Colours::black);
         g.setFont(juce::Font(fontSize, juce::Font::bold));
         
-        juce::Rectangle<float> textRect(xOffset - 8, yOffset, switchWidth, switchHeight);
+        juce::Rectangle<float> textRect(xOffset - 8, yOffset - 0.5, switchWidth, switchHeight);
         g.drawText(text, textRect, juce::Justification::centred);
         
         const float ledXOffset = xOffset + 28;
@@ -286,14 +291,24 @@ class ActiveSwitchTheme : public juce::LookAndFeel_V4
         g.setColour(juce::Colours::black);
         g.drawEllipse(ledXOffset, ledYOffset, LED_RADIUS * 2, LED_RADIUS * 2, 1.5f);
     }
+    
+    void setBackgroundColour(juce::Colour colour)
+    {
+        backgroundColour = colour;
+    }
+    
+private:
+    juce::Colour backgroundColour;
 };
 
-/*
- The BypassSwitchTheme class implements a look and feel for the bypass button.
- */
-class BypassSwitchTheme : public juce::LookAndFeel_V4
+class AutoUpdateSwitchTheme : public juce::LookAndFeel_V4
 {
     public:
+    
+    AutoUpdateSwitchTheme ()
+    {
+        backgroundColour = juce::Colour(0xffD7DBDC);
+    }
     
     void drawToggleButton(Graphics& g, ToggleButton& button,
                           bool shouldDrawButtonAsHighlighted,
@@ -301,38 +316,53 @@ class BypassSwitchTheme : public juce::LookAndFeel_V4
     {
         const bool isOn = button.getToggleState();
         
-        const float switchMargin = 3.5f;
         const float borderRadius = 5.0f;
-        float switchWidth = button.getWidth() - 4.0f;
-        float switchHeight = button.getHeight() - 4.0f;
-        float xOffset = 2.0f;
-        float yOffset = 2.0f;
+        const float borderThickness = 3.5f;
+        const float xOffset = 2.0f;
+        const float yOffset = 2.0f;
+        const float switchWidth = button.getWidth() - 4.0f;
+        const float switchHeight = button.getHeight() - 4.0f;
         
-        g.fillAll(juce::Colour(SWITCH_BACKGROUND));
+        g.fillAll(backgroundColour);
         
         juce::Rectangle<float> switchRect(xOffset, yOffset, switchWidth, switchHeight);
         g.setColour(juce::Colours::black);
-        g.drawRoundedRectangle(switchRect, borderRadius, switchMargin);
+        g.drawRoundedRectangle(switchRect, borderRadius, borderThickness);
         
-        g.setColour(isOn ? juce::Colour(BYPASS_ON_COLOUR) : juce::Colour(BYPASS_OFF_COLOUR));
+        const float adjustedSwitchOffset = isOn ? 0.75f : 0.0f;
+        juce::Rectangle<float> buttonRect(xOffset + adjustedSwitchOffset, yOffset + adjustedSwitchOffset,
+                                          switchWidth - adjustedSwitchOffset * 2, switchHeight - adjustedSwitchOffset * 2);
         
-        if (isOn)
-        {
-            const float adjustment = 1.25f;
-            switchWidth -= adjustment * 2;
-            switchHeight -= adjustment * 2;
-            xOffset += adjustment;
-            yOffset += adjustment;
-        }
-        
-        juce::Rectangle<float> buttonRect(xOffset, yOffset, switchWidth, switchHeight);
+        g.setColour(isOn ? juce::Colour(ON_SWITCH_COLOUR) : juce::Colour(OFF_SWITCH_COLOUR));
         g.fillRoundedRectangle(buttonRect, borderRadius);
         
-        g.setColour(juce::Colours::white);
-        const float fontSize = isOn ? 11.0f : 12.0f;
-        g.setFont(juce::Font("Gill Sans", fontSize, juce::Font::bold).withTypefaceStyle("SemiBold"));
-        g.drawText("BYPASS", switchRect, juce::Justification::centred);
+        const juce::Colour ledColour = juce::Colour(isOn ? LED_ON_COLOUR : LED_OFF_COLOUR);
+        const juce::String text = isOn ? "AUTO" : "MAN";
+        const float fontSize = 10.0f;
+        
+        g.setColour(isOn ? juce::Colours::white : juce::Colours::black);
+        g.setFont(juce::Font(fontSize, juce::Font::bold));
+        
+        juce::Rectangle<float> textRect(xOffset - 8, yOffset - 1, switchWidth, switchHeight);
+        g.drawText(text, textRect, juce::Justification::centred);
+        
+        const float ledXOffset = xOffset + 35;
+        const float ledYOffset = yOffset + 6;
+        
+        g.setColour(ledColour);
+        g.fillEllipse(ledXOffset, ledYOffset, LED_RADIUS * 2, LED_RADIUS * 2);
+        
+        g.setColour(juce::Colours::black);
+        g.drawEllipse(ledXOffset, ledYOffset, LED_RADIUS * 2, LED_RADIUS * 2, 1.5f);
     }
+    
+    void setBackgroundColour(juce::Colour colour)
+    {
+        backgroundColour = colour;
+    }
+    
+private:
+    juce::Colour backgroundColour;
 };
 
 /*
@@ -442,7 +472,7 @@ class AmpDbSwitchTheme : public juce::LookAndFeel_V4
 class GenericButtonTheme : public LookAndFeel_V4
 {
     public:
-    GenericButtonTheme (juce::String textToDisplay = "", float size = 10.0f) : text(textToDisplay), fontSize(size) {}
+    GenericButtonTheme (juce::String textToDisplay = "", float size = 11.0f) : text(textToDisplay), fontSize(size) {}
     
     void drawButtonBackground(juce::Graphics& g, juce::Button& button,
                               const juce::Colour& backgroundColour,
@@ -635,51 +665,6 @@ class ComboBoxTheme : public juce::LookAndFeel_V4
             g.setFont(juce::Font("Gill Sans", 12.0f, juce::Font::plain));
             g.drawFittedText(text, area.reduced(10, 0), juce::Justification::centredLeft, 1);
         }
-    }
-};
-
-class AutoUpdateSwitchTheme : public juce::LookAndFeel_V4
-{
-    public:
-    
-    void drawToggleButton(Graphics& g, ToggleButton& button,
-                          bool shouldDrawButtonAsHighlighted,
-                          bool shouldDrawButtonAsDown) override
-    {
-        const bool isOn = button.getToggleState();
-        
-        const float borderRadius = 5.0f;
-        const float switchMargin = 3.5f;
-        const float adjustment = 0.75f;
-        
-        float switchWidth = button.getWidth() - 4.0f;
-        float switchHeight = button.getHeight() - 4.0f;
-        float xOffset = 2.0f;
-        float yOffset = 2.0f;
-        
-        g.fillAll(juce::Colour(SWITCH_BACKGROUND));
-        
-        juce::Rectangle<float> switchRect(xOffset, yOffset, switchWidth, switchHeight);
-        g.setColour(juce::Colours::black);
-        g.drawRoundedRectangle(switchRect, borderRadius, switchMargin);
-        
-        g.setColour(isOn ? juce::Colour(AUTO_UPDATE_ON_COLOUR) : juce::Colour(AUTO_UPDATE_OFF_COLOUR));
-        
-        if (isOn)
-        {
-            switchWidth -= adjustment * 2;
-            switchHeight -= adjustment * 2;
-            xOffset += adjustment;
-            yOffset += adjustment;
-        }
-        
-        juce::Rectangle<float> buttonRect(xOffset, yOffset, switchWidth, switchHeight);
-        g.fillRoundedRectangle(buttonRect, borderRadius);
-        
-        g.setColour(juce::Colours::black);
-        const float fontSize = isOn ? 11.5f : 12.0f;
-        g.setFont(juce::Font("Gill Sans", fontSize, juce::Font::bold).withTypefaceStyle("SemiBold"));
-        g.drawText("AUTO UPDATE", switchRect, juce::Justification::centred);
     }
 };
 
