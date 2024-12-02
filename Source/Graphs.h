@@ -151,50 +151,24 @@ class PhaseResponse : public FrequencyResponse
         
         responsePath.startNewSubPath(bounds.getX(), bounds.getBottom() - values[0] * bounds.getHeight());
         
-        float prev_x = 0;
-        float prev_y = values[0];
-        
         for (int i = 1; i < GRAPHS_QUALITY; ++i)
         {
-            float curr_x = i;
-            float curr_y = values[i];
+            float x = bounds.getX() + i * (bounds.getWidth() / GRAPHS_QUALITY);
+            float y = bounds.getBottom() - values[i] * bounds.getHeight();
+            float deltaPhase = std::abs(values[i] - values[i - 1]);
             
-            float curr_graph_x = bounds.getX() + curr_x * (bounds.getWidth() / GRAPHS_QUALITY);
-            float curr_graph_y = bounds.getBottom() - curr_y * bounds.getHeight();
-            
-            float deltaPhase = curr_y - prev_y;
-            
-            if (deltaPhase > 0.5)
-            {
-                auto x_pi = (- prev_y) * (curr_x - prev_x) / (curr_y - 1 - prev_y) + prev_x;
-                auto x_pi_graph = bounds.getX() + x_pi * (bounds.getWidth() / GRAPHS_QUALITY);
-                
-                responsePath.lineTo(x_pi_graph, 0.0);
-
-                responsePath.startNewSubPath(x_pi_graph, 1);
-            }
-            else if (deltaPhase < -0.5)
-            {
-                auto x_pi = (1 - prev_y) * (curr_x - prev_x) / (curr_y + 1 - prev_y) + prev_x;
-                auto x_pi_graph = bounds.getX() + x_pi * (bounds.getWidth() / GRAPHS_QUALITY);
-                
-                responsePath.lineTo(x_pi_graph, 1.0);
-        
-                responsePath.startNewSubPath(x_pi_graph, 0);
-            }
-            
-            responsePath.lineTo(curr_graph_x, curr_graph_y);
+            if (deltaPhase >= 0.25)
+                responsePath.startNewSubPath(x, y);
+            else
+                responsePath.lineTo(x, y);
             
             if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
             {
                 g.setColour(juce::Colour(GRID_COLOUR));
-                g.drawVerticalLine(static_cast<int>(curr_graph_x), bounds.getY(), bounds.getBottom());
+                g.drawVerticalLine(static_cast<int>(x), bounds.getY(), bounds.getBottom());
                 g.setColour(juce::Colour(TEXT_COLOUR));
-                g.drawText(formatFrequency(referenceFrequencies[i / (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)] * sampleRate), curr_graph_x - 10, bounds.getCentreY(), 20, 20, juce::Justification::centred);
+                g.drawText(formatFrequency(referenceFrequencies[i / (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)] * sampleRate), x - 10, bounds.getCentreY(), 20, 20, juce::Justification::centred);
             }
-            
-            prev_x = curr_x;
-            prev_y = curr_y;
         }
         
         g.setColour(juce::Colour(LINE_COLOUR));

@@ -13,10 +13,8 @@
 #define SWITCH_BACKGROUND                   0xffe7eaeb
 #define OFF_SWITCH_COLOUR                   0xffcacfd2
 #define ON_SWITCH_COLOUR                    0xff909497
-#define LIN_COLOUR                          0xff73cc81
-#define LOG_COLOUR                          0xcde86d5c
-#define AMP_COLOUR                          0xff73cc81
-#define DB_COLOUR                           0xcde86d5c
+#define LIN_COLOUR                          0xcd3498d8
+#define LOG_COLOUR                          0xff73cc81
 #define LED_ON_COLOUR                       0xffff5f58
 #define LED_OFF_COLOUR                      0xff781a13
 #define LED_RADIUS                          4.5f
@@ -435,8 +433,8 @@ class AmpDbSwitchTheme : public juce::LookAndFeel_V4
         
         auto bounds = button.getLocalBounds().withSizeKeepingCentre(button.getWidth() - 8.0f, button.getHeight() - 2.0f);
         
-        const auto ampColor = juce::Colour(AMP_COLOUR);
-        const auto dbColor = juce::Colour(DB_COLOUR);
+        const auto ampColor = juce::Colour(LIN_COLOUR);
+        const auto dbColor = juce::Colour(LOG_COLOUR);
         const auto borderColor = juce::Colours::black;
         const auto indicatorColor = juce::Colours::white;
         
