@@ -15,11 +15,11 @@
 #define CONJ_POLES_COLOUR                   0x70ffbc2e
 #define LINE_COLOUR                         0xff000000
 #define PLANE_GRID_COLOUR                   0x67383838
-#define PLANE_PADDING                       2.0 / 31.0
+#define PLANE_PADDING                       13
 #define PLANE_LINE_THICKNESS                1.0f
 #define CIRCLE_LINE_THICKNESS               1.5f
 #define REFERENCE_ANGLES                    {0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360}
-#define GAUSSIAN_PLANE_RECTANGLE            juce::Rectangle<float>(30, 430, 310, 310)
+#define GAUSSIAN_PLANE_RECTANGLE            juce::Rectangle<float>(30, 424, 316, 316)
 #define ELEMENT_WIDTH                       16
 #define ELEMENT_HEIGHT                      16
 #define ELEMENT_LINE_THICKNESS              2.0f
@@ -153,21 +153,41 @@ class PhaseResponse : public FrequencyResponse
 
         for (int i = 1; i < GRAPHS_QUALITY; ++i)
         {
-            float x = bounds.getX() + i * (bounds.getWidth() / GRAPHS_QUALITY);
-            float y = bounds.getBottom() - values[i] * bounds.getHeight();
-            float deltaPhase = std::abs(values[i] - values[i - 1]);
+            float curr_x = bounds.getX() + i * (bounds.getWidth() / GRAPHS_QUALITY);
+            float curr_y = bounds.getBottom() - values[i] * bounds.getHeight();
             
-            if (deltaPhase >= 0.5)
-                responsePath.startNewSubPath(x, y);
+            float prev_x = bounds.getX() + (i - 1) * (bounds.getWidth() / GRAPHS_QUALITY);
+            float prev_y;
+            if (i != 1)
+                prev_y = bounds.getBottom() - values[i - 1] * bounds.getHeight();
             else
-                responsePath.lineTo(x, y);            
+                prev_y = 0.0f;
+            
+            float deltaPhase = values[i] - values[i - 1];
+            
+            if (deltaPhase > 0.5)
+            {
+                auto x_pi = (- prev_y) * (curr_x - prev_x) / (curr_y - 1 - prev_y) + prev_x;
+                responsePath.lineTo(x_pi, 0);
+                responsePath.closeSubPath();
+                responsePath.startNewSubPath(x_pi, 1);
+            }
+            else if (deltaPhase < -0.5)
+            {
+                auto x_pi = (1 - prev_y) * (curr_x - prev_x) / (curr_y + 1 - prev_y) + prev_x;
+                responsePath.lineTo(x_pi, 1);
+                responsePath.closeSubPath();
+                responsePath.startNewSubPath(x_pi, 0);
+            }
+            
+            responsePath.lineTo(curr_x, curr_y);
             
             if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
             {
                 g.setColour(juce::Colour(GRID_COLOUR));
-                g.drawVerticalLine(static_cast<int>(x), bounds.getY(), bounds.getBottom());
+                g.drawVerticalLine(static_cast<int>(curr_x), bounds.getY(), bounds.getBottom());
                 g.setColour(juce::Colour(TEXT_COLOUR));
-                g.drawText(formatFrequency(referenceFrequencies[i / (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)] * sampleRate), x - 10, bounds.getCentreY(), 20, 20, juce::Justification::centred);
+                g.drawText(formatFrequency(referenceFrequencies[i / (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)] * sampleRate), curr_x - 10, bounds.getCentreY(), 20, 20, juce::Justification::centred);
             }
         }
         
@@ -213,7 +233,7 @@ class GaussianPlane : public juce::Component
     GaussianPlane (const std::vector<FilterElement>& elements)
     {
         auto componentBounds = GAUSSIAN_PLANE_RECTANGLE;
-        bounds = componentBounds.reduced(componentBounds.getWidth() * PLANE_PADDING, componentBounds.getHeight() * PLANE_PADDING);
+        bounds = componentBounds.reduced(PLANE_PADDING, PLANE_PADDING);
         updateConjugate(elements);
     }
     
@@ -240,8 +260,7 @@ class GaussianPlane : public juce::Component
         float cornerSize = 6.0f;
         auto componentBounds = getLocalBounds().toFloat();
         g.fillRoundedRectangle(componentBounds, cornerSize);
-        
-        bounds = componentBounds.reduced(componentBounds.getWidth() * PLANE_PADDING, componentBounds.getHeight() * PLANE_PADDING);
+        bounds = componentBounds.reduced(PLANE_PADDING, PLANE_PADDING);
         
         g.setColour(juce::Colour(LINE_COLOUR));
         drawPlane(g);
@@ -255,12 +274,12 @@ class GaussianPlane : public juce::Component
     
     float getCentreX ()
     {
-        return bounds.getWidth() * 0.5 + 30 + 20;
+        return bounds.getWidth() * 0.5 + 30 + 13;
     }
     
     float getCentreY ()
     {
-        return bounds.getHeight() * 0.5 + 430 + 20;
+        return bounds.getHeight() * 0.5 + 430 + 7;
     }
     
     float getWidth ()
