@@ -154,7 +154,6 @@ class PhaseResponse : public FrequencyResponse
         float prev_x = 0;
         float prev_y = values[0];
         
-        
         for (int i = 1; i < GRAPHS_QUALITY; ++i)
         {
             float curr_x = i;
@@ -168,18 +167,20 @@ class PhaseResponse : public FrequencyResponse
             if (deltaPhase > 0.5)
             {
                 auto x_pi = (- prev_y) * (curr_x - prev_x) / (curr_y - 1 - prev_y) + prev_x;
+                auto x_pi_graph = bounds.getX() + x_pi * (bounds.getWidth() / GRAPHS_QUALITY);
                 
-                responsePath.lineTo(x_pi, 0.0);
+                responsePath.lineTo(x_pi_graph, 0.0);
 
-                responsePath.startNewSubPath(x_pi, 1);
+                responsePath.startNewSubPath(x_pi_graph, 1);
             }
             else if (deltaPhase < -0.5)
             {
                 auto x_pi = (1 - prev_y) * (curr_x - prev_x) / (curr_y + 1 - prev_y) + prev_x;
+                auto x_pi_graph = bounds.getX() + x_pi * (bounds.getWidth() / GRAPHS_QUALITY);
                 
-                responsePath.lineTo(x_pi, 1.0);
+                responsePath.lineTo(x_pi_graph, 1.0);
         
-                responsePath.startNewSubPath(x_pi, 0);
+                responsePath.startNewSubPath(x_pi_graph, 0);
             }
             
             responsePath.lineTo(curr_graph_x, curr_graph_y);
