@@ -157,7 +157,7 @@ class PhaseResponse : public FrequencyResponse
             float y = bounds.getBottom() - values[i] * bounds.getHeight();
             float deltaPhase = std::abs(values[i] - values[i - 1]);
             
-            if (deltaPhase >= 0.25)
+            if (deltaPhase > 0.25)
                 responsePath.startNewSubPath(x, y);
             else
                 responsePath.lineTo(x, y);
