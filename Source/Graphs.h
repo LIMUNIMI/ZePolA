@@ -62,7 +62,7 @@ class FrequencyResponse : public juce::Component
         std::vector<float> levels = linLog ? std::vector<float>{0.1f, 0.5f, 1.0f, 1.5f, 2.0f}
         : std::vector<float>{-50.0f, -30.0f, -20.0f, -10.0f, -5.0f, 0.0f, 5.0f, 10.0f, 20.0f, 30.0f, 50.0f};
         g.setFont(juce::Font("Gill Sans", 10.0f, juce::Font::plain));
-            
+        
         for (auto level : levels)
         {
             float yPos = juce::jmap<float>(level, linLog ? 0.0f : -60.0f, linLog ? 2.0f : 60.0f, bounds.getBottom(), bounds.getY());
@@ -150,45 +150,50 @@ class PhaseResponse : public FrequencyResponse
         drawPhaseGrid(g, bounds);
         
         responsePath.startNewSubPath(bounds.getX(), bounds.getBottom() - values[0] * bounds.getHeight());
-
+        
+        float prev_x = 0;
+        float prev_y = values[0];
+        
+        
         for (int i = 1; i < GRAPHS_QUALITY; ++i)
         {
-            float curr_x = bounds.getX() + i * (bounds.getWidth() / GRAPHS_QUALITY);
-            float curr_y = bounds.getBottom() - values[i] * bounds.getHeight();
+            float curr_x = i;
+            float curr_y = values[i];
             
-            float prev_x = bounds.getX() + (i - 1) * (bounds.getWidth() / GRAPHS_QUALITY);
-            float prev_y;
-            if (i != 1)
-                prev_y = bounds.getBottom() - values[i - 1] * bounds.getHeight();
-            else
-                prev_y = 0.0f;
+            float curr_graph_x = bounds.getX() + curr_x * (bounds.getWidth() / GRAPHS_QUALITY);
+            float curr_graph_y = bounds.getBottom() - curr_y * bounds.getHeight();
             
-            float deltaPhase = values[i] - values[i - 1];
+            float deltaPhase = curr_y - prev_y;
             
             if (deltaPhase > 0.5)
             {
                 auto x_pi = (- prev_y) * (curr_x - prev_x) / (curr_y - 1 - prev_y) + prev_x;
-                responsePath.lineTo(x_pi, 0);
-                responsePath.closeSubPath();
+                
+                responsePath.lineTo(x_pi, 0.0);
+
                 responsePath.startNewSubPath(x_pi, 1);
             }
             else if (deltaPhase < -0.5)
             {
                 auto x_pi = (1 - prev_y) * (curr_x - prev_x) / (curr_y + 1 - prev_y) + prev_x;
-                responsePath.lineTo(x_pi, 1);
-                responsePath.closeSubPath();
+                
+                responsePath.lineTo(x_pi, 1.0);
+        
                 responsePath.startNewSubPath(x_pi, 0);
             }
             
-            responsePath.lineTo(curr_x, curr_y);
+            responsePath.lineTo(curr_graph_x, curr_graph_y);
             
             if (!(i % (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)))
             {
                 g.setColour(juce::Colour(GRID_COLOUR));
-                g.drawVerticalLine(static_cast<int>(curr_x), bounds.getY(), bounds.getBottom());
+                g.drawVerticalLine(static_cast<int>(curr_graph_x), bounds.getY(), bounds.getBottom());
                 g.setColour(juce::Colour(TEXT_COLOUR));
-                g.drawText(formatFrequency(referenceFrequencies[i / (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)] * sampleRate), curr_x - 10, bounds.getCentreY(), 20, 20, juce::Justification::centred);
+                g.drawText(formatFrequency(referenceFrequencies[i / (GRAPHS_QUALITY / NUMBER_OF_REFERENCE_FREQUENCIES)] * sampleRate), curr_graph_x - 10, bounds.getCentreY(), 20, 20, juce::Justification::centred);
             }
+            
+            prev_x = curr_x;
+            prev_y = curr_y;
         }
         
         g.setColour(juce::Colour(LINE_COLOUR));
@@ -343,10 +348,10 @@ class GaussianPlane : public juce::Component
             g.setColour(juce::Colour (CONJ_ZEROS_COLOUR));
             float x = (std::real(zero) * (width * 0.5)) + centerX;
             float y = ((std::imag(zero)) * (height * 0.5)) + centerY;
-
+            
             g.drawEllipse(x - radius, y - radius, radius * 2.0f, radius * 2.0f, 2.0f);
         }
-    
+        
         for (const auto& pole : poles)
         {
             g.setColour(juce::Colour (CONJ_POLES_COLOUR));
