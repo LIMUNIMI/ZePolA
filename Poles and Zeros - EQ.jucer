@@ -5,6 +5,12 @@
               pluginFormats="buildAU,buildStandalone,buildVST3" pluginAUMainType="'aufx'"
               displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED = 1">
   <MAINGROUP id="ZGYPR9" name="Poles and Zeros - EQ">
+    <GROUP id="{482B7901-6351-0DFB-794C-CC9F2AF6F30B}" name="Graphics">
+      <FILE id="qjFJhK" name="anticlockwise_arrow.svg" compile="0" resource="1"
+            file="Graphics/anticlockwise_arrow.svg"/>
+      <FILE id="iA8QPb" name="clockwise_arrow.svg" compile="0" resource="1"
+            file="Graphics/clockwise_arrow.svg"/>
+    </GROUP>
     <GROUP id="{7D61AFCF-4618-4DA8-96D3-B0DC7D2A26DB}" name="Source">
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
         <FILE id="uMM33l" name="GraphicTheme.h" compile="0" resource="0" file="Source/GraphicTheme.h"/>
