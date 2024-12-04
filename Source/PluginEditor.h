@@ -60,8 +60,6 @@ public:
     void timerCallback() override;
 
     // Binary resources:
-    static const char* anticlockwise_arrow_png;
-    static const int anticlockwise_arrow_pngSize;
     static const char* clockwise_arrow_png;
     static const int clockwise_arrow_pngSize;
     static const char* load_icon_png;
@@ -281,9 +279,9 @@ private:
     std::unique_ptr<CustomButton> save_preset_button;
     std::unique_ptr<CustomButton> load_preset_button;
     
-
-    juce::Image cachedImage_anticlockwise_arrow_png_1;
-    juce::Image cachedImage_clockwise_arrow_png_2;
+    // Images
+    std::unique_ptr<juce::Drawable> anticlockwise_arrow_svg;
+    std::unique_ptr<juce::Drawable> clockwise_arrow_svg;
     juce::Image cachedImage_load_icon_png_3;
     juce::Image cachedImage_save_icon_png_4;
     
