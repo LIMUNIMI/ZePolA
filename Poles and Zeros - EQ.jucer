@@ -10,6 +10,7 @@
             file="Graphics/anticlockwise_arrow.svg"/>
       <FILE id="iA8QPb" name="clockwise_arrow.svg" compile="0" resource="1"
             file="Graphics/clockwise_arrow.svg"/>
+      <FILE id="bH1cct" name="load_icon.svg" compile="0" resource="1" file="Graphics/load_icon.svg"/>
     </GROUP>
     <GROUP id="{7D61AFCF-4618-4DA8-96D3-B0DC7D2A26DB}" name="Source">
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
