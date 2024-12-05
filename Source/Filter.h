@@ -14,7 +14,7 @@ class FilterElement
 public:
     /**
      * @brief Filter element type
-     * 
+     *
      *  - ZERO: 2-zero filter
      *  - POLE: 2-pole filter
      */
@@ -77,8 +77,6 @@ public:
     void setInactive();
 
     // ========================================================================
-    // Computes the output sample given the input sample
-    double processSample(double);
     /**
      * @brief Computes the output samples for an input array of samples
      *
@@ -88,8 +86,6 @@ public:
      * and n - 1
      */
     void processBlock(double* outputs, double* inputs, int n);
-
-    // ========================================================================
     /**
      * @brief Computes the DTFT of the digital filter
      *

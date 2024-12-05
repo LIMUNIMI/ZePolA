@@ -128,13 +128,10 @@ double FilterElement::processSamplePole(double x)
     pushSample(y);
     return y;
 }
-double FilterElement::processSample(double x)
-{
-    return (this->*processSampleFunc)(x);
-}
 void FilterElement::processBlock(double* outputs, double* inputs, int n)
 {
-    for (int i = 0; i < n; ++i) outputs[i] = processSample(inputs[i]);
+    for (int i = 0; i < n; ++i)
+        outputs[i] = (this->*processSampleFunc)(inputs[i]);
 }
 
 // ============================================================================
