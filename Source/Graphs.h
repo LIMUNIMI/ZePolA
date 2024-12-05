@@ -1,5 +1,7 @@
 #pragma once
 #include <JuceHeader.h>
+#include "Filter.h"
+#include "PluginProcessor.h"
 
 // Magnitude & phase response MACROS
 #define GRAPHS_BACKGROUND                   0x45979a9a
