@@ -1715,7 +1715,7 @@ void EditorComponent::paint (juce::Graphics& g)
     }
 
     {
-        int x = 59, y = 16, width = 10, height = 10;
+        float x = 59, y = 16, width = 10, height = 10;
         g.setColour (juce::Colours::black);
         anticlockwise_arrow_svg->drawWithin(
             g,
@@ -1726,7 +1726,7 @@ void EditorComponent::paint (juce::Graphics& g)
     }
 
     {
-        int x = 128, y = 16, width = 10, height = 10;
+        float x = 128, y = 16, width = 10, height = 10;
         g.setColour (juce::Colours::black);
         clockwise_arrow_svg->drawWithin(
             g,
@@ -1737,7 +1737,7 @@ void EditorComponent::paint (juce::Graphics& g)
     }
 
     {
-        int x = 1161, y = 11, width = 23, height = 19;
+        float x = 1161, y = 11, width = 23, height = 19;
         g.setColour (juce::Colours::black);
         load_icon_svg->drawWithin(
             g,
