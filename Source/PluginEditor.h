@@ -283,7 +283,7 @@ private:
     std::unique_ptr<juce::Drawable> anticlockwise_arrow_svg;
     std::unique_ptr<juce::Drawable> clockwise_arrow_svg;
     std::unique_ptr<juce::Drawable> load_icon_svg;
-    juce::Image cachedImage_save_icon_png_4;
+    std::unique_ptr<juce::Drawable> save_icon_svg;
     
     juce::Colour backgroundColour;
 
