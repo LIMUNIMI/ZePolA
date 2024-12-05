@@ -3116,7 +3116,7 @@ void EditorComponent::slidersInit()
 {
     auto elements = processor.getFilterElementsChain();
 
-    if (elements[0].isActive())
+    if (elements[0].getActive())
     {
         m1_slider->setLookAndFeel(&activeSliderTheme);
         p1_slider->setLookAndFeel(&activeSliderTheme);
@@ -3127,7 +3127,7 @@ void EditorComponent::slidersInit()
         p1_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[1].isActive())
+    if (elements[1].getActive())
     {
         m2_slider->setLookAndFeel(&activeSliderTheme);
         p2_slider->setLookAndFeel(&activeSliderTheme);
@@ -3138,7 +3138,7 @@ void EditorComponent::slidersInit()
         p2_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[2].isActive())
+    if (elements[2].getActive())
     {
         m3_slider->setLookAndFeel(&activeSliderTheme);
         p3_slider->setLookAndFeel(&activeSliderTheme);
@@ -3149,7 +3149,7 @@ void EditorComponent::slidersInit()
         p3_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[3].isActive())
+    if (elements[3].getActive())
     {
         m4_slider->setLookAndFeel(&activeSliderTheme);
         p4_slider->setLookAndFeel(&activeSliderTheme);
@@ -3160,7 +3160,7 @@ void EditorComponent::slidersInit()
         p4_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[4].isActive())
+    if (elements[4].getActive())
     {
         m5_slider->setLookAndFeel(&activeSliderTheme);
         p5_slider->setLookAndFeel(&activeSliderTheme);
@@ -3171,7 +3171,7 @@ void EditorComponent::slidersInit()
         p5_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[5].isActive())
+    if (elements[5].getActive())
     {
         m6_slider->setLookAndFeel(&activeSliderTheme);
         p6_slider->setLookAndFeel(&activeSliderTheme);
@@ -3182,7 +3182,7 @@ void EditorComponent::slidersInit()
         p6_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[6].isActive())
+    if (elements[6].getActive())
     {
         m7_slider->setLookAndFeel(&activeSliderTheme);
         p7_slider->setLookAndFeel(&activeSliderTheme);
@@ -3193,7 +3193,7 @@ void EditorComponent::slidersInit()
         p7_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[7].isActive())
+    if (elements[7].getActive())
     {
         m8_slider->setLookAndFeel(&activeSliderTheme);
         p8_slider->setLookAndFeel(&activeSliderTheme);

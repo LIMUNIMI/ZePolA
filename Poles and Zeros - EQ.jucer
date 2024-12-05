@@ -14,6 +14,7 @@
       <FILE id="juXqX7" name="save_icon.svg" compile="0" resource="1" file="Graphics/save_icon.svg"/>
     </GROUP>
     <GROUP id="{7D61AFCF-4618-4DA8-96D3-B0DC7D2A26DB}" name="Source">
+      <FILE id="VocETI" name="Macros.h" compile="0" resource="0" file="Source/Macros.h"/>
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
         <FILE id="uMM33l" name="GraphicTheme.h" compile="0" resource="0" file="Source/GraphicTheme.h"/>
         <FILE id="HNvN2h" name="PluginEditor.cpp" compile="1" resource="0"
@@ -22,6 +23,7 @@
         <FILE id="htO7Xe" name="Graphs.h" compile="0" resource="0" file="Source/Graphs.h"/>
       </GROUP>
       <GROUP id="{D2A8AF86-7D3D-AB40-6162-437A1EDBDD1A}" name="DSP">
+        <FILE id="qBik1j" name="Filter.cpp" compile="1" resource="0" file="Source/Filter.cpp"/>
         <FILE id="eZApCn" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
       </GROUP>
       <FILE id="T3jzAd" name="Parameters.h" compile="0" resource="0" file="Source/Parameters.h"/>

@@ -273,7 +273,7 @@ public:
 
         for (auto& element : elements)
         {
-            if (!element.isActive()) continue;
+            if (!element.getActive()) continue;
             if (element.getType())
                 poles.push_back(
                     std::polar(element.getMagnitude(),
@@ -479,7 +479,7 @@ public:
         type      = e.getType();
         elementNr = elNr;
 
-        if (!e.isActive())
+        if (!e.getActive())
             setVisible(false);
         else
             setVisible(true);
