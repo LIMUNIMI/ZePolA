@@ -61,7 +61,10 @@ void FilterElement::setMagnitude(double m)
 {
     switch (type)
     {
-    default: break;  // nothing to do, ok
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for filter element type. Defaulting to 'ZERO'");
+    case FilterElement::Type::ZERO: break;  // nothing to do, ok
     case FilterElement::Type::POLE:
         if (m > pole_magnitude_ceil) m = pole_magnitude_ceil;
         break;
@@ -151,10 +154,12 @@ std::complex<double> FilterElement::dtft(double omega) const
         = 1.0 + coeffs[0] * z_inv + coeffs[1] * z_inv * z_inv;
     switch (type)
     {
-    default: break;  // nothing to do, ok
-    case FilterElement::Type::POLE: h = 1.0 / h; break;
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for filter element type. Defaulting to 'ZERO'");
+    case FilterElement::Type::ZERO: h *= gain; break;
+    case FilterElement::Type::POLE: h = gain / h; break;
     }
-    h *= gain;
 
     return h;
 }
