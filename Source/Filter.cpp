@@ -2,7 +2,9 @@
 #include "Macros.h"
 
 // =============================================================================
-const double FilterElement::gain_floor_db       = -128.0;
+const double FilterElement::gain_floor_db = -128.0;
+const double FilterElement::gain_floor
+    = pow(10.0, FilterElement::gain_floor_db / 20.0);
 const double FilterElement::pole_magnitude_ceil = 0.99999;
 
 // =============================================================================
@@ -40,7 +42,7 @@ FilterElement::Type FilterElement::getType() const { return type; }
 double FilterElement::getGain() const { return gain; }
 double FilterElement::getGainDb() const
 {
-    return juce::Decibels::gainToDecibels(getGain(), gain_floor_db);
+    return (gain < gain_floor) ? gain_floor_db : 20.0 * log10(gain);
 }
 bool FilterElement::getActive() const { return active; }
 double FilterElement::getRealPart() const
@@ -102,10 +104,7 @@ void FilterElement::setType(FilterElement::Type t)
     }
 }
 void FilterElement::setGain(double g) { gain = g; }
-void FilterElement::setGainDb(double g)
-{
-    setGain(juce::Decibels::decibelsToGain(g, gain_floor_db));
-}
+void FilterElement::setGainDb(double g) { setGain(pow(10, g / 20.0)); }
 void FilterElement::setActive(bool a)
 {
     if (a && a != active) resetMemory();
@@ -218,8 +217,7 @@ std::complex<double> FilterElementCascade::dtft(double omega) const
 std::vector<std::array<double, 3>> FilterElementCascade::getCoefficients() const
 {
     std::vector<std::array<double, 3>> coeffs;
-    for (auto& e : elements)
-        coeffs.push_back(e.getCoefficients());
+    for (auto& e : elements) coeffs.push_back(e.getCoefficients());
     return coeffs;
 }
 

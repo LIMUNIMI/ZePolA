@@ -1,6 +1,7 @@
 #pragma once
-#include "Parameters.h"
-#include <JuceHeader.h>
+#include <array>
+#include <complex>
+#include <vector>
 
 // =============================================================================
 /**
@@ -25,6 +26,11 @@ public:
         ZERO,
         POLE
     };
+    // Minimum input gain allowed
+    static const double gain_floor_db;
+    static const double gain_floor;
+    // Maximum magnitude allowed for poles
+    static const double pole_magnitude_ceil;
 
     // =========================================================================
     /**
@@ -108,20 +114,11 @@ private:
     double processSamplePole(double);
 
     // =========================================================================
-    // Minimum input gain allowed
-    static const double gain_floor_db;
-    // Maximum magnitude allowed for poles
-    static const double pole_magnitude_ceil;
-
-    // =========================================================================
     double magnitude, phase, gain, coeffs[2], memory[2];
     bool active;
     Type type;
 
     double (FilterElement::*processSampleFunc)(double);
-
-    // =========================================================================
-    JUCE_LEAK_DETECTOR(FilterElement);
 };
 
 // =============================================================================
@@ -189,7 +186,4 @@ public:
 private:
     // =========================================================================
     std::vector<FilterElement> elements;
-
-    // =========================================================================
-    JUCE_LEAK_DETECTOR(FilterElement);
 };
