@@ -1679,8 +1679,8 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
 
     updateElements();
     slidersInit();
-    autoGain->setToggleState(true, NotificationType::sendNotification);
-    gainsInit();
+    autoGain->setToggleState(false, NotificationType::sendNotification);
+    // gainsInit();
 }
 
 EditorComponent::~EditorComponent()
@@ -2854,33 +2854,27 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
     }
     else if (buttonThatWasClicked == saveCoefficients_button.get())
     {
-        auto coefficients = processor.getCoefficients();
-
         auto defaultPresetLocation = File::getSpecialLocation(
             File::SpecialLocationType::commonDocumentsDirectory);
         juce::FileChooser chooser("Select the save location...",
                                   defaultPresetLocation, "*.txt");
         if (chooser.browseForFileToSave(true))
         {
-            auto file = chooser.getResult();
-            if (file.exists()) file.deleteFile();
+            juce::File file = chooser.getResult();
             juce::FileOutputStream outputStream(file);
             if (outputStream.openedOk())
             {
-                juce::String content;
+                outputStream.setPosition(0);
+                outputStream.truncate();
+                outputStream << "Sample rate: "
+                             << juce::String(processor.getSampleRate()) << "\n";
 
-                content += "Sample rate: "
-                           + juce::String(processor.getSampleRate()) + "\n\n";
-
-                int i = 0;
-                for (const auto& coeff : coefficients)
+                for (const auto& coeffs : processor.getCoefficients())
                 {
-                    content += juce::String(coeff) + "\n";
-                    ++i;
-                    if (i % 3 == 0) content += "\n";
+                    outputStream << "\n";
+                    for (auto c : coeffs)
+                        outputStream << juce::String(c) << "\n";
                 }
-
-                file.replaceWithText(content);
             }
         }
     }
@@ -3116,7 +3110,7 @@ void EditorComponent::slidersInit()
 {
     auto elements = processor.getFilterElementsChain();
 
-    if (elements[0].isActive())
+    if (elements[0].getActive())
     {
         m1_slider->setLookAndFeel(&activeSliderTheme);
         p1_slider->setLookAndFeel(&activeSliderTheme);
@@ -3127,7 +3121,7 @@ void EditorComponent::slidersInit()
         p1_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[1].isActive())
+    if (elements[1].getActive())
     {
         m2_slider->setLookAndFeel(&activeSliderTheme);
         p2_slider->setLookAndFeel(&activeSliderTheme);
@@ -3138,7 +3132,7 @@ void EditorComponent::slidersInit()
         p2_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[2].isActive())
+    if (elements[2].getActive())
     {
         m3_slider->setLookAndFeel(&activeSliderTheme);
         p3_slider->setLookAndFeel(&activeSliderTheme);
@@ -3149,7 +3143,7 @@ void EditorComponent::slidersInit()
         p3_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[3].isActive())
+    if (elements[3].getActive())
     {
         m4_slider->setLookAndFeel(&activeSliderTheme);
         p4_slider->setLookAndFeel(&activeSliderTheme);
@@ -3160,7 +3154,7 @@ void EditorComponent::slidersInit()
         p4_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[4].isActive())
+    if (elements[4].getActive())
     {
         m5_slider->setLookAndFeel(&activeSliderTheme);
         p5_slider->setLookAndFeel(&activeSliderTheme);
@@ -3171,7 +3165,7 @@ void EditorComponent::slidersInit()
         p5_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[5].isActive())
+    if (elements[5].getActive())
     {
         m6_slider->setLookAndFeel(&activeSliderTheme);
         p6_slider->setLookAndFeel(&activeSliderTheme);
@@ -3182,7 +3176,7 @@ void EditorComponent::slidersInit()
         p6_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[6].isActive())
+    if (elements[6].getActive())
     {
         m7_slider->setLookAndFeel(&activeSliderTheme);
         p7_slider->setLookAndFeel(&activeSliderTheme);
@@ -3193,7 +3187,7 @@ void EditorComponent::slidersInit()
         p7_slider->setLookAndFeel(&unactiveSliderTheme);
     }
 
-    if (elements[7].isActive())
+    if (elements[7].getActive())
     {
         m8_slider->setLookAndFeel(&activeSliderTheme);
         p8_slider->setLookAndFeel(&activeSliderTheme);

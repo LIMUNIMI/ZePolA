@@ -75,7 +75,7 @@ public:
     bool getSafetyFlag();
     void resetSafetyFlag();
 
-    std::vector<double> getCoefficients();
+    std::vector<std::array<double, 3>> getCoefficients() const;
 
     AudioProcessorValueTreeState parameters;
 

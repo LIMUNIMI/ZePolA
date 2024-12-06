@@ -1,333 +1,189 @@
 #pragma once
-#include "Parameters.h"
-#include <JuceHeader.h>
+#include <array>
+#include <complex>
+#include <vector>
 
-// -----------------------------------------------------------------------------
-/*
- The FilterElement class represent a second order digital filter. The filter can
- be a 2-nd order FIR filter, and therefore have only one zero (and its
- conjugate), or a 2-nd order IIR filter. In this case the filter has only one
- pole (and its conjugate) and no zeros and the frequency response has 1 in the
- numerator.
-*/
+// =============================================================================
+/**
+ * @brief Second order digital filter
+ *
+ * The filter can be a 2-nd order FIR filter, and therefore have only one zero
+ * (and its conjugate), or a 2-nd order IIR filter, and therefore have only one
+ * pole (and its conjugate)
+ */
 class FilterElement
 {
 public:
+    // =========================================================================
+    /**
+     * @brief Filter element type
+     *
+     *  - ZERO: 2-zero filter
+     *  - POLE: 2-pole filter
+     */
     enum Type
     {
         ZERO,
         POLE
     };
+    // Minimum input gain allowed
+    static const double gain_floor_db;
+    static const double gain_floor;
+    // Maximum magnitude allowed for poles
+    static const double pole_magnitude_ceil;
 
-    FilterElement(Type t, double mg = MAGNITUDE_DEFAULT,
-                  double ph = PHASE_DEFAULT)
-        : type(t), magnitude(mg), phase(ph)
-    {
-        calculateCoefficients();
-    }
+    // =========================================================================
+    /**
+     * @brief Construct a new Filter Element
+     *
+     * By default, it is a 2-zero filter with both zeros in 0
+     */
+    FilterElement();
+    // Copy constructor
+    FilterElement(const FilterElement&);
 
-    ~FilterElement() { }
-
+    // =========================================================================
     // Returns the magnitude of the zero/pole of the digital filter
-    inline double getMagnitude() const { return magnitude; }
+    double getMagnitude() const;
+    // Returns the normalized phase of the zero/pole of the digital filter
+    double getPhase() const;
+    // Returns the angle (non-normalized) of the zero/pole of the digital filter
+    double getAngle() const;
+    // Returns the real part of the zero/pole of the digital filter
+    double getRealPart() const;
+    // Returns the imaginary part of the zero/pole of the digital filter
+    double getImagPart() const;
+    // Returns the type of the digital filter (pole/zero)
+    Type getType() const;
+    // Returns the input gain (linear) of the digital filter
+    double getGain() const;
+    // Returns the input gain (in decibel) of the digital filter
+    double getGainDb() const;
+    // Returns true if the filter is active (or false if it is not)
+    bool getActive() const;
+    // Returns an array with the current gain and coefficients of the filter
+    std::array<double, 3> getCoefficients() const;
 
-    // Returns the phase of the zero/pole of the digital filter
-    inline double getPhase() const { return phase; }
-
-    // Returns the type of the filter (ZERO: FIR, POLE: IIR)
-    inline Type getType() const { return type; }
-
-    // Returns the current gain of the digital filter
-    inline double getGain() const { return gain; }
-
-    // Returns true if the filter is active or false if it is not
-    inline bool isActive() const { return active; }
-
-    // Returns a pointer to an array with the current coefficients of the filter
-    inline std::vector<double> getCoefficients() const
-    {
-        return {gain, coeff1, coeff2};
-    }
-
-    // Returns the real part of the digital filter
-    double getRealPart()
-    {
-        return getMagnitude() * cos(getPhase() * MathConstants<double>::pi);
-    }
-
-    // Sets the magnitude of the zero/pole of the digital filter
-    void setMagnitude(double newValue)
-    {
-        if (type) newValue = jmin(newValue, POLE_MAX_MAGNITUDE);
-
-        magnitude = newValue;
-        calculateCoefficients();
-    }
-
-    // Sets the phase of the zero/pole of the digital filter
-    void setPhase(double newValue)
-    {
-        phase = newValue;
-        calculateCoefficients();
-    }
-
-    // Sets the active statuts of the digital filter
-    void setUnsetActive(bool newValue)
-    {
-        active = newValue;
-        if (!active) memoryReset();
-    }
-
-    // Sets the type of the digital filter (ZERO: FIR, POLE: IIR)
-    void setType(FilterElement::Type newType)
-    {
-        type = newType;
-        memoryReset();
-    }
-
-    // Sets the gain of the digital filter
-    void setGain(double newValue)
-    {
-        auto linearGain = Decibels::decibelsToGain(
-            newValue, FILTER_ELEMENT_GAIN_FLOOR - 1.0);
-        gain = linearGain;
-    }
-
+    // =========================================================================
     // Resets the memory of the digital filter to the initial state
-    void memoryReset()
-    {
-        memory1 = 0.0;
-        memory2 = 0.0;
-    }
+    void resetMemory();
+    // Sets the magnitude of the zero/pole of the digital filter
+    void setMagnitude(double);
+    // Sets the normalized phase of the zero/pole of the digital filter
+    void setPhase(double);
+    // Sets the type of the digital filter (pole/zero)
+    void setType(Type);
+    // Sets the input gain (linear) of the digital filter
+    void setGain(double);
+    // Sets the input gain (in decibel) of the digital filter
+    void setGainDb(double);
+    // Sets the active state of the digital filter
+    void setActive(bool b = true);
+    // Sets the digital filter to be inactive
+    void setInactive();
 
-    // Calculates the frequency response coefficients
-    void calculateCoefficients()
-    {
-        coeff1 = -2 * getRealPart();
-        coeff2 = magnitude * magnitude;
-    }
-
-    // Calculates the output sample given the input sample
-    float processSample(double inputSample)
-    {
-        double outputSample;
-        inputSample *= gain;
-
-        switch (type)
-        {
-        case ZERO:
-        {
-            outputSample = inputSample + coeff1 * memory1 + coeff2 * memory2;
-        }
-        break;
-
-        case POLE:
-        {
-            outputSample = inputSample - coeff1 * memory1 - coeff2 * memory2;
-        }
-        break;
-        }
-
-        updateMemory(inputSample, outputSample);
-        return outputSample;
-    }
-
-    // Calls the processSample method on each sample in the buffer
-    void processBlock(double* bufferData, int numSamples)
-    {
-        for (int smp = 0; smp < numSamples; ++smp)
-            bufferData[smp] = processSample(bufferData[smp]);
-    }
-
-    // Returns the value of the frequency response at the given phi
-    std::complex<double> getFrequencyResponseAtPhi(const double phi)
-    {
-        std::complex<double> z1
-            = std::polar(1.0, -2 * MathConstants<double>::pi * phi);
-        std::complex<double> z2
-            = std::polar(1.0, -4 * MathConstants<double>::pi * phi);
-
-        auto H = 1.0 + coeff1 * z1 + coeff2 * z2;
-
-        if (type == POLE) H = 1.0 / H;
-
-        return std::polar(gain * std::abs(H), std::arg(H));
-    }
+    // =========================================================================
+    /**
+     * @brief Computes the output samples for an input array of samples
+     *
+     * @param outputs Output buffer
+     * @param inputs Input buffer (can be the same as output buffer)
+     * @param n Buffer size. Both pointers should safe to be accessed between 0
+     * and n - 1
+     */
+    void processBlock(double* outputs, double* inputs, int n);
+    /**
+     * @brief Computes the DTFT of the digital filter
+     *
+     * @param Ω Digital frequency, where 0 is the DC and 2π is the sample rate
+     * @return DTFT at digital frequency Ω
+     */
+    std::complex<double> dtft(double) const;
 
 private:
+    // =========================================================================
+    // Computes the digital filter time-domain coefficients
+    void computeCoefficients();
+    // Pushes a sample in the memory queue
+    void pushSample(double);
+
+    // =========================================================================
+    // Zero sample processing function
+    double processSampleZero(double);
+    // Pole sample processing function
+    double processSamplePole(double);
+
+    // =========================================================================
+    double magnitude, phase, gain, coeffs[2], memory[2];
+    bool active;
     Type type;
 
-    double magnitude;
-    double phase;
-
-    double coeff1;
-    double coeff2;
-
-    double gain = 1.0;
-
-    double memory1;
-    double memory2;
-
-    bool active = false;
-
-    // Updates the memory of the digital filter
-    void updateMemory(double inputSample, double outputSample)
-    {
-        memory2 = memory1;
-        memory1 = (type == ZERO) ? inputSample : outputSample;
-    }
+    double (FilterElement::*processSampleFunc)(double);
 };
 
-// -----------------------------------------------------------------------------
-/*
- The FilterElementCascade class represent a digital filter as a chain of 2-nd
- order only FIR or only IIR filters (FilterElement).
- A FilterElementCascade is basically an std::vector<FilterElement>.
-*/
+// =============================================================================
+/**
+ * @brief A filter made by 2-pole or 2-zero filters in series
+ *
+ * The components of this filter are implemented by the FilterElement class
+ */
 class FilterElementCascade
 {
 public:
-    FilterElementCascade(FilterElementCascade* cascade = nullptr,
-                         int nElements = NUMBER_OF_FILTER_ELEMENTS)
-    {
-        if (cascade == nullptr)
-            for (int i = 0; i < nElements; ++i) addElement(FilterElement::ZERO);
-        else
-        {
-            for (int i = 0; i < cascade->elements.size(); ++i)
-            {
-                addElement(cascade->getElementType(i + 1));
-                elements[i].setMagnitude(cascade->getElementMagnitude(i + 1));
-                elements[i].setPhase(cascade->getElementPhase(i + 1));
-                elements[i].setUnsetActive(
-                    cascade->getElementActiveStatus(i + 1));
-            }
-        }
-    }
+    // =========================================================================
+    // Construct a new Filter Element Cascade with n elements
+    FilterElementCascade(int n);
+    // Copy constructor
+    FilterElementCascade(const FilterElementCascade&);
 
-    ~FilterElementCascade() { }
+    // =========================================================================
+    // Adds a new element at the end of the cascade
+    void addElement();
+    // Adds a copy of the provided element at the end of the cascade
+    void addElement(const FilterElement&);
 
-    // Returns the value of the frequency response at the given phi. It is
-    // calculated as the multiplication between the spectrum of each 2-nd order
-    // filter.
-    std::complex<double> getFrequencyResponseAtPhi(const double phi)
-    {
-        std::complex<double> frequencyResponse(1.0, 0.0);
+    // =========================================================================
+    // Resets the memory of the digital filter to the initial state
+    void resetMemory();
 
-        for (auto& element : elements)
-            if (element.isActive())
-                frequencyResponse *= element.getFrequencyResponseAtPhi(phi);
+    // =========================================================================
+    // Iterator begin() method
+    std::vector<FilterElement>::iterator begin();
+    // Iterator end() method
+    std::vector<FilterElement>::iterator end();
+    // Number of elements in the cascade
+    size_t size() const;
+    // Checks if the cascade has no elements
+    bool empty() const;
+    // Access element of the chain
+    FilterElement& operator[](size_t);
+    // Returns the cascade as a vector of FilterElement
+    [[deprecated("Use accessors instead.")]] std::vector<FilterElement>&
+    getElementsChain();
 
-        return frequencyResponse;
-    }
+    // =========================================================================
+    /**
+     * @brief Computes the DTFT of the digital filter
+     *
+     * @param Ω Digital frequency, where 0 is the DC and 2π is the sample rate
+     * @return DTFT at digital frequency Ω
+     */
+    std::complex<double> dtft(double) const;
+    // Returns an array with the current gain and coefficients of each element
+    std::vector<std::array<double, 3>> getCoefficients() const;
 
-    // Returns the cascade
-    inline FilterElementCascade* getCascade() { return this; }
-
-    // Returns the cascade as an std::vector of FilterElement
-    std::vector<FilterElement>& getElementsChain() { return elements; }
-
-    // Returns the magnitude of the elementNr element in the cascade
-    inline double getElementMagnitude(int elementNr) const
-    {
-        return elements[elementNr - 1].getMagnitude();
-    }
-
-    // Returns the phase of the elementNr element in the cascade
-    inline double getElementPhase(int elementNr) const
-    {
-        return elements[elementNr - 1].getPhase();
-    }
-
-    // Returns the type (ZERO: FIR, POLE: IIR) of the elementNr element in the
-    // cascade
-    inline FilterElement::Type getElementType(int elementNr) const
-    {
-        return elements[elementNr - 1].getType();
-    }
-
-    // Returns the active status of the elementNr element in the cascade
-    inline bool getElementActiveStatus(int elementNr) const
-    {
-        return elements[elementNr - 1].isActive();
-    }
-
-    // Returns the gain of the elementNr element in the cascade
-    inline double getElementGain(int elementNr) const
-    {
-        return elements[elementNr - 1].getGain();
-    }
-
-    // Returns the elementNr element in the cascade
-    inline FilterElement getElement(int elementNr) const
-    {
-        return elements[elementNr - 1];
-    }
-
-    inline std::vector<double> getCoefficients() const
-    {
-        std::vector<double> coefficients;
-        for (auto& element : elements)
-        {
-            auto coeffs = element.getCoefficients();
-            for (auto& c : coeffs) coefficients.push_back(c);
-        }
-
-        return coefficients;
-    }
-
-    // Sets the magnitude of the elementNr element in the cascade
-    void setElementMagnitude(const int elementNr, double newValue)
-    {
-        elements[elementNr - 1].setMagnitude(newValue);
-    }
-
-    // Sets the phase of the elementNr element in the cascade
-    void setElementPhase(const int elementNr, double newValue)
-    {
-        elements[elementNr - 1].setPhase(newValue);
-    }
-
-    // Sets the active status of the elementNr element in the cascade
-    void setUnsetElementActive(const int elementNr, bool newValue)
-    {
-        elements[elementNr - 1].setUnsetActive(newValue);
-    }
-
-    // Sets the type (ZERO: FIR, POLE: IIR) of the elementNr element in the
-    // cascade
-    void setElementType(const int elementNr, bool isZero)
-    {
-        elements[elementNr - 1].setType(isZero ? FilterElement::ZERO
-                                               : FilterElement::POLE);
-    }
-
-    void setElementGain(const int elementNr, double newValue)
-    {
-        elements[elementNr - 1].setGain(newValue);
-    }
-
-    // Resets the memory of each element in the cascade
-    void memoryReset()
-    {
-        for (auto& element : elements) element.memoryReset();
-    }
-
-    // Adds a new element in the cascade
-    void addElement(FilterElement::Type type)
-    {
-        elements.push_back(FilterElement(type));
-    }
-
-    // Process a set of samples by calling the process block method of each
-    // element
-    void processBlock(double* bufferData, const int numSamples)
-    {
-        for (auto& element : elements)
-            if (element.isActive())
-                element.processBlock(bufferData, numSamples);
-    }
+    // =========================================================================
+    /**
+     * @brief Computes the output samples for an input array of samples
+     *
+     * @param outputs Output buffer
+     * @param inputs Input buffer (can be the same as output buffer)
+     * @param n Buffer size. Both pointers should safe to be accessed between 0
+     * and n - 1
+     */
+    void processBlock(double* outputs, double* inputs, int n);
 
 private:
+    // =========================================================================
     std::vector<FilterElement> elements;
 };
