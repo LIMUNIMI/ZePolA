@@ -1679,8 +1679,8 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
 
     updateElements();
     slidersInit();
-    autoGain->setToggleState(true, NotificationType::sendNotification);
-    gainsInit();
+    autoGain->setToggleState(false, NotificationType::sendNotification);
+    // gainsInit();
 }
 
 EditorComponent::~EditorComponent()
