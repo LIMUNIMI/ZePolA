@@ -1,18 +1,17 @@
 #include "Filter.h"
 #include "Macros.h"
 
-// ============================================================================
+// =============================================================================
 const double FilterElement::gain_floor_db       = -128.0;
 const double FilterElement::pole_magnitude_ceil = 0.99999;
 
-// ============================================================================
-FilterElement::FilterElement(FilterElement::Type t, double m, double p,
-                             double g, bool a)
+// =============================================================================
+FilterElement::FilterElement(FilterElement::Type t)
     : type(t)
-    , magnitude(m)
-    , phase(p)
-    , gain(g)
-    , active(a)
+    , magnitude(0.0)
+    , phase(0.0)
+    , gain(1.0)
+    , active(false)
     , processSampleFunc(&FilterElement::processSampleZero)
 {
     resetMemory();

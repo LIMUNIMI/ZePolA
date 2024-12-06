@@ -29,13 +29,8 @@ public:
      * @brief Construct a new Filter Element
      *
      * @param t Type (Pole or Zero)
-     * @param m Magnitude
-     * @param p Phase (normalized angle/frequency)
-     * @param g Input gain
-     * @param a Active flag
      */
-    FilterElement(Type t = Type::ZERO, double m = 0.0, double p = 0.0,
-                  double g = 1.0, bool a = false);
+    FilterElement(Type t = Type::ZERO);
     // Copy constructor
     FilterElement(FilterElement&);
 
@@ -122,6 +117,9 @@ private:
     Type type;
 
     double (FilterElement::*processSampleFunc)(double);
+
+    // =========================================================================
+    JUCE_LEAK_DETECTOR(FilterElement);
 };
 
 // =============================================================================
