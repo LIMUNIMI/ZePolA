@@ -73,7 +73,8 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     auto bufferData = doubleBuffer.getArrayOfWritePointers();
 
     for (int ch = 0; ch < numChannels; ++ch)
-        multiChannelCascade[ch].processBlock(bufferData[ch], numSamples);
+        multiChannelCascade[ch].processBlock(bufferData[ch], bufferData[ch],
+                                             numSamples);
 
     juce::dsp::AudioBlock<double> block(doubleBuffer);
     gainProcessor.process(juce::dsp::ProcessContextReplacing<double>(block));

@@ -179,14 +179,16 @@ public:
         return coefficients;
     }
 
-    // Process a set of samples by calling the process block method of each
-    // element
-    void processBlock(double* bufferData, const int numSamples)
-    {
-        for (auto& element : elements)
-            if (element.getActive())
-                element.processBlock(bufferData, bufferData, numSamples);
-    }
+    // =========================================================================
+    /**
+     * @brief Computes the output samples for an input array of samples
+     *
+     * @param outputs Output buffer
+     * @param inputs Input buffer (can be the same as output buffer)
+     * @param n Buffer size. Both pointers should safe to be accessed between 0
+     * and n - 1
+     */
+    void processBlock(double* outputs, double* inputs, int n);
 
 private:
     std::vector<FilterElement> elements;

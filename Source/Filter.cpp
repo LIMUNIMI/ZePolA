@@ -182,7 +182,8 @@ void FilterElementCascade::addElement(const FilterElement& other)
 }
 
 // =========================================================================
-void FilterElementCascade::resetMemory() {
+void FilterElementCascade::resetMemory()
+{
     for (auto e : elements) e.resetMemory();
 }
 
@@ -204,4 +205,11 @@ std::complex<double> FilterElementCascade::dtft(double omega) const
     for (auto& e : elements)
         if (e.getActive()) h *= e.dtft(omega);
     return h;
+}
+
+// =========================================================================
+void FilterElementCascade::processBlock(double* outputs, double* inputs, int n)
+{
+    for (auto& e : elements)
+        if (e.getActive()) e.processBlock(outputs, inputs, n);
 }
