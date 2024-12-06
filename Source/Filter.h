@@ -150,8 +150,14 @@ public:
     void resetMemory();
 
     // =========================================================================
-    // Number of elements in the chain
+    // Iterator begin() method
+    std::vector<FilterElement>::iterator begin();
+    // Iterator end() method
+    std::vector<FilterElement>::iterator end();
+    // Number of elements in the cascade
     size_t size() const;
+    // Checks if the cascade has no elements
+    bool empty() const;
     // Access element of the chain
     FilterElement& operator[](size_t);
     // Returns the cascade as a vector of FilterElement

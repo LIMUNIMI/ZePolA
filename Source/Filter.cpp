@@ -188,7 +188,16 @@ void FilterElementCascade::resetMemory()
 }
 
 // =========================================================================
+std::vector<FilterElement>::iterator FilterElementCascade::begin()
+{
+    return elements.begin();
+}
+std::vector<FilterElement>::iterator FilterElementCascade::end()
+{
+    return elements.end();
+}
 size_t FilterElementCascade::size() const { return elements.size(); }
+bool FilterElementCascade::empty() const { return elements.empty(); }
 FilterElement& FilterElementCascade::operator[](size_t i)
 {
     return elements[i];
