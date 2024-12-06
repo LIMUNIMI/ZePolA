@@ -2869,12 +2869,11 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
                 outputStream << "Sample rate: "
                              << juce::String(processor.getSampleRate()) << "\n";
 
-                int i = 0;
-                for (const auto& coeff : processor.getCoefficients())
+                for (const auto& coeffs : processor.getCoefficients())
                 {
-                    if (!i) outputStream << "\n";
-                    outputStream << juce::String(coeff) << "\n";
-                    i = (i + 1) % 3;
+                    outputStream << "\n";
+                    for (auto c : coeffs)
+                        outputStream << juce::String(c) << "\n";
                 }
             }
         }

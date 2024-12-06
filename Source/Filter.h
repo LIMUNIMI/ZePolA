@@ -173,7 +173,7 @@ public:
      */
     std::complex<double> dtft(double) const;
     // Returns an array with the current gain and coefficients of each element
-    std::vector<double> getCoefficients() const;
+    std::vector<std::array<double, 3>> getCoefficients() const;
 
     // =========================================================================
     /**

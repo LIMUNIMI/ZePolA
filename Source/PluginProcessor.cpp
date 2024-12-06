@@ -366,7 +366,7 @@ bool PolesAndZerosEQAudioProcessor::getSafetyFlag() { return safetyFlag; }
 
 void PolesAndZerosEQAudioProcessor::resetSafetyFlag() { safetyFlag = false; }
 
-std::vector<double> PolesAndZerosEQAudioProcessor::getCoefficients()
+std::vector<std::array<double, 3>> PolesAndZerosEQAudioProcessor::getCoefficients() const
 {
     return multiChannelCascade[0].getCoefficients();
 }
