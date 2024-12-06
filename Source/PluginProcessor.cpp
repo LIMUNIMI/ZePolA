@@ -201,7 +201,7 @@ PolesAndZerosEQAudioProcessor::getFrequencyResponseAtPhi(const double phi)
 
 double PolesAndZerosEQAudioProcessor::getElementGain(const int elementNr)
 {
-    return multiChannelCascade[0].getElementGain(elementNr);
+    return multiChannelCascade[0][elementNr - 1].getGain();
 }
 
 std::vector<FilterElement>

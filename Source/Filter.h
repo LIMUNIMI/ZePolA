@@ -163,37 +163,6 @@ public:
      */
     std::complex<double> dtft(double) const;
 
-    // Returns the magnitude of the elementNr element in the cascade
-    inline double getElementMagnitude(int elementNr) const
-    {
-        return elements[elementNr - 1].getMagnitude();
-    }
-
-    // Returns the phase of the elementNr element in the cascade
-    inline double getElementPhase(int elementNr) const
-    {
-        return elements[elementNr - 1].getPhase();
-    }
-
-    // Returns the type (ZERO: FIR, POLE: IIR) of the elementNr element in the
-    // cascade
-    inline FilterElement::Type getElementType(int elementNr) const
-    {
-        return elements[elementNr - 1].getType();
-    }
-
-    // Returns the active status of the elementNr element in the cascade
-    inline bool getElementActiveStatus(int elementNr) const
-    {
-        return elements[elementNr - 1].getActive();
-    }
-
-    // Returns the gain of the elementNr element in the cascade
-    inline double getElementGain(int elementNr) const
-    {
-        return elements[elementNr - 1].getGain();
-    }
-
     inline std::vector<double> getCoefficients() const
     {
         std::vector<double> coefficients;
