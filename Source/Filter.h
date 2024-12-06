@@ -2,6 +2,7 @@
 #include "Parameters.h"
 #include <JuceHeader.h>
 
+// =============================================================================
 /**
  * @brief Second order digital filter
  *
@@ -38,7 +39,7 @@ public:
     // Copy constructor
     FilterElement(FilterElement&);
 
-    // ========================================================================
+    // =========================================================================
     // Returns the magnitude of the zero/pole of the digital filter
     double getMagnitude() const;
     // Returns the normalized phase of the zero/pole of the digital filter
@@ -60,7 +61,7 @@ public:
     // Returns an array with the current gain and coefficients of the filter
     std::array<double, 3> getCoefficients() const;
 
-    // ========================================================================
+    // =========================================================================
     // Resets the memory of the digital filter to the initial state
     void resetMemory();
     // Sets the magnitude of the zero/pole of the digital filter
@@ -78,7 +79,7 @@ public:
     // Sets the digital filter to be inactive
     void setInactive();
 
-    // ========================================================================
+    // =========================================================================
     /**
      * @brief Computes the output samples for an input array of samples
      *
@@ -97,25 +98,25 @@ public:
     std::complex<double> dtft(double) const;
 
 private:
-    // ========================================================================
+    // =========================================================================
     // Computes the digital filter time-domain coefficients
     void computeCoefficients();
     // Pushes a sample in the memory queue
     void pushSample(double);
 
-    // ========================================================================
+    // =========================================================================
     // Zero sample processing function
     double processSampleZero(double);
     // Pole sample processing function
     double processSamplePole(double);
 
-    // ========================================================================
+    // =========================================================================
     // Minimum input gain allowed
     static const double gain_floor_db;
     // Maximum magnitude allowed for poles
     static const double pole_magnitude_ceil;
 
-    // ========================================================================
+    // =========================================================================
     double magnitude, phase, gain, coeffs[2], memory[2];
     bool active;
     Type type;
@@ -123,12 +124,12 @@ private:
     double (FilterElement::*processSampleFunc)(double);
 };
 
-// -----------------------------------------------------------------------------
-/*
- The FilterElementCascade class represent a digital filter as a chain of 2-nd
- order only FIR or only IIR filters (FilterElement).
- A FilterElementCascade is basically an std::vector<FilterElement>.
-*/
+// =============================================================================
+/**
+ * @brief A filter made by 2-pole or 2-zero filters in series
+ * 
+ * The components of this filter are implemented by the FilterElement class
+ */
 class FilterElementCascade
 {
 public:

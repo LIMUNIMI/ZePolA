@@ -32,7 +32,7 @@ FilterElement::FilterElement(FilterElement& other)
     computeCoefficients();
 }
 
-// ============================================================================
+// =============================================================================
 double FilterElement::getMagnitude() const { return magnitude; }
 double FilterElement::getPhase() const { return phase; }
 double FilterElement::getAngle() const
@@ -59,7 +59,7 @@ std::array<double, 3> FilterElement::getCoefficients() const
     return {gain, coeffs[0], coeffs[1]};
 }
 
-// ============================================================================
+// =============================================================================
 void FilterElement::setMagnitude(double m)
 {
     switch (type)
@@ -113,7 +113,7 @@ void FilterElement::setActive(bool a)
 }
 void FilterElement::setInactive() { setActive(false); }
 
-// ============================================================================
+// =============================================================================
 void FilterElement::resetMemory() { memory[0] = memory[1] = 0.0; }
 void FilterElement::pushSample(double x)
 {
@@ -126,7 +126,7 @@ void FilterElement::computeCoefficients()
     coeffs[1] = magnitude * magnitude;
 }
 
-// ============================================================================
+// =============================================================================
 double FilterElement::processSampleZero(double x)
 {
     double y = x + coeffs[0] * memory[0] + coeffs[1] * memory[1];
@@ -145,7 +145,7 @@ void FilterElement::processBlock(double* outputs, double* inputs, int n)
         outputs[i] = (this->*processSampleFunc)(gain * inputs[i]);
 }
 
-// ============================================================================
+// =============================================================================
 std::complex<double> FilterElement::dtft(double omega) const
 {
     std::complex<double> z_inv = std::exp(std::complex<double>(0.0, -omega));
