@@ -60,7 +60,8 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     {
         auto currentNumCh = multiChannelCascade.size();
         for (int i = currentNumCh; i < numChannels; ++i)
-            multiChannelCascade.push_back(FilterElementCascade(multiChannelCascade[0]));
+            multiChannelCascade.push_back(
+                FilterElementCascade(multiChannelCascade[0]));
     }
     else if (multiChannelCascade.size() > numChannels)
         for (int i = numChannels; i < multiChannelCascade.size(); ++i)
@@ -147,27 +148,29 @@ void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
     if (parameter == "M")
     {
         for (auto& cascade : multiChannelCascade)
-            cascade.setElementMagnitude(elementNr, newValue);
+            cascade[elementNr - 1].setMagnitude(newValue);
     }
     else if (parameter == "P")
     {
         for (auto& cascade : multiChannelCascade)
-            cascade.setElementPhase(elementNr, newValue);
+            cascade[elementNr - 1].setPhase(newValue);
     }
     else if (parameter == "A")
     {
         for (auto& cascade : multiChannelCascade)
-            cascade.setUnsetElementActive(elementNr, newValue > 0.5);
+            cascade[elementNr - 1].setActive(newValue > 0.5);
     }
     else if (parameter == "T")
     {
         for (auto& cascade : multiChannelCascade)
-            cascade.setElementType(elementNr, newValue > 0.5);
+            cascade[elementNr - 1].setType((newValue > 0.5)
+                                               ? FilterElement::Type::ZERO
+                                               : FilterElement::Type::POLE);
     }
     else if (parameter == "G")
     {
         for (auto& cascade : multiChannelCascade)
-            cascade.setElementGain(elementNr, newValue);
+            cascade[elementNr - 1].setGainDb(newValue);
     }
 
     if (editorCallback)
@@ -196,7 +199,8 @@ void PolesAndZerosEQAudioProcessor::setUnactive(const int elementNr)
 std::complex<double>
 PolesAndZerosEQAudioProcessor::getFrequencyResponseAtPhi(const double phi)
 {
-    return multiChannelCascade[0].dtft(phi * juce::MathConstants<double>::twoPi);
+    return multiChannelCascade[0].dtft(phi
+                                       * juce::MathConstants<double>::twoPi);
 }
 
 double PolesAndZerosEQAudioProcessor::getElementGain(const int elementNr)

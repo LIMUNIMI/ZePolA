@@ -175,37 +175,6 @@ public:
         return coefficients;
     }
 
-    // Sets the magnitude of the elementNr element in the cascade
-    void setElementMagnitude(const int elementNr, double newValue)
-    {
-        elements[elementNr - 1].setMagnitude(newValue);
-    }
-
-    // Sets the phase of the elementNr element in the cascade
-    void setElementPhase(const int elementNr, double newValue)
-    {
-        elements[elementNr - 1].setPhase(newValue);
-    }
-
-    // Sets the active status of the elementNr element in the cascade
-    void setUnsetElementActive(const int elementNr, bool newValue)
-    {
-        elements[elementNr - 1].setActive(newValue);
-    }
-
-    // Sets the type (ZERO: FIR, POLE: IIR) of the elementNr element in the
-    // cascade
-    void setElementType(const int elementNr, bool isZero)
-    {
-        elements[elementNr - 1].setType(isZero ? FilterElement::ZERO
-                                               : FilterElement::POLE);
-    }
-
-    void setElementGain(const int elementNr, double newValue)
-    {
-        elements[elementNr - 1].setGainDb(newValue);
-    }
-
     // Resets the memory of each element in the cascade
     void memoryReset()
     {
