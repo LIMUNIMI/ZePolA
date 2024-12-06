@@ -127,7 +127,7 @@ private:
 // =============================================================================
 /**
  * @brief A filter made by 2-pole or 2-zero filters in series
- * 
+ *
  * The components of this filter are implemented by the FilterElement class
  */
 class FilterElementCascade
@@ -140,6 +140,21 @@ public:
     FilterElementCascade(const FilterElementCascade&);
 
     // =========================================================================
+    // Adds a new element at the end of the cascade
+    void addElement();
+    // Adds a copy of the provided element at the end of the cascade
+    void addElement(const FilterElement&);
+
+    // =========================================================================
+    // Number of elements in the chain
+    size_t size() const;
+    // Access element of the chain
+    FilterElement& operator[](size_t);
+    // Returns the cascade as a vector of FilterElement
+    [[deprecated("Use accessors instead.")]] std::vector<FilterElement>&
+    getElementsChain();
+
+    // =========================================================================
     /**
      * @brief Computes the DTFT of the digital filter
      *
@@ -147,9 +162,6 @@ public:
      * @return DTFT at digital frequency Ω
      */
     std::complex<double> dtft(double) const;
-
-    // Returns the cascade as an std::vector of FilterElement
-    std::vector<FilterElement>& getElementsChain() { return elements; }
 
     // Returns the magnitude of the elementNr element in the cascade
     inline double getElementMagnitude(int elementNr) const
@@ -180,12 +192,6 @@ public:
     inline double getElementGain(int elementNr) const
     {
         return elements[elementNr - 1].getGain();
-    }
-
-    // Returns the elementNr element in the cascade
-    inline FilterElement getElement(int elementNr)
-    {
-        return elements[elementNr - 1];
     }
 
     inline std::vector<double> getCoefficients() const
@@ -236,9 +242,6 @@ public:
     {
         for (auto& element : elements) element.resetMemory();
     }
-
-    // Adds a new element in the cascade
-    void addElement() { elements.push_back(FilterElement()); }
 
     // Process a set of samples by calling the process block method of each
     // element

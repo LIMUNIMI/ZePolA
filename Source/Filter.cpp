@@ -171,7 +171,25 @@ FilterElementCascade::FilterElementCascade(int n)
 }
 FilterElementCascade::FilterElementCascade(const FilterElementCascade& other)
 {
-    for (auto e : other.elements) elements.push_back(FilterElement(e));
+    for (auto e : other.elements) addElement(e);
+}
+
+// =========================================================================
+void FilterElementCascade::addElement() { elements.push_back(FilterElement()); }
+void FilterElementCascade::addElement(const FilterElement& other)
+{
+    elements.push_back(FilterElement(other));
+}
+
+// =========================================================================
+size_t FilterElementCascade::size() const { return elements.size(); }
+FilterElement& FilterElementCascade::operator[](size_t i)
+{
+    return elements[i];
+}
+std::vector<FilterElement>& FilterElementCascade::getElementsChain()
+{
+    return elements;
 }
 
 // =========================================================================
