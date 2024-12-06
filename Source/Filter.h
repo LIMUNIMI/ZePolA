@@ -133,20 +133,13 @@ private:
 class FilterElementCascade
 {
 public:
-    FilterElementCascade(FilterElementCascade* cascade = nullptr,
-                         int nElements = NUMBER_OF_FILTER_ELEMENTS)
-    {
-        if (cascade == nullptr)
-            for (int i = 0; i < nElements; ++i) addElement();
-        else
-        {
-            for (int i = 0; i < cascade->elements.size(); ++i)
-                elements.push_back(FilterElement(cascade->elements[i]));
-        }
-    }
+    // =========================================================================
+    // Construct a new Filter Element Cascade with n elements
+    FilterElementCascade(int n);
+    // Copy constructor
+    FilterElementCascade(const FilterElementCascade&);
 
-    ~FilterElementCascade() { }
-
+    // =========================================================================
     // Returns the value of the frequency response at the given phi. It is
     // calculated as the multiplication between the spectrum of each 2-nd order
     // filter.

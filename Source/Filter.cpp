@@ -163,3 +163,13 @@ std::complex<double> FilterElement::dtft(double omega) const
 
     return h;
 }
+
+// =============================================================================
+FilterElementCascade::FilterElementCascade(int n)
+{
+    for (int i = 0; i < n; ++i) addElement();
+}
+FilterElementCascade::FilterElementCascade(const FilterElementCascade& other)
+{
+    for (auto e : other.elements) elements.push_back(FilterElement(e));
+}

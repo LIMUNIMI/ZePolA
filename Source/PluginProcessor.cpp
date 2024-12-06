@@ -11,7 +11,8 @@ PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor()
     Parameters::addListenerToAllParameters(parameters, this);
 
     for (int i = 0; i < STEREO; ++i)
-        multiChannelCascade.push_back(FilterElementCascade());
+        multiChannelCascade.push_back(
+            FilterElementCascade(NUMBER_OF_FILTER_ELEMENTS));
 }
 
 PolesAndZerosEQAudioProcessor::~PolesAndZerosEQAudioProcessor() { }
@@ -60,7 +61,7 @@ void PolesAndZerosEQAudioProcessor::processBlock(
         auto currentNumCh = multiChannelCascade.size();
         for (int i = currentNumCh; i < numChannels; ++i)
             multiChannelCascade.push_back(
-                FilterElementCascade(multiChannelCascade[0].getCascade()));
+                FilterElementCascade(*multiChannelCascade[0].getCascade()));
     }
     else if (multiChannelCascade.size() > numChannels)
         for (int i = numChannels; i < multiChannelCascade.size(); ++i)
