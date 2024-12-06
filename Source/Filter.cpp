@@ -20,6 +20,17 @@ FilterElement::FilterElement(FilterElement::Type t, double m, double p,
     // Force setting of process function pointer
     setType(t);
 }
+FilterElement::FilterElement(FilterElement& other)
+    : type(other.type)
+    , magnitude(other.magnitude)
+    , phase(other.phase)
+    , gain(other.gain)
+    , active(other.active)
+    , processSampleFunc(other.processSampleFunc)
+{
+    resetMemory();
+    computeCoefficients();
+}
 
 // ============================================================================
 double FilterElement::getMagnitude() const { return magnitude; }

@@ -35,6 +35,8 @@ public:
      */
     FilterElement(Type t = Type::ZERO, double m = 0.0, double p = 0.0,
                   double g = 1.0, bool a = false);
+    // Copy constructor
+    FilterElement(FilterElement&);
 
     // ========================================================================
     // Returns the magnitude of the zero/pole of the digital filter
