@@ -146,6 +146,10 @@ public:
     void addElement(const FilterElement&);
 
     // =========================================================================
+    // Resets the memory of the digital filter to the initial state
+    void resetMemory();
+
+    // =========================================================================
     // Number of elements in the chain
     size_t size() const;
     // Access element of the chain
@@ -173,12 +177,6 @@ public:
         }
 
         return coefficients;
-    }
-
-    // Resets the memory of each element in the cascade
-    void memoryReset()
-    {
-        for (auto& element : elements) element.resetMemory();
     }
 
     // Process a set of samples by calling the process block method of each

@@ -28,7 +28,7 @@ void PolesAndZerosEQAudioProcessor::prepareToPlay(double sampleRate,
     gainProcessor.prepare(spec);
     gainProcessor.setGainDecibels(MASTER_GAIN_DEFAULT);
 
-    for (auto& cascade : multiChannelCascade) cascade.memoryReset();
+    for (auto& cascade : multiChannelCascade) cascade.resetMemory();
 }
 
 void PolesAndZerosEQAudioProcessor::releaseResources() { }
@@ -65,7 +65,7 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     }
     else if (multiChannelCascade.size() > numChannels)
         for (int i = numChannels; i < multiChannelCascade.size(); ++i)
-            multiChannelCascade[i].memoryReset();
+            multiChannelCascade[i].resetMemory();
 
     AudioBuffer<double> doubleBuffer(numChannels, numSamples);
     castBuffer(doubleBuffer, buffer, numChannels, numSamples);
@@ -88,7 +88,7 @@ void PolesAndZerosEQAudioProcessor::processBlock(
 void PolesAndZerosEQAudioProcessor::processBlockBypassed(
     juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    for (auto& cascade : multiChannelCascade) cascade.memoryReset();
+    for (auto& cascade : multiChannelCascade) cascade.resetMemory();
 }
 
 juce::AudioProcessorEditor* PolesAndZerosEQAudioProcessor::createEditor()
@@ -129,7 +129,7 @@ void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
     {
         active = !(newValue > 0.5f);
         if (!active)
-            for (auto& cascade : multiChannelCascade) cascade.memoryReset();
+            for (auto& cascade : multiChannelCascade) cascade.resetMemory();
         return;
     }
     else if (parameterID == "MSTR_GAIN")
@@ -257,7 +257,7 @@ void PolesAndZerosEQAudioProcessor::resetFilter()
     setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME),
                       BYPASS_DEFAULT);
 
-    for (auto& cascade : multiChannelCascade) cascade.memoryReset();
+    for (auto& cascade : multiChannelCascade) cascade.resetMemory();
 }
 
 float PolesAndZerosEQAudioProcessor::getCurrentGain()

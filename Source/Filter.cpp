@@ -182,6 +182,11 @@ void FilterElementCascade::addElement(const FilterElement& other)
 }
 
 // =========================================================================
+void FilterElementCascade::resetMemory() {
+    for (auto e : elements) e.resetMemory();
+}
+
+// =========================================================================
 size_t FilterElementCascade::size() const { return elements.size(); }
 FilterElement& FilterElementCascade::operator[](size_t i)
 {
