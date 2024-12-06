@@ -140,19 +140,13 @@ public:
     FilterElementCascade(const FilterElementCascade&);
 
     // =========================================================================
-    // Returns the value of the frequency response at the given phi. It is
-    // calculated as the multiplication between the spectrum of each 2-nd order
-    // filter.
-    std::complex<double> getFrequencyResponseAtPhi(const double phi)
-    {
-        std::complex<double> frequencyResponse(1.0, 0.0);
-        double omega = MathConstants<double>::twoPi * phi;
-
-        for (auto& element : elements)
-            if (element.getActive()) frequencyResponse *= element.dtft(omega);
-
-        return frequencyResponse;
-    }
+    /**
+     * @brief Computes the DTFT of the digital filter
+     *
+     * @param Ω Digital frequency, where 0 is the DC and 2π is the sample rate
+     * @return DTFT at digital frequency Ω
+     */
+    std::complex<double> dtft(double) const;
 
     // Returns the cascade
     inline FilterElementCascade* getCascade() { return this; }

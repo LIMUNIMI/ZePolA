@@ -3242,8 +3242,8 @@ void EditorComponent::getFrequencyResponse()
                             / (static_cast<double>(GRAPHS_QUALITY - 1)))));
 
         frequencyResponse = processor.getFrequencyResponseAtPhi(phi);
-        magnitudes[i]     = gain * std::abs(frequencyResponse);
-        phases[i]         = (pi + std::arg(frequencyResponse)) / (2.0 * pi);
+        magnitudes[i] = gain * std::abs(frequencyResponse);
+        phases[i]     = (pi + std::arg(frequencyResponse)) / (2.0 * pi);
     }
 }
 

@@ -173,3 +173,12 @@ FilterElementCascade::FilterElementCascade(const FilterElementCascade& other)
 {
     for (auto e : other.elements) elements.push_back(FilterElement(e));
 }
+
+// =========================================================================
+std::complex<double> FilterElementCascade::dtft(double omega) const
+{
+    std::complex<double> h(1.0, 0.0);
+    for (auto& e : elements)
+        if (e.getActive()) h *= e.dtft(omega);
+    return h;
+}

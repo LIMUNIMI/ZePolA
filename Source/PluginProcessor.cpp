@@ -197,7 +197,7 @@ void PolesAndZerosEQAudioProcessor::setUnactive(const int elementNr)
 std::complex<double>
 PolesAndZerosEQAudioProcessor::getFrequencyResponseAtPhi(const double phi)
 {
-    return multiChannelCascade[0].getFrequencyResponseAtPhi(phi);
+    return multiChannelCascade[0].dtft(phi * juce::MathConstants<double>::twoPi);
 }
 
 double PolesAndZerosEQAudioProcessor::getElementGain(const int elementNr)
