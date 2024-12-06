@@ -60,8 +60,7 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     {
         auto currentNumCh = multiChannelCascade.size();
         for (int i = currentNumCh; i < numChannels; ++i)
-            multiChannelCascade.push_back(
-                FilterElementCascade(*multiChannelCascade[0].getCascade()));
+            multiChannelCascade.push_back(FilterElementCascade(multiChannelCascade[0]));
     }
     else if (multiChannelCascade.size() > numChannels)
         for (int i = numChannels; i < multiChannelCascade.size(); ++i)

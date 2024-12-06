@@ -148,9 +148,6 @@ public:
      */
     std::complex<double> dtft(double) const;
 
-    // Returns the cascade
-    inline FilterElementCascade* getCascade() { return this; }
-
     // Returns the cascade as an std::vector of FilterElement
     std::vector<FilterElement>& getElementsChain() { return elements; }
 
