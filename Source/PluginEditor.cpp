@@ -2854,33 +2854,28 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
     }
     else if (buttonThatWasClicked == saveCoefficients_button.get())
     {
-        auto coefficients = processor.getCoefficients();
-
         auto defaultPresetLocation = File::getSpecialLocation(
             File::SpecialLocationType::commonDocumentsDirectory);
         juce::FileChooser chooser("Select the save location...",
                                   defaultPresetLocation, "*.txt");
         if (chooser.browseForFileToSave(true))
         {
-            auto file = chooser.getResult();
-            if (file.exists()) file.deleteFile();
+            juce::File file = chooser.getResult();
             juce::FileOutputStream outputStream(file);
             if (outputStream.openedOk())
             {
-                juce::String content;
-
-                content += "Sample rate: "
-                           + juce::String(processor.getSampleRate()) + "\n\n";
+                outputStream.setPosition(0);
+                outputStream.truncate();
+                outputStream << "Sample rate: "
+                             << juce::String(processor.getSampleRate()) << "\n";
 
                 int i = 0;
-                for (const auto& coeff : coefficients)
+                for (const auto& coeff : processor.getCoefficients())
                 {
-                    content += juce::String(coeff) + "\n";
-                    ++i;
-                    if (i % 3 == 0) content += "\n";
+                    if (!i) outputStream << "\n";
+                    outputStream << juce::String(coeff) << "\n";
+                    i = (i + 1) % 3;
                 }
-
-                file.replaceWithText(content);
             }
         }
     }
@@ -3242,8 +3237,8 @@ void EditorComponent::getFrequencyResponse()
                             / (static_cast<double>(GRAPHS_QUALITY - 1)))));
 
         frequencyResponse = processor.getFrequencyResponseAtPhi(phi);
-        magnitudes[i] = gain * std::abs(frequencyResponse);
-        phases[i]     = (pi + std::arg(frequencyResponse)) / (2.0 * pi);
+        magnitudes[i]     = gain * std::abs(frequencyResponse);
+        phases[i]         = (pi + std::arg(frequencyResponse)) / (2.0 * pi);
     }
 }
 
