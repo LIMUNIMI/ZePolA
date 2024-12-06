@@ -28,9 +28,9 @@ public:
     /**
      * @brief Construct a new Filter Element
      *
-     * @param t Type (Pole or Zero)
+     * By default, it is a 2-zero filter with both zeros in 0
      */
-    FilterElement(Type t = Type::ZERO);
+    FilterElement();
     // Copy constructor
     FilterElement(FilterElement&);
 
@@ -135,16 +135,11 @@ public:
                          int nElements = NUMBER_OF_FILTER_ELEMENTS)
     {
         if (cascade == nullptr)
-            for (int i = 0; i < nElements; ++i) addElement(FilterElement::ZERO);
+            for (int i = 0; i < nElements; ++i) addElement();
         else
         {
             for (int i = 0; i < cascade->elements.size(); ++i)
-            {
-                addElement(cascade->getElementType(i + 1));
-                elements[i].setMagnitude(cascade->getElementMagnitude(i + 1));
-                elements[i].setPhase(cascade->getElementPhase(i + 1));
-                elements[i].setActive(cascade->getElementActiveStatus(i + 1));
-            }
+                elements.push_back(FilterElement(cascade->elements[i]));
         }
     }
 
@@ -202,7 +197,7 @@ public:
     }
 
     // Returns the elementNr element in the cascade
-    inline FilterElement getElement(int elementNr) const
+    inline FilterElement getElement(int elementNr)
     {
         return elements[elementNr - 1];
     }
@@ -257,10 +252,7 @@ public:
     }
 
     // Adds a new element in the cascade
-    void addElement(FilterElement::Type type)
-    {
-        elements.push_back(FilterElement(type));
-    }
+    void addElement() { elements.push_back(FilterElement()); }
 
     // Process a set of samples by calling the process block method of each
     // element

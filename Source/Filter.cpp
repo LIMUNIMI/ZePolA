@@ -6,8 +6,8 @@ const double FilterElement::gain_floor_db       = -128.0;
 const double FilterElement::pole_magnitude_ceil = 0.99999;
 
 // =============================================================================
-FilterElement::FilterElement(FilterElement::Type t)
-    : type(t)
+FilterElement::FilterElement()
+    : type(FilterElement::Type::ZERO)
     , magnitude(0.0)
     , phase(0.0)
     , gain(1.0)
@@ -16,8 +16,6 @@ FilterElement::FilterElement(FilterElement::Type t)
 {
     resetMemory();
     computeCoefficients();
-    // Force setting of process function pointer
-    setType(t);
 }
 FilterElement::FilterElement(FilterElement& other)
     : type(other.type)
