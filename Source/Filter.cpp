@@ -206,6 +206,14 @@ std::complex<double> FilterElementCascade::dtft(double omega) const
         if (e.getActive()) h *= e.dtft(omega);
     return h;
 }
+std::vector<double> FilterElementCascade::getCoefficients() const
+{
+    std::vector<double> coefficients;
+    for (auto& e : elements)
+        for (auto& c : e.getCoefficients()) coefficients.push_back(c);
+
+    return coefficients;
+}
 
 // =========================================================================
 void FilterElementCascade::processBlock(double* outputs, double* inputs, int n)

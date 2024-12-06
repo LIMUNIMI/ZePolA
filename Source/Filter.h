@@ -166,18 +166,8 @@ public:
      * @return DTFT at digital frequency Ω
      */
     std::complex<double> dtft(double) const;
-
-    inline std::vector<double> getCoefficients() const
-    {
-        std::vector<double> coefficients;
-        for (auto& element : elements)
-        {
-            auto coeffs = element.getCoefficients();
-            for (auto& c : coeffs) coefficients.push_back(c);
-        }
-
-        return coefficients;
-    }
+    // Returns an array with the current gain and coefficients of each element
+    std::vector<double> getCoefficients() const;
 
     // =========================================================================
     /**
