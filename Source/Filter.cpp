@@ -17,7 +17,7 @@ FilterElement::FilterElement()
     resetMemory();
     computeCoefficients();
 }
-FilterElement::FilterElement(FilterElement& other)
+FilterElement::FilterElement(const FilterElement& other)
     : type(other.type)
     , magnitude(other.magnitude)
     , phase(other.phase)

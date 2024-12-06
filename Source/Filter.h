@@ -13,6 +13,7 @@
 class FilterElement
 {
 public:
+    // =========================================================================
     /**
      * @brief Filter element type
      *
@@ -25,6 +26,7 @@ public:
         POLE
     };
 
+    // =========================================================================
     /**
      * @brief Construct a new Filter Element
      *
@@ -32,7 +34,7 @@ public:
      */
     FilterElement();
     // Copy constructor
-    FilterElement(FilterElement&);
+    FilterElement(const FilterElement&);
 
     // =========================================================================
     // Returns the magnitude of the zero/pole of the digital filter
