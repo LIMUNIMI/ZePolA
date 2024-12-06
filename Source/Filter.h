@@ -191,5 +191,9 @@ public:
     void processBlock(double* outputs, double* inputs, int n);
 
 private:
+    // =========================================================================
     std::vector<FilterElement> elements;
+
+    // =========================================================================
+    JUCE_LEAK_DETECTOR(FilterElement);
 };
