@@ -207,15 +207,6 @@ PolesAndZerosEQAudioProcessor::getFilterElementsChain()
     return multiChannelCascade[0].getElementsChain();
 }
 
-FilterElement
-PolesAndZerosEQAudioProcessor::getElementState(const int elementNr)
-{
-    auto elements = getFilterElementsChain();
-
-    if (elementNr > 0 && elementNr <= elements.size())
-        return elements[elementNr - 1];
-}
-
 void PolesAndZerosEQAudioProcessor::setEditorCallback(
     std::function<void()> callback)
 {
@@ -358,7 +349,8 @@ bool PolesAndZerosEQAudioProcessor::getSafetyFlag() { return safetyFlag; }
 
 void PolesAndZerosEQAudioProcessor::resetSafetyFlag() { safetyFlag = false; }
 
-std::vector<std::array<double, 3>> PolesAndZerosEQAudioProcessor::getCoefficients() const
+std::vector<std::array<double, 3>>
+PolesAndZerosEQAudioProcessor::getCoefficients() const
 {
     return multiChannelCascade[0].getCoefficients();
 }

@@ -84,61 +84,53 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
 
     gaussian_plane->setBounds(30, 424, 316, 316);
 
-    e2.reset(new DraggableElement(processor.getElementState(2), 2,
-                                  gaussian_plane.get(), &processor));
-    addAndMakeVisible(e2.get());
-    e2->setName("Element 2");
-
-    e2->setBounds(152, 602, 16, 16);
-
-    e3.reset(new DraggableElement(processor.getElementState(3), 3,
-                                  gaussian_plane.get(), &processor));
-    addAndMakeVisible(e3.get());
-    e3->setName("Element 3");
-
-    e3->setBounds(152, 602, 16, 16);
-
-    e4.reset(new DraggableElement(processor.getElementState(4), 4,
-                                  gaussian_plane.get(), &processor));
-    addAndMakeVisible(e4.get());
-    e4->setName("Element 4");
-
-    e4->setBounds(152, 602, 16, 16);
-
-    e5.reset(new DraggableElement(processor.getElementState(5), 5,
-                                  gaussian_plane.get(), &processor));
-    addAndMakeVisible(e5.get());
-    e5->setName("Element 5");
-
-    e5->setBounds(152, 602, 16, 16);
-
-    e6.reset(new DraggableElement(processor.getElementState(6), 6,
-                                  gaussian_plane.get(), &processor));
-    addAndMakeVisible(e6.get());
-    e6->setName("Element 6");
-
-    e6->setBounds(152, 602, 16, 16);
-
-    e7.reset(new DraggableElement(processor.getElementState(7), 7,
-                                  gaussian_plane.get(), &processor));
-    addAndMakeVisible(e7.get());
-    e7->setName("Element 7");
-
-    e7->setBounds(152, 602, 16, 16);
-
-    e8.reset(new DraggableElement(processor.getElementState(8), 8,
-                                  gaussian_plane.get(), &processor));
-    addAndMakeVisible(e8.get());
-    e8->setName("Element 8");
-
-    e8->setBounds(152, 602, 16, 16);
-
-    e1.reset(new DraggableElement(processor.getElementState(1), 1,
+    e1.reset(new DraggableElement(processor.multiChannelCascade[0][0], 1,
                                   gaussian_plane.get(), &processor));
     addAndMakeVisible(e1.get());
     e1->setName("Element 1");
-
     e1->setBounds(152, 602, 16, 16);
+
+    e2.reset(new DraggableElement(processor.multiChannelCascade[0][1], 2,
+                                  gaussian_plane.get(), &processor));
+    addAndMakeVisible(e2.get());
+    e2->setName("Element 2");
+    e2->setBounds(152, 602, 16, 16);
+
+    e3.reset(new DraggableElement(processor.multiChannelCascade[0][2], 3,
+                                  gaussian_plane.get(), &processor));
+    addAndMakeVisible(e3.get());
+    e3->setName("Element 3");
+    e3->setBounds(152, 602, 16, 16);
+
+    e4.reset(new DraggableElement(processor.multiChannelCascade[0][3], 4,
+                                  gaussian_plane.get(), &processor));
+    addAndMakeVisible(e4.get());
+    e4->setName("Element 4");
+    e4->setBounds(152, 602, 16, 16);
+
+    e5.reset(new DraggableElement(processor.multiChannelCascade[0][4], 5,
+                                  gaussian_plane.get(), &processor));
+    addAndMakeVisible(e5.get());
+    e5->setName("Element 5");
+    e5->setBounds(152, 602, 16, 16);
+
+    e6.reset(new DraggableElement(processor.multiChannelCascade[0][5], 6,
+                                  gaussian_plane.get(), &processor));
+    addAndMakeVisible(e6.get());
+    e6->setName("Element 6");
+    e6->setBounds(152, 602, 16, 16);
+
+    e7.reset(new DraggableElement(processor.multiChannelCascade[0][6], 7,
+                                  gaussian_plane.get(), &processor));
+    addAndMakeVisible(e7.get());
+    e7->setName("Element 7");
+    e7->setBounds(152, 602, 16, 16);
+
+    e8.reset(new DraggableElement(processor.multiChannelCascade[0][7], 8,
+                                  gaussian_plane.get(), &processor));
+    addAndMakeVisible(e8.get());
+    e8->setName("Element 8");
+    e8->setBounds(152, 602, 16, 16);
 
     passbandAmplitude_label.reset(new juce::Label(
         "Passband Amplitude", TRANS("PASSBAND AMPLITUDE (DB)")));
@@ -2138,7 +2130,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
     }
     else if (sliderThatWasMoved == m1_slider.get())
     {
-        auto element = processor.getElementState(1);
+        auto element = processor.multiChannelCascade[0][0];
         if (element.getType() == FilterElement::POLE
             && sliderThatWasMoved->getValue()
                    == sliderThatWasMoved->getMaximum())
@@ -2173,7 +2165,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
     }
     else if (sliderThatWasMoved == m2_slider.get())
     {
-        auto element = processor.getElementState(2);
+        auto element = processor.multiChannelCascade[0][1];
         if (element.getType() == FilterElement::POLE
             && sliderThatWasMoved->getValue()
                    == sliderThatWasMoved->getMaximum())
@@ -2195,7 +2187,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
     }
     else if (sliderThatWasMoved == m3_slider.get())
     {
-        auto element = processor.getElementState(3);
+        auto element = processor.multiChannelCascade[0][2];
         if (element.getType() == FilterElement::POLE
             && sliderThatWasMoved->getValue()
                    == sliderThatWasMoved->getMaximum())
@@ -2217,7 +2209,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
     }
     else if (sliderThatWasMoved == m4_slider.get())
     {
-        auto element = processor.getElementState(4);
+        auto element = processor.multiChannelCascade[0][3];
         if (element.getType() == FilterElement::POLE
             && sliderThatWasMoved->getValue()
                    == sliderThatWasMoved->getMaximum())
@@ -2239,7 +2231,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
     }
     else if (sliderThatWasMoved == m5_slider.get())
     {
-        auto element = processor.getElementState(5);
+        auto element = processor.multiChannelCascade[0][4];
         if (element.getType() == FilterElement::POLE
             && sliderThatWasMoved->getValue()
                    == sliderThatWasMoved->getMaximum())
@@ -2261,7 +2253,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
     }
     else if (sliderThatWasMoved == m6_slider.get())
     {
-        auto element = processor.getElementState(6);
+        auto element = processor.multiChannelCascade[0][5];
         if (element.getType() == FilterElement::POLE
             && sliderThatWasMoved->getValue()
                    == sliderThatWasMoved->getMaximum())
@@ -2283,7 +2275,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
     }
     else if (sliderThatWasMoved == m7_slider.get())
     {
-        auto element = processor.getElementState(7);
+        auto element = processor.multiChannelCascade[0][6];
         if (element.getType() == FilterElement::POLE
             && sliderThatWasMoved->getValue()
                    == sliderThatWasMoved->getMaximum())
@@ -2305,7 +2297,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
     }
     else if (sliderThatWasMoved == m8_slider.get())
     {
-        auto element = processor.getElementState(8);
+        auto element = processor.multiChannelCascade[0][7];
         if (element.getType() == FilterElement::POLE
             && sliderThatWasMoved->getValue()
                    == sliderThatWasMoved->getMaximum())
@@ -2489,7 +2481,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
     }
     else if (buttonThatWasClicked == e1_type.get())
     {
-        auto element = processor.getElementState(1);
+        auto element = processor.multiChannelCascade[0][0];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
@@ -2513,7 +2505,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
     }
     else if (buttonThatWasClicked == e2_type.get())
     {
-        auto element = processor.getElementState(2);
+        auto element = processor.multiChannelCascade[0][1];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
@@ -2537,7 +2529,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
     }
     else if (buttonThatWasClicked == e3_type.get())
     {
-        auto element = processor.getElementState(3);
+        auto element = processor.multiChannelCascade[0][2];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
@@ -2561,7 +2553,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
     }
     else if (buttonThatWasClicked == e4_type.get())
     {
-        auto element = processor.getElementState(4);
+        auto element = processor.multiChannelCascade[0][3];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
@@ -2585,7 +2577,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
     }
     else if (buttonThatWasClicked == e5_type.get())
     {
-        auto element = processor.getElementState(5);
+        auto element = processor.multiChannelCascade[0][4];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
@@ -2609,7 +2601,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
     }
     else if (buttonThatWasClicked == e6_type.get())
     {
-        auto element = processor.getElementState(6);
+        auto element = processor.multiChannelCascade[0][5];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
@@ -2633,7 +2625,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
     }
     else if (buttonThatWasClicked == e7_type.get())
     {
-        auto element = processor.getElementState(7);
+        auto element = processor.multiChannelCascade[0][6];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
@@ -2657,7 +2649,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
     }
     else if (buttonThatWasClicked == e8_type.get())
     {
-        auto element = processor.getElementState(8);
+        auto element = processor.multiChannelCascade[0][7];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
@@ -3282,22 +3274,22 @@ void EditorComponent::updateReferenceFrequencies()
 
 void EditorComponent::updateElements()
 {
-    e1->updateElement(processor.getElementState(1), 1, gaussian_plane.get(),
-                      &processor);
-    e2->updateElement(processor.getElementState(2), 2, gaussian_plane.get(),
-                      &processor);
-    e3->updateElement(processor.getElementState(3), 3, gaussian_plane.get(),
-                      &processor);
-    e4->updateElement(processor.getElementState(4), 4, gaussian_plane.get(),
-                      &processor);
-    e5->updateElement(processor.getElementState(5), 5, gaussian_plane.get(),
-                      &processor);
-    e6->updateElement(processor.getElementState(6), 6, gaussian_plane.get(),
-                      &processor);
-    e7->updateElement(processor.getElementState(7), 7, gaussian_plane.get(),
-                      &processor);
-    e8->updateElement(processor.getElementState(8), 8, gaussian_plane.get(),
-                      &processor);
+    e1->updateElement(processor.multiChannelCascade[0][0], 1,
+                      gaussian_plane.get(), &processor);
+    e2->updateElement(processor.multiChannelCascade[0][1], 2,
+                      gaussian_plane.get(), &processor);
+    e3->updateElement(processor.multiChannelCascade[0][2], 3,
+                      gaussian_plane.get(), &processor);
+    e4->updateElement(processor.multiChannelCascade[0][3], 4,
+                      gaussian_plane.get(), &processor);
+    e5->updateElement(processor.multiChannelCascade[0][4], 5,
+                      gaussian_plane.get(), &processor);
+    e6->updateElement(processor.multiChannelCascade[0][5], 6,
+                      gaussian_plane.get(), &processor);
+    e7->updateElement(processor.multiChannelCascade[0][6], 7,
+                      gaussian_plane.get(), &processor);
+    e8->updateElement(processor.multiChannelCascade[0][7], 8,
+                      gaussian_plane.get(), &processor);
 }
 
 void EditorComponent::updateFrequencyFromSlider(juce::Slider* slider,
@@ -3569,7 +3561,7 @@ float EditorComponent::formatGainInput(float gain)
 
 float EditorComponent::calculateGain(const int elementNr, bool isChangingType)
 {
-    auto element   = processor.getElementState(elementNr);
+    auto element   = processor.multiChannelCascade[0][elementNr - 1];
     auto magnitude = element.getMagnitude();
     auto type      = element.getType();
 

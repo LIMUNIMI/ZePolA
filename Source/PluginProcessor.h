@@ -7,6 +7,8 @@ class PolesAndZerosEQAudioProcessor
       public AudioProcessorValueTreeState::Listener
 {
 public:
+    friend class EditorComponent;
+
     PolesAndZerosEQAudioProcessor();
     ~PolesAndZerosEQAudioProcessor() override;
 
@@ -52,7 +54,6 @@ public:
     void setElementGain(const int elementNr, double gain);
 
     std::vector<FilterElement> getFilterElementsChain();
-    FilterElement getElementState(const int elementNr);
 
     void setEditorCallback(std::function<void()> callback);
 
