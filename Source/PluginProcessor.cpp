@@ -182,17 +182,9 @@ void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
     resetSafetyFlag();
 }
 
-void PolesAndZerosEQAudioProcessor::setParameterValue(
-    juce::RangedAudioParameter* parameter, float value)
-{
-    parameter->beginChangeGesture();
-    parameter->setValueNotifyingHost(value);
-    parameter->endChangeGesture();
-}
-
 void PolesAndZerosEQAudioProcessor::setUnactive(const int elementNr)
 {
-    setParameterValue(
+    Parameters::setParameterValue(
         parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
         ACTIVE_DEFAULT);
 }
@@ -234,28 +226,28 @@ void PolesAndZerosEQAudioProcessor::resetFilter()
 {
     for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++i)
     {
-        setParameterValue(
+        Parameters::setParameterValue(
             parameters.getParameter(MAGNITUDE_NAME + std::to_string(i)),
             MAGNITUDE_DEFAULT);
-        setParameterValue(
+        Parameters::setParameterValue(
             parameters.getParameter(PHASE_NAME + std::to_string(i)),
             PHASE_DEFAULT);
-        setParameterValue(
+        Parameters::setParameterValue(
             parameters.getParameter(TYPE_NAME + std::to_string(i)),
             TYPE_DEFAULT);
-        setParameterValue(
+        Parameters::setParameterValue(
             parameters.getParameter(ACTIVE_NAME + std::to_string(i)),
             ACTIVE_DEFAULT);
-        setParameterValue(
+        Parameters::setParameterValue(
             parameters.getParameter(GAIN_NAME + std::to_string(i)),
             jmap(GAIN_DEFAULT, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR,
                  SLIDERS_CEILING));
     }
-    setParameterValue(parameters.getParameter(MASTER_GAIN_NAME),
+    Parameters::setParameterValue(parameters.getParameter(MASTER_GAIN_NAME),
                       jmap(MASTER_GAIN_DEFAULT, MASTER_GAIN_FLOOR,
                            MASTER_GAIN_CEILING, SLIDERS_FLOOR,
                            SLIDERS_CEILING));
-    setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME),
+    Parameters::setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME),
                       BYPASS_DEFAULT);
 
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();
@@ -268,7 +260,7 @@ float PolesAndZerosEQAudioProcessor::getCurrentGain()
 
 void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
 {
-    setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME), bypass);
+    Parameters::setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME), bypass);
 }
 
 void PolesAndZerosEQAudioProcessor::doublePhases()
@@ -284,7 +276,7 @@ void PolesAndZerosEQAudioProcessor::doublePhases()
             newPhase = 1.0;
         else
             newPhase = currentPhase * 2.0;
-        setParameterValue(
+        Parameters::setParameterValue(
             parameters.getParameter(PHASE_NAME + std::to_string(i)), newPhase);
     }
 }
@@ -297,7 +289,7 @@ void PolesAndZerosEQAudioProcessor::halfPhases()
     for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++i)
     {
         currentPhase = elements[i - 1].getPhase();
-        setParameterValue(
+        Parameters::setParameterValue(
             parameters.getParameter(PHASE_NAME + std::to_string(i)),
             currentPhase * 0.5);
     }
@@ -316,11 +308,11 @@ void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
         {
             newType = false;
             if (elements[i - 1].getMagnitude() == 1.0)
-                setParameterValue(
+                Parameters::setParameterValue(
                     parameters.getParameter(MAGNITUDE_NAME + std::to_string(i)),
                     POLE_MAX_MAGNITUDE);
         }
-        setParameterValue(
+        Parameters::setParameterValue(
             parameters.getParameter(TYPE_NAME + std::to_string(i)), newType);
     }
 }
@@ -331,7 +323,7 @@ void PolesAndZerosEQAudioProcessor::turnOnOffAllElements(bool option)
 
     if (option) active = true;
     for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++i)
-        setParameterValue(
+        Parameters::setParameterValue(
             parameters.getParameter(ACTIVE_NAME + std::to_string(i)), active);
 }
 
@@ -342,22 +334,22 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
                                               double linearGain)
 {
     if (elementNr > NUMBER_OF_FILTER_ELEMENTS) return;
-    setParameterValue(
+    Parameters::setParameterValue(
         parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
         false);
 
     float gain = Decibels::gainToDecibels(linearGain, GAIN_FLOOR - 1.0);
 
-    setParameterValue(
+    Parameters::setParameterValue(
         parameters.getParameter(MAGNITUDE_NAME + std::to_string(elementNr)),
         magnitude);
-    setParameterValue(
+    Parameters::setParameterValue(
         parameters.getParameter(PHASE_NAME + std::to_string(elementNr)), phase);
-    setParameterValue(
+    Parameters::setParameterValue(
         parameters.getParameter(TYPE_NAME + std::to_string(elementNr)), !type);
-    setParameterValue(
+    Parameters::setParameterValue(
         parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)), true);
-    setParameterValue(
+    Parameters::setParameterValue(
         parameters.getParameter(GAIN_NAME + std::to_string(elementNr)),
         jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
 }

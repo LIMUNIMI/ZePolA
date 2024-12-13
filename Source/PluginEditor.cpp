@@ -2152,10 +2152,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(1);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(1)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(1)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == p1_slider.get())
@@ -2165,10 +2165,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(1);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(1)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(1)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == m2_slider.get())
@@ -2187,10 +2187,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(2);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(2)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(2)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == m3_slider.get())
@@ -2209,10 +2209,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(3);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(3)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(3)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == m4_slider.get())
@@ -2231,10 +2231,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(4);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(4)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(4)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == m5_slider.get())
@@ -2253,10 +2253,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(5);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(5)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(5)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == m6_slider.get())
@@ -2275,10 +2275,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(6);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(6)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(6)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == m7_slider.get())
@@ -2297,10 +2297,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(7);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(7)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(7)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == m8_slider.get())
@@ -2319,10 +2319,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(8);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(8)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(8)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == p2_slider.get())
@@ -2332,10 +2332,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(2);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(2)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(2)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == p3_slider.get())
@@ -2345,10 +2345,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(3);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(3)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(3)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == p4_slider.get())
@@ -2358,10 +2358,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(4);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(4)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(4)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == p5_slider.get())
@@ -2371,10 +2371,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(5);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(5)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(5)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == p6_slider.get())
@@ -2384,10 +2384,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(6);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(6)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(6)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == p7_slider.get())
@@ -2397,10 +2397,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(7);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(7)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(7)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == p8_slider.get())
@@ -2410,10 +2410,10 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(8);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(8)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(8)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (sliderThatWasMoved == frequency_design_slider.get())
@@ -2492,9 +2492,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.getElementState(1);
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            MAGNITUDE_NAME + std::to_string(1)),
-                                        POLE_MAX_MAGNITUDE);
+            Parameters::setParameterValue(
+                processor.parameters.getParameter(MAGNITUDE_NAME
+                                                  + std::to_string(1)),
+                POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
             m1_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2504,10 +2505,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(1, true);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(1)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(1)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (buttonThatWasClicked == e2_type.get())
@@ -2515,9 +2516,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.getElementState(2);
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            MAGNITUDE_NAME + std::to_string(2)),
-                                        POLE_MAX_MAGNITUDE);
+            Parameters::setParameterValue(
+                processor.parameters.getParameter(MAGNITUDE_NAME
+                                                  + std::to_string(2)),
+                POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
             m2_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2527,10 +2529,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(2, true);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(2)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(2)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (buttonThatWasClicked == e3_type.get())
@@ -2538,9 +2540,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.getElementState(3);
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            MAGNITUDE_NAME + std::to_string(3)),
-                                        POLE_MAX_MAGNITUDE);
+            Parameters::setParameterValue(
+                processor.parameters.getParameter(MAGNITUDE_NAME
+                                                  + std::to_string(3)),
+                POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
             m3_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2550,10 +2553,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(3, true);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(3)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(3)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (buttonThatWasClicked == e4_type.get())
@@ -2561,9 +2564,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.getElementState(4);
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            MAGNITUDE_NAME + std::to_string(4)),
-                                        POLE_MAX_MAGNITUDE);
+            Parameters::setParameterValue(
+                processor.parameters.getParameter(MAGNITUDE_NAME
+                                                  + std::to_string(4)),
+                POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
             m4_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2573,10 +2577,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(4, true);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(4)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(4)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (buttonThatWasClicked == e5_type.get())
@@ -2584,9 +2588,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.getElementState(5);
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            MAGNITUDE_NAME + std::to_string(5)),
-                                        POLE_MAX_MAGNITUDE);
+            Parameters::setParameterValue(
+                processor.parameters.getParameter(MAGNITUDE_NAME
+                                                  + std::to_string(5)),
+                POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
             m5_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2596,10 +2601,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(5, true);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(5)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(5)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (buttonThatWasClicked == e6_type.get())
@@ -2607,9 +2612,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.getElementState(6);
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            MAGNITUDE_NAME + std::to_string(6)),
-                                        POLE_MAX_MAGNITUDE);
+            Parameters::setParameterValue(
+                processor.parameters.getParameter(MAGNITUDE_NAME
+                                                  + std::to_string(6)),
+                POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
             m6_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2619,10 +2625,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(6, true);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(6)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(6)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (buttonThatWasClicked == e7_type.get())
@@ -2630,9 +2636,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.getElementState(7);
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            MAGNITUDE_NAME + std::to_string(7)),
-                                        POLE_MAX_MAGNITUDE);
+            Parameters::setParameterValue(
+                processor.parameters.getParameter(MAGNITUDE_NAME
+                                                  + std::to_string(7)),
+                POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
             m7_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2642,10 +2649,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(7, true);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(7)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(7)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (buttonThatWasClicked == e8_type.get())
@@ -2653,9 +2660,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.getElementState(8);
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            MAGNITUDE_NAME + std::to_string(8)),
-                                        POLE_MAX_MAGNITUDE);
+            Parameters::setParameterValue(
+                processor.parameters.getParameter(MAGNITUDE_NAME
+                                                  + std::to_string(8)),
+                POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
             m8_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2665,10 +2673,10 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(8, true);
-            processor.setParameterValue(processor.parameters.getParameter(
-                                            GAIN_NAME + std::to_string(8)),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
+            Parameters::setParameterValue(processor.parameters.getParameter(
+                                              GAIN_NAME + std::to_string(8)),
+                                          jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                               SLIDERS_FLOOR, SLIDERS_CEILING));
         }
     }
     else if (buttonThatWasClicked == e1_active.get())
@@ -3204,7 +3212,7 @@ void EditorComponent::gainsInit()
     for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++i)
     {
         auto gain = calculateGain(i);
-        processor.setParameterValue(
+        Parameters::setParameterValue(
             processor.parameters.getParameter(GAIN_NAME + std::to_string(i)),
             jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR,
                  SLIDERS_CEILING));

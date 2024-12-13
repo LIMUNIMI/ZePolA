@@ -457,11 +457,11 @@ public:
         double newPhase
             = std::abs(std::arg(newPosition) / MathConstants<double>::pi);
 
-        processor->setParameterValue(
+        Parameters::setParameterValue(
             processor->parameters.getParameter(MAGNITUDE_NAME
                                                + std::to_string(elementNr)),
             newMagnitude);
-        processor->setParameterValue(
+        Parameters::setParameterValue(
             processor->parameters.getParameter(PHASE_NAME
                                                + std::to_string(elementNr)),
             newPhase);

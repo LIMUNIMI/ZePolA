@@ -53,3 +53,13 @@ void Parameters::addListenerToAllParameters(
         valueTreeState.addParameterListener(id, listener);
     }
 }
+void Parameters::setParameterValue(juce::RangedAudioParameter* parameter,
+                                   float value)
+{
+    if (parameter)
+    {
+        parameter->beginChangeGesture();
+        parameter->setValueNotifyingHost(value);
+        parameter->endChangeGesture();
+    }
+}
