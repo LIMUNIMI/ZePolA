@@ -55,8 +55,6 @@ public:
 
     std::vector<FilterElement> getFilterElementsChain();
 
-    void setEditorCallback(std::function<void()> callback);
-
     void resetFilter();
 
     float getCurrentGain();

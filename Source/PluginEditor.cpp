@@ -29,17 +29,16 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
     warning_label->setBounds(595, 370, 340, 120);
     warning_label->setVisible(false);
 
-    p.setEditorCallback(
-        [this]()
-        {
-            getFrequencyResponse();
-            magnitude_response->updateValues(magnitudes, referenceFrequencies,
-                                             processor.getSampleRate(), ampDb);
-            phase_response->updateValues(phases, referenceFrequencies,
-                                         processor.getSampleRate(), true);
-            updateElements();
-            gaussian_plane->updateConjugate(processor.getFilterElementsChain());
-        });
+    p.editorCallback = [this]()
+    {
+        getFrequencyResponse();
+        magnitude_response->updateValues(magnitudes, referenceFrequencies,
+                                         processor.getSampleRate(), ampDb);
+        phase_response->updateValues(phases, referenceFrequencies,
+                                     processor.getSampleRate(), true);
+        updateElements();
+        gaussian_plane->updateConjugate(processor.getFilterElementsChain());
+    };
 
     warningRectangle.reset(new WarningRectangle());
     addAndMakeVisible(warningRectangle.get());
@@ -1677,6 +1676,8 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
 
 EditorComponent::~EditorComponent()
 {
+    processor.editorCallback = nullptr;
+
     for (int i = 0; i < NUMBER_OF_FILTER_ELEMENTS; ++i)
     {
         magnitudesAttachments[i].reset();

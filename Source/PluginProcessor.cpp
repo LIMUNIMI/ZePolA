@@ -207,12 +207,6 @@ PolesAndZerosEQAudioProcessor::getFilterElementsChain()
     return multiChannelCascade[0].getElementsChain();
 }
 
-void PolesAndZerosEQAudioProcessor::setEditorCallback(
-    std::function<void()> callback)
-{
-    editorCallback = callback;
-}
-
 void PolesAndZerosEQAudioProcessor::resetFilter()
 {
     for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++i)
