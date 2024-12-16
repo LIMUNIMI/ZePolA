@@ -326,12 +326,6 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
         jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
 }
 
-std::vector<std::array<double, 3>>
-PolesAndZerosEQAudioProcessor::getCoefficients() const
-{
-    return multiChannelCascade[0].getCoefficients();
-}
-
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new PolesAndZerosEQAudioProcessor();

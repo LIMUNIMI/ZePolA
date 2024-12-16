@@ -2869,7 +2869,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
                 outputStream << "Sample rate: "
                              << juce::String(processor.getSampleRate()) << "\n";
 
-                for (const auto& coeffs : processor.getCoefficients())
+                for (const auto& coeffs :
+                     processor.multiChannelCascade[0].getCoefficients())
                 {
                     outputStream << "\n";
                     for (auto c : coeffs)

@@ -68,8 +68,6 @@ public:
                    FilterElement::Type type, const int elementNr,
                    const double linearGain = 1.0);
 
-    std::vector<std::array<double, 3>> getCoefficients() const;
-
     AudioProcessorValueTreeState parameters;
 
 private:
