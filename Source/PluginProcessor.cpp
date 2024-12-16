@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "Filter.h"
+#include "Macros.h"
 #include "Parameters.h"
 #include "PluginEditor.h"
 #include <JuceHeader.h>
@@ -253,20 +254,22 @@ void PolesAndZerosEQAudioProcessor::halfPhases()
 
 void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
 {
-    auto elements = getFilterElementsChain();
-    bool newType;
-
-    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++i)
+    size_t n = multiChannelCascade[0].size();
+    for (int i = 1; i <= n; ++i)
     {
-        newType          = true;
-        auto currentType = elements[i - 1].getType();
-        if (currentType == FilterElement::ZERO)
+        auto currentType = multiChannelCascade[0][i - 1].getType();
+        FilterElement::Type newType;
+        switch (currentType)
         {
-            newType = false;
-            if (elements[i - 1].getMagnitude() == 1.0)
-                Parameters::setParameterValue(
-                    parameters.getParameter(MAGNITUDE_NAME + std::to_string(i)),
-                    POLE_MAX_MAGNITUDE);
+        default:
+            UNHANDLED_SWITCH_CASE(
+                "Unhandled case for filter element type. Defaulting to 'ZERO'");
+        case (FilterElement::Type::ZERO):
+            newType = FilterElement::Type::POLE;
+            break;
+        case (FilterElement::Type::POLE):
+            newType = FilterElement::Type::ZERO;
+            break;
         }
         Parameters::setParameterValue(
             parameters.getParameter(TYPE_NAME + std::to_string(i)), newType);
