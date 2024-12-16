@@ -179,7 +179,7 @@ void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
         editorCallback();
     }
 
-    resetSafetyFlag();
+    safetyFlag = false;
 }
 
 void PolesAndZerosEQAudioProcessor::setUnactive(const int elementNr)
@@ -331,10 +331,6 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
         parameters.getParameter(GAIN_NAME + std::to_string(elementNr)),
         jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
 }
-
-bool PolesAndZerosEQAudioProcessor::getSafetyFlag() { return safetyFlag; }
-
-void PolesAndZerosEQAudioProcessor::resetSafetyFlag() { safetyFlag = false; }
 
 std::vector<std::array<double, 3>>
 PolesAndZerosEQAudioProcessor::getCoefficients() const

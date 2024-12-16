@@ -70,9 +70,6 @@ public:
                    FilterElement::Type type, const int elementNr,
                    const double linearGain = 1.0);
 
-    bool getSafetyFlag();
-    void resetSafetyFlag();
-
     std::vector<std::array<double, 3>> getCoefficients() const;
 
     AudioProcessorValueTreeState parameters;
