@@ -75,6 +75,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 void addListenerToAllParameters(
     juce::AudioProcessorValueTreeState& valueTreeState,
     juce::AudioProcessorValueTreeState::Listener* listener);
-/** Set parameter value, enclosing it in a gesture */
+/** Set parameter value, enclosing the operation in a gesture */
 void setParameterValue(juce::RangedAudioParameter* parameter, float value);
+/** Set parameter value to default, enclosing the operation in a gesture */
+void resetParameterValue(juce::RangedAudioParameter*);
 }  // namespace Parameters

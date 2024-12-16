@@ -52,7 +52,7 @@ public:
     double getElementGain(const int elementNr);
     void setElementGain(const int elementNr, double gain);
 
-    void resetFilter();
+    void resetParams();
 
     float getCurrentGain();
     void setdBGain(double newdBGain);

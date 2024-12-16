@@ -2477,7 +2477,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
 {
     if (buttonThatWasClicked == reset_button.get())
     {
-        processor.resetFilter();
+        processor.resetParams();
     }
     else if (buttonThatWasClicked == e1_type.get())
     {

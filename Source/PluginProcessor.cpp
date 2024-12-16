@@ -194,34 +194,17 @@ double PolesAndZerosEQAudioProcessor::getElementGain(const int elementNr)
     return multiChannelCascade[0][elementNr - 1].getGain();
 }
 
-void PolesAndZerosEQAudioProcessor::resetFilter()
+void PolesAndZerosEQAudioProcessor::resetParams()
 {
-    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++i)
-    {
-        Parameters::setParameterValue(
-            parameters.getParameter(MAGNITUDE_NAME + std::to_string(i)),
-            MAGNITUDE_DEFAULT);
-        Parameters::setParameterValue(
-            parameters.getParameter(PHASE_NAME + std::to_string(i)),
-            PHASE_DEFAULT);
-        Parameters::setParameterValue(
-            parameters.getParameter(TYPE_NAME + std::to_string(i)),
-            TYPE_DEFAULT);
-        Parameters::setParameterValue(
-            parameters.getParameter(ACTIVE_NAME + std::to_string(i)),
-            ACTIVE_DEFAULT);
-        Parameters::setParameterValue(
-            parameters.getParameter(GAIN_NAME + std::to_string(i)),
-            jmap(GAIN_DEFAULT, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR,
-                 SLIDERS_CEILING));
-    }
-    Parameters::setParameterValue(parameters.getParameter(MASTER_GAIN_NAME),
-                                  jmap(MASTER_GAIN_DEFAULT, MASTER_GAIN_FLOOR,
-                                       MASTER_GAIN_CEILING, SLIDERS_FLOOR,
-                                       SLIDERS_CEILING));
-    Parameters::setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME),
-                                  BYPASS_DEFAULT);
-
+    size_t n = multiChannelCascade[0].size();
+    RangedAudioParameter* p;
+    for (int i = 1; i <= n; ++i)
+        for (auto k :
+             {MAGNITUDE_NAME, PHASE_NAME, TYPE_NAME, ACTIVE_NAME, GAIN_NAME})
+            Parameters::resetParameterValue(
+                parameters.getParameter(k + std::to_string(i)));
+    for (auto k : {MASTER_GAIN_NAME, FILTER_BYPASS_NAME})
+        Parameters::resetParameterValue(parameters.getParameter(k));
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();
 }
 
