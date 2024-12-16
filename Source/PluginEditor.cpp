@@ -3740,7 +3740,7 @@ void EditorComponent::filterDesignAndSetup()
     }
 
     for (; elementNr <= NUMBER_OF_FILTER_ELEMENTS; ++elementNr)
-        processor.setUnactive(elementNr);
+        processor.setInactive(elementNr);
 
     processor.setBypass(false);
     isSettingFilters = false;

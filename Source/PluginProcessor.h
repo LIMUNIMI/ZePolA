@@ -47,7 +47,7 @@ public:
 
     void setParameterValue(juce::RangedAudioParameter* parameter, float value);
 
-    void setUnactive(const int elementNr);
+    void setInactive(const int elementNr);
 
     double getElementGain(const int elementNr);
     void setElementGain(const int elementNr, double gain);

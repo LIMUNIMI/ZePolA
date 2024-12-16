@@ -182,11 +182,11 @@ void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
     safetyFlag = false;
 }
 
-void PolesAndZerosEQAudioProcessor::setUnactive(const int elementNr)
+void PolesAndZerosEQAudioProcessor::setInactive(const int elementNr)
 {
     Parameters::setParameterValue(
         parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
-        ACTIVE_DEFAULT);
+        false);
 }
 
 double PolesAndZerosEQAudioProcessor::getElementGain(const int elementNr)
