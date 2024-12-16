@@ -37,7 +37,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
         phase_response->updateValues(phases, referenceFrequencies,
                                      processor.getSampleRate(), true);
         updateElements();
-        gaussian_plane->updateConjugate(processor.getFilterElementsChain());
+        gaussian_plane->updateConjugate(processor.multiChannelCascade[0]);
     };
 
     warningRectangle.reset(new WarningRectangle());
@@ -77,10 +77,9 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
 
     e1_gain->setBounds(310, 5, 97, 25);
 
-    gaussian_plane.reset(new GaussianPlane(processor.getFilterElementsChain()));
+    gaussian_plane.reset(new GaussianPlane(processor.multiChannelCascade[0]));
     addAndMakeVisible(gaussian_plane.get());
     gaussian_plane->setName("gaussianPlane");
-
     gaussian_plane->setBounds(30, 424, 316, 316);
 
     e1.reset(new DraggableElement(processor.multiChannelCascade[0][0], 1,
@@ -3109,7 +3108,7 @@ void EditorComponent::comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged)
 
 void EditorComponent::slidersInit()
 {
-    auto elements = processor.getFilterElementsChain();
+    auto elements = processor.multiChannelCascade[0];
 
     if (elements[0].getActive())
     {

@@ -259,14 +259,14 @@ private:
 class GaussianPlane : public juce::Component
 {
 public:
-    GaussianPlane(const std::vector<FilterElement>& elements)
+    GaussianPlane(FilterElementCascade& elements)
     {
         auto componentBounds = GAUSSIAN_PLANE_RECTANGLE;
         bounds = componentBounds.reduced(PLANE_PADDING, PLANE_PADDING);
         updateConjugate(elements);
     }
 
-    void updateConjugate(const std::vector<FilterElement>& elements)
+    void updateConjugate(FilterElementCascade& elements)
     {
         zeros.clear();
         poles.clear();

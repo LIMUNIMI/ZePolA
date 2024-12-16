@@ -52,8 +52,6 @@ public:
     double getElementGain(const int elementNr);
     void setElementGain(const int elementNr, double gain);
 
-    std::vector<FilterElement> getFilterElementsChain();
-
     void resetFilter();
 
     float getCurrentGain();

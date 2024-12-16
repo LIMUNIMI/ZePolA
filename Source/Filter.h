@@ -157,9 +157,6 @@ public:
     bool empty() const;
     // Access element of the chain
     FilterElement& operator[](size_t);
-    // Returns the cascade as a vector of FilterElement
-    [[deprecated("Use accessors instead.")]] std::vector<FilterElement>&
-    getElementsChain();
 
     // =========================================================================
     /**

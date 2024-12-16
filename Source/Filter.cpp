@@ -201,10 +201,6 @@ FilterElement& FilterElementCascade::operator[](size_t i)
 {
     return elements[i];
 }
-std::vector<FilterElement>& FilterElementCascade::getElementsChain()
-{
-    return elements;
-}
 
 // =========================================================================
 std::complex<double> FilterElementCascade::dtft(double omega) const
