@@ -58,6 +58,7 @@ public:
     void setdBGain(double newdBGain);
     void setBypass(bool bypass);
 
+    void multiplyPhases(double);
     void doublePhases();
     void halfPhases();
     void swapPolesAndZeros();

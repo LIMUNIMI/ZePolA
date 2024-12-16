@@ -220,37 +220,20 @@ void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
                                   bypass);
 }
 
-void PolesAndZerosEQAudioProcessor::doublePhases()
+void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
 {
-    auto elements = getFilterElementsChain();
-    double currentPhase;
-    double newPhase;
-
-    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++i)
+    size_t n = multiChannelCascade[0].size();
+    for (int i = 0; i < n; ++i)
     {
-        currentPhase = elements[i - 1].getPhase();
-        if (currentPhase > (PHASE_CEILING / 2))
-            newPhase = 1.0;
-        else
-            newPhase = currentPhase * 2.0;
         Parameters::setParameterValue(
-            parameters.getParameter(PHASE_NAME + std::to_string(i)), newPhase);
+            parameters.getParameter(PHASE_NAME + std::to_string(i + 1)),
+            multiChannelCascade[0][i].getPhase() * k);
     }
 }
 
-void PolesAndZerosEQAudioProcessor::halfPhases()
-{
-    auto elements = getFilterElementsChain();
-    double currentPhase;
+void PolesAndZerosEQAudioProcessor::doublePhases() { multiplyPhases(2.0); }
 
-    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++i)
-    {
-        currentPhase = elements[i - 1].getPhase();
-        Parameters::setParameterValue(
-            parameters.getParameter(PHASE_NAME + std::to_string(i)),
-            currentPhase * 0.5);
-    }
-}
+void PolesAndZerosEQAudioProcessor::halfPhases() { multiplyPhases(0.5); }
 
 void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
 {
