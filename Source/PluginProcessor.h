@@ -49,7 +49,6 @@ public:
 
     void setUnactive(const int elementNr);
 
-    std::complex<double> getFrequencyResponseAtPhi(const double phi);
     double getElementGain(const int elementNr);
     void setElementGain(const int elementNr, double gain);
 

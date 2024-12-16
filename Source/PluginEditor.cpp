@@ -3216,14 +3216,13 @@ void EditorComponent::getFrequencyResponse()
 {
     double phi;
     const auto sampleRate = processor.getSampleRate();
-    const double pi       = MathConstants<double>::pi;
 
     auto n1 = log(FREQUENCY_FLOOR / sampleRate);
     auto n2 = log(0.5) - n1;
 
     std::complex<double> frequencyResponse;
 
-    const double gain = processor.getCurrentGain();
+    const double gain = processor.gainProcessor.getGainLinear();
 
     for (int i = 0; i < GRAPHS_QUALITY; ++i)
     {
@@ -3235,10 +3234,13 @@ void EditorComponent::getFrequencyResponse()
                       + (n2
                          * (static_cast<double>(i)
                             / (static_cast<double>(GRAPHS_QUALITY - 1)))));
+        phi *= juce::MathConstants<double>::twoPi;
 
-        frequencyResponse = processor.getFrequencyResponseAtPhi(phi);
+        frequencyResponse = processor.multiChannelCascade[0].dtft(phi);
         magnitudes[i]     = gain * std::abs(frequencyResponse);
-        phases[i]         = (pi + std::arg(frequencyResponse)) / (2.0 * pi);
+        phases[i]
+            = (juce::MathConstants<double>::pi + std::arg(frequencyResponse))
+              / juce::MathConstants<double>::twoPi;
     }
 }
 
