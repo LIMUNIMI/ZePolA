@@ -216,11 +216,11 @@ void PolesAndZerosEQAudioProcessor::resetFilter()
                  SLIDERS_CEILING));
     }
     Parameters::setParameterValue(parameters.getParameter(MASTER_GAIN_NAME),
-                      jmap(MASTER_GAIN_DEFAULT, MASTER_GAIN_FLOOR,
-                           MASTER_GAIN_CEILING, SLIDERS_FLOOR,
-                           SLIDERS_CEILING));
+                                  jmap(MASTER_GAIN_DEFAULT, MASTER_GAIN_FLOOR,
+                                       MASTER_GAIN_CEILING, SLIDERS_FLOOR,
+                                       SLIDERS_CEILING));
     Parameters::setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME),
-                      BYPASS_DEFAULT);
+                                  BYPASS_DEFAULT);
 
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();
 }
@@ -232,7 +232,8 @@ float PolesAndZerosEQAudioProcessor::getCurrentGain()
 
 void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
 {
-    Parameters::setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME), bypass);
+    Parameters::setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME),
+                                  bypass);
 }
 
 void PolesAndZerosEQAudioProcessor::doublePhases()
@@ -289,12 +290,10 @@ void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
     }
 }
 
-void PolesAndZerosEQAudioProcessor::turnOnOffAllElements(bool option)
+void PolesAndZerosEQAudioProcessor::setAllActive(bool active)
 {
-    bool active = false;
-
-    if (option) active = true;
-    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++i)
+    size_t n = multiChannelCascade[0].size();
+    for (int i = 1; i <= n; ++i)
         Parameters::setParameterValue(
             parameters.getParameter(ACTIVE_NAME + std::to_string(i)), active);
 }

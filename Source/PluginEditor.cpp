@@ -2803,11 +2803,11 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
     }
     else if (buttonThatWasClicked == turn_on_button.get())
     {
-        processor.turnOnOffAllElements(1);
+        processor.setAllActive(true);
     }
     else if (buttonThatWasClicked == turn_off_button.get())
     {
-        processor.turnOnOffAllElements(0);
+        processor.setAllActive(false);
     }
     else if (buttonThatWasClicked == ampDb_switch.get())
     {

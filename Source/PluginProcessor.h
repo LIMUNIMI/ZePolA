@@ -62,7 +62,7 @@ public:
     void halfPhases();
     void swapPolesAndZeros();
 
-    void turnOnOffAllElements(bool option);
+    void setAllActive(bool);
 
     void setFilter(const double magnitude, const double phase,
                    FilterElement::Type type, const int elementNr,
