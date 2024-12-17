@@ -8,6 +8,9 @@ class PolesAndZerosEQAudioProcessor
 {
 public:
     friend class EditorComponent;
+    // TODO: remove this friend declaration: a DraggableElement should own a
+    // pointer its corresponding parameter
+    friend class DraggableElement;
 
     PolesAndZerosEQAudioProcessor();
     ~PolesAndZerosEQAudioProcessor() override;
