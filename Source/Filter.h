@@ -91,7 +91,7 @@ public:
      * @param n Buffer size. Both pointers should safe to be accessed between 0
      * and n - 1
      */
-    void processBlock(double* outputs, double* inputs, int n);
+    void processBlock(double* outputs, const double* inputs, int n);
     /**
      * @brief Computes the DTFT of the digital filter
      *
@@ -178,7 +178,7 @@ public:
      * @param n Buffer size. Both pointers should safe to be accessed between 0
      * and n - 1
      */
-    void processBlock(double* outputs, double* inputs, int n);
+    void processBlock(double* outputs, const double* inputs, int n);
 
 private:
     // =========================================================================
