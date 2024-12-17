@@ -84,6 +84,8 @@ private:
      * number of channels
      */
     void allocateChannelsIfNeeded(int);
+    /** Delete all allocated channel processors except one */
+    void resetChannels();
     /** Multiply the value of the phases */
     void multiplyPhases(double);
 

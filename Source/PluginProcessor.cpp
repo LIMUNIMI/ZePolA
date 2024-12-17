@@ -11,6 +11,11 @@ void PolesAndZerosEQAudioProcessor::allocateChannelsIfNeeded(int n)
     while (multiChannelCascade.size() < n)
         multiChannelCascade.push_back(FilterElementCascade(n_elements));
 }
+void PolesAndZerosEQAudioProcessor::resetChannels()
+{
+    multiChannelCascade.erase(multiChannelCascade.begin() + 1,
+                              multiChannelCascade.end());
+}
 PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
     : parameters(*this, &undoManager, "PolesAndZero-EQ",
                  Parameters::createParameterLayout(n))
@@ -42,7 +47,11 @@ bool PolesAndZerosEQAudioProcessor::isBusesLayoutSupported(
 {
     return true;
 }
-void PolesAndZerosEQAudioProcessor::releaseResources() { }
+void PolesAndZerosEQAudioProcessor::releaseResources()
+{
+    pivotBuffer.setSize(0, 0);
+    resetChannels();
+}
 void PolesAndZerosEQAudioProcessor::processBlock(
     juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
@@ -163,7 +172,8 @@ void PolesAndZerosEQAudioProcessor::resetParams()
         Parameters::resetParameterValue(parameters.getParameter(k));
     resetMemory();
 }
-void PolesAndZerosEQAudioProcessor::resetMemory() {
+void PolesAndZerosEQAudioProcessor::resetMemory()
+{
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();
 }
 void PolesAndZerosEQAudioProcessor::setAllActive(bool active)
