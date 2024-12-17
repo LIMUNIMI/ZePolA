@@ -177,11 +177,6 @@ void PolesAndZerosEQAudioProcessor::setInactive(const int elementNr)
         false);
 }
 
-double PolesAndZerosEQAudioProcessor::getElementGain(const int elementNr)
-{
-    return multiChannelCascade[0][elementNr - 1].getGain();
-}
-
 void PolesAndZerosEQAudioProcessor::resetParams()
 {
     size_t n = multiChannelCascade[0].size();
@@ -194,11 +189,6 @@ void PolesAndZerosEQAudioProcessor::resetParams()
     for (auto k : {MASTER_GAIN_NAME, FILTER_BYPASS_NAME})
         Parameters::resetParameterValue(parameters.getParameter(k));
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();
-}
-
-float PolesAndZerosEQAudioProcessor::getCurrentGain()
-{
-    return gainProcessor.getGainLinear();
 }
 
 void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
