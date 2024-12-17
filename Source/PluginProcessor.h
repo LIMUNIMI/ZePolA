@@ -50,6 +50,8 @@ public:
     void setStateInformation(const void* data, int sizeInBytes) override;
 
     // =========================================================================
+    /** Get number of filter elements */
+    size_t nElements() const;
     /** Reset parameters to default and clear filter memory */
     void resetParams();
     /** Activate or deactivate all filter elements */

@@ -133,9 +133,13 @@ void PolesAndZerosEQAudioProcessor::setStateInformation(const void* data,
 }
 
 // =============================================================================
+size_t PolesAndZerosEQAudioProcessor::nElements() const {
+    jassert(multiChannelCascade.size() > 0);
+    return multiChannelCascade[0].size();
+}
 void PolesAndZerosEQAudioProcessor::resetParams()
 {
-    size_t n = multiChannelCascade[0].size();
+    size_t n = nElements();
     RangedAudioParameter* p;
     for (int i = 1; i <= n; ++i)
         for (auto k :
@@ -148,7 +152,7 @@ void PolesAndZerosEQAudioProcessor::resetParams()
 }
 void PolesAndZerosEQAudioProcessor::setAllActive(bool active)
 {
-    size_t n = multiChannelCascade[0].size();
+    size_t n = nElements();
     for (int i = 1; i <= n; ++i)
         Parameters::setParameterValue(
             parameters.getParameter(ACTIVE_NAME + std::to_string(i)), active);
@@ -166,7 +170,7 @@ void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
 }
 void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
 {
-    size_t n = multiChannelCascade[0].size();
+    size_t n = nElements();
     for (int i = 0; i < n; ++i)
     {
         Parameters::setParameterValue(
@@ -178,7 +182,7 @@ void PolesAndZerosEQAudioProcessor::doublePhases() { multiplyPhases(2.0); }
 void PolesAndZerosEQAudioProcessor::halfPhases() { multiplyPhases(0.5); }
 void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
 {
-    size_t n = multiChannelCascade[0].size();
+    size_t n = nElements();
     for (int i = 0; i < n; ++i)
     {
         auto currentType = multiChannelCascade[0][i].getType();
