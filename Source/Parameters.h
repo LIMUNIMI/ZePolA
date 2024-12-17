@@ -3,7 +3,6 @@
 
 // =============================================================================
 // Generic constants & macros
-#define NUMBER_OF_FILTER_ELEMENTS 8
 #define STEREO 2
 #define SLIDERS_FLOOR 0.0f
 #define SLIDERS_CEILING 1.0f
@@ -67,8 +66,13 @@
 // =============================================================================
 namespace Parameters
 {
-/** Initialize the parameter layout for the plugin */
-juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+/**
+ * @brief Initialize the parameter layout for the plugin
+ *
+ * @param n_elements Number of filter elements
+ */
+juce::AudioProcessorValueTreeState::ParameterLayout
+createParameterLayout(int n_elements);
 
 // =============================================================================
 /** Add the specified listener as listener of all parameters  */

@@ -6,15 +6,15 @@
 #include <JuceHeader.h>
 
 // =============================================================================
-PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor()
+PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
     : parameters(*this, &undoManager, "PolesAndZero-EQ",
-                 Parameters::createParameterLayout())
+                 Parameters::createParameterLayout(n))
+    , n_elements(n)
 {
     Parameters::addListenerToAllParameters(parameters, this);
 
     for (int i = 0; i < STEREO; ++i)
-        multiChannelCascade.push_back(
-            FilterElementCascade(NUMBER_OF_FILTER_ELEMENTS));
+        multiChannelCascade.push_back(FilterElementCascade(n_elements));
 }
 
 // =============================================================================
@@ -133,15 +133,10 @@ void PolesAndZerosEQAudioProcessor::setStateInformation(const void* data,
 }
 
 // =============================================================================
-size_t PolesAndZerosEQAudioProcessor::nElements() const {
-    jassert(multiChannelCascade.size() > 0);
-    return multiChannelCascade[0].size();
-}
 void PolesAndZerosEQAudioProcessor::resetParams()
 {
-    size_t n = nElements();
     RangedAudioParameter* p;
-    for (int i = 1; i <= n; ++i)
+    for (int i = 1; i <= n_elements; ++i)
         for (auto k :
              {MAGNITUDE_NAME, PHASE_NAME, TYPE_NAME, ACTIVE_NAME, GAIN_NAME})
             Parameters::resetParameterValue(
@@ -152,8 +147,7 @@ void PolesAndZerosEQAudioProcessor::resetParams()
 }
 void PolesAndZerosEQAudioProcessor::setAllActive(bool active)
 {
-    size_t n = nElements();
-    for (int i = 1; i <= n; ++i)
+    for (int i = 1; i <= n_elements; ++i)
         Parameters::setParameterValue(
             parameters.getParameter(ACTIVE_NAME + std::to_string(i)), active);
 }
@@ -170,8 +164,7 @@ void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
 }
 void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
 {
-    size_t n = nElements();
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n_elements; ++i)
     {
         Parameters::setParameterValue(
             parameters.getParameter(PHASE_NAME + std::to_string(i + 1)),
@@ -182,8 +175,7 @@ void PolesAndZerosEQAudioProcessor::doublePhases() { multiplyPhases(2.0); }
 void PolesAndZerosEQAudioProcessor::halfPhases() { multiplyPhases(0.5); }
 void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
 {
-    size_t n = nElements();
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n_elements; ++i)
     {
         auto currentType = multiChannelCascade[0][i].getType();
         FilterElement::Type newType;
@@ -210,7 +202,7 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
                                               const int elementNr,
                                               double linearGain)
 {
-    if (elementNr > NUMBER_OF_FILTER_ELEMENTS) return;
+    if (elementNr > n_elements) return;
     Parameters::setParameterValue(
         parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
         false);
@@ -297,5 +289,5 @@ void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
 // =============================================================================
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new PolesAndZerosEQAudioProcessor();
+    return new PolesAndZerosEQAudioProcessor(8);
 }

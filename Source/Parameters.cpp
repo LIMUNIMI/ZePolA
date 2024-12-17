@@ -2,7 +2,7 @@
 
 // =============================================================================
 AudioProcessorValueTreeState::ParameterLayout
-Parameters::createParameterLayout()
+Parameters::createParameterLayout(int n_elements)
 {
     std::vector<std::unique_ptr<RangedAudioParameter>> params;
 
@@ -11,7 +11,7 @@ Parameters::createParameterLayout()
     juce::NormalisableRange<float> gainRange(GAIN_FLOOR, GAIN_CEILING,
                                              GAIN_INTERVAL);
 
-    for (int i = 0; i < NUMBER_OF_FILTER_ELEMENTS; ++i)
+    for (int i = 0; i < n_elements; ++i)
     {
         std::string number = std::to_string(i + 1);
 

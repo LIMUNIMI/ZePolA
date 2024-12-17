@@ -53,11 +53,11 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
     getFrequencyResponse();
     updateReferenceFrequencies();
 
-    magnitudesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
-    phasesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
-    typesAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
-    activeAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
-    gainsAttachments.resize(NUMBER_OF_FILTER_ELEMENTS);
+    magnitudesAttachments.resize(processor.n_elements);
+    phasesAttachments.resize(processor.n_elements);
+    typesAttachments.resize(processor.n_elements);
+    activeAttachments.resize(processor.n_elements);
+    gainsAttachments.resize(processor.n_elements);
 
     e1_gain.reset(new CustomSlider("Element 1 gain"));
     addAndMakeVisible(e1_gain.get());
@@ -1677,7 +1677,7 @@ EditorComponent::~EditorComponent()
 {
     processor.editorCallback = nullptr;
 
-    for (int i = 0; i < NUMBER_OF_FILTER_ELEMENTS; ++i)
+    for (int i = 0; i < processor.n_elements; ++i)
     {
         magnitudesAttachments[i].reset();
         phasesAttachments[i].reset();
@@ -3202,7 +3202,7 @@ void EditorComponent::slidersInit()
 
 void EditorComponent::gainsInit()
 {
-    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++i)
+    for (int i = 1; i <= processor.n_elements; ++i)
     {
         auto gain = calculateGain(i);
         Parameters::setParameterValue(
@@ -3739,7 +3739,7 @@ void EditorComponent::filterDesignAndSetup()
         }
     }
 
-    for (; elementNr <= NUMBER_OF_FILTER_ELEMENTS; ++elementNr)
+    for (; elementNr <= processor.n_elements; ++elementNr)
         processor.setInactive(elementNr);
 
     processor.setBypass(false);

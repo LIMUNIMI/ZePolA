@@ -16,7 +16,12 @@ public:
     friend class DraggableElement;
 
     // =========================================================================
-    PolesAndZerosEQAudioProcessor();
+    /**
+     * @brief Build a Poles And Zeros EQ processor
+     *
+     * @param n_elements Number of filter elements
+     */
+    PolesAndZerosEQAudioProcessor(int n_elements);
 
     // =========================================================================
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -50,8 +55,6 @@ public:
     void setStateInformation(const void* data, int sizeInBytes) override;
 
     // =========================================================================
-    /** Get number of filter elements */
-    size_t nElements() const;
     /** Reset parameters to default and clear filter memory */
     void resetParams();
     /** Activate or deactivate all filter elements */
@@ -88,6 +91,7 @@ private:
     // =========================================================================
     bool active     = true;
     bool safetyFlag = false;
+    const int n_elements;
 
     std::function<void()> editorCallback;
     juce::UndoManager undoManager;
