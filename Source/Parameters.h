@@ -3,7 +3,6 @@
 
 // =============================================================================
 // Generic constants & macros
-#define STEREO 2
 #define SLIDERS_FLOOR 0.0f
 #define SLIDERS_CEILING 1.0f
 
