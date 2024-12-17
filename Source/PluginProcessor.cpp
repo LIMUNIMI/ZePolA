@@ -34,19 +34,6 @@ void PolesAndZerosEQAudioProcessor::prepareToPlay(double sampleRate,
 
 void PolesAndZerosEQAudioProcessor::releaseResources() { }
 
-template <typename TargetType, typename SourceType>
-void PolesAndZerosEQAudioProcessor::castBuffer(
-    AudioBuffer<TargetType>& destination, const AudioBuffer<SourceType>& source,
-    const int numChannels, const int numSamples)
-{
-    auto dst = destination.getArrayOfWritePointers();
-    auto src = source.getArrayOfReadPointers();
-
-    for (int ch = 0; ch < numChannels; ++ch)
-        for (int smp = 0; smp < numSamples; ++smp)
-            dst[ch][smp] = static_cast<TargetType>(src[ch][smp]);
-}
-
 void PolesAndZerosEQAudioProcessor::processBlock(
     juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
@@ -69,7 +56,7 @@ void PolesAndZerosEQAudioProcessor::processBlock(
             multiChannelCascade[i].resetMemory();
 
     AudioBuffer<double> doubleBuffer(numChannels, numSamples);
-    castBuffer(doubleBuffer, buffer, numChannels, numSamples);
+    doubleBuffer.makeCopyOf(buffer, true);
 
     auto bufferData = doubleBuffer.getArrayOfWritePointers();
 
@@ -80,7 +67,7 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     juce::dsp::AudioBlock<double> block(doubleBuffer);
     gainProcessor.process(juce::dsp::ProcessContextReplacing<double>(block));
 
-    castBuffer(buffer, doubleBuffer, numChannels, numSamples);
+    buffer.makeCopyOf(doubleBuffer, true);
 
     safetyFlag |= buffer.getMagnitude(0, numSamples) > 4;
 
