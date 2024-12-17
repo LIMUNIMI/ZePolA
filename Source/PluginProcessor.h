@@ -57,6 +57,8 @@ public:
     // =========================================================================
     /** Reset parameters to default and clear filter memory */
     void resetParams();
+    /** Clear filter memory */
+    void resetMemory();
     /** Activate or deactivate all filter elements */
     void setAllActive(bool);
     /** Deactivate specific filter element */
@@ -91,11 +93,12 @@ private:
 
     // =========================================================================
     std::vector<FilterElementCascade> multiChannelCascade;
-    juce::dsp::Gain<double> gainProcessor;
+    juce::dsp::Gain<float> gainProcessor;
 
     // =========================================================================
     bool active, safetyFlag;
     const int n_elements;
+    juce::AudioBuffer<double> pivotBuffer;
 
     std::function<void()> editorCallback;
     juce::UndoManager undoManager;

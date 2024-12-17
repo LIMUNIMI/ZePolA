@@ -35,7 +35,7 @@ void PolesAndZerosEQAudioProcessor::prepareToPlay(double sampleRate,
     gainProcessor.prepare(spec);
     gainProcessor.setGainDecibels(MASTER_GAIN_DEFAULT);
 
-    for (auto& cascade : multiChannelCascade) cascade.resetMemory();
+    resetMemory();
 }
 bool PolesAndZerosEQAudioProcessor::isBusesLayoutSupported(
     const BusesLayout&) const
@@ -47,46 +47,58 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    if (!active) return;
+    if (!active) return processBlockBypassed(buffer, midiMessages);
 
-    const auto numChannels = buffer.getNumChannels();
-    const auto numSamples  = buffer.getNumSamples();
-    AudioBuffer<double> doubleBuffer(numChannels, numSamples);
+    // Ensure enough processors for input channels and reset memory of excess
+    // ones
+    int n_in_channels  = getTotalNumInputChannels();
+    int n_out_channels = getTotalNumOutputChannels();
+    int n_samples      = buffer.getNumSamples();
+    allocateChannelsIfNeeded(n_in_channels);
+    size_t n_processors = multiChannelCascade.size();
+    for (int i = n_in_channels; i < n_processors; ++i)
+        multiChannelCascade[i].resetMemory();
 
-    // Ensure enough processors
-    if (numChannels > multiChannelCascade.size())
+    pivotBuffer.makeCopyOf(buffer, true);
     {
-        auto currentNumCh = multiChannelCascade.size();
-        for (int i = currentNumCh; i < numChannels; ++i)
-            multiChannelCascade.push_back(
-                FilterElementCascade(multiChannelCascade[0]));
+        // Process in double precision
+        auto channels = pivotBuffer.getArrayOfWritePointers();
+        for (int c = 0; c < n_in_channels; ++c)
+            multiChannelCascade[c].processBlock(channels[c], channels[c],
+                                                n_samples);
     }
-    else if (multiChannelCascade.size() > numChannels)
-        for (int i = numChannels; i < multiChannelCascade.size(); ++i)
-            multiChannelCascade[i].resetMemory();
+    buffer.makeCopyOf(pivotBuffer, true);
 
-    // float to double
-    doubleBuffer.makeCopyOf(buffer, true);
-    juce::dsp::AudioBlock<double> block(doubleBuffer);
-    auto bufferData = doubleBuffer.getArrayOfWritePointers();
-
-    // Process
-    for (int ch = 0; ch < numChannels; ++ch)
-        multiChannelCascade[ch].processBlock(bufferData[ch], bufferData[ch],
-                                             numSamples);
-    gainProcessor.process(juce::dsp::ProcessContextReplacing<double>(block));
-
-    // double to float
-    buffer.makeCopyOf(doubleBuffer, true);
+    if (n_in_channels < n_out_channels)
+    {
+        // Handle channel mismatch
+        if (2 == n_out_channels)
+        {
+            // in the case mono-to-stereo, copy channel output
+            buffer.copyFrom(1, 0, buffer, 0, 0, n_samples);
+        }
+        else
+        {
+            // in the case any-to-any, clear extra channels
+            for (int c = n_in_channels; c < n_out_channels; ++c)
+                buffer.clear(c, 0, n_samples);
+        }
+    }
+    {
+        // Apply gain
+        juce::dsp::AudioBlock<float> block(buffer);
+        juce::dsp::ProcessContextReplacing<float> prc_ctx(block);
+        gainProcessor.process(prc_ctx);
+    }
 
     // Output safety check (not resetting)
-    safetyFlag |= buffer.getMagnitude(0, numSamples) > 4;
+    safetyFlag |= buffer.getMagnitude(0, n_samples) > 4;
     if (safetyFlag) buffer.clear();
 }
 void PolesAndZerosEQAudioProcessor::processBlockBypassed(
-    juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+    juce::AudioBuffer<float>&, juce::MidiBuffer&)
 {
-    for (auto& cascade : multiChannelCascade) cascade.resetMemory();
+    resetMemory();
 }
 
 // =============================================================================
@@ -149,6 +161,9 @@ void PolesAndZerosEQAudioProcessor::resetParams()
                 parameters.getParameter(k + std::to_string(i)));
     for (auto k : {MASTER_GAIN_NAME, FILTER_BYPASS_NAME})
         Parameters::resetParameterValue(parameters.getParameter(k));
+    resetMemory();
+}
+void PolesAndZerosEQAudioProcessor::resetMemory() {
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();
 }
 void PolesAndZerosEQAudioProcessor::setAllActive(bool active)
@@ -239,8 +254,7 @@ void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
     if (parameterID == "BYPASS")
     {
         active = !(newValue > 0.5f);
-        if (!active)
-            for (auto& cascade : multiChannelCascade) cascade.resetMemory();
+        if (!active) resetMemory();
         return;
     }
     else if (parameterID == "MSTR_GAIN")
