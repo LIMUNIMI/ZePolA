@@ -6,15 +6,21 @@
 #include <JuceHeader.h>
 
 // =============================================================================
+void PolesAndZerosEQAudioProcessor::allocateChannelsIfNeeded(int n)
+{
+    while (multiChannelCascade.size() < n)
+        multiChannelCascade.push_back(FilterElementCascade(n_elements));
+}
 PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
     : parameters(*this, &undoManager, "PolesAndZero-EQ",
                  Parameters::createParameterLayout(n))
     , n_elements(n)
+    , pivotBuffer()
+    , safetyFlag(false)
+    , active(true)
 {
+    allocateChannelsIfNeeded(1);
     Parameters::addListenerToAllParameters(parameters, this);
-
-    for (int i = 0; i < STEREO; ++i)
-        multiChannelCascade.push_back(FilterElementCascade(n_elements));
 }
 
 // =============================================================================

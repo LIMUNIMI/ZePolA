@@ -77,6 +77,11 @@ public:
 
 private:
     // =========================================================================
+    /**
+     * Allocate processors in order to have enough to process the specified
+     * number of channels
+     */
+    void allocateChannelsIfNeeded(int);
     /** Multiply the value of the phases */
     void multiplyPhases(double);
 
@@ -89,8 +94,7 @@ private:
     juce::dsp::Gain<double> gainProcessor;
 
     // =========================================================================
-    bool active     = true;
-    bool safetyFlag = false;
+    bool active, safetyFlag;
     const int n_elements;
 
     std::function<void()> editorCallback;
