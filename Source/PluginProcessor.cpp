@@ -101,6 +101,28 @@ void PolesAndZerosEQAudioProcessor::releaseResources()
     pivotBuffer.setSize(0, 0);
     resetChannels();
 }
+void PolesAndZerosEQAudioProcessor::processBlockExtraChannels(
+    juce::AudioBuffer<float>& buffer)
+{
+    int n_in_channels  = getTotalNumInputChannels();
+    int n_out_channels = getTotalNumOutputChannels();
+    if (n_in_channels < n_out_channels)
+    {
+        int n_samples = buffer.getNumSamples();
+        // Handle channel mismatch
+        if (2 == n_out_channels)
+        {
+            // in the case mono-to-stereo, copy channel output
+            buffer.copyFrom(1, 0, buffer, 0, 0, n_samples);
+        }
+        else
+        {
+            // in the case any-to-any, clear extra channels
+            for (int c = n_in_channels; c < n_out_channels; ++c)
+                buffer.clear(c, 0, n_samples);
+        }
+    }
+}
 void PolesAndZerosEQAudioProcessor::processBlock(
     juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
@@ -109,9 +131,8 @@ void PolesAndZerosEQAudioProcessor::processBlock(
 
     // Ensure enough processors for input channels and reset memory of excess
     // ones
-    int n_in_channels  = getTotalNumInputChannels();
-    int n_out_channels = getTotalNumOutputChannels();
-    int n_samples      = buffer.getNumSamples();
+    int n_in_channels = getTotalNumInputChannels();
+    int n_samples     = buffer.getNumSamples();
     allocateChannelsIfNeeded(n_in_channels);
     size_t n_processors = multiChannelCascade.size();
     for (int i = n_in_channels; i < n_processors; ++i)
@@ -127,21 +148,8 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     }
     buffer.makeCopyOf(pivotBuffer, true);
 
-    if (n_in_channels < n_out_channels)
-    {
-        // Handle channel mismatch
-        if (2 == n_out_channels)
-        {
-            // in the case mono-to-stereo, copy channel output
-            buffer.copyFrom(1, 0, buffer, 0, 0, n_samples);
-        }
-        else
-        {
-            // in the case any-to-any, clear extra channels
-            for (int c = n_in_channels; c < n_out_channels; ++c)
-                buffer.clear(c, 0, n_samples);
-        }
-    }
+    // Handle channel mismatch
+    processBlockExtraChannels(buffer);
     {
         // Apply gain
         juce::dsp::AudioBlock<float> block(buffer);
@@ -154,8 +162,9 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     if (safetyFlag) buffer.clear();
 }
 void PolesAndZerosEQAudioProcessor::processBlockBypassed(
-    juce::AudioBuffer<float>&, juce::MidiBuffer&)
+    juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
+    processBlockExtraChannels(buffer);
     resetMemory();
 }
 

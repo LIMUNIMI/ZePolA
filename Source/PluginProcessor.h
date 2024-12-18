@@ -75,6 +75,8 @@ public:
 private:
     // =========================================================================
     void appendListeners() override;
+    /** Process extra channels in audio block */
+    void processBlockExtraChannels(juce::AudioBuffer<float>&);
     /**
      * Allocate processors in order to have enough to process the specified
      * number of channels
