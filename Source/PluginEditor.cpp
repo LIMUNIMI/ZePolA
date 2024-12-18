@@ -1438,38 +1438,38 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
         BinaryData::save_icon_svg, BinaryData::save_icon_svgSize);
 
     magnitudesAttachments[0].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_NAME + std::to_string(1), *m1_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(0), *m1_slider));
     magnitudesAttachments[1].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_NAME + std::to_string(2), *m2_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(1), *m2_slider));
     magnitudesAttachments[2].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_NAME + std::to_string(3), *m3_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(2), *m3_slider));
     magnitudesAttachments[3].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_NAME + std::to_string(4), *m4_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(3), *m4_slider));
     magnitudesAttachments[4].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_NAME + std::to_string(5), *m5_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(4), *m5_slider));
     magnitudesAttachments[5].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_NAME + std::to_string(6), *m6_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(5), *m6_slider));
     magnitudesAttachments[6].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_NAME + std::to_string(7), *m7_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(6), *m7_slider));
     magnitudesAttachments[7].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_NAME + std::to_string(8), *m8_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(7), *m8_slider));
 
     phasesAttachments[0].reset(new SliderAttachment(
-        valueTreeState, PHASE_NAME + std::to_string(1), *p1_slider));
+        valueTreeState, PHASE_ID_PREFIX + std::to_string(0), *p1_slider));
     phasesAttachments[1].reset(new SliderAttachment(
-        valueTreeState, PHASE_NAME + std::to_string(2), *p2_slider));
+        valueTreeState, PHASE_ID_PREFIX + std::to_string(1), *p2_slider));
     phasesAttachments[2].reset(new SliderAttachment(
-        valueTreeState, PHASE_NAME + std::to_string(3), *p3_slider));
+        valueTreeState, PHASE_ID_PREFIX + std::to_string(2), *p3_slider));
     phasesAttachments[3].reset(new SliderAttachment(
-        valueTreeState, PHASE_NAME + std::to_string(4), *p4_slider));
+        valueTreeState, PHASE_ID_PREFIX + std::to_string(3), *p4_slider));
     phasesAttachments[4].reset(new SliderAttachment(
-        valueTreeState, PHASE_NAME + std::to_string(5), *p5_slider));
+        valueTreeState, PHASE_ID_PREFIX + std::to_string(4), *p5_slider));
     phasesAttachments[5].reset(new SliderAttachment(
-        valueTreeState, PHASE_NAME + std::to_string(6), *p6_slider));
+        valueTreeState, PHASE_ID_PREFIX + std::to_string(5), *p6_slider));
     phasesAttachments[6].reset(new SliderAttachment(
-        valueTreeState, PHASE_NAME + std::to_string(7), *p7_slider));
+        valueTreeState, PHASE_ID_PREFIX + std::to_string(6), *p7_slider));
     phasesAttachments[7].reset(new SliderAttachment(
-        valueTreeState, PHASE_NAME + std::to_string(8), *p8_slider));
+        valueTreeState, PHASE_ID_PREFIX + std::to_string(7), *p8_slider));
 
     typesAttachments[0].reset(new ButtonAttachment(
         valueTreeState, TYPE_NAME + std::to_string(1), *e1_type));
@@ -2468,8 +2468,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.multiChannelCascade[0][0];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_NAME + std::to_string(1),
-                                        POLE_MAX_MAGNITUDE);
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(0),
+                                        FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
             m1_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2489,8 +2489,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.multiChannelCascade[0][1];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_NAME + std::to_string(2),
-                                        POLE_MAX_MAGNITUDE);
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(1),
+                                        FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
             m2_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2510,8 +2510,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.multiChannelCascade[0][2];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_NAME + std::to_string(3),
-                                        POLE_MAX_MAGNITUDE);
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(2),
+                                        FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
             m3_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2531,8 +2531,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.multiChannelCascade[0][3];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_NAME + std::to_string(4),
-                                        POLE_MAX_MAGNITUDE);
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(3),
+                                        FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
             m4_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2552,8 +2552,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.multiChannelCascade[0][4];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_NAME + std::to_string(5),
-                                        POLE_MAX_MAGNITUDE);
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(4),
+                                        FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
             m5_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2573,8 +2573,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.multiChannelCascade[0][5];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_NAME + std::to_string(6),
-                                        POLE_MAX_MAGNITUDE);
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(5),
+                                        FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
             m6_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2594,8 +2594,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.multiChannelCascade[0][6];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_NAME + std::to_string(7),
-                                        POLE_MAX_MAGNITUDE);
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(6),
+                                        FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
             m7_slider->setColour(juce::Slider::textBoxTextColourId,
@@ -2615,8 +2615,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.multiChannelCascade[0][7];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_NAME + std::to_string(8),
-                                        POLE_MAX_MAGNITUDE);
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(7),
+                                        FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
             m8_slider->setColour(juce::Slider::textBoxTextColourId,

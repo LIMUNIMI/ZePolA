@@ -5,6 +5,8 @@
 // Parameter id
 #define BYPASS_ID "BYPASS"
 #define GAIN_ID "GAIN"
+#define MAGNITUDE_ID_PREFIX "MAGNITUDE_"
+#define PHASE_ID_PREFIX "PHASE_"
 
 // =============================================================================
 // Generic constants & macros
@@ -33,19 +35,6 @@
 
 // =============================================================================
 // Plugin parameters macros
-#define MAGNITUDE_NAME "M"
-#define MAGNITUDE_FLOOR 0.0f
-#define MAGNITUDE_CEILING 1.0f
-#define POLE_MAX_MAGNITUDE 0.99999
-
-#define PHASE_NAME "P"
-#define PHASE_FLOOR 0.0f
-#define PHASE_CEILING 1.0f
-
-#define MAGNITUDE_DEFAULT 0.0f
-#define PHASE_DEFAULT 0.0f
-#define INTERVAL 0.00001f
-
 #define TYPE_NAME "T"
 #define TYPE_DEFAULT true
 

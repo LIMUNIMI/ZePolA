@@ -457,10 +457,10 @@ public:
         double newPhase
             = std::abs(std::arg(newPosition) / MathConstants<double>::pi);
 
-        processor->setParameterValue(MAGNITUDE_NAME + std::to_string(elementNr),
-                                     newMagnitude);
-        processor->setParameterValue(PHASE_NAME + std::to_string(elementNr),
-                                     newPhase);
+        processor->setParameterValue(
+            MAGNITUDE_ID_PREFIX + std::to_string(elementNr - 1), newMagnitude);
+        processor->setParameterValue(
+            PHASE_ID_PREFIX + std::to_string(elementNr - 1), newPhase);
 
         element = std::polar(newMagnitude, newPhase);
 

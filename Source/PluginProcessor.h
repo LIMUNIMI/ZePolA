@@ -50,6 +50,22 @@ public:
     void changeProgramName(int index, const juce::String& newName) override;
 
     // =========================================================================
+    /**
+     * Set an element's magnitude
+     *
+     * @param i Element index (zero-based)
+     * @param v Magnitude value
+     */
+    void setElementMagnitude(int i, float v);
+    /**
+     * Set an element's phase
+     *
+     * @param i Element index (zero-based)
+     * @param v Phase value
+     */
+    void setElementPhase(int i, float v);
+
+    // =========================================================================
     /** Clear filter memory */
     void resetMemory();
     /** Activate or deactivate all filter elements */
