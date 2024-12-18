@@ -301,7 +301,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
 
     type_label->setBounds(305, 57, 91, 24);
 
-    active_label.reset(new juce::Label("Active", TRANS("ACTIVE")));
+    active_label.reset(new juce::Label("Active", "ACTIVE"));
     addAndMakeVisible(active_label.get());
     active_label->setFont(juce::Font("Gill Sans", 13.00f, juce::Font::plain)
                               .withTypefaceStyle("SemiBold"));
@@ -1490,21 +1490,21 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
         valueTreeState, TYPE_NAME + juce::String(8), *e8_type));
 
     activeAttachments[0].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + juce::String(1), *e1_active));
+        valueTreeState, ACTIVE_ID_PREFIX + juce::String(0), *e1_active));
     activeAttachments[1].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + juce::String(2), *e2_active));
+        valueTreeState, ACTIVE_ID_PREFIX + juce::String(1), *e2_active));
     activeAttachments[2].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + juce::String(3), *e3_active));
+        valueTreeState, ACTIVE_ID_PREFIX + juce::String(2), *e3_active));
     activeAttachments[3].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + juce::String(4), *e4_active));
+        valueTreeState, ACTIVE_ID_PREFIX + juce::String(3), *e4_active));
     activeAttachments[4].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + juce::String(5), *e5_active));
+        valueTreeState, ACTIVE_ID_PREFIX + juce::String(4), *e5_active));
     activeAttachments[5].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + juce::String(6), *e6_active));
+        valueTreeState, ACTIVE_ID_PREFIX + juce::String(5), *e6_active));
     activeAttachments[6].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + juce::String(7), *e7_active));
+        valueTreeState, ACTIVE_ID_PREFIX + juce::String(6), *e7_active));
     activeAttachments[7].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + juce::String(8), *e8_active));
+        valueTreeState, ACTIVE_ID_PREFIX + juce::String(7), *e8_active));
 
     gainsAttachments[0].reset(new SliderAttachment(
         valueTreeState, GAIN_ID_PREFIX + juce::String(0), *e1_gain));
@@ -3429,7 +3429,7 @@ float EditorComponent::calculateGain(const int elementNr, bool isChangingType)
             UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
                                   "Returning default value: 0dB");
             computeRMSG = false;
-            g = 0.0f;
+            g           = 0.0f;
             break;
         case FilterElement::ZERO:
             element_copy.setType(FilterElement::POLE);
@@ -3541,7 +3541,7 @@ void EditorComponent::filterDesignAndSetup()
                 zero = -(b1 / b0);
                 pole = -a1;
             }
-
+    
             processor.setFilter(std::abs(zero), std::arg(zero),
                                 FilterElement::ZERO, elementNr, b0);
             ++elementNr;
@@ -3571,7 +3571,6 @@ void EditorComponent::filterDesignAndSetup()
             std::complex<double> zero = std::polar(magnitude, phase);
             processor.setFilter(std::abs(zero), std::arg(zero),
                                 FilterElement::ZERO, elementNr, b0);
-
             ++elementNr;
 
             fromCoefficientsToMagnitudeAndPhase(magnitude, phase, a1, a2);
@@ -3582,8 +3581,7 @@ void EditorComponent::filterDesignAndSetup()
         }
     }
 
-    for (; elementNr <= processor.n_elements; ++elementNr)
-        processor.setInactive(elementNr);
+    processor.setAllActive(false);
 
     processor.setParameterValue(BYPASS_ID, false);
     isSettingFilters = false;

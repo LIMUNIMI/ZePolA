@@ -71,14 +71,26 @@ public:
      * @param v Gain value (decibel)
      */
     void setElementGainDb(int i, float v);
+    /**
+     * Set an element's active state
+     *
+     * @param i Element index (zero-based)
+     * @param v New active state
+     */
+    void setElementActive(int i, bool v);
+    /**
+     * Set an element's active state, with a value threshold on 0.5
+     *
+     * @param i Element index (zero-based)
+     * @param v New active state, as a float
+     */
+    void setElementActiveTh(int i, float v);
 
     // =========================================================================
     /** Clear filter memory */
     void resetMemory();
     /** Activate or deactivate all filter elements */
     void setAllActive(bool);
-    /** Deactivate specific filter element */
-    void setInactive(int elementNr);
     /** Set the bypassed state of the processor */
     void setBypass(bool bypass);
     /** Set the bypassed state of the processor with a value threshold on 0.5 */

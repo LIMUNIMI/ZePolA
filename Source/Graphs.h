@@ -475,10 +475,7 @@ public:
         type      = e.getType();
         elementNr = elNr;
 
-        if (!e.getActive())
-            setVisible(false);
-        else
-            setVisible(true);
+        setVisible(e.getActive());
 
         gaussianPlane = gp;
         processor     = p;

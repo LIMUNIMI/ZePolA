@@ -2,12 +2,13 @@
 #include <JuceHeader.h>
 
 // =============================================================================
-// Parameter id
+// Parameter ids
 #define BYPASS_ID "BYPASS"
 #define GAIN_ID "GAIN"
 #define MAGNITUDE_ID_PREFIX "MAGNITUDE_"
 #define PHASE_ID_PREFIX "PHASE_"
 #define GAIN_ID_PREFIX "GAIN_"
+#define ACTIVE_ID_PREFIX "ACTIVE_"
 
 // =============================================================================
 // Generic constants & macros
@@ -34,9 +35,6 @@
 // Plugin parameters macros
 #define TYPE_NAME "T"
 #define TYPE_DEFAULT true
-
-#define ACTIVE_NAME "A"
-#define ACTIVE_DEFAULT false
 
 // =============================================================================
 namespace Parameters
