@@ -139,10 +139,6 @@ private:
     void multiplyPhases(double);
 
     // =========================================================================
-    void parameterChanged(const juce::String& parameterID,
-                          float newValue) override;
-
-    // =========================================================================
     std::vector<FilterElementCascade> multiChannelCascade;
     juce::dsp::Gain<float> gain;
 

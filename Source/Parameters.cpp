@@ -1,18 +1,6 @@
 #include "Parameters.h"
 
 // =============================================================================
-void Parameters::addListenerToAllParameters(
-    AudioProcessorValueTreeState& valueTreeState,
-    AudioProcessorValueTreeState::Listener* listener)
-{
-    std::unique_ptr<XmlElement> xml(valueTreeState.copyState().createXml());
-
-    for (auto element : xml->getChildWithTagNameIterator("PARAM"))
-    {
-        const juce::String& id = element->getStringAttribute("id");
-        valueTreeState.addParameterListener(id, listener);
-    }
-}
 void Parameters::setParameterValue(juce::RangedAudioParameter* parameter,
                                    float value)
 {

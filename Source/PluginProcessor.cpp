@@ -94,7 +94,6 @@ PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
     , bypassed(false)
 {
     allocateChannelsIfNeeded(1);
-    Parameters::addListenerToAllParameters(valueTreeState, this);
     initializeListeners();
 }
 
@@ -333,12 +332,6 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
     setParameterValue(TYPE_ID_PREFIX + i_str, FilterElement::typeToFloat(type));
     setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
     setParameterValue(GAIN_ID_PREFIX + i_str, gain);
-}
-
-// =============================================================================
-void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
-                                                     float newValue)
-{
 }
 
 // =============================================================================

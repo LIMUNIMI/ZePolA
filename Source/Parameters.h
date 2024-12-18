@@ -35,10 +35,6 @@
 // =============================================================================
 namespace Parameters
 {
-/** Add the specified listener as listener of all parameters  */
-void addListenerToAllParameters(
-    juce::AudioProcessorValueTreeState& valueTreeState,
-    juce::AudioProcessorValueTreeState::Listener* listener);
 /** Set parameter value, enclosing the operation in a gesture */
 void setParameterValue(juce::RangedAudioParameter* parameter, float value);
 /** Set parameter value to default, enclosing the operation in a gesture */
@@ -49,8 +45,7 @@ void resetParameterValue(juce::RangedAudioParameter*);
 /**
  * A class for audio processors with a value tree state
  */
-class VTSAudioProcessor : public juce::AudioProcessor,
-                          public juce::AudioProcessorValueTreeState::Listener
+class VTSAudioProcessor : public juce::AudioProcessor
 {
 public:
     //==============================================================================
