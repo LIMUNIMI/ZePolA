@@ -19,8 +19,8 @@ createParameterLayout(int n_elements)
 
     for (int i = 0; i < n_elements; ++i)
     {
-        auto i_str   = std::to_string(i);
-        auto ip1_str = std::to_string(i + 1);
+        juce::String i_str(i);
+        juce::String ip1_str(i + 1);
 
         params.push_back(std::make_unique<AudioParameterFloat>(
             MAGNITUDE_ID_PREFIX + i_str, "Magnitude " + ip1_str,
@@ -66,7 +66,7 @@ void PolesAndZerosEQAudioProcessor::appendListeners()
     // Listeners for element parameters
     for (int i = 0; i < n_elements; ++i)
     {
-        auto i_str = std::to_string(i);
+        auto i_str = juce::String(i);
 
         pushListener(MAGNITUDE_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
@@ -246,11 +246,11 @@ void PolesAndZerosEQAudioProcessor::resetMemory()
 void PolesAndZerosEQAudioProcessor::setAllActive(bool active)
 {
     for (int i = 1; i <= n_elements; ++i)
-        setParameterValue(ACTIVE_NAME + std::to_string(i), active);
+        setParameterValue(ACTIVE_NAME + juce::String(i), active);
 }
 void PolesAndZerosEQAudioProcessor::setInactive(const int elementNr)
 {
-    setParameterValue(ACTIVE_NAME + std::to_string(elementNr), false);
+    setParameterValue(ACTIVE_NAME + juce::String(elementNr), false);
 }
 void PolesAndZerosEQAudioProcessor::setBypass(bool b) { bypassed = b; }
 void PolesAndZerosEQAudioProcessor::setBypassTh(float b)
@@ -265,7 +265,7 @@ void PolesAndZerosEQAudioProcessor::markAsSafe(float)
 void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
 {
     for (int i = 0; i < n_elements; ++i)
-        setParameterValue(PHASE_ID_PREFIX + std::to_string(i),
+        setParameterValue(PHASE_ID_PREFIX + juce::String(i),
                           multiChannelCascade[0][i].getPhase() * k);
 }
 void PolesAndZerosEQAudioProcessor::doublePhases() { multiplyPhases(2.0); }
@@ -288,7 +288,7 @@ void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
             newType = FilterElement::Type::ZERO;
             break;
         }
-        setParameterValue(TYPE_NAME + std::to_string(i + 1), newType);
+        setParameterValue(TYPE_NAME + juce::String(i + 1), newType);
     }
 }
 void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
@@ -298,10 +298,11 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
                                               double linearGain)
 {
     if (elementNr > n_elements) return;
-    setParameterValue(ACTIVE_NAME + std::to_string(elementNr), false);
+    setParameterValue(ACTIVE_NAME + juce::String(elementNr), false);
 
-    float gain = Decibels::gainToDecibels(linearGain, GAIN_FLOOR - 1.0);
-    auto i_str = std::to_string(elementNr - 1);
+    float gain
+        = Decibels::gainToDecibels(linearGain, FilterElement::gain_floor_db);
+    auto i_str = juce::String(elementNr - 1);
 
     setParameterValue(MAGNITUDE_ID_PREFIX + i_str, magnitude);
     setParameterValue(PHASE_ID_PREFIX + i_str, phase);

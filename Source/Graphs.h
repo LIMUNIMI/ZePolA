@@ -458,9 +458,9 @@ public:
             = std::abs(std::arg(newPosition) / MathConstants<double>::pi);
 
         processor->setParameterValue(
-            MAGNITUDE_ID_PREFIX + std::to_string(elementNr - 1), newMagnitude);
+            MAGNITUDE_ID_PREFIX + juce::String(elementNr - 1), newMagnitude);
         processor->setParameterValue(
-            PHASE_ID_PREFIX + std::to_string(elementNr - 1), newPhase);
+            PHASE_ID_PREFIX + juce::String(elementNr - 1), newPhase);
 
         element = std::polar(newMagnitude, newPhase);
 

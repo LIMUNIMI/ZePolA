@@ -1,3 +1,4 @@
+#include "Macros.h"
 #include "Parameters.h"
 #include <JuceHeader.h>
 #include <cmath>
@@ -1438,72 +1439,72 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
         BinaryData::save_icon_svg, BinaryData::save_icon_svgSize);
 
     magnitudesAttachments[0].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(0), *m1_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + juce::String(0), *m1_slider));
     magnitudesAttachments[1].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(1), *m2_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + juce::String(1), *m2_slider));
     magnitudesAttachments[2].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(2), *m3_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + juce::String(2), *m3_slider));
     magnitudesAttachments[3].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(3), *m4_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + juce::String(3), *m4_slider));
     magnitudesAttachments[4].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(4), *m5_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + juce::String(4), *m5_slider));
     magnitudesAttachments[5].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(5), *m6_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + juce::String(5), *m6_slider));
     magnitudesAttachments[6].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(6), *m7_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + juce::String(6), *m7_slider));
     magnitudesAttachments[7].reset(new SliderAttachment(
-        valueTreeState, MAGNITUDE_ID_PREFIX + std::to_string(7), *m8_slider));
+        valueTreeState, MAGNITUDE_ID_PREFIX + juce::String(7), *m8_slider));
 
     phasesAttachments[0].reset(new SliderAttachment(
-        valueTreeState, PHASE_ID_PREFIX + std::to_string(0), *p1_slider));
+        valueTreeState, PHASE_ID_PREFIX + juce::String(0), *p1_slider));
     phasesAttachments[1].reset(new SliderAttachment(
-        valueTreeState, PHASE_ID_PREFIX + std::to_string(1), *p2_slider));
+        valueTreeState, PHASE_ID_PREFIX + juce::String(1), *p2_slider));
     phasesAttachments[2].reset(new SliderAttachment(
-        valueTreeState, PHASE_ID_PREFIX + std::to_string(2), *p3_slider));
+        valueTreeState, PHASE_ID_PREFIX + juce::String(2), *p3_slider));
     phasesAttachments[3].reset(new SliderAttachment(
-        valueTreeState, PHASE_ID_PREFIX + std::to_string(3), *p4_slider));
+        valueTreeState, PHASE_ID_PREFIX + juce::String(3), *p4_slider));
     phasesAttachments[4].reset(new SliderAttachment(
-        valueTreeState, PHASE_ID_PREFIX + std::to_string(4), *p5_slider));
+        valueTreeState, PHASE_ID_PREFIX + juce::String(4), *p5_slider));
     phasesAttachments[5].reset(new SliderAttachment(
-        valueTreeState, PHASE_ID_PREFIX + std::to_string(5), *p6_slider));
+        valueTreeState, PHASE_ID_PREFIX + juce::String(5), *p6_slider));
     phasesAttachments[6].reset(new SliderAttachment(
-        valueTreeState, PHASE_ID_PREFIX + std::to_string(6), *p7_slider));
+        valueTreeState, PHASE_ID_PREFIX + juce::String(6), *p7_slider));
     phasesAttachments[7].reset(new SliderAttachment(
-        valueTreeState, PHASE_ID_PREFIX + std::to_string(7), *p8_slider));
+        valueTreeState, PHASE_ID_PREFIX + juce::String(7), *p8_slider));
 
     typesAttachments[0].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + std::to_string(1), *e1_type));
+        valueTreeState, TYPE_NAME + juce::String(1), *e1_type));
     typesAttachments[1].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + std::to_string(2), *e2_type));
+        valueTreeState, TYPE_NAME + juce::String(2), *e2_type));
     typesAttachments[2].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + std::to_string(3), *e3_type));
+        valueTreeState, TYPE_NAME + juce::String(3), *e3_type));
     typesAttachments[3].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + std::to_string(4), *e4_type));
+        valueTreeState, TYPE_NAME + juce::String(4), *e4_type));
     typesAttachments[4].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + std::to_string(5), *e5_type));
+        valueTreeState, TYPE_NAME + juce::String(5), *e5_type));
     typesAttachments[5].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + std::to_string(6), *e6_type));
+        valueTreeState, TYPE_NAME + juce::String(6), *e6_type));
     typesAttachments[6].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + std::to_string(7), *e7_type));
+        valueTreeState, TYPE_NAME + juce::String(7), *e7_type));
     typesAttachments[7].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + std::to_string(8), *e8_type));
+        valueTreeState, TYPE_NAME + juce::String(8), *e8_type));
 
     activeAttachments[0].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + std::to_string(1), *e1_active));
+        valueTreeState, ACTIVE_NAME + juce::String(1), *e1_active));
     activeAttachments[1].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + std::to_string(2), *e2_active));
+        valueTreeState, ACTIVE_NAME + juce::String(2), *e2_active));
     activeAttachments[2].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + std::to_string(3), *e3_active));
+        valueTreeState, ACTIVE_NAME + juce::String(3), *e3_active));
     activeAttachments[3].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + std::to_string(4), *e4_active));
+        valueTreeState, ACTIVE_NAME + juce::String(4), *e4_active));
     activeAttachments[4].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + std::to_string(5), *e5_active));
+        valueTreeState, ACTIVE_NAME + juce::String(5), *e5_active));
     activeAttachments[5].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + std::to_string(6), *e6_active));
+        valueTreeState, ACTIVE_NAME + juce::String(6), *e6_active));
     activeAttachments[6].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + std::to_string(7), *e7_active));
+        valueTreeState, ACTIVE_NAME + juce::String(7), *e7_active));
     activeAttachments[7].reset(new ButtonAttachment(
-        valueTreeState, ACTIVE_NAME + std::to_string(8), *e8_active));
+        valueTreeState, ACTIVE_NAME + juce::String(8), *e8_active));
 
     gainsAttachments[0].reset(new SliderAttachment(
         valueTreeState, GAIN_NAME + std::to_string(1), *e1_gain));
@@ -2468,7 +2469,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         auto element = processor.multiChannelCascade[0][0];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(0),
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + juce::String(0),
                                         FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
@@ -2477,19 +2478,15 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         m1_slider->repaint();
 
         if (autoGain.get()->getToggleState())
-        {
-            auto gain = calculateGain(1, true);
-            processor.setParameterValue(GAIN_NAME + std::to_string(1),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(0),
+                                        calculateGain(1, true));
     }
     else if (buttonThatWasClicked == e2_type.get())
     {
         auto element = processor.multiChannelCascade[0][1];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(1),
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + juce::String(1),
                                         FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
@@ -2498,19 +2495,15 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         m2_slider->repaint();
 
         if (autoGain.get()->getToggleState())
-        {
-            auto gain = calculateGain(2, true);
-            processor.setParameterValue(GAIN_NAME + std::to_string(2),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(1),
+                                        calculateGain(2, true));
     }
     else if (buttonThatWasClicked == e3_type.get())
     {
         auto element = processor.multiChannelCascade[0][2];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(2),
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + juce::String(2),
                                         FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
@@ -2519,19 +2512,15 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         m3_slider->repaint();
 
         if (autoGain.get()->getToggleState())
-        {
-            auto gain = calculateGain(3, true);
-            processor.setParameterValue(GAIN_NAME + std::to_string(3),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(2),
+                                        calculateGain(3, true));
     }
     else if (buttonThatWasClicked == e4_type.get())
     {
         auto element = processor.multiChannelCascade[0][3];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(3),
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + juce::String(3),
                                         FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
@@ -2540,19 +2529,15 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         m4_slider->repaint();
 
         if (autoGain.get()->getToggleState())
-        {
-            auto gain = calculateGain(4, true);
-            processor.setParameterValue(GAIN_NAME + std::to_string(4),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(3),
+                                        calculateGain(4, true));
     }
     else if (buttonThatWasClicked == e5_type.get())
     {
         auto element = processor.multiChannelCascade[0][4];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(4),
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + juce::String(4),
                                         FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
@@ -2561,19 +2546,15 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         m5_slider->repaint();
 
         if (autoGain.get()->getToggleState())
-        {
-            auto gain = calculateGain(5, true);
-            processor.setParameterValue(GAIN_NAME + std::to_string(5),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(4),
+                                        calculateGain(5, true));
     }
     else if (buttonThatWasClicked == e6_type.get())
     {
         auto element = processor.multiChannelCascade[0][5];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(5),
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + juce::String(5),
                                         FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
@@ -2582,19 +2563,15 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         m6_slider->repaint();
 
         if (autoGain.get()->getToggleState())
-        {
-            auto gain = calculateGain(6, true);
-            processor.setParameterValue(GAIN_NAME + std::to_string(6),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(5),
+                                        calculateGain(6, true));
     }
     else if (buttonThatWasClicked == e7_type.get())
     {
         auto element = processor.multiChannelCascade[0][6];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(6),
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + juce::String(6),
                                         FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
@@ -2603,19 +2580,15 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         m7_slider->repaint();
 
         if (autoGain.get()->getToggleState())
-        {
-            auto gain = calculateGain(7, true);
-            processor.setParameterValue(GAIN_NAME + std::to_string(7),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(6),
+                                        calculateGain(7, true));
     }
     else if (buttonThatWasClicked == e8_type.get())
     {
         auto element = processor.multiChannelCascade[0][7];
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
-            processor.setParameterValue(MAGNITUDE_ID_PREFIX + std::to_string(7),
+            processor.setParameterValue(MAGNITUDE_ID_PREFIX + juce::String(7),
                                         FilterElement::pole_magnitude_ceil);
 
         if (element.getType() == FilterElement::POLE)
