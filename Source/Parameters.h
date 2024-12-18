@@ -83,3 +83,71 @@ void setParameterValue(juce::RangedAudioParameter* parameter, float value);
 /** Set parameter value to default, enclosing the operation in a gesture */
 void resetParameterValue(juce::RangedAudioParameter*);
 }  // namespace Parameters
+
+// =============================================================================
+/**
+ * A class for audio processors with a value tree state
+ */
+class VTSAudioProcessor : public juce::AudioProcessor
+{
+public:
+    //==============================================================================
+    VTSAudioProcessor(std::vector<std::unique_ptr<juce::RangedAudioParameter>>,
+                      const juce::Identifier& valueTreeType,
+                      juce::UndoManager* undoManagerToUse = nullptr);
+    ~VTSAudioProcessor();
+
+    //==============================================================================
+    virtual void getStateInformation(juce::MemoryBlock& destData);
+    virtual void setStateInformation(const void* data, int sizeInBytes);
+
+protected:
+    //==============================================================================
+    /**
+     * Push a listener and its id into the list. Call this method from
+     * appendListeners()
+     */
+    void pushListener(juce::String,
+                      juce::AudioProcessorValueTreeState::Listener*);
+    /**
+     * Append listeners and ids to the lists. Subclasses should override this
+     * method
+     */
+    virtual void appendListeners();
+    /**
+     * Responsible for listener and id initialization and registration at
+     * construction time. Call this method in the final class constructor.
+     */
+    void initializeListeners();
+
+private:
+    //==============================================================================
+    /**
+     * Helper function for notifying all listeners of a value change. Used by
+     * setStateInformation()
+     */
+    void sendValueChangedMessageToAllListeners();
+
+    //==============================================================================
+    std::vector<juce::AudioProcessorValueTreeState::Listener*> listeners;
+    juce::AudioProcessorValueTreeState valueTreeState;
+    std::vector<juce::String> listeners_ids;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VTSAudioProcessor)
+};
+
+/**
+ * A simple value tree state parameter change listener
+ */
+class SimpleListener : public juce::AudioProcessorValueTreeState::Listener
+{
+public:
+    SimpleListener(std::function<void(float)>);
+    void parameterChanged(const juce::String&, float) override;
+
+private:
+    std::function<void(float)> setterFunction;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleListener)
+};
