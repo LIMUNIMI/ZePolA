@@ -17,15 +17,15 @@ void PolesAndZerosEQAudioProcessor::resetChannels()
                               multiChannelCascade.end());
 }
 PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
-    : parameters(*this, &undoManager, JucePlugin_Name,
-                 Parameters::createParameterLayout(n))
+    : VTSAudioProcessor(Parameters::createParameterLayout(n), getName())
     , n_elements(n)
     , pivotBuffer()
     , safetyFlag(false)
     , active(true)
 {
     allocateChannelsIfNeeded(1);
-    Parameters::addListenerToAllParameters(parameters, this);
+    Parameters::addListenerToAllParameters(valueTreeState, this);
+    initializeListeners();
 }
 
 // =============================================================================
@@ -38,7 +38,6 @@ void PolesAndZerosEQAudioProcessor::prepareToPlay(double sampleRate,
     spec.numChannels      = getTotalNumInputChannels();
 
     gainProcessor.prepare(spec);
-    gainProcessor.setGainDecibels(MASTER_GAIN_DEFAULT);
 
     resetMemory();
 }
@@ -113,7 +112,7 @@ void PolesAndZerosEQAudioProcessor::processBlockBypassed(
 // =============================================================================
 juce::AudioProcessorEditor* PolesAndZerosEQAudioProcessor::createEditor()
 {
-    return new WrappedEditor(*this, parameters);
+    return new WrappedEditor(*this, valueTreeState);
 }
 bool PolesAndZerosEQAudioProcessor::hasEditor() const { return true; }
 
@@ -143,23 +142,6 @@ void PolesAndZerosEQAudioProcessor::changeProgramName(int, const juce::String&)
 }
 
 // =============================================================================
-void PolesAndZerosEQAudioProcessor::getStateInformation(
-    juce::MemoryBlock& destData)
-{
-    auto state = parameters.copyState();
-    std::unique_ptr<XmlElement> xml(state.createXml());
-    copyXmlToBinary(*xml, destData);
-}
-void PolesAndZerosEQAudioProcessor::setStateInformation(const void* data,
-                                                        int sizeInBytes)
-{
-    std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
-    if (xmlState.get() != nullptr)
-        if (xmlState->hasTagName(parameters.state.getType()))
-            parameters.replaceState(ValueTree::fromXml(*xmlState));
-}
-
-// =============================================================================
 void PolesAndZerosEQAudioProcessor::resetParams()
 {
     RangedAudioParameter* p;
@@ -167,9 +149,9 @@ void PolesAndZerosEQAudioProcessor::resetParams()
         for (auto k :
              {MAGNITUDE_NAME, PHASE_NAME, TYPE_NAME, ACTIVE_NAME, GAIN_NAME})
             Parameters::resetParameterValue(
-                parameters.getParameter(k + std::to_string(i)));
+                valueTreeState.getParameter(k + std::to_string(i)));
     for (auto k : {MASTER_GAIN_NAME, FILTER_BYPASS_NAME})
-        Parameters::resetParameterValue(parameters.getParameter(k));
+        Parameters::resetParameterValue(valueTreeState.getParameter(k));
     resetMemory();
 }
 void PolesAndZerosEQAudioProcessor::resetMemory()
@@ -180,25 +162,26 @@ void PolesAndZerosEQAudioProcessor::setAllActive(bool active)
 {
     for (int i = 1; i <= n_elements; ++i)
         Parameters::setParameterValue(
-            parameters.getParameter(ACTIVE_NAME + std::to_string(i)), active);
+            valueTreeState.getParameter(ACTIVE_NAME + std::to_string(i)),
+            active);
 }
 void PolesAndZerosEQAudioProcessor::setInactive(const int elementNr)
 {
     Parameters::setParameterValue(
-        parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
+        valueTreeState.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
         false);
 }
 void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
 {
-    Parameters::setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME),
-                                  bypass);
+    Parameters::setParameterValue(
+        valueTreeState.getParameter(FILTER_BYPASS_NAME), bypass);
 }
 void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
 {
     for (int i = 0; i < n_elements; ++i)
     {
         Parameters::setParameterValue(
-            parameters.getParameter(PHASE_NAME + std::to_string(i + 1)),
+            valueTreeState.getParameter(PHASE_NAME + std::to_string(i + 1)),
             multiChannelCascade[0][i].getPhase() * k);
     }
 }
@@ -223,7 +206,7 @@ void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
             break;
         }
         Parameters::setParameterValue(
-            parameters.getParameter(TYPE_NAME + std::to_string(i + 1)),
+            valueTreeState.getParameter(TYPE_NAME + std::to_string(i + 1)),
             newType);
     }
 }
@@ -235,22 +218,25 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
 {
     if (elementNr > n_elements) return;
     Parameters::setParameterValue(
-        parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
+        valueTreeState.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
         false);
 
     float gain = Decibels::gainToDecibels(linearGain, GAIN_FLOOR - 1.0);
 
     Parameters::setParameterValue(
-        parameters.getParameter(MAGNITUDE_NAME + std::to_string(elementNr)),
+        valueTreeState.getParameter(MAGNITUDE_NAME + std::to_string(elementNr)),
         magnitude);
     Parameters::setParameterValue(
-        parameters.getParameter(PHASE_NAME + std::to_string(elementNr)), phase);
+        valueTreeState.getParameter(PHASE_NAME + std::to_string(elementNr)),
+        phase);
     Parameters::setParameterValue(
-        parameters.getParameter(TYPE_NAME + std::to_string(elementNr)), !type);
+        valueTreeState.getParameter(TYPE_NAME + std::to_string(elementNr)),
+        !type);
     Parameters::setParameterValue(
-        parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)), true);
+        valueTreeState.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
+        true);
     Parameters::setParameterValue(
-        parameters.getParameter(GAIN_NAME + std::to_string(elementNr)),
+        valueTreeState.getParameter(GAIN_NAME + std::to_string(elementNr)),
         jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
 }
 

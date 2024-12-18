@@ -70,7 +70,7 @@ namespace Parameters
  *
  * @param n_elements Number of filter elements
  */
-juce::AudioProcessorValueTreeState::ParameterLayout
+std::vector<std::unique_ptr<juce::RangedAudioParameter>>
 createParameterLayout(int n_elements);
 
 // =============================================================================
@@ -88,7 +88,8 @@ void resetParameterValue(juce::RangedAudioParameter*);
 /**
  * A class for audio processors with a value tree state
  */
-class VTSAudioProcessor : public juce::AudioProcessor
+class VTSAudioProcessor : public juce::AudioProcessor,
+                          public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -102,6 +103,10 @@ public:
     virtual void setStateInformation(const void* data, int sizeInBytes);
 
 protected:
+    //==============================================================================
+    // TODO: Should be private in the end
+    juce::AudioProcessorValueTreeState valueTreeState;
+
     //==============================================================================
     /**
      * Push a listener and its id into the list. Call this method from
@@ -130,7 +135,6 @@ private:
 
     //==============================================================================
     std::vector<juce::AudioProcessorValueTreeState::Listener*> listeners;
-    juce::AudioProcessorValueTreeState valueTreeState;
     std::vector<juce::String> listeners_ids;
 
     //==============================================================================

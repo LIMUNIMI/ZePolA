@@ -1,7 +1,7 @@
 #include "Parameters.h"
 
 // =============================================================================
-AudioProcessorValueTreeState::ParameterLayout
+std::vector<std::unique_ptr<juce::RangedAudioParameter>>
 Parameters::createParameterLayout(int n_elements)
 {
     std::vector<std::unique_ptr<RangedAudioParameter>> params;
@@ -37,7 +37,7 @@ Parameters::createParameterLayout(int n_elements)
     params.push_back(std::make_unique<AudioParameterFloat>(
         MASTER_GAIN_NAME, "Gain (dB)", masterGainRange, MASTER_GAIN_DEFAULT));
 
-    return {params.begin(), params.end()};
+    return params;
 }
 
 // =============================================================================
@@ -91,7 +91,7 @@ VTSAudioProcessor::~VTSAudioProcessor()
 }
 
 // ============================================================================
-void VTSAudioProcessor::appendListeners() {}
+void VTSAudioProcessor::appendListeners() { }
 void VTSAudioProcessor::pushListener(
     juce::String id, juce::AudioProcessorValueTreeState::Listener* listener)
 {

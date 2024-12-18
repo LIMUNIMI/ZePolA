@@ -2144,7 +2144,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(1);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(1)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2157,7 +2157,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(1);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(1)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2179,7 +2179,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(2);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(2)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2201,7 +2201,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(3);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(3)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2223,7 +2223,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(4);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(4)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2245,7 +2245,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(5);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(5)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2267,7 +2267,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(6);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(6)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2289,7 +2289,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(7);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(7)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2311,7 +2311,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(8);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(8)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2324,7 +2324,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(2);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(2)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2337,7 +2337,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(3);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(3)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2350,7 +2350,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(4);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(4)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2363,7 +2363,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(5);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(5)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2376,7 +2376,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(6);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(6)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2389,7 +2389,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(7);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(7)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2402,7 +2402,7 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         if (autoGain.get()->getToggleState() && !isSettingFilters)
         {
             auto gain = calculateGain(8);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(8)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2485,8 +2485,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
-                processor.parameters.getParameter(MAGNITUDE_NAME
-                                                  + std::to_string(1)),
+                processor.valueTreeState.getParameter(MAGNITUDE_NAME
+                                                      + std::to_string(1)),
                 POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
@@ -2497,7 +2497,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(1, true);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(1)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2509,8 +2509,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
-                processor.parameters.getParameter(MAGNITUDE_NAME
-                                                  + std::to_string(2)),
+                processor.valueTreeState.getParameter(MAGNITUDE_NAME
+                                                      + std::to_string(2)),
                 POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
@@ -2521,7 +2521,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(2, true);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(2)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2533,8 +2533,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
-                processor.parameters.getParameter(MAGNITUDE_NAME
-                                                  + std::to_string(3)),
+                processor.valueTreeState.getParameter(MAGNITUDE_NAME
+                                                      + std::to_string(3)),
                 POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
@@ -2545,7 +2545,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(3, true);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(3)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2557,8 +2557,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
-                processor.parameters.getParameter(MAGNITUDE_NAME
-                                                  + std::to_string(4)),
+                processor.valueTreeState.getParameter(MAGNITUDE_NAME
+                                                      + std::to_string(4)),
                 POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
@@ -2569,7 +2569,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(4, true);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(4)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2581,8 +2581,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
-                processor.parameters.getParameter(MAGNITUDE_NAME
-                                                  + std::to_string(5)),
+                processor.valueTreeState.getParameter(MAGNITUDE_NAME
+                                                      + std::to_string(5)),
                 POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
@@ -2593,7 +2593,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(5, true);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(5)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2605,8 +2605,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
-                processor.parameters.getParameter(MAGNITUDE_NAME
-                                                  + std::to_string(6)),
+                processor.valueTreeState.getParameter(MAGNITUDE_NAME
+                                                      + std::to_string(6)),
                 POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
@@ -2617,7 +2617,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(6, true);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(6)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2629,8 +2629,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
-                processor.parameters.getParameter(MAGNITUDE_NAME
-                                                  + std::to_string(7)),
+                processor.valueTreeState.getParameter(MAGNITUDE_NAME
+                                                      + std::to_string(7)),
                 POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
@@ -2641,7 +2641,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(7, true);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(7)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -2653,8 +2653,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (element.getType() == FilterElement::ZERO
             && element.getMagnitude() == 1.0)
             Parameters::setParameterValue(
-                processor.parameters.getParameter(MAGNITUDE_NAME
-                                                  + std::to_string(8)),
+                processor.valueTreeState.getParameter(MAGNITUDE_NAME
+                                                      + std::to_string(8)),
                 POLE_MAX_MAGNITUDE);
 
         if (element.getType() == FilterElement::POLE)
@@ -2665,7 +2665,7 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         if (autoGain.get()->getToggleState())
         {
             auto gain = calculateGain(8, true);
-            Parameters::setParameterValue(processor.parameters.getParameter(
+            Parameters::setParameterValue(processor.valueTreeState.getParameter(
                                               GAIN_NAME + std::to_string(8)),
                                           jmap(gain, GAIN_FLOOR, GAIN_CEILING,
                                                SLIDERS_FLOOR, SLIDERS_CEILING));
@@ -3205,10 +3205,10 @@ void EditorComponent::gainsInit()
     for (int i = 1; i <= processor.n_elements; ++i)
     {
         auto gain = calculateGain(i);
-        Parameters::setParameterValue(
-            processor.parameters.getParameter(GAIN_NAME + std::to_string(i)),
-            jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR,
-                 SLIDERS_CEILING));
+        Parameters::setParameterValue(processor.valueTreeState.getParameter(
+                                          GAIN_NAME + std::to_string(i)),
+                                      jmap(gain, GAIN_FLOOR, GAIN_CEILING,
+                                           SLIDERS_FLOOR, SLIDERS_CEILING));
     }
 }
 

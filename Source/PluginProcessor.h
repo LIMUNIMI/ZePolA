@@ -1,12 +1,11 @@
 #pragma once
 #include "Filter.h"
+#include "Parameters.h"
 #include <JuceHeader.h>
 
 // =============================================================================
 /** Plugin processor for poles and zero eq  */
-class PolesAndZerosEQAudioProcessor
-    : public juce::AudioProcessor,
-      public juce::AudioProcessorValueTreeState::Listener
+class PolesAndZerosEQAudioProcessor : public VTSAudioProcessor
 {
 public:
     // =========================================================================
@@ -49,10 +48,6 @@ public:
     void setCurrentProgram(int) override;
     const juce::String getProgramName(int);
     void changeProgramName(int index, const juce::String& newName) override;
-
-    // =========================================================================
-    void getStateInformation(juce::MemoryBlock& destData) override;
-    void setStateInformation(const void* data, int sizeInBytes) override;
 
     // =========================================================================
     /** Reset parameters to default and clear filter memory */
@@ -104,7 +99,6 @@ private:
 
     std::function<void()> editorCallback;
     juce::UndoManager undoManager;
-    juce::AudioProcessorValueTreeState parameters;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PolesAndZerosEQAudioProcessor);

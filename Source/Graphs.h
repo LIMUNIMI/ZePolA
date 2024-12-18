@@ -458,12 +458,12 @@ public:
             = std::abs(std::arg(newPosition) / MathConstants<double>::pi);
 
         Parameters::setParameterValue(
-            processor->parameters.getParameter(MAGNITUDE_NAME
-                                               + std::to_string(elementNr)),
+            processor->valueTreeState.getParameter(MAGNITUDE_NAME
+                                                   + std::to_string(elementNr)),
             newMagnitude);
         Parameters::setParameterValue(
-            processor->parameters.getParameter(PHASE_NAME
-                                               + std::to_string(elementNr)),
+            processor->valueTreeState.getParameter(PHASE_NAME
+                                                   + std::to_string(elementNr)),
             newPhase);
 
         element = std::polar(newMagnitude, newPhase);
