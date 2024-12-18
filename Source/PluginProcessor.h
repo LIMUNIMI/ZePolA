@@ -85,6 +85,20 @@ public:
      * @param v New active state, as a float
      */
     void setElementActiveTh(int i, float v);
+    /**
+     * Set an element's type
+     *
+     * @param i Element index (zero-based)
+     * @param v New element type
+     */
+    void setElementType(int i, FilterElement::Type v);
+    /**
+     * Set an element's type, with a float value
+     *
+     * @param i Element index (zero-based)
+     * @param v New element type, as a float value
+     */
+    void setElementTypeF(int i, float v);
 
     // =========================================================================
     /** Clear filter memory */

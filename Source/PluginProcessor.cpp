@@ -255,6 +255,14 @@ void PolesAndZerosEQAudioProcessor::setElementActiveTh(int i, float v)
 {
     setElementActive(i, v > 0.5);
 }
+void PolesAndZerosEQAudioProcessor::setElementType(int i, FilterElement::Type v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setType(v);
+}
+void PolesAndZerosEQAudioProcessor::setElementTypeF(int i, float v)
+{
+    setElementType(i, FilterElement::floatToType(v));
+}
 
 // =============================================================================
 void PolesAndZerosEQAudioProcessor::resetMemory()
@@ -311,6 +319,7 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
                                               const int elementNr,
                                               double linearGain)
 {
+    if (elementNr > n_elements) return;
     auto i_str = juce::String(elementNr - 1);
     setParameterValue(ACTIVE_ID_PREFIX + i_str, false);
 
