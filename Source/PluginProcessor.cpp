@@ -14,10 +14,11 @@ createParameterLayout(int n_elements)
     // Refactored with listener
     params.push_back(
         std::make_unique<AudioParameterBool>(BYPASS_ID, "Bypass", false));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>(
+        GAIN_ID, "Gain", juce::NormalisableRange<float>(-48.0f, 48.0f, 0.01f),
+        0.0f, "dB"));
 
     // Not refactored
-    juce::NormalisableRange<float> masterGainRange(
-        MASTER_GAIN_FLOOR, MASTER_GAIN_CEILING, MASTER_GAIN_INTERVAL);
     juce::NormalisableRange<float> gainRange(GAIN_FLOOR, GAIN_CEILING,
                                              GAIN_INTERVAL);
 
@@ -41,8 +42,6 @@ createParameterLayout(int n_elements)
         params.push_back(std::make_unique<AudioParameterFloat>(
             GAIN_NAME + number, "Gain " + number, gainRange, GAIN_DEFAULT));
     }
-    params.push_back(std::make_unique<AudioParameterFloat>(
-        MASTER_GAIN_NAME, "Gain (dB)", masterGainRange, MASTER_GAIN_DEFAULT));
 
     return params;
 }
@@ -51,6 +50,9 @@ void PolesAndZerosEQAudioProcessor::appendListeners()
     pushListener(BYPASS_ID, new SimpleListener(std::bind(
                                 &PolesAndZerosEQAudioProcessor::setBypassTh,
                                 this, std::placeholders::_1)));
+    pushListener(GAIN_ID, new SimpleListener(std::bind(
+                              &juce::dsp::Gain<float>::setGainDecibels, &gain,
+                              std::placeholders::_1)));
 }
 
 // =============================================================================
@@ -87,7 +89,7 @@ void PolesAndZerosEQAudioProcessor::prepareToPlay(double sampleRate,
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels      = getTotalNumInputChannels();
 
-    gainProcessor.prepare(spec);
+    gain.prepare(spec);
 
     resetMemory();
 }
@@ -154,7 +156,7 @@ void PolesAndZerosEQAudioProcessor::processBlock(
         // Apply gain
         juce::dsp::AudioBlock<float> block(buffer);
         juce::dsp::ProcessContextReplacing<float> prc_ctx(block);
-        gainProcessor.process(prc_ctx);
+        gain.process(prc_ctx);
     }
 
     // Output safety check (not resetting)
@@ -272,54 +274,42 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
 void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
                                                      float newValue)
 {
-    juce::String parameter;
-    int elementNr;
+    if (parameterID != GAIN_ID && parameterID != BYPASS_ID)
+    {
+        auto parameter = parameterID.substring(0, 1);
+        auto elementNr = parameterID.substring(1).getIntValue();
+        newValue       = static_cast<double>(newValue);
 
-    if (parameterID == "MSTR_GAIN")
-    {
-        gainProcessor.setGainLinear(
-            Decibels::decibelsToGain(newValue, MASTER_GAIN_FLOOR - 1.0f));
-    }
-    else
-    {
-        parameter = parameterID.substring(0, 1);
-        elementNr = parameterID.substring(1).getIntValue();
-
-        newValue = static_cast<double>(newValue);
-    }
-
-    if (parameter == "M")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade[elementNr - 1].setMagnitude(newValue);
-    }
-    else if (parameter == "P")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade[elementNr - 1].setPhase(newValue);
-    }
-    else if (parameter == "A")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade[elementNr - 1].setActive(newValue > 0.5);
-    }
-    else if (parameter == "T")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade[elementNr - 1].setType((newValue > 0.5)
-                                               ? FilterElement::Type::ZERO
-                                               : FilterElement::Type::POLE);
-    }
-    else if (parameter == "G")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade[elementNr - 1].setGainDb(newValue);
+        if (parameter == "M")
+        {
+            for (auto& cascade : multiChannelCascade)
+                cascade[elementNr - 1].setMagnitude(newValue);
+        }
+        else if (parameter == "P")
+        {
+            for (auto& cascade : multiChannelCascade)
+                cascade[elementNr - 1].setPhase(newValue);
+        }
+        else if (parameter == "A")
+        {
+            for (auto& cascade : multiChannelCascade)
+                cascade[elementNr - 1].setActive(newValue > 0.5);
+        }
+        else if (parameter == "T")
+        {
+            for (auto& cascade : multiChannelCascade)
+                cascade[elementNr - 1].setType((newValue > 0.5)
+                                                   ? FilterElement::Type::ZERO
+                                                   : FilterElement::Type::POLE);
+        }
+        else if (parameter == "G")
+        {
+            for (auto& cascade : multiChannelCascade)
+                cascade[elementNr - 1].setGainDb(newValue);
+        }
     }
 
-    if (editorCallback)
-    {
-        editorCallback();
-    }
+    if (editorCallback) editorCallback();
 
     safetyFlag = false;
 }

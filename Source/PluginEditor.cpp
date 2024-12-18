@@ -1522,8 +1522,8 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
     gainsAttachments[7].reset(new SliderAttachment(
         valueTreeState, GAIN_NAME + std::to_string(8), *e8_gain));
 
-    masterGainAttachment.reset(new SliderAttachment(
-        valueTreeState, MASTER_GAIN_NAME, *masterGain_slider));
+    masterGainAttachment.reset(
+        new SliderAttachment(valueTreeState, GAIN_ID, *masterGain_slider));
     bypassAttachment.reset(
         new ButtonAttachment(valueTreeState, BYPASS_ID, *bypass));
 
@@ -3181,7 +3181,7 @@ void EditorComponent::getFrequencyResponse()
 
     std::complex<double> frequencyResponse;
 
-    const double gain = processor.gainProcessor.getGainLinear();
+    const double gain = processor.gain.getGainLinear();
 
     for (int i = 0; i < GRAPHS_QUALITY; ++i)
     {

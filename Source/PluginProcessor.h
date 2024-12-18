@@ -93,7 +93,7 @@ private:
 
     // =========================================================================
     std::vector<FilterElementCascade> multiChannelCascade;
-    juce::dsp::Gain<float> gainProcessor;
+    juce::dsp::Gain<float> gain;
 
     // =========================================================================
     bool bypassed, safetyFlag;
