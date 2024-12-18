@@ -102,6 +102,14 @@ public:
     virtual void getStateInformation(juce::MemoryBlock& destData);
     virtual void setStateInformation(const void* data, int sizeInBytes);
 
+    //==============================================================================
+    /** Set parameter value, enclosing the operation in a gesture */
+    void setParameterValue(juce::StringRef parameterID, float value);
+    /** Set parameter value to default, enclosing the operation in a gesture */
+    void resetParameterValue(juce::StringRef);
+    /** Reset value of all parameters */
+    void resetParameters();
+
 protected:
     //==============================================================================
     // TODO: Should be private in the end
@@ -127,6 +135,8 @@ protected:
 
 private:
     //==============================================================================
+    /** Gets the vector of all parameter identifiers */
+    std::vector<juce::StringRef> parameterIDs();
     /**
      * Helper function for notifying all listeners of a value change. Used by
      * setStateInformation()

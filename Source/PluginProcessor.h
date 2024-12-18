@@ -50,8 +50,6 @@ public:
     void changeProgramName(int index, const juce::String& newName) override;
 
     // =========================================================================
-    /** Reset parameters to default and clear filter memory */
-    void resetParams();
     /** Clear filter memory */
     void resetMemory();
     /** Activate or deactivate all filter elements */

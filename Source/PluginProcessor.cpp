@@ -142,18 +142,6 @@ void PolesAndZerosEQAudioProcessor::changeProgramName(int, const juce::String&)
 }
 
 // =============================================================================
-void PolesAndZerosEQAudioProcessor::resetParams()
-{
-    RangedAudioParameter* p;
-    for (int i = 1; i <= n_elements; ++i)
-        for (auto k :
-             {MAGNITUDE_NAME, PHASE_NAME, TYPE_NAME, ACTIVE_NAME, GAIN_NAME})
-            Parameters::resetParameterValue(
-                valueTreeState.getParameter(k + std::to_string(i)));
-    for (auto k : {MASTER_GAIN_NAME, FILTER_BYPASS_NAME})
-        Parameters::resetParameterValue(valueTreeState.getParameter(k));
-    resetMemory();
-}
 void PolesAndZerosEQAudioProcessor::resetMemory()
 {
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();
@@ -161,29 +149,21 @@ void PolesAndZerosEQAudioProcessor::resetMemory()
 void PolesAndZerosEQAudioProcessor::setAllActive(bool active)
 {
     for (int i = 1; i <= n_elements; ++i)
-        Parameters::setParameterValue(
-            valueTreeState.getParameter(ACTIVE_NAME + std::to_string(i)),
-            active);
+        setParameterValue(ACTIVE_NAME + std::to_string(i), active);
 }
 void PolesAndZerosEQAudioProcessor::setInactive(const int elementNr)
 {
-    Parameters::setParameterValue(
-        valueTreeState.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
-        false);
+    setParameterValue(ACTIVE_NAME + std::to_string(elementNr), false);
 }
 void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
 {
-    Parameters::setParameterValue(
-        valueTreeState.getParameter(FILTER_BYPASS_NAME), bypass);
+    setParameterValue(FILTER_BYPASS_NAME, bypass);
 }
 void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
 {
     for (int i = 0; i < n_elements; ++i)
-    {
-        Parameters::setParameterValue(
-            valueTreeState.getParameter(PHASE_NAME + std::to_string(i + 1)),
-            multiChannelCascade[0][i].getPhase() * k);
-    }
+        setParameterValue(PHASE_NAME + std::to_string(i + 1),
+                          multiChannelCascade[0][i].getPhase() * k);
 }
 void PolesAndZerosEQAudioProcessor::doublePhases() { multiplyPhases(2.0); }
 void PolesAndZerosEQAudioProcessor::halfPhases() { multiplyPhases(0.5); }
@@ -205,9 +185,7 @@ void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
             newType = FilterElement::Type::ZERO;
             break;
         }
-        Parameters::setParameterValue(
-            valueTreeState.getParameter(TYPE_NAME + std::to_string(i + 1)),
-            newType);
+        setParameterValue(TYPE_NAME + std::to_string(i + 1), newType);
     }
 }
 void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
@@ -217,26 +195,16 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
                                               double linearGain)
 {
     if (elementNr > n_elements) return;
-    Parameters::setParameterValue(
-        valueTreeState.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
-        false);
+    setParameterValue(ACTIVE_NAME + std::to_string(elementNr), false);
 
     float gain = Decibels::gainToDecibels(linearGain, GAIN_FLOOR - 1.0);
 
-    Parameters::setParameterValue(
-        valueTreeState.getParameter(MAGNITUDE_NAME + std::to_string(elementNr)),
-        magnitude);
-    Parameters::setParameterValue(
-        valueTreeState.getParameter(PHASE_NAME + std::to_string(elementNr)),
-        phase);
-    Parameters::setParameterValue(
-        valueTreeState.getParameter(TYPE_NAME + std::to_string(elementNr)),
-        !type);
-    Parameters::setParameterValue(
-        valueTreeState.getParameter(ACTIVE_NAME + std::to_string(elementNr)),
-        true);
-    Parameters::setParameterValue(
-        valueTreeState.getParameter(GAIN_NAME + std::to_string(elementNr)),
+    setParameterValue(MAGNITUDE_NAME + std::to_string(elementNr), magnitude);
+    setParameterValue(PHASE_NAME + std::to_string(elementNr), phase);
+    setParameterValue(TYPE_NAME + std::to_string(elementNr), !type);
+    setParameterValue(ACTIVE_NAME + std::to_string(elementNr), true);
+    setParameterValue(
+        GAIN_NAME + std::to_string(elementNr),
         jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
 }
 

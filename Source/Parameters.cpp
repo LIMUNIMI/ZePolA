@@ -128,17 +128,39 @@ void VTSAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
     sendValueChangedMessageToAllListeners();
 }
 
-// ============================================================================
-void VTSAudioProcessor::sendValueChangedMessageToAllListeners()
+//==============================================================================
+void VTSAudioProcessor::setParameterValue(juce::StringRef parameterID,
+                                          float value)
 {
-    DBG("--- sendValueChangedMessageToAllListeners ------------------------");
+    Parameters::setParameterValue(valueTreeState.getParameter(parameterID),
+                                  value);
+}
+void VTSAudioProcessor::resetParameterValue(juce::StringRef parameterID)
+{
+    Parameters::resetParameterValue(valueTreeState.getParameter(parameterID));
+}
+void VTSAudioProcessor::resetParameters()
+{
+    for (auto id : parameterIDs()) resetParameterValue(id);
+}
+
+// ============================================================================
+std::vector<juce::StringRef> VTSAudioProcessor::parameterIDs()
+{
+    std::vector<juce::StringRef> v;
     std::unique_ptr<juce::XmlElement> xml(
         valueTreeState.copyState().createXml());
     for (auto* element : xml->getChildWithTagNameIterator("PARAM"))
+        v.push_back(element->getStringAttribute("id"));
+    return v;
+}
+void VTSAudioProcessor::sendValueChangedMessageToAllListeners()
+{
+    DBG("--- sendValueChangedMessageToAllListeners ------------------------");
+    for (auto id : parameterIDs())
     {
-        const juce::String& id = element->getStringAttribute("id");
-        auto* param            = valueTreeState.getParameter(id);
-        auto val               = param->getValue();
+        auto* param = valueTreeState.getParameter(id);
+        auto val    = param->getValue();
         DBG(id << "->sendValueChangedMessageToListeners (" << val << ")");
         param->sendValueChangedMessageToListeners(val);
     }
