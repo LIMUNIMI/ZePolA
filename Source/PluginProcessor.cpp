@@ -28,13 +28,13 @@ createParameterLayout(int n_elements)
         params.push_back(std::make_unique<AudioParameterFloat>(
             PHASE_ID_PREFIX + i_str, "Phase " + ip1_str,
             NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f));
+        params.push_back(std::make_unique<AudioParameterFloat>(
+            GAIN_ID_PREFIX + i_str, "Gain " + ip1_str,
+            NormalisableRange<float>(-128.0f, 24.0f, 0.1f), 0.0f));
     }
 
     // ^^^ Refactored with listener
     // vvv Not refactored
-
-    juce::NormalisableRange<float> gainRange(GAIN_FLOOR, GAIN_CEILING,
-                                             GAIN_INTERVAL);
 
     for (int i = 0; i < n_elements; ++i)
     {
@@ -44,8 +44,6 @@ createParameterLayout(int n_elements)
             ACTIVE_NAME + number, "Active " + number, ACTIVE_DEFAULT));
         params.push_back(std::make_unique<AudioParameterBool>(
             TYPE_NAME + number, "Type" + number, TYPE_DEFAULT));
-        params.push_back(std::make_unique<AudioParameterFloat>(
-            GAIN_NAME + number, "Gain " + number, gainRange, GAIN_DEFAULT));
     }
 
     return params;
@@ -75,6 +73,10 @@ void PolesAndZerosEQAudioProcessor::appendListeners()
         pushListener(PHASE_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
                          &PolesAndZerosEQAudioProcessor::setElementPhase, this,
+                         i, std::placeholders::_1)));
+        pushListener(GAIN_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &PolesAndZerosEQAudioProcessor::setElementGainDb, this,
                          i, std::placeholders::_1)));
     }
 }
@@ -237,6 +239,10 @@ void PolesAndZerosEQAudioProcessor::setElementPhase(int i, float v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setPhase(v);
 }
+void PolesAndZerosEQAudioProcessor::setElementGainDb(int i, float v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setGainDb(v);
+}
 
 // =============================================================================
 void PolesAndZerosEQAudioProcessor::resetMemory()
@@ -306,11 +312,9 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
 
     setParameterValue(MAGNITUDE_ID_PREFIX + i_str, magnitude);
     setParameterValue(PHASE_ID_PREFIX + i_str, phase);
-    setParameterValue(TYPE_NAME + std::to_string(elementNr), !type);
-    setParameterValue(ACTIVE_NAME + std::to_string(elementNr), true);
-    setParameterValue(
-        GAIN_NAME + std::to_string(elementNr),
-        jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+    setParameterValue(TYPE_NAME + juce::String(elementNr), !type);
+    setParameterValue(ACTIVE_NAME + juce::String(elementNr), true);
+    setParameterValue(GAIN_ID_PREFIX + i_str, gain);
 }
 
 // =============================================================================
@@ -334,11 +338,6 @@ void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
             cascade[elementNr - 1].setType((newValue > 0.5)
                                                ? FilterElement::Type::ZERO
                                                : FilterElement::Type::POLE);
-    }
-    else if (parameter == "G")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade[elementNr - 1].setGainDb(newValue);
     }
 }
 

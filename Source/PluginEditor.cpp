@@ -1507,21 +1507,21 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
         valueTreeState, ACTIVE_NAME + juce::String(8), *e8_active));
 
     gainsAttachments[0].reset(new SliderAttachment(
-        valueTreeState, GAIN_NAME + std::to_string(1), *e1_gain));
+        valueTreeState, GAIN_ID_PREFIX + juce::String(0), *e1_gain));
     gainsAttachments[1].reset(new SliderAttachment(
-        valueTreeState, GAIN_NAME + std::to_string(2), *e2_gain));
+        valueTreeState, GAIN_ID_PREFIX + juce::String(1), *e2_gain));
     gainsAttachments[2].reset(new SliderAttachment(
-        valueTreeState, GAIN_NAME + std::to_string(3), *e3_gain));
+        valueTreeState, GAIN_ID_PREFIX + juce::String(2), *e3_gain));
     gainsAttachments[3].reset(new SliderAttachment(
-        valueTreeState, GAIN_NAME + std::to_string(4), *e4_gain));
+        valueTreeState, GAIN_ID_PREFIX + juce::String(3), *e4_gain));
     gainsAttachments[4].reset(new SliderAttachment(
-        valueTreeState, GAIN_NAME + std::to_string(5), *e5_gain));
+        valueTreeState, GAIN_ID_PREFIX + juce::String(4), *e5_gain));
     gainsAttachments[5].reset(new SliderAttachment(
-        valueTreeState, GAIN_NAME + std::to_string(6), *e6_gain));
+        valueTreeState, GAIN_ID_PREFIX + juce::String(5), *e6_gain));
     gainsAttachments[6].reset(new SliderAttachment(
-        valueTreeState, GAIN_NAME + std::to_string(7), *e7_gain));
+        valueTreeState, GAIN_ID_PREFIX + juce::String(6), *e7_gain));
     gainsAttachments[7].reset(new SliderAttachment(
-        valueTreeState, GAIN_NAME + std::to_string(8), *e8_gain));
+        valueTreeState, GAIN_ID_PREFIX + juce::String(7), *e8_gain));
 
     masterGainAttachment.reset(
         new SliderAttachment(valueTreeState, GAIN_ID, *masterGain_slider));
@@ -2143,24 +2143,16 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         sliderThatWasMoved->repaint();
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(1);
-            processor.setParameterValue(GAIN_NAME + std::to_string(1),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(0),
+                                        calculateGain(1));
     }
     else if (sliderThatWasMoved == p1_slider.get())
     {
         updateFrequencyFromSlider(p1_slider.get(), p1_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(1);
-            processor.setParameterValue(GAIN_NAME + std::to_string(1),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(0),
+                                        calculateGain(1));
     }
     else if (sliderThatWasMoved == m2_slider.get())
     {
@@ -2176,12 +2168,8 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         sliderThatWasMoved->repaint();
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(2);
-            processor.setParameterValue(GAIN_NAME + std::to_string(2),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(1),
+                                        calculateGain(2));
     }
     else if (sliderThatWasMoved == m3_slider.get())
     {
@@ -2197,12 +2185,8 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         sliderThatWasMoved->repaint();
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(3);
-            processor.setParameterValue(GAIN_NAME + std::to_string(3),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(1),
+                                        calculateGain(2));
     }
     else if (sliderThatWasMoved == m4_slider.get())
     {
@@ -2218,12 +2202,8 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         sliderThatWasMoved->repaint();
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(4);
-            processor.setParameterValue(GAIN_NAME + std::to_string(4),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(3),
+                                        calculateGain(4));
     }
     else if (sliderThatWasMoved == m5_slider.get())
     {
@@ -2239,12 +2219,8 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         sliderThatWasMoved->repaint();
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(5);
-            processor.setParameterValue(GAIN_NAME + std::to_string(5),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(4),
+                                        calculateGain(5));
     }
     else if (sliderThatWasMoved == m6_slider.get())
     {
@@ -2260,12 +2236,8 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         sliderThatWasMoved->repaint();
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(6);
-            processor.setParameterValue(GAIN_NAME + std::to_string(6),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(5),
+                                        calculateGain(6));
     }
     else if (sliderThatWasMoved == m7_slider.get())
     {
@@ -2281,12 +2253,8 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         sliderThatWasMoved->repaint();
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(7);
-            processor.setParameterValue(GAIN_NAME + std::to_string(7),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(6),
+                                        calculateGain(7));
     }
     else if (sliderThatWasMoved == m8_slider.get())
     {
@@ -2302,96 +2270,64 @@ void EditorComponent::sliderValueChanged(juce::Slider* sliderThatWasMoved)
         sliderThatWasMoved->repaint();
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(8);
-            processor.setParameterValue(GAIN_NAME + std::to_string(8),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(7),
+                                        calculateGain(8));
     }
     else if (sliderThatWasMoved == p2_slider.get())
     {
         updateFrequencyFromSlider(p2_slider.get(), p2_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(2);
-            processor.setParameterValue(GAIN_NAME + std::to_string(2),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(1),
+                                        calculateGain(2));
     }
     else if (sliderThatWasMoved == p3_slider.get())
     {
         updateFrequencyFromSlider(p3_slider.get(), p3_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(3);
-            processor.setParameterValue(GAIN_NAME + std::to_string(3),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(2),
+                                        calculateGain(3));
     }
     else if (sliderThatWasMoved == p4_slider.get())
     {
         updateFrequencyFromSlider(p4_slider.get(), p4_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(4);
-            processor.setParameterValue(GAIN_NAME + std::to_string(4),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(3),
+                                        calculateGain(4));
     }
     else if (sliderThatWasMoved == p5_slider.get())
     {
         updateFrequencyFromSlider(p5_slider.get(), p5_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState())
-        {
-            auto gain = calculateGain(5);
-            processor.setParameterValue(GAIN_NAME + std::to_string(5),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(4),
+                                        calculateGain(5));
     }
     else if (sliderThatWasMoved == p6_slider.get())
     {
         updateFrequencyFromSlider(p6_slider.get(), p6_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(6);
-            processor.setParameterValue(GAIN_NAME + std::to_string(6),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(5),
+                                        calculateGain(6));
     }
     else if (sliderThatWasMoved == p7_slider.get())
     {
         updateFrequencyFromSlider(p7_slider.get(), p7_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(7);
-            processor.setParameterValue(GAIN_NAME + std::to_string(7),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(6),
+                                        calculateGain(7));
     }
     else if (sliderThatWasMoved == p8_slider.get())
     {
         updateFrequencyFromSlider(p8_slider.get(), p8_freq.get(), sampleRate);
 
         if (autoGain.get()->getToggleState() && !isSettingFilters)
-        {
-            auto gain = calculateGain(8);
-            processor.setParameterValue(GAIN_NAME + std::to_string(8),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(7),
+                                        calculateGain(8));
     }
     else if (sliderThatWasMoved == frequency_design_slider.get())
     {
@@ -2597,12 +2533,8 @@ void EditorComponent::buttonClicked(juce::Button* buttonThatWasClicked)
         m8_slider->repaint();
 
         if (autoGain.get()->getToggleState())
-        {
-            auto gain = calculateGain(8, true);
-            processor.setParameterValue(GAIN_NAME + std::to_string(8),
-                                        jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                             SLIDERS_FLOOR, SLIDERS_CEILING));
-        }
+            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(7),
+                                        calculateGain(8, true));
     }
     else if (buttonThatWasClicked == e1_active.get())
     {
@@ -2910,8 +2842,9 @@ void EditorComponent::labelTextChanged(juce::Label* labelThatHasChanged)
     const double sampleRate = processor.getSampleRate();
     int newFrequency        = labelThatHasChanged->getText().getIntValue();
 
-    float newGain
-        = formatGainInput(labelThatHasChanged->getText().getFloatValue());
+    float newGain = processor.formatParameterValue(
+        GAIN_ID_PREFIX + juce::String(0),
+        labelThatHasChanged->getText().getFloatValue());
 
     if (labelThatHasChanged == frequency_label.get())
         formatDesignFrequencyInput(newFrequency, labelThatHasChanged,
@@ -3135,13 +3068,9 @@ void EditorComponent::slidersInit()
 
 void EditorComponent::gainsInit()
 {
-    for (int i = 1; i <= processor.n_elements; ++i)
-    {
-        auto gain = calculateGain(i);
-        processor.setParameterValue(GAIN_NAME + std::to_string(i),
-                                    jmap(gain, GAIN_FLOOR, GAIN_CEILING,
-                                         SLIDERS_FLOOR, SLIDERS_CEILING));
-    }
+    for (int i = 0; i < processor.n_elements; ++i)
+        processor.setParameterValue(GAIN_ID_PREFIX + juce::String(i),
+                                    calculateGain(i + 1));
 }
 
 void EditorComponent::getFrequencyResponse()
@@ -3484,53 +3413,35 @@ void EditorComponent::updateGUIEllipticChebyshevIandII()
     update_button->setEnabled(true);
 }
 
-float EditorComponent::formatGainInput(float gain)
-{
-    if (gain < GAIN_FLOOR)
-        gain = GAIN_FLOOR;
-    else if (gain > GAIN_CEILING)
-        gain = GAIN_CEILING;
-
-    return gain;
-}
-
 float EditorComponent::calculateGain(const int elementNr, bool isChangingType)
 {
-    auto element   = processor.multiChannelCascade[0][elementNr - 1];
+    const FilterElement& element
+        = processor.multiChannelCascade[0][elementNr - 1];
     auto magnitude = element.getMagnitude();
     auto type      = element.getType();
+    FilterElement element_copy(element);
 
-    if (isChangingType)
-        type = (type == FilterElement::ZERO) ? FilterElement::POLE
-                                             : FilterElement::ZERO;
+    bool computeRMSG = true;
+    float g;
+    if (isChangingType) switch (type)
+        {
+        default:
+            UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
+                                  "Returning default value: 0dB");
+            computeRMSG = false;
+            g = 0.0f;
+            break;
+        case FilterElement::ZERO:
+            element_copy.setType(FilterElement::POLE);
+            break;
+        case FilterElement::POLE:
+            element_copy.setType(FilterElement::ZERO);
+            break;
+        }
+    if (computeRMSG) g = -element_copy.rmsgDb();
 
-    auto Re = element.getMagnitude()
-              * std::cos(element.getPhase() * MathConstants<double>::pi);
-
-    switch (type)
-    {
-    case FilterElement::ZERO:
-    {
-        auto gainValue
-            = std::sqrt(1.0
-                        / (1.0 + 4 * Re * Re
-                           + magnitude * magnitude * magnitude * magnitude));
-        return static_cast<float>(
-            Decibels::gainToDecibels(gainValue, GAIN_FLOOR - 1.0));
-    }
-
-    case FilterElement::POLE:
-    {
-        auto Im = element.getMagnitude()
-                  * std::sin(element.getPhase() * MathConstants<double>::pi);
-        auto MSG = 1.0
-                   / (std::abs(1.0 - magnitude * magnitude)
-                      * (Re * Re - 2 * std::abs(Re) + Im * Im + 1.0));
-        auto gainValue = 1.0 / std::sqrt(MSG);
-        return static_cast<float>(
-            Decibels::gainToDecibels(gainValue, GAIN_FLOOR - 1.0));
-    }
-    }
+    return processor.formatParameterValue(
+        GAIN_ID_PREFIX + juce::String(elementNr - 1), g);
 }
 
 void EditorComponent::coefficientsNormalization(double* c0, double* c1,

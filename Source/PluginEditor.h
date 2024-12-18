@@ -50,7 +50,6 @@ public:
     void updateGUIButterworth();
     void updateGUIEllipticChebyshevIandII();
 
-    float formatGainInput(float gain);
     float calculateGain(const int elementNr, bool isChangingType = false);
 
     void coefficientsNormalization(double* c0, double* c1,

@@ -64,6 +64,13 @@ public:
      * @param v Phase value
      */
     void setElementPhase(int i, float v);
+    /**
+     * Set an element's gain in decibel
+     *
+     * @param i Element index (zero-based)
+     * @param v Gain value (decibel)
+     */
+    void setElementGainDb(int i, float v);
 
     // =========================================================================
     /** Clear filter memory */

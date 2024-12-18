@@ -7,6 +7,7 @@
 #define GAIN_ID "GAIN"
 #define MAGNITUDE_ID_PREFIX "MAGNITUDE_"
 #define PHASE_ID_PREFIX "PHASE_"
+#define GAIN_ID_PREFIX "GAIN_"
 
 // =============================================================================
 // Generic constants & macros
@@ -30,22 +31,12 @@
     }
 
 // =============================================================================
-// Filter Element macros
-#define FILTER_ELEMENT_GAIN_FLOOR -128.0
-
-// =============================================================================
 // Plugin parameters macros
 #define TYPE_NAME "T"
 #define TYPE_DEFAULT true
 
 #define ACTIVE_NAME "A"
 #define ACTIVE_DEFAULT false
-
-#define GAIN_NAME "G"
-#define GAIN_FLOOR -128.0f
-#define GAIN_CEILING 24.0f
-#define GAIN_INTERVAL 0.1f
-#define GAIN_DEFAULT 0.0f
 
 // =============================================================================
 namespace Parameters
