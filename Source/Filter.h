@@ -26,10 +26,11 @@ public:
         ZERO,
         POLE
     };
-    // Minimum input gain allowed
+    /** Minimum input gain allowed in decibel */
     static const double gain_floor_db;
+    /** Minimum input gain allowed */
     static const double gain_floor;
-    // Maximum magnitude allowed for poles
+    /** Maximum magnitude allowed for poles */
     static const double pole_magnitude_ceil;
 
     // =========================================================================
@@ -39,47 +40,48 @@ public:
      * By default, it is a 2-zero filter with both zeros in 0
      */
     FilterElement();
-    // Copy constructor
+    /** Copy constructor */
     FilterElement(const FilterElement&);
 
     // =========================================================================
-    // Returns the magnitude of the zero/pole of the digital filter
+    /** Returns the magnitude of the zero/pole of the digital filter */
     double getMagnitude() const;
-    // Returns the normalized phase of the zero/pole of the digital filter
+    /** Returns the normalized phase of the zero/pole of the digital filter */
     double getPhase() const;
-    // Returns the angle (non-normalized) of the zero/pole of the digital filter
+    /** Returns the angle (non-normalized) of the zero/pole of the digital
+     * filter */
     double getAngle() const;
-    // Returns the real part of the zero/pole of the digital filter
+    /** Returns the real part of the zero/pole of the digital filter */
     double getRealPart() const;
-    // Returns the imaginary part of the zero/pole of the digital filter
+    /** Returns the imaginary part of the zero/pole of the digital filter */
     double getImagPart() const;
-    // Returns the type of the digital filter (pole/zero)
+    /** Returns the type of the digital filter (pole/zero) */
     Type getType() const;
-    // Returns the input gain (linear) of the digital filter
+    /** Returns the input gain (linear) of the digital filter */
     double getGain() const;
-    // Returns the input gain (in decibel) of the digital filter
+    /** Returns the input gain (in decibel) of the digital filter */
     double getGainDb() const;
-    // Returns true if the filter is active (or false if it is not)
+    /** Returns true if the filter is active (or false if it is not) */
     bool getActive() const;
-    // Returns an array with the current gain and coefficients of the filter
+    /** Returns an array with the current gain and coefficients of the filter */
     std::array<double, 3> getCoefficients() const;
 
     // =========================================================================
-    // Resets the memory of the digital filter to the initial state
+    /** Resets the memory of the digital filter to the initial state */
     void resetMemory();
-    // Sets the magnitude of the zero/pole of the digital filter
+    /** Sets the magnitude of the zero/pole of the digital filter */
     void setMagnitude(double);
-    // Sets the normalized phase of the zero/pole of the digital filter
+    /** Sets the normalized phase of the zero/pole of the digital filter */
     void setPhase(double);
-    // Sets the type of the digital filter (pole/zero)
+    /** Sets the type of the digital filter (pole/zero) */
     void setType(Type);
-    // Sets the input gain (linear) of the digital filter
+    /** Sets the input gain (linear) of the digital filter */
     void setGain(double);
-    // Sets the input gain (in decibel) of the digital filter
+    /** Sets the input gain (in decibel) of the digital filter */
     void setGainDb(double);
-    // Sets the active state of the digital filter
+    /** Sets the active state of the digital filter */
     void setActive(bool b = true);
-    // Sets the digital filter to be inactive
+    /** Sets the digital filter to be inactive */
     void setInactive();
 
     // =========================================================================
@@ -99,18 +101,28 @@ public:
      * @return DTFT at digital frequency Ω
      */
     std::complex<double> dtft(double) const;
+    /**
+     * Computes the root mean-squared gain of the filter, without accounting for
+     * the input gain
+     */
+    double rmsg() const;
+    /**
+     * Computes the root mean-squared gain of the filter in decibel, without
+     * accounting for the input gain
+     */
+    double rmsgDb() const;
 
 private:
     // =========================================================================
-    // Computes the digital filter time-domain coefficients
+    /** Computes the digital filter time-domain coefficients */
     void computeCoefficients();
-    // Pushes a sample in the memory queue
+    /** Pushes a sample in the memory queue */
     void pushSample(double);
 
     // =========================================================================
-    // Zero sample processing function
+    /** Zero sample processing function */
     double processSampleZero(double);
-    // Pole sample processing function
+    /** Pole sample processing function */
     double processSamplePole(double);
 
     // =========================================================================
@@ -131,31 +143,31 @@ class FilterElementCascade
 {
 public:
     // =========================================================================
-    // Construct a new Filter Element Cascade with n elements
+    /** Construct a new Filter Element Cascade with n elements */
     FilterElementCascade(int n);
-    // Copy constructor
+    /** Copy constructor */
     FilterElementCascade(const FilterElementCascade&);
 
     // =========================================================================
-    // Adds a new element at the end of the cascade
+    /** Adds a new element at the end of the cascade */
     void addElement();
-    // Adds a copy of the provided element at the end of the cascade
+    /** Adds a copy of the provided element at the end of the cascade */
     void addElement(const FilterElement&);
 
     // =========================================================================
-    // Resets the memory of the digital filter to the initial state
+    /** Resets the memory of the digital filter to the initial state */
     void resetMemory();
 
     // =========================================================================
-    // Iterator begin() method
+    /** Iterator begin() method */
     std::vector<FilterElement>::iterator begin();
-    // Iterator end() method
+    /** Iterator end() method */
     std::vector<FilterElement>::iterator end();
-    // Number of elements in the cascade
+    /** Number of elements in the cascade */
     size_t size() const;
-    // Checks if the cascade has no elements
+    /** Checks if the cascade has no elements */
     bool empty() const;
-    // Access element of the chain
+    /** Access element of the chain */
     FilterElement& operator[](size_t);
 
     // =========================================================================
@@ -166,7 +178,8 @@ public:
      * @return DTFT at digital frequency Ω
      */
     std::complex<double> dtft(double) const;
-    // Returns an array with the current gain and coefficients of each element
+    /** Returns an array with the current gain and coefficients of each element
+     */
     std::vector<std::array<double, 3>> getCoefficients() const;
 
     // =========================================================================

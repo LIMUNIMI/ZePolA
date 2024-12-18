@@ -2,9 +2,14 @@
 #include "Macros.h"
 
 // =============================================================================
+static double _db2a(double d) { return pow(10.0, d / 20.0); }
 const double FilterElement::gain_floor_db = -128.0;
-const double FilterElement::gain_floor
-    = pow(10.0, FilterElement::gain_floor_db / 20.0);
+const double FilterElement::gain_floor    = _db2a(FilterElement::gain_floor_db);
+static double _a2db(double a)
+{
+    return (a < FilterElement::gain_floor) ? FilterElement::gain_floor_db
+                                           : 20.0 * log10(a);
+}
 const double FilterElement::pole_magnitude_ceil = 0.99999;
 
 // =============================================================================
@@ -40,10 +45,7 @@ double FilterElement::getAngle() const
 }
 FilterElement::Type FilterElement::getType() const { return type; }
 double FilterElement::getGain() const { return gain; }
-double FilterElement::getGainDb() const
-{
-    return (gain < gain_floor) ? gain_floor_db : 20.0 * log10(gain);
-}
+double FilterElement::getGainDb() const { return _a2db(gain); }
 bool FilterElement::getActive() const { return active; }
 double FilterElement::getRealPart() const
 {
@@ -102,9 +104,10 @@ void FilterElement::setType(FilterElement::Type t)
         processSampleFunc = &FilterElement::processSampleZero;
         break;
     }
+    setMagnitude(getMagnitude());
 }
 void FilterElement::setGain(double g) { gain = g; }
-void FilterElement::setGainDb(double g) { setGain(pow(10, g / 20.0)); }
+void FilterElement::setGainDb(double g) { setGain(_db2a(g)); }
 void FilterElement::setActive(bool a)
 {
     if (a && a != active) resetMemory();
@@ -162,6 +165,32 @@ std::complex<double> FilterElement::dtft(double omega) const
 
     return h;
 }
+double FilterElement::rmsg() const
+{
+    double g;
+    switch (type)
+    {
+    default:
+        UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
+                              "Returning the default value: 1.0");
+        g = 1.0;
+        break;
+    case FilterElement::Type::ZERO:
+        // 1 + 4Re^2{z} + |z|^4
+        g = 1.0 + coeffs[0] * coeffs[0] + coeffs[1] * coeffs[1];
+        break;
+    case FilterElement::Type::POLE:
+    {
+        double r = getRealPart();
+        double i = getImagPart();
+        // (1 - |p|^2) * (Re^2{p} - 2|Re{z}| + Im^2{p} + 1)
+        g = (1.0 - coeffs[1]) * (r * r + coeffs[0] + i * i + 1.0);
+        break;
+    }
+    }
+    return std::sqrt(g);
+}
+double FilterElement::rmsgDb() const { return _a2db(rmsg()); }
 
 // =============================================================================
 FilterElementCascade::FilterElementCascade(int n)
