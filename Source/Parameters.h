@@ -79,6 +79,8 @@ public:
     virtual void setStateInformation(const void* data, int sizeInBytes);
 
     //==============================================================================
+    /** Format parameter value, so that it is in range */
+    float formatParameterValue(juce::StringRef parameterID, float value);
     /** Set parameter value, enclosing the operation in a gesture */
     void setParameterValue(juce::StringRef parameterID, float value);
     /** Set parameter value to default, enclosing the operation in a gesture */

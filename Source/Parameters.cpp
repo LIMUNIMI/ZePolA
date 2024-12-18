@@ -19,7 +19,7 @@ void Parameters::setParameterValue(juce::RangedAudioParameter* parameter,
     if (parameter)
     {
         parameter->beginChangeGesture();
-        parameter->setValueNotifyingHost(value);
+        parameter->setValueNotifyingHost(parameter->convertTo0to1(value));
         parameter->endChangeGesture();
     }
 }
@@ -94,6 +94,13 @@ void VTSAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 }
 
 //==============================================================================
+float VTSAudioProcessor::formatParameterValue(juce::StringRef parameterID,
+                                              float value)
+{
+    juce::NormalisableRange<float> nr
+        = valueTreeState.getParameterRange(parameterID);
+    return nr.convertFrom0to1(nr.convertTo0to1(value));
+}
 void VTSAudioProcessor::setParameterValue(juce::StringRef parameterID,
                                           float value)
 {
