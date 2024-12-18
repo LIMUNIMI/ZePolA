@@ -1,16 +1,27 @@
 #include "Filter.h"
 #include "Macros.h"
+#include <Juceheader.h>
 
 // =============================================================================
-static double _db2a(double d) { return pow(10.0, d / 20.0); }
-const double FilterElement::gain_floor_db = -128.0;
-const double FilterElement::gain_floor    = _db2a(FilterElement::gain_floor_db);
-static double _a2db(double a)
-{
-    return (a < FilterElement::gain_floor) ? FilterElement::gain_floor_db
-                                           : 20.0 * log10(a);
-}
+const double FilterElement::gain_floor_db       = -128.0;
 const double FilterElement::pole_magnitude_ceil = 0.99999;
+
+// =============================================================================
+float FilterElement::typeToFloat(FilterElement::Type t)
+{
+    return static_cast<float>(static_cast<int>(t));
+}
+FilterElement::Type FilterElement::floatToType(float f)
+{
+    switch (juce::roundFloatToInt(f))
+    {
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for filter element type. Defaulting to 'ZERO'");
+    case FilterElement::Type::ZERO: return FilterElement::Type::ZERO;
+    case FilterElement::Type::POLE: return FilterElement::Type::POLE;
+    }
+}
 
 // =============================================================================
 FilterElement::FilterElement()
@@ -45,7 +56,10 @@ double FilterElement::getAngle() const
 }
 FilterElement::Type FilterElement::getType() const { return type; }
 double FilterElement::getGain() const { return gain; }
-double FilterElement::getGainDb() const { return _a2db(gain); }
+double FilterElement::getGainDb() const
+{
+    return juce::Decibels::gainToDecibels(gain, gain_floor_db);
+}
 bool FilterElement::getActive() const { return active; }
 double FilterElement::getRealPart() const
 {
@@ -107,7 +121,10 @@ void FilterElement::setType(FilterElement::Type t)
     setMagnitude(getMagnitude());
 }
 void FilterElement::setGain(double g) { gain = g; }
-void FilterElement::setGainDb(double g) { setGain(_db2a(g)); }
+void FilterElement::setGainDb(double g)
+{
+    setGain(juce::Decibels::decibelsToGain(g, gain_floor_db));
+}
 void FilterElement::setActive(bool a)
 {
     if (a && a != active) resetMemory();
@@ -190,7 +207,10 @@ double FilterElement::rmsg() const
     }
     return std::sqrt(g);
 }
-double FilterElement::rmsgDb() const { return _a2db(rmsg()); }
+double FilterElement::rmsgDb() const
+{
+    return juce::Decibels::gainToDecibels(rmsg(), gain_floor_db);
+}
 
 // =============================================================================
 FilterElementCascade::FilterElementCascade(int n)

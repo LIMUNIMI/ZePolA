@@ -23,13 +23,19 @@ public:
      */
     enum Type
     {
-        ZERO,
-        POLE
+        ZERO = 0,
+        POLE,
+
+        // This type should not be used as a type, but only to get how many
+        // types are there
+        N_TYPES
     };
+    /** Encode filter type as a float */
+    static float typeToFloat(Type);
+    /** Decode float as a filter type */
+    static Type floatToType(float);
     /** Minimum input gain allowed in decibel */
     static const double gain_floor_db;
-    /** Minimum input gain allowed */
-    static const double gain_floor;
     /** Maximum magnitude allowed for poles */
     static const double pole_magnitude_ceil;
 
