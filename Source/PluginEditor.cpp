@@ -1473,21 +1473,21 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
         valueTreeState, PHASE_ID_PREFIX + juce::String(7), *p8_slider));
 
     typesAttachments[0].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + juce::String(1), *e1_type));
+        valueTreeState, TYPE_ID_PREFIX + juce::String(0), *e1_type));
     typesAttachments[1].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + juce::String(2), *e2_type));
+        valueTreeState, TYPE_ID_PREFIX + juce::String(1), *e2_type));
     typesAttachments[2].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + juce::String(3), *e3_type));
+        valueTreeState, TYPE_ID_PREFIX + juce::String(2), *e3_type));
     typesAttachments[3].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + juce::String(4), *e4_type));
+        valueTreeState, TYPE_ID_PREFIX + juce::String(3), *e4_type));
     typesAttachments[4].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + juce::String(5), *e5_type));
+        valueTreeState, TYPE_ID_PREFIX + juce::String(4), *e5_type));
     typesAttachments[5].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + juce::String(6), *e6_type));
+        valueTreeState, TYPE_ID_PREFIX + juce::String(5), *e6_type));
     typesAttachments[6].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + juce::String(7), *e7_type));
+        valueTreeState, TYPE_ID_PREFIX + juce::String(6), *e7_type));
     typesAttachments[7].reset(new ButtonAttachment(
-        valueTreeState, TYPE_NAME + juce::String(8), *e8_type));
+        valueTreeState, TYPE_ID_PREFIX + juce::String(7), *e8_type));
 
     activeAttachments[0].reset(new ButtonAttachment(
         valueTreeState, ACTIVE_ID_PREFIX + juce::String(0), *e1_active));
@@ -3541,7 +3541,7 @@ void EditorComponent::filterDesignAndSetup()
                 zero = -(b1 / b0);
                 pole = -a1;
             }
-    
+
             processor.setFilter(std::abs(zero), std::arg(zero),
                                 FilterElement::ZERO, elementNr, b0);
             ++elementNr;

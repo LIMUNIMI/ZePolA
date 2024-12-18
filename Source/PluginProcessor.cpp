@@ -33,17 +33,13 @@ createParameterLayout(int n_elements)
             NormalisableRange<float>(-128.0f, 24.0f, 0.1f), 0.0f));
         params.push_back(std::make_unique<AudioParameterBool>(
             ACTIVE_ID_PREFIX + i_str, "Active " + ip1_str, false));
-    }
-
-    // ^^^ Refactored with listener
-    // vvv Not refactored
-
-    for (int i = 0; i < n_elements; ++i)
-    {
-        std::string number = std::to_string(i + 1);
-
-        params.push_back(std::make_unique<AudioParameterBool>(
-            TYPE_NAME + number, "Type" + number, TYPE_DEFAULT));
+        params.push_back(std::make_unique<AudioParameterFloat>(
+            TYPE_ID_PREFIX + i_str, "Type " + ip1_str,
+            NormalisableRange<float>(
+                0.0f,
+                FilterElement::typeToFloat(FilterElement::Type::N_TYPES) - 1.0f,
+                0.1f),
+            FilterElement::typeToFloat(FilterElement::Type::ZERO)));
     }
 
     return params;
@@ -82,6 +78,10 @@ void PolesAndZerosEQAudioProcessor::appendListeners()
                      new SimpleListener(std::bind(
                          &PolesAndZerosEQAudioProcessor::setElementActiveTh,
                          this, i, std::placeholders::_1)));
+        pushListener(TYPE_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &PolesAndZerosEQAudioProcessor::setElementTypeF, this,
+                         i, std::placeholders::_1)));
     }
 }
 
@@ -310,7 +310,8 @@ void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
             newType = FilterElement::Type::ZERO;
             break;
         }
-        setParameterValue(TYPE_NAME + juce::String(i + 1), newType);
+        setParameterValue(TYPE_ID_PREFIX + juce::String(i),
+                          FilterElement::typeToFloat(newType));
     }
 }
 void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
@@ -329,7 +330,7 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
     setParameterValue(ACTIVE_ID_PREFIX + i_str, false);
     setParameterValue(MAGNITUDE_ID_PREFIX + i_str, magnitude);
     setParameterValue(PHASE_ID_PREFIX + i_str, phase);
-    setParameterValue(TYPE_NAME + juce::String(elementNr), !type);
+    setParameterValue(TYPE_ID_PREFIX + i_str, FilterElement::typeToFloat(type));
     setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
     setParameterValue(GAIN_ID_PREFIX + i_str, gain);
 }
@@ -338,19 +339,6 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
 void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
                                                      float newValue)
 {
-    if (parameterID == GAIN_ID || parameterID == BYPASS_ID) return;
-
-    auto parameter = parameterID.substring(0, 1);
-    auto elementNr = parameterID.substring(1).getIntValue();
-    newValue       = static_cast<double>(newValue);
-
-    if (parameter == "T")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade[elementNr - 1].setType((newValue > 0.5)
-                                               ? FilterElement::Type::ZERO
-                                               : FilterElement::Type::POLE);
-    }
 }
 
 // =============================================================================

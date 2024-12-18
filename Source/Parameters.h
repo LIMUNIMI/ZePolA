@@ -9,6 +9,7 @@
 #define PHASE_ID_PREFIX "PHASE_"
 #define GAIN_ID_PREFIX "GAIN_"
 #define ACTIVE_ID_PREFIX "ACTIVE_"
+#define TYPE_ID_PREFIX "TYPE_"
 
 // =============================================================================
 // Generic constants & macros
@@ -30,11 +31,6 @@
     {                                                                          \
         "2", "4", "6", "8"                                                     \
     }
-
-// =============================================================================
-// Plugin parameters macros
-#define TYPE_NAME "T"
-#define TYPE_DEFAULT true
 
 // =============================================================================
 namespace Parameters
