@@ -58,6 +58,11 @@ void VTSAudioProcessor::pushListener(
     listeners_ids.push_back(id);
     listeners.push_back(listener);
 }
+void VTSAudioProcessor::pushListenerForAllParameters(
+    juce::AudioProcessorValueTreeState::Listener* listener)
+{
+    for (auto id : parameterIDs()) pushListener(id, listener);
+}
 void VTSAudioProcessor::initializeListeners()
 {
     jassert(listeners_ids.size() == 0);

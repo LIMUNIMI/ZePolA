@@ -75,6 +75,8 @@ public:
 private:
     // =========================================================================
     void appendListeners() override;
+    /** Mark the processor as in a safe state */
+    void markAsSafe(float);
     /** Process extra channels in audio block */
     void processBlockExtraChannels(juce::AudioBuffer<float>&);
     /**
@@ -96,7 +98,7 @@ private:
     juce::dsp::Gain<float> gain;
 
     // =========================================================================
-    bool bypassed, safetyFlag;
+    bool bypassed, unsafe;
     const int n_elements;
     juce::AudioBuffer<double> pivotBuffer;
 

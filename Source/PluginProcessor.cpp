@@ -47,6 +47,11 @@ createParameterLayout(int n_elements)
 }
 void PolesAndZerosEQAudioProcessor::appendListeners()
 {
+    // The unsafe flag resetter listens to all parameters
+    pushListenerForAllParameters(
+        new SimpleListener(std::bind(&PolesAndZerosEQAudioProcessor::markAsSafe,
+                                     this, std::placeholders::_1)));
+
     pushListener(BYPASS_ID, new SimpleListener(std::bind(
                                 &PolesAndZerosEQAudioProcessor::setBypassTh,
                                 this, std::placeholders::_1)));
@@ -60,7 +65,7 @@ PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
     : VTSAudioProcessor(createParameterLayout(n), getName())
     , n_elements(n)
     , pivotBuffer()
-    , safetyFlag(false)
+    , unsafe(false)
     , bypassed(false)
 {
     allocateChannelsIfNeeded(1);
@@ -72,7 +77,9 @@ PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
 void PolesAndZerosEQAudioProcessor::allocateChannelsIfNeeded(int n)
 {
     while (multiChannelCascade.size() < n)
-        multiChannelCascade.push_back(FilterElementCascade(n_elements));
+        multiChannelCascade.push_back(FilterElementCascade(
+            (multiChannelCascade.empty()) ? n_elements
+                                          : multiChannelCascade[0]));
 }
 void PolesAndZerosEQAudioProcessor::resetChannels()
 {
@@ -160,8 +167,8 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     }
 
     // Output safety check (not resetting)
-    safetyFlag |= buffer.getMagnitude(0, n_samples) > 4;
-    if (safetyFlag) buffer.clear();
+    unsafe |= buffer.getMagnitude(0, n_samples) > 4;
+    if (unsafe) buffer.clear();
 }
 void PolesAndZerosEQAudioProcessor::processBlockBypassed(
     juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
@@ -221,6 +228,11 @@ void PolesAndZerosEQAudioProcessor::setBypassTh(float b)
 {
     setBypass(b > 0.5f);
 }
+void PolesAndZerosEQAudioProcessor::markAsSafe(float)
+{
+    unsafe = false;
+    if (editorCallback) editorCallback();
+}
 void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
 {
     for (int i = 0; i < n_elements; ++i)
@@ -274,44 +286,39 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
 void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
                                                      float newValue)
 {
-    if (parameterID != GAIN_ID && parameterID != BYPASS_ID)
+    if (parameterID == GAIN_ID || parameterID == BYPASS_ID) return;
+
+    auto parameter = parameterID.substring(0, 1);
+    auto elementNr = parameterID.substring(1).getIntValue();
+    newValue       = static_cast<double>(newValue);
+
+    if (parameter == "M")
     {
-        auto parameter = parameterID.substring(0, 1);
-        auto elementNr = parameterID.substring(1).getIntValue();
-        newValue       = static_cast<double>(newValue);
-
-        if (parameter == "M")
-        {
-            for (auto& cascade : multiChannelCascade)
-                cascade[elementNr - 1].setMagnitude(newValue);
-        }
-        else if (parameter == "P")
-        {
-            for (auto& cascade : multiChannelCascade)
-                cascade[elementNr - 1].setPhase(newValue);
-        }
-        else if (parameter == "A")
-        {
-            for (auto& cascade : multiChannelCascade)
-                cascade[elementNr - 1].setActive(newValue > 0.5);
-        }
-        else if (parameter == "T")
-        {
-            for (auto& cascade : multiChannelCascade)
-                cascade[elementNr - 1].setType((newValue > 0.5)
-                                                   ? FilterElement::Type::ZERO
-                                                   : FilterElement::Type::POLE);
-        }
-        else if (parameter == "G")
-        {
-            for (auto& cascade : multiChannelCascade)
-                cascade[elementNr - 1].setGainDb(newValue);
-        }
+        for (auto& cascade : multiChannelCascade)
+            cascade[elementNr - 1].setMagnitude(newValue);
     }
-
-    if (editorCallback) editorCallback();
-
-    safetyFlag = false;
+    else if (parameter == "P")
+    {
+        for (auto& cascade : multiChannelCascade)
+            cascade[elementNr - 1].setPhase(newValue);
+    }
+    else if (parameter == "A")
+    {
+        for (auto& cascade : multiChannelCascade)
+            cascade[elementNr - 1].setActive(newValue > 0.5);
+    }
+    else if (parameter == "T")
+    {
+        for (auto& cascade : multiChannelCascade)
+            cascade[elementNr - 1].setType((newValue > 0.5)
+                                               ? FilterElement::Type::ZERO
+                                               : FilterElement::Type::POLE);
+    }
+    else if (parameter == "G")
+    {
+        for (auto& cascade : multiChannelCascade)
+            cascade[elementNr - 1].setGainDb(newValue);
+    }
 }
 
 // =============================================================================

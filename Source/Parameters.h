@@ -109,6 +109,9 @@ protected:
      */
     void pushListener(juce::String,
                       juce::AudioProcessorValueTreeState::Listener*);
+    /** Appends the specified listener as listener of all parameters  */
+    void
+    pushListenerForAllParameters(juce::AudioProcessorValueTreeState::Listener*);
     /**
      * Append listeners and ids to the lists. Subclasses should override this
      * method

@@ -3718,7 +3718,7 @@ void EditorComponent::autoUpdateCheckAndSetup()
 
 void EditorComponent::timerCallback()
 {
-    if (processor.safetyFlag)
+    if (processor.unsafe)
     {
         warningRectangle->setVisible(true);
         warningRectangle->toFront(true);
