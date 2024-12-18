@@ -1525,7 +1525,7 @@ EditorComponent::EditorComponent(PolesAndZerosEQAudioProcessor& p,
     masterGainAttachment.reset(new SliderAttachment(
         valueTreeState, MASTER_GAIN_NAME, *masterGain_slider));
     bypassAttachment.reset(
-        new ButtonAttachment(valueTreeState, FILTER_BYPASS_NAME, *bypass));
+        new ButtonAttachment(valueTreeState, BYPASS_ID, *bypass));
 
     m1_slider->setLookAndFeel(&activeSliderTheme);
     m2_slider->setLookAndFeel(&activeSliderTheme);
@@ -2090,7 +2090,7 @@ void EditorComponent::paint(juce::Graphics& g)
 
     {
         int x = 1059, y = 695, width = 80, height = 20;
-        juce::String text(TRANS("BYPASS"));
+        juce::String text("BYPASS");
         juce::Colour fillColour = juce::Colour(0xff383838);
         g.setColour(fillColour);
         g.setFont(juce::Font("Gill Sans", 13.00f, juce::Font::plain)
@@ -3630,7 +3630,7 @@ void EditorComponent::filterDesignAndSetup()
     double magnitude, phase;
     int elementNr = 1;
 
-    processor.setBypass(true);
+    processor.setParameterValue(BYPASS_ID, true);
     isSettingFilters = true;
     autoGain->setToggleState(false, NotificationType::sendNotificationSync);
 
@@ -3701,7 +3701,7 @@ void EditorComponent::filterDesignAndSetup()
     for (; elementNr <= processor.n_elements; ++elementNr)
         processor.setInactive(elementNr);
 
-    processor.setBypass(false);
+    processor.setParameterValue(BYPASS_ID, false);
     isSettingFilters = false;
 }
 

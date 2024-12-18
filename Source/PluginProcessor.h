@@ -58,6 +58,8 @@ public:
     void setInactive(int elementNr);
     /** Set the bypassed state of the processor */
     void setBypass(bool bypass);
+    /** Set the bypassed state of the processor with a value threshold on 0.5 */
+    void setBypassTh(float bypass);
     /** Double the value of the phases */
     void doublePhases();
     /** Divide by two the value of the phases */
@@ -72,6 +74,7 @@ public:
 
 private:
     // =========================================================================
+    void appendListeners() override;
     /**
      * Allocate processors in order to have enough to process the specified
      * number of channels
@@ -91,7 +94,7 @@ private:
     juce::dsp::Gain<float> gainProcessor;
 
     // =========================================================================
-    bool active, safetyFlag;
+    bool bypassed, safetyFlag;
     const int n_elements;
     juce::AudioBuffer<double> pivotBuffer;
 

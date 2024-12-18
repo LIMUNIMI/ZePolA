@@ -6,6 +6,67 @@
 #include <JuceHeader.h>
 
 // =============================================================================
+static std::vector<std::unique_ptr<juce::RangedAudioParameter>>
+createParameterLayout(int n_elements)
+{
+    std::vector<std::unique_ptr<RangedAudioParameter>> params;
+
+    // Refactored with listener
+    params.push_back(
+        std::make_unique<AudioParameterBool>(BYPASS_ID, "Bypass", false));
+
+    // Not refactored
+    juce::NormalisableRange<float> masterGainRange(
+        MASTER_GAIN_FLOOR, MASTER_GAIN_CEILING, MASTER_GAIN_INTERVAL);
+    juce::NormalisableRange<float> gainRange(GAIN_FLOOR, GAIN_CEILING,
+                                             GAIN_INTERVAL);
+
+    for (int i = 0; i < n_elements; ++i)
+    {
+        std::string number = std::to_string(i + 1);
+
+        params.push_back(std::make_unique<AudioParameterFloat>(
+            MAGNITUDE_NAME + number, "Element " + number + " Magnitude",
+            NormalisableRange<float>(MAGNITUDE_FLOOR, MAGNITUDE_CEILING,
+                                     INTERVAL),
+            MAGNITUDE_DEFAULT));
+        params.push_back(std::make_unique<AudioParameterFloat>(
+            PHASE_NAME + number, "Element " + number + " Phase",
+            NormalisableRange<float>(PHASE_FLOOR, PHASE_CEILING, INTERVAL),
+            PHASE_DEFAULT));
+        params.push_back(std::make_unique<AudioParameterBool>(
+            ACTIVE_NAME + number, "Active " + number, ACTIVE_DEFAULT));
+        params.push_back(std::make_unique<AudioParameterBool>(
+            TYPE_NAME + number, "Type" + number, TYPE_DEFAULT));
+        params.push_back(std::make_unique<AudioParameterFloat>(
+            GAIN_NAME + number, "Gain " + number, gainRange, GAIN_DEFAULT));
+    }
+    params.push_back(std::make_unique<AudioParameterFloat>(
+        MASTER_GAIN_NAME, "Gain (dB)", masterGainRange, MASTER_GAIN_DEFAULT));
+
+    return params;
+}
+void PolesAndZerosEQAudioProcessor::appendListeners()
+{
+    pushListener(BYPASS_ID, new SimpleListener(std::bind(
+                                &PolesAndZerosEQAudioProcessor::setBypassTh,
+                                this, std::placeholders::_1)));
+}
+
+// =============================================================================
+PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
+    : VTSAudioProcessor(createParameterLayout(n), getName())
+    , n_elements(n)
+    , pivotBuffer()
+    , safetyFlag(false)
+    , bypassed(false)
+{
+    allocateChannelsIfNeeded(1);
+    Parameters::addListenerToAllParameters(valueTreeState, this);
+    initializeListeners();
+}
+
+// =============================================================================
 void PolesAndZerosEQAudioProcessor::allocateChannelsIfNeeded(int n)
 {
     while (multiChannelCascade.size() < n)
@@ -15,17 +76,6 @@ void PolesAndZerosEQAudioProcessor::resetChannels()
 {
     multiChannelCascade.erase(multiChannelCascade.begin() + 1,
                               multiChannelCascade.end());
-}
-PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
-    : VTSAudioProcessor(Parameters::createParameterLayout(n), getName())
-    , n_elements(n)
-    , pivotBuffer()
-    , safetyFlag(false)
-    , active(true)
-{
-    allocateChannelsIfNeeded(1);
-    Parameters::addListenerToAllParameters(valueTreeState, this);
-    initializeListeners();
 }
 
 // =============================================================================
@@ -55,7 +105,7 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    if (!active) return processBlockBypassed(buffer, midiMessages);
+    if (bypassed) return processBlockBypassed(buffer, midiMessages);
 
     // Ensure enough processors for input channels and reset memory of excess
     // ones
@@ -155,9 +205,10 @@ void PolesAndZerosEQAudioProcessor::setInactive(const int elementNr)
 {
     setParameterValue(ACTIVE_NAME + std::to_string(elementNr), false);
 }
-void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
+void PolesAndZerosEQAudioProcessor::setBypass(bool b) { bypassed = b; }
+void PolesAndZerosEQAudioProcessor::setBypassTh(float b)
 {
-    setParameterValue(FILTER_BYPASS_NAME, bypass);
+    setBypass(b > 0.5f);
 }
 void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
 {
@@ -215,13 +266,7 @@ void PolesAndZerosEQAudioProcessor::parameterChanged(const String& parameterID,
     juce::String parameter;
     int elementNr;
 
-    if (parameterID == "BYPASS")
-    {
-        active = !(newValue > 0.5f);
-        if (!active) resetMemory();
-        return;
-    }
-    else if (parameterID == "MSTR_GAIN")
+    if (parameterID == "MSTR_GAIN")
     {
         gainProcessor.setGainLinear(
             Decibels::decibelsToGain(newValue, MASTER_GAIN_FLOOR - 1.0f));

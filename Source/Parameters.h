@@ -2,6 +2,10 @@
 #include <JuceHeader.h>
 
 // =============================================================================
+// Parameter id
+#define BYPASS_ID "BYPASS"
+
+// =============================================================================
 // Generic constants & macros
 #define SLIDERS_FLOOR 0.0f
 #define SLIDERS_CEILING 1.0f
@@ -59,21 +63,9 @@
 #define MASTER_GAIN_INTERVAL 0.01f
 #define MASTER_GAIN_DEFAULT 0.0f
 
-#define FILTER_BYPASS_NAME "BYPASS"
-#define BYPASS_DEFAULT false
-
 // =============================================================================
 namespace Parameters
 {
-/**
- * @brief Initialize the parameter layout for the plugin
- *
- * @param n_elements Number of filter elements
- */
-std::vector<std::unique_ptr<juce::RangedAudioParameter>>
-createParameterLayout(int n_elements);
-
-// =============================================================================
 /** Add the specified listener as listener of all parameters  */
 void addListenerToAllParameters(
     juce::AudioProcessorValueTreeState& valueTreeState,
