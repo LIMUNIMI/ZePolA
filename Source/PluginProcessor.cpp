@@ -17,7 +17,7 @@ void PolesAndZerosEQAudioProcessor::resetChannels()
                               multiChannelCascade.end());
 }
 PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
-    : parameters(*this, &undoManager, "PolesAndZero-EQ",
+    : parameters(*this, &undoManager, JucePlugin_Name,
                  Parameters::createParameterLayout(n))
     , n_elements(n)
     , pivotBuffer()
