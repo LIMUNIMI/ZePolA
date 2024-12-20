@@ -17,6 +17,8 @@
       <FILE id="NcDhiw" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>
       <FILE id="VocETI" name="Macros.h" compile="0" resource="0" file="Source/Macros.h"/>
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
+        <FILE id="GZa1D9" name="Palette.cpp" compile="1" resource="0" file="Source/GUIElements/Palette.cpp"/>
+        <FILE id="aabY0w" name="Palette.h" compile="0" resource="0" file="Source/GUIElements/Palette.h"/>
         <FILE id="JkWQf9" name="PluginEditor_.cpp" compile="1" resource="0"
               file="Source/PluginEditor_.cpp"/>
         <FILE id="HcmWXE" name="PluginEditor_.h" compile="0" resource="0" file="Source/PluginEditor_.h"/>

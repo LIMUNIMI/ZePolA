@@ -3,11 +3,15 @@
 // =============================================================================
 const int PolesAndZerosEQAudioProcessorEditor::originalWidth  = 1200;
 const int PolesAndZerosEQAudioProcessorEditor::originalHeight = 790;
+typedef PolesAndZerosEQColourScheme::Label ColourLabels;
 
 // =============================================================================
 PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     PolesAndZerosEQAudioProcessor& p)
-    : juce::AudioProcessorEditor(&p), processor(p), aspectRatioConstrainer()
+    : juce::AudioProcessorEditor(&p)
+    , processor(p)
+    , aspectRatioConstrainer()
+    , palette(PolesAndZerosEQColourScheme::getEditorTheme())
 {
     sizeSetup();
 }
@@ -35,5 +39,8 @@ void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
 }
 
 // =============================================================================
-void PolesAndZerosEQAudioProcessorEditor::paint(juce::Graphics& g) {}
+void PolesAndZerosEQAudioProcessorEditor::paint(juce::Graphics& g)
+{
+    g.fillAll(palette.getColour(ColourLabels::BACKGROUND));
+}
 void PolesAndZerosEQAudioProcessorEditor::resized() {}

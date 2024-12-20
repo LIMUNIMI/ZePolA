@@ -1,4 +1,5 @@
 #pragma once
+#include "GUIElements/Palette.h"
 #include "PluginProcessor.h"
 #include <JuceHeader.h>
 
@@ -25,6 +26,7 @@ private:
     // ===========================================================================
     juce::ApplicationProperties applicationProperties;
     juce::ComponentBoundsConstrainer aspectRatioConstrainer;
+    PolesAndZerosEQColourScheme palette;
     static const int originalWidth;
     static const int originalHeight;
 
