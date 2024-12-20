@@ -2,7 +2,7 @@
 #include "Filter.h"
 #include "Macros.h"
 #include "Parameters.h"
-#include "PluginEditor.h"
+#include "PluginEditor_.h"
 #include <JuceHeader.h>
 
 // =============================================================================
@@ -202,7 +202,7 @@ void PolesAndZerosEQAudioProcessor::processBlockBypassed(
 // =============================================================================
 juce::AudioProcessorEditor* PolesAndZerosEQAudioProcessor::createEditor()
 {
-    return new WrappedEditor(*this, valueTreeState);
+    return new PolesAndZerosEQAudioProcessorEditor(*this);
 }
 bool PolesAndZerosEQAudioProcessor::hasEditor() const { return true; }
 
