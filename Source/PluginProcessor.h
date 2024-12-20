@@ -1,97 +1,155 @@
 #pragma once
 #include "Filter.h"
+#include "Parameters.h"
 #include <JuceHeader.h>
 
-class PolesAndZerosEQAudioProcessor
-    : public juce::AudioProcessor,
-      public AudioProcessorValueTreeState::Listener
+// =============================================================================
+/** Plugin processor for poles and zero eq  */
+class PolesAndZerosEQAudioProcessor : public VTSAudioProcessor
 {
 public:
-    PolesAndZerosEQAudioProcessor();
-    ~PolesAndZerosEQAudioProcessor() override;
+    // =========================================================================
+    friend class EditorComponent;
+    // TODO: remove this friend declaration: a DraggableElement should own a
+    // pointer its corresponding parameter
+    friend class DraggableElement;
 
+    // =========================================================================
+    /**
+     * @brief Build a Poles And Zeros EQ processor
+     *
+     * @param n_elements Number of filter elements
+     */
+    PolesAndZerosEQAudioProcessor(int n_elements);
+
+    // =========================================================================
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
+    bool isBusesLayoutSupported(
+        const juce::AudioProcessor::BusesLayout&) const override;
     void releaseResources() override;
-
-    template <typename TargetType, typename SourceType>
-    void castBuffer(AudioBuffer<TargetType>& destination,
-                    const AudioBuffer<SourceType>& source,
-                    const int numChannels, const int numSamples);
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     void processBlockBypassed(juce::AudioBuffer<float>&,
                               juce::MidiBuffer&) override;
 
+    // =========================================================================
     juce::AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override { return true; };
+    bool hasEditor() const override;
 
-    const juce::String getName() const override { return JucePlugin_Name; }
+    // =========================================================================
+    const juce::String getName() const override;
+    bool acceptsMidi() const override;
+    bool producesMidi() const override;
+    bool isMidiEffect() const override;
+    double getTailLengthSeconds() const override;
 
-    bool acceptsMidi() const override { return false; }
-    bool producesMidi() const override { return false; }
-    bool isMidiEffect() const override { return false; }
+    // =========================================================================
+    int getNumPrograms() override;
+    int getCurrentProgram() override;
+    void setCurrentProgram(int) override;
+    const juce::String getProgramName(int);
+    void changeProgramName(int index, const juce::String& newName) override;
 
-    double getTailLengthSeconds() const override { return 0.0; }
+    // =========================================================================
+    /**
+     * Set an element's magnitude
+     *
+     * @param i Element index (zero-based)
+     * @param v Magnitude value
+     */
+    void setElementMagnitude(int i, float v);
+    /**
+     * Set an element's phase
+     *
+     * @param i Element index (zero-based)
+     * @param v Phase value
+     */
+    void setElementPhase(int i, float v);
+    /**
+     * Set an element's gain in decibel
+     *
+     * @param i Element index (zero-based)
+     * @param v Gain value (decibel)
+     */
+    void setElementGainDb(int i, float v);
+    /**
+     * Set an element's active state
+     *
+     * @param i Element index (zero-based)
+     * @param v New active state
+     */
+    void setElementActive(int i, bool v);
+    /**
+     * Set an element's active state, with a value threshold on 0.5
+     *
+     * @param i Element index (zero-based)
+     * @param v New active state, as a float
+     */
+    void setElementActiveTh(int i, float v);
+    /**
+     * Set an element's type
+     *
+     * @param i Element index (zero-based)
+     * @param v New element type
+     */
+    void setElementType(int i, FilterElement::Type v);
+    /**
+     * Set an element's type, with a float value
+     *
+     * @param i Element index (zero-based)
+     * @param v New element type, as a float value
+     */
+    void setElementTypeF(int i, float v);
 
-    int getNumPrograms() override { return 1; }
-    int getCurrentProgram() override { return 0; }
-    void setCurrentProgram(int index) override { }
-    const juce::String getProgramName(int index) override { return {}; }
-    void changeProgramName(int index, const juce::String& newName) override { }
-
-    void getStateInformation(juce::MemoryBlock& destData) override;
-    void setStateInformation(const void* data, int sizeInBytes) override;
-
-    bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
-
-    void setParameterValue(juce::RangedAudioParameter* parameter, float value);
-
-    void setUnactive(const int elementNr);
-
-    std::complex<double> getFrequencyResponseAtPhi(const double phi);
-    double getElementGain(const int elementNr);
-    void setElementGain(const int elementNr, double gain);
-
-    std::vector<FilterElement> getFilterElementsChain();
-    FilterElement getElementState(const int elementNr);
-
-    void setEditorCallback(std::function<void()> callback);
-
-    void resetFilter();
-
-    float getCurrentGain();
-    void setdBGain(double newdBGain);
+    // =========================================================================
+    /** Clear filter memory */
+    void resetMemory();
+    /** Activate or deactivate all filter elements */
+    void setAllActive(bool);
+    /** Set the bypassed state of the processor */
     void setBypass(bool bypass);
-
+    /** Set the bypassed state of the processor with a value threshold on 0.5 */
+    void setBypassTh(float bypass);
+    /** Double the value of the phases */
     void doublePhases();
+    /** Divide by two the value of the phases */
     void halfPhases();
+    /** Turn zeros into poles and vice versa */
     void swapPolesAndZeros();
-
-    void turnOnOffAllElements(bool option);
-
-    void setFilter(const double magnitude, const double phase,
-                   FilterElement::Type type, const int elementNr,
-                   const double linearGain = 1.0);
-
-    bool getSafetyFlag();
-    void resetSafetyFlag();
-
-    std::vector<std::array<double, 3>> getCoefficients() const;
-
-    AudioProcessorValueTreeState parameters;
+    /** Set the parameters of a filter element */
+    [[deprecated("Avoid using such an invasive method")]] void
+    setFilter(const double magnitude, const double phase,
+              FilterElement::Type type, const int elementNr,
+              const double linearGain = 1.0);
 
 private:
-    void parameterChanged(const String& parameterID, float newValue) override;
+    // =========================================================================
+    void appendListeners() override;
+    /** Mark the processor as in a safe state */
+    void markAsSafe(float);
+    /** Process extra channels in audio block */
+    void processBlockExtraChannels(juce::AudioBuffer<float>&);
+    /**
+     * Allocate processors in order to have enough to process the specified
+     * number of channels
+     */
+    void allocateChannelsIfNeeded(int);
+    /** Delete all allocated channel processors except one */
+    void resetChannels();
+    /** Multiply the value of the phases */
+    void multiplyPhases(double);
 
+    // =========================================================================
     std::vector<FilterElementCascade> multiChannelCascade;
+    juce::dsp::Gain<float> gain;
 
-    juce::dsp::Gain<double> gainProcessor;
-
-    bool active     = true;
-    bool safetyFlag = false;
+    // =========================================================================
+    bool bypassed, unsafe;
+    const int n_elements;
+    juce::AudioBuffer<double> pivotBuffer;
 
     std::function<void()> editorCallback;
+    juce::UndoManager undoManager;
 
-    UndoManager undoManager;
-
+    // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PolesAndZerosEQAudioProcessor);
 };

@@ -1,11 +1,43 @@
 #include "Filter.h"
 #include "Macros.h"
+#include <JuceHeader.h>
 
 // =============================================================================
-const double FilterElement::gain_floor_db = -128.0;
-const double FilterElement::gain_floor
-    = pow(10.0, FilterElement::gain_floor_db / 20.0);
+const double FilterElement::gain_floor_db       = -128.0;
 const double FilterElement::pole_magnitude_ceil = 0.99999;
+
+// =============================================================================
+const std::string FilterElement::typeToString(FilterElement::Type t)
+{
+    switch (t)
+    {
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for filter element type. Defaulting to 'UNKNOWN'");
+        return "UNKNOWN";
+    case FilterElement::Type::ZERO: return "ZERO";
+    case FilterElement::Type::POLE: return "POLE";
+    }
+}
+const std::string FilterElement::typeToString(float t)
+{
+    return FilterElement::typeToString(FilterElement::floatToType(t));
+}
+float FilterElement::typeToFloat(FilterElement::Type t)
+{
+    return static_cast<float>(static_cast<int>(t));
+}
+FilterElement::Type FilterElement::floatToType(float f)
+{
+    switch (juce::roundFloatToInt(f))
+    {
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for filter element type. Defaulting to 'ZERO'");
+    case FilterElement::Type::ZERO: return FilterElement::Type::ZERO;
+    case FilterElement::Type::POLE: return FilterElement::Type::POLE;
+    }
+}
 
 // =============================================================================
 FilterElement::FilterElement()
@@ -42,7 +74,7 @@ FilterElement::Type FilterElement::getType() const { return type; }
 double FilterElement::getGain() const { return gain; }
 double FilterElement::getGainDb() const
 {
-    return (gain < gain_floor) ? gain_floor_db : 20.0 * log10(gain);
+    return juce::Decibels::gainToDecibels(gain, gain_floor_db);
 }
 bool FilterElement::getActive() const { return active; }
 double FilterElement::getRealPart() const
@@ -102,9 +134,13 @@ void FilterElement::setType(FilterElement::Type t)
         processSampleFunc = &FilterElement::processSampleZero;
         break;
     }
+    setMagnitude(getMagnitude());
 }
 void FilterElement::setGain(double g) { gain = g; }
-void FilterElement::setGainDb(double g) { setGain(pow(10, g / 20.0)); }
+void FilterElement::setGainDb(double g)
+{
+    setGain(juce::Decibels::decibelsToGain(g, gain_floor_db));
+}
 void FilterElement::setActive(bool a)
 {
     if (a && a != active) resetMemory();
@@ -138,7 +174,7 @@ double FilterElement::processSamplePole(double x)
     pushSample(y);
     return y;
 }
-void FilterElement::processBlock(double* outputs, double* inputs, int n)
+void FilterElement::processBlock(double* outputs, const double* inputs, int n)
 {
     for (int i = 0; i < n; ++i)
         outputs[i] = (this->*processSampleFunc)(gain * inputs[i]);
@@ -161,6 +197,35 @@ std::complex<double> FilterElement::dtft(double omega) const
     }
 
     return h;
+}
+double FilterElement::rmsg() const
+{
+    double g;
+    switch (type)
+    {
+    default:
+        UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
+                              "Returning the default value: 1.0");
+        g = 1.0;
+        break;
+    case FilterElement::Type::ZERO:
+        // 1 + 4Re^2{z} + |z|^4
+        g = 1.0 + coeffs[0] * coeffs[0] + coeffs[1] * coeffs[1];
+        break;
+    case FilterElement::Type::POLE:
+    {
+        double r = getRealPart();
+        double i = getImagPart();
+        // (1 - |p|^2) * (Re^2{p} - 2|Re{z}| + Im^2{p} + 1)
+        g = (1.0 - coeffs[1]) * (r * r + coeffs[0] + i * i + 1.0);
+        break;
+    }
+    }
+    return std::sqrt(g);
+}
+double FilterElement::rmsgDb() const
+{
+    return juce::Decibels::gainToDecibels(rmsg(), gain_floor_db);
 }
 
 // =============================================================================
@@ -201,10 +266,6 @@ FilterElement& FilterElementCascade::operator[](size_t i)
 {
     return elements[i];
 }
-std::vector<FilterElement>& FilterElementCascade::getElementsChain()
-{
-    return elements;
-}
 
 // =========================================================================
 std::complex<double> FilterElementCascade::dtft(double omega) const
@@ -222,7 +283,8 @@ std::vector<std::array<double, 3>> FilterElementCascade::getCoefficients() const
 }
 
 // =========================================================================
-void FilterElementCascade::processBlock(double* outputs, double* inputs, int n)
+void FilterElementCascade::processBlock(double* outputs, const double* inputs,
+                                        int n)
 {
     for (auto& e : elements)
         if (e.getActive()) e.processBlock(outputs, inputs, n);

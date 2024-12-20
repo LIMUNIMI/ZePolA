@@ -259,14 +259,14 @@ private:
 class GaussianPlane : public juce::Component
 {
 public:
-    GaussianPlane(const std::vector<FilterElement>& elements)
+    GaussianPlane(FilterElementCascade& elements)
     {
         auto componentBounds = GAUSSIAN_PLANE_RECTANGLE;
         bounds = componentBounds.reduced(PLANE_PADDING, PLANE_PADDING);
         updateConjugate(elements);
     }
 
-    void updateConjugate(const std::vector<FilterElement>& elements)
+    void updateConjugate(FilterElementCascade& elements)
     {
         zeros.clear();
         poles.clear();
@@ -458,13 +458,9 @@ public:
             = std::abs(std::arg(newPosition) / MathConstants<double>::pi);
 
         processor->setParameterValue(
-            processor->parameters.getParameter(MAGNITUDE_NAME
-                                               + std::to_string(elementNr)),
-            newMagnitude);
+            MAGNITUDE_ID_PREFIX + juce::String(elementNr - 1), newMagnitude);
         processor->setParameterValue(
-            processor->parameters.getParameter(PHASE_NAME
-                                               + std::to_string(elementNr)),
-            newPhase);
+            PHASE_ID_PREFIX + juce::String(elementNr - 1), newPhase);
 
         element = std::polar(newMagnitude, newPhase);
 
@@ -479,10 +475,7 @@ public:
         type      = e.getType();
         elementNr = elNr;
 
-        if (!e.getActive())
-            setVisible(false);
-        else
-            setVisible(true);
+        setVisible(e.getActive());
 
         gaussianPlane = gp;
         processor     = p;

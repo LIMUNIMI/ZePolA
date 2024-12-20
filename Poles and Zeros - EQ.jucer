@@ -14,6 +14,7 @@
       <FILE id="juXqX7" name="save_icon.svg" compile="0" resource="1" file="Graphics/save_icon.svg"/>
     </GROUP>
     <GROUP id="{7D61AFCF-4618-4DA8-96D3-B0DC7D2A26DB}" name="Source">
+      <FILE id="NcDhiw" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>
       <FILE id="VocETI" name="Macros.h" compile="0" resource="0" file="Source/Macros.h"/>
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
         <FILE id="uMM33l" name="GraphicTheme.h" compile="0" resource="0" file="Source/GraphicTheme.h"/>
