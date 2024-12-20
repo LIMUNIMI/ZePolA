@@ -7,6 +7,22 @@ const double FilterElement::gain_floor_db       = -128.0;
 const double FilterElement::pole_magnitude_ceil = 0.99999;
 
 // =============================================================================
+const std::string FilterElement::typeToString(FilterElement::Type t)
+{
+    switch (t)
+    {
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for filter element type. Defaulting to 'UNKNOWN'");
+        return "UNKNOWN";
+    case FilterElement::Type::ZERO: return "ZERO";
+    case FilterElement::Type::POLE: return "POLE";
+    }
+}
+const std::string FilterElement::typeToString(float t)
+{
+    return FilterElement::typeToString(FilterElement::floatToType(t));
+}
 float FilterElement::typeToFloat(FilterElement::Type t)
 {
     return static_cast<float>(static_cast<int>(t));

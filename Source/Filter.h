@@ -30,6 +30,10 @@ public:
         // types are there
         N_TYPES
     };
+    /** Encode filter type as a string */
+    static const std::string typeToString(Type);
+    /** Encode filter type as a string */
+    static const std::string typeToString(float);
     /** Encode filter type as a float */
     static float typeToFloat(Type);
     /** Decode float as a filter type */

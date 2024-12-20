@@ -22,24 +22,22 @@ createParameterLayout(int n_elements)
         juce::String i_str(i);
         juce::String ip1_str(i + 1);
 
-        params.push_back(std::make_unique<AudioParameterFloat>(
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
             MAGNITUDE_ID_PREFIX + i_str, "Magnitude " + ip1_str,
-            NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f));
-        params.push_back(std::make_unique<AudioParameterFloat>(
+            juce::NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f));
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
             PHASE_ID_PREFIX + i_str, "Phase " + ip1_str,
-            NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f));
-        params.push_back(std::make_unique<AudioParameterFloat>(
+            juce::NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f));
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
             GAIN_ID_PREFIX + i_str, "Gain " + ip1_str,
-            NormalisableRange<float>(-128.0f, 24.0f, 0.1f), 0.0f));
-        params.push_back(std::make_unique<AudioParameterBool>(
+            juce::NormalisableRange<float>(-128.0f, 24.0f, 0.1f), 0.0f));
+        params.push_back(std::make_unique<juce::AudioParameterChoice>(
+            TYPE_ID_PREFIX + i_str, "Type" + ip1_str,
+            juce::StringArray {FilterElement::typeToString(0),
+                               FilterElement::typeToString(1)},
+            0));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
             ACTIVE_ID_PREFIX + i_str, "Active " + ip1_str, false));
-        params.push_back(std::make_unique<AudioParameterFloat>(
-            TYPE_ID_PREFIX + i_str, "Type " + ip1_str,
-            NormalisableRange<float>(
-                0.0f,
-                FilterElement::typeToFloat(FilterElement::Type::N_TYPES) - 1.0f,
-                0.1f),
-            FilterElement::typeToFloat(FilterElement::Type::ZERO)));
     }
 
     return params;
@@ -224,7 +222,7 @@ double PolesAndZerosEQAudioProcessor::getTailLengthSeconds() const
 // =============================================================================
 int PolesAndZerosEQAudioProcessor::getNumPrograms() { return 1; }
 int PolesAndZerosEQAudioProcessor::getCurrentProgram() { return 0; }
-void PolesAndZerosEQAudioProcessor::setCurrentProgram(int) { }
+void PolesAndZerosEQAudioProcessor::setCurrentProgram(int) {}
 const juce::String PolesAndZerosEQAudioProcessor::getProgramName(int)
 {
     return {};
