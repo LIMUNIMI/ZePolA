@@ -1,6 +1,6 @@
 #include "Filter.h"
 #include "Macros.h"
-#include <Juceheader.h>
+#include <JuceHeader.h>
 
 // =============================================================================
 const double FilterElement::gain_floor_db       = -128.0;
