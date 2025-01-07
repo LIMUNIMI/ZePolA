@@ -1,5 +1,5 @@
 #pragma once
-#include "Filter.h"
+#include "DSP/Filter.h"
 #include "Parameters.h"
 #include <JuceHeader.h>
 

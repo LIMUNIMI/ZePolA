@@ -1,5 +1,5 @@
 #pragma once
-#include "Filter.h"
+#include "DSP/Filter.h"
 #include "PluginProcessor.h"
 #include <JuceHeader.h>
 
@@ -417,7 +417,7 @@ public:
                                              planeCentre.y - newY);
 
         auto theta  = std::atan2(static_cast<float>(newRelativePosition.y),
-                                 static_cast<float>(newRelativePosition.x));
+                                static_cast<float>(newRelativePosition.x));
         auto radius = gaussianPlane->getRadius();
         auto xLimit = radius * std::cos(theta);
         auto yLimit = radius * std::sin(theta);
@@ -471,7 +471,7 @@ public:
                        PolesAndZerosEQAudioProcessor* p)
     {
         element   = std::polar(e.getMagnitude(),
-                               MathConstants<double>::pi * e.getPhase());
+                             MathConstants<double>::pi * e.getPhase());
         type      = e.getType();
         elementNr = elNr;
 

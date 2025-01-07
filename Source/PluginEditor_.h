@@ -1,6 +1,6 @@
 #pragma once
-#include "GUIElements/Panel.h"
-#include "GUIElements/Settings.h"
+#include "GUI/Panel.h"
+#include "GUI/Settings.h"
 #include "PluginProcessor.h"
 #include <JuceHeader.h>
 

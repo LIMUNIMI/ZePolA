@@ -1,5 +1,5 @@
 #include "PluginProcessor.h"
-#include "Filter.h"
+#include "DSP/Filter.h"
 #include "Macros.h"
 #include "Parameters.h"
 #include "PluginEditor_.h"
