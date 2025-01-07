@@ -29,7 +29,7 @@ float FilterElement::typeToFloat(FilterElement::Type t)
 }
 FilterElement::Type FilterElement::floatToType(float f)
 {
-    switch (juce::roundFloatToInt(f))
+    switch (juce::roundToInt(f))
     {
     default:
         UNHANDLED_SWITCH_CASE(
