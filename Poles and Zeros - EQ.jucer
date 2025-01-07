@@ -17,10 +17,10 @@
       <FILE id="NcDhiw" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>
       <FILE id="VocETI" name="Macros.h" compile="0" resource="0" file="Source/Macros.h"/>
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
+        <FILE id="Es9cSH" name="LookAndFeel.cpp" compile="1" resource="0" file="Source/GUI/LookAndFeel.cpp"/>
+        <FILE id="a6nWf6" name="LookAndFeel.h" compile="0" resource="0" file="Source/GUI/LookAndFeel.h"/>
         <FILE id="MYs53O" name="Settings.cpp" compile="1" resource="0" file="Source/GUI/Settings.cpp"/>
         <FILE id="r26VqP" name="Settings.h" compile="0" resource="0" file="Source/GUI/Settings.h"/>
-        <FILE id="SrMjuH" name="Panel.cpp" compile="1" resource="0" file="Source/GUI/Panel.cpp"/>
-        <FILE id="kavf0i" name="Panel.h" compile="0" resource="0" file="Source/GUI/Panel.h"/>
         <FILE id="JkWQf9" name="PluginEditor_.cpp" compile="1" resource="0"
               file="Source/PluginEditor_.cpp"/>
         <FILE id="HcmWXE" name="PluginEditor_.h" compile="0" resource="0" file="Source/PluginEditor_.h"/>

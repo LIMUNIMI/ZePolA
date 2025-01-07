@@ -1,6 +1,5 @@
 #pragma once
 #include "GUI/LookAndFeel.h"
-#include "GUI/Panel.h"
 #include "GUI/Settings.h"
 #include "PluginProcessor.h"
 #include <JuceHeader.h>
