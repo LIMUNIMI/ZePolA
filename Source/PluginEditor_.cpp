@@ -1,17 +1,12 @@
 #include "PluginEditor_.h"
 
 // =============================================================================
-const int PolesAndZerosEQAudioProcessorEditor::originalWidth  = 1200;
-const int PolesAndZerosEQAudioProcessorEditor::originalHeight = 790;
-typedef PolesAndZerosEQColourScheme::Label ColourLabels;
-
-// =============================================================================
 PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     PolesAndZerosEQAudioProcessor& p)
     : juce::AudioProcessorEditor(&p)
     , processor(p)
     , aspectRatioConstrainer()
-    , palette(PolesAndZerosEQColourScheme::getEditorTheme())
+    , settings(GUISettings::getEditorTheme())
     , sizeRatio(1.0f)
 {
     sizeSetup();
@@ -23,7 +18,8 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
 void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
 {
     aspectRatioConstrainer.setFixedAspectRatio(
-        static_cast<double>(originalWidth) / originalHeight);
+        settings.getValue(GUISettings::SettingLabel::FULL_WIDTH)
+        / settings.getValue(GUISettings::SettingLabel::FULL_HEIGHT));
     setConstrainer(&aspectRatioConstrainer);
 
     juce::PropertiesFile::Options options;
@@ -38,20 +34,26 @@ void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
         sizeRatio = pf->getDoubleValue("sizeRatio", sizeRatio);
 
     setResizable(true, true);
-    setSize(static_cast<int>(originalWidth * sizeRatio),
-            static_cast<int>(originalHeight * sizeRatio));
+    setSize(static_cast<int>(
+                settings.getValue(GUISettings::SettingLabel::FULL_WIDTH)
+                * sizeRatio),
+            static_cast<int>(
+                settings.getValue(GUISettings::SettingLabel::FULL_HEIGHT)
+                * sizeRatio));
 }
 
 // =============================================================================
 void PolesAndZerosEQAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    g.fillAll(palette[ColourLabels::BACKGROUND]);
+    g.fillAll(getColour(GUISettings::ColourLabel::BACKGROUND));
 }
 void PolesAndZerosEQAudioProcessorEditor::resized()
 {
-    float wRatio = static_cast<float>(getWidth()) / originalWidth;
-    float hRatio = static_cast<float>(getHeight()) / originalHeight;
-    sizeRatio    = fminf(wRatio, hRatio);
+    float wRatio
+        = getWidth() / settings.getValue(GUISettings::SettingLabel::FULL_WIDTH);
+    float hRatio = getHeight()
+                   / settings.getValue(GUISettings::SettingLabel::FULL_HEIGHT);
+    sizeRatio = fminf(wRatio, hRatio);
 
     slidersPanel.setBounds(
         static_cast<int>(15 * sizeRatio), static_cast<int>(55 * sizeRatio),
@@ -72,34 +74,23 @@ void PolesAndZerosEQAudioProcessorEditor::resized()
 }
 
 // =============================================================================
-juce::Colour PolesAndZerosEQAudioProcessorEditor::getColour(ColourLabels label)
+juce::Colour
+PolesAndZerosEQAudioProcessorEditor::getColour(GUISettings::ColourLabel label)
 {
-    return palette[label];
+    return settings.getColour(label);
+}
+float PolesAndZerosEQAudioProcessorEditor::getValue(
+    GUISettings::SettingLabel label)
+{
+    return settings.getValue(label);
 }
 float PolesAndZerosEQAudioProcessorEditor::getRectCornerSize()
 {
-    return 14.5f * sizeRatio;
+    return settings.getValue(GUISettings::SettingLabel::FULL_RECT_CORNER_SIZE)
+           * sizeRatio;
 }
 float PolesAndZerosEQAudioProcessorEditor::getRectThickness()
 {
-    return 1.5f * sizeRatio;
-}
-
-// =============================================================================
-Panel::Panel() {}
-void Panel::paint(juce::Graphics& g)
-{
-    juce::Rectangle<float> r = getLocalBounds().toFloat();
-
-    if (PolesAndZerosEQAudioProcessorEditor* ape
-        = findParentComponentOfClass<PolesAndZerosEQAudioProcessorEditor>())
-    {
-        float t                       = ape->getRectThickness();
-        juce::Rectangle<float> r_trim = r.reduced(t);
-
-        g.setColour(ape->getColour(ColourLabels::BOX_FILL));
-        g.fillRoundedRectangle(r_trim, ape->getRectCornerSize());
-        g.setColour(ape->getColour(ColourLabels::BOX_STROKE));
-        g.drawRoundedRectangle(r_trim, ape->getRectCornerSize(), t);
-    }
+    return settings.getValue(GUISettings::SettingLabel::FULL_RECT_THICKNESS)
+           * sizeRatio;
 }

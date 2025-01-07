@@ -1,26 +1,8 @@
 #pragma once
-#include "GUIElements/Palette.h"
+#include "GUIElements/Panel.h"
+#include "GUIElements/Settings.h"
 #include "PluginProcessor.h"
 #include <JuceHeader.h>
-
-// =============================================================================
-/** Rectangular panel for the GUI  */
-class Panel : public juce::Component
-{
-public:
-    // ===========================================================================
-    Panel();
-
-    //===================================================================
-    void paint(juce::Graphics&) override;
-
-private:
-    // ===========================================================================
-    PolesAndZerosEQColourScheme palette;
-
-    // ===========================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Panel);
-};
 
 // =============================================================================
 /** Plugin editor for poles and zero eq  */
@@ -36,7 +18,9 @@ public:
 
     //===================================================================
     /** Get colour from palette */
-    juce::Colour getColour(PolesAndZerosEQColourScheme::Label);
+    juce::Colour getColour(GUISettings::ColourLabel);
+    /** Get value from settings */
+    float getValue(GUISettings::SettingLabel);
     /** Get rectangle corner size */
     float getRectCornerSize();
     /** Get rectangle corner size */
@@ -51,13 +35,13 @@ private:
     PolesAndZerosEQAudioProcessor& processor;
 
     // ===========================================================================
-    juce::ApplicationProperties applicationProperties;
-    juce::ComponentBoundsConstrainer aspectRatioConstrainer;
-    PolesAndZerosEQColourScheme palette;
-    static const int originalWidth;
-    static const int originalHeight;
-    float sizeRatio;
     Panel slidersPanel, plotsPanel, designPanel, masterPanel;
+
+    // ===========================================================================
+    juce::ComponentBoundsConstrainer aspectRatioConstrainer;
+    juce::ApplicationProperties applicationProperties;
+    GUISettings settings;
+    float sizeRatio;
 
     // ===========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
