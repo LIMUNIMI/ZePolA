@@ -12,6 +12,8 @@ PolesAndZerosEQColourScheme PolesAndZerosEQColourScheme::getEditorTheme()
 {
     PolesAndZerosEQColourScheme cs;
     cs.setColour(Label::BACKGROUND, 0xffecf0f1);
+    cs.setColour(Label::BOX_FILL, 0x17b1b1b1);
+    cs.setColour(Label::BOX_STROKE, 0xff383838);
     return cs;
 }
 

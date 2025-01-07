@@ -12,6 +12,8 @@ public:
     {
         // Background color label
         BACKGROUND = 0,
+        BOX_FILL,
+        BOX_STROKE,
 
         // This should not be used as a label, but only to get how many
         // labels are there
