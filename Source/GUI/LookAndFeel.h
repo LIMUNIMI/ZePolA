@@ -22,9 +22,28 @@ public:
                                    juce::GroupComponent&) override;
 
     // ===========================================================================
+    /** Set the new resize ratio */
     void setResizeRatio(float);
+    /** Set the new resize ratio by specifying width and height */
+    void setResizeRatio(int w, int h);
+    /** Get the current resize ratio */
+    float getResizeRatio();
+    /** Resize a given length using the resize ratio */
+    template <typename ValueType>
+    ValueType resizeSize(ValueType);
+    /** Get the current width */
+    int getResizedWidth();
+    /** Get the current height */
+    int getResizedHeight();
+    /** Get the current panel outer margin */
+    int getResizedPanelOuterMargin();
+    /** Get the intended aspect ratio */
+    float getAspectRatio();
 
 private:
     // ===========================================================================
-    float resizeRatio, groupComponentThickness, groupComponentCornerSize;
+    int fullWidth, fullHeight;
+    float resizeRatio;
+    int fullPanelOuterMargin;
+    float groupComponentThickness, groupComponentCornerSize;
 };

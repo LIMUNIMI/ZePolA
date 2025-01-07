@@ -3,11 +3,7 @@
 // =============================================================================
 PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     PolesAndZerosEQAudioProcessor& p)
-    : juce::AudioProcessorEditor(&p)
-    , processor(p)
-    , aspectRatioConstrainer()
-    , settings(GUISettings::getEditorTheme())
-    , sizeRatio(1.0f)
+    : juce::AudioProcessorEditor(&p), processor(p), aspectRatioConstrainer()
 {
     setLookAndFeel(&claf);
     sizeSetup();
@@ -18,9 +14,7 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
 }
 void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
 {
-    aspectRatioConstrainer.setFixedAspectRatio(
-        settings.getValue(GUISettings::SettingLabel::FULL_WIDTH)
-        / settings.getValue(GUISettings::SettingLabel::FULL_HEIGHT));
+    aspectRatioConstrainer.setFixedAspectRatio(claf.getAspectRatio());
     setConstrainer(&aspectRatioConstrainer);
 
     juce::PropertiesFile::Options options;
@@ -32,72 +26,40 @@ void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
     applicationProperties.setStorageParameters(options);
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
-        sizeRatio = pf->getDoubleValue("sizeRatio", sizeRatio);
-    claf.setResizeRatio(sizeRatio);
+        claf.setResizeRatio(
+            pf->getDoubleValue("sizeRatio", claf.getResizeRatio()));
 
     setResizable(true, true);
-    setSize(static_cast<int>(
-                settings.getValue(GUISettings::SettingLabel::FULL_WIDTH)
-                * sizeRatio),
-            static_cast<int>(
-                settings.getValue(GUISettings::SettingLabel::FULL_HEIGHT)
-                * sizeRatio));
+    setSize(claf.getResizedWidth(), claf.getResizedHeight());
 }
 
 // =============================================================================
 void PolesAndZerosEQAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    g.fillAll(getColour(GUISettings::ColourLabel::BACKGROUND));
+    g.fillAll(
+        getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 }
 void PolesAndZerosEQAudioProcessorEditor::resized()
 {
-    float wRatio
-        = getWidth() / settings.getValue(GUISettings::SettingLabel::FULL_WIDTH);
-    float hRatio = getHeight()
-                   / settings.getValue(GUISettings::SettingLabel::FULL_HEIGHT);
-    sizeRatio = fminf(wRatio, hRatio);
+    claf.setResizeRatio(getWidth(), getHeight());
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
-        pf->setValue("sizeRatio", sizeRatio);
-    claf.setResizeRatio(sizeRatio);
+        pf->setValue("sizeRatio", claf.getResizeRatio());
 
     juce::Rectangle<float> panels_box = getLocalBounds().toFloat();
     juce::Rectangle<float> header_bar = panels_box.removeFromTop(40.0f);
 
-    panels_box = panels_box.reduced(
-        settings.getValue(GUISettings::SettingLabel::PANELS_OUTER_MARGIN));
+    panels_box = panels_box.reduced(claf.getResizedPanelOuterMargin());
 
     juce::Rectangle<float> sliders_panel_box
-        = panels_box.removeFromLeft(510.0f * sizeRatio);
+        = panels_box.removeFromLeft(claf.resizeSize(510.0f));
     juce::Rectangle<float> plots_panel_box
-        = panels_box.removeFromLeft(480.0f * sizeRatio);
+        = panels_box.removeFromLeft(claf.resizeSize(480.0f));
     juce::Rectangle<float> design_panel_box
-        = panels_box.removeFromTop(396.0f * sizeRatio);
+        = panels_box.removeFromTop(claf.resizeSize(396.0f));
 
     slidersGroup.setBounds(sliders_panel_box.toNearestIntEdges());
     plotsGroup.setBounds(plots_panel_box.toNearestIntEdges());
     designGroup.setBounds(design_panel_box.toNearestIntEdges());
     masterGroup.setBounds(panels_box.toNearestIntEdges());
-}
-
-// =============================================================================
-juce::Colour
-PolesAndZerosEQAudioProcessorEditor::getColour(GUISettings::ColourLabel label)
-{
-    return settings.getColour(label);
-}
-float PolesAndZerosEQAudioProcessorEditor::getValue(
-    GUISettings::SettingLabel label)
-{
-    return settings.getValue(label);
-}
-float PolesAndZerosEQAudioProcessorEditor::getRectCornerSize()
-{
-    return settings.getValue(GUISettings::SettingLabel::FULL_RECT_CORNER_SIZE)
-           * sizeRatio;
-}
-float PolesAndZerosEQAudioProcessorEditor::getRectThickness()
-{
-    return settings.getValue(GUISettings::SettingLabel::FULL_RECT_THICKNESS)
-           * sizeRatio;
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include "GUI/LookAndFeel.h"
-#include "GUI/Settings.h"
 #include "PluginProcessor.h"
 #include <JuceHeader.h>
 
@@ -15,16 +14,6 @@ public:
     //===================================================================
     void paint(juce::Graphics&) override;
     void resized() override;
-
-    //===================================================================
-    /** Get colour from palette */
-    juce::Colour getColour(GUISettings::ColourLabel);
-    /** Get value from settings */
-    float getValue(GUISettings::SettingLabel);
-    /** Get rectangle corner size */
-    float getRectCornerSize();
-    /** Get rectangle corner size */
-    float getRectThickness();
 
 private:
     // ===========================================================================
@@ -41,8 +30,6 @@ private:
     juce::ComponentBoundsConstrainer aspectRatioConstrainer;
     juce::ApplicationProperties applicationProperties;
     CustomLookAndFeel claf;
-    GUISettings settings;
-    float sizeRatio;
 
     // ===========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
