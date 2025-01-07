@@ -19,6 +19,7 @@ GUISettings GUISettings::getEditorTheme()
     gs.setValue(SettingLabel::FULL_HEIGHT, 790.0f);
     gs.setValue(SettingLabel::FULL_RECT_CORNER_SIZE, 14.5f);
     gs.setValue(SettingLabel::FULL_RECT_THICKNESS, 1.5f);
+    gs.setValue(SettingLabel::PANELS_OUTER_MARGIN, 15.0f);
 
     return gs;
 }

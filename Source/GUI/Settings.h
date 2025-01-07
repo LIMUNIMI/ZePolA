@@ -32,6 +32,8 @@ public:
         FULL_RECT_CORNER_SIZE,
         // Rectangle stroke thickness at full size
         FULL_RECT_THICKNESS,
+        // Outer margin of rectangular panels
+        PANELS_OUTER_MARGIN,
 
         // This should not be used as a label, but only to get how many
         // labels are there

@@ -54,23 +54,27 @@ void PolesAndZerosEQAudioProcessorEditor::resized()
     float hRatio = getHeight()
                    / settings.getValue(GUISettings::SettingLabel::FULL_HEIGHT);
     sizeRatio = fminf(wRatio, hRatio);
-
-    slidersPanel.setBounds(
-        static_cast<int>(15 * sizeRatio), static_cast<int>(55 * sizeRatio),
-        static_cast<int>(510 * sizeRatio), static_cast<int>(720 * sizeRatio));
-    plotsPanel.setBounds(
-        static_cast<int>(525 * sizeRatio), static_cast<int>(55 * sizeRatio),
-        static_cast<int>(480 * sizeRatio), static_cast<int>(720 * sizeRatio));
-    designPanel.setBounds(
-        static_cast<int>(1005 * sizeRatio), static_cast<int>(55 * sizeRatio),
-        static_cast<int>(180 * sizeRatio), static_cast<int>(396 * sizeRatio));
-    masterPanel.setBounds(
-        static_cast<int>(1005 * sizeRatio), static_cast<int>(451 * sizeRatio),
-        static_cast<int>(180 * sizeRatio), static_cast<int>(324 * sizeRatio));
-
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
         pf->setValue("sizeRatio", sizeRatio);
+
+    juce::Rectangle<float> panels_box = getLocalBounds().toFloat();
+    juce::Rectangle<float> header_bar = panels_box.removeFromTop(40.0f);
+
+    panels_box = panels_box.reduced(
+        settings.getValue(GUISettings::SettingLabel::PANELS_OUTER_MARGIN));
+
+    juce::Rectangle<float> sliders_panel_box
+        = panels_box.removeFromLeft(510.0f * sizeRatio);
+    juce::Rectangle<float> plots_panel_box
+        = panels_box.removeFromLeft(480.0f * sizeRatio);
+    juce::Rectangle<float> design_panel_box
+        = panels_box.removeFromTop(396.0f * sizeRatio);
+
+    slidersPanel.setBounds(sliders_panel_box.toNearestInt());
+    plotsPanel.setBounds(plots_panel_box.toNearestInt());
+    designPanel.setBounds(design_panel_box.toNearestInt());
+    masterPanel.setBounds(panels_box.toNearestInt());
 }
 
 // =============================================================================
