@@ -1,4 +1,5 @@
 #pragma once
+#include "GUI/LookAndFeel.h"
 #include "GUI/Panel.h"
 #include "GUI/Settings.h"
 #include "PluginProcessor.h"
@@ -35,11 +36,12 @@ private:
     PolesAndZerosEQAudioProcessor& processor;
 
     // ===========================================================================
-    Panel slidersPanel, plotsPanel, designPanel, masterPanel;
+    juce::GroupComponent slidersGroup, plotsGroup, designGroup, masterGroup;
 
     // ===========================================================================
     juce::ComponentBoundsConstrainer aspectRatioConstrainer;
     juce::ApplicationProperties applicationProperties;
+    CustomLookAndFeel claf;
     GUISettings settings;
     float sizeRatio;
 

@@ -9,11 +9,12 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     , settings(GUISettings::getEditorTheme())
     , sizeRatio(1.0f)
 {
+    setLookAndFeel(&claf);
     sizeSetup();
-    addAndMakeVisible(slidersPanel);
-    addAndMakeVisible(plotsPanel);
-    addAndMakeVisible(designPanel);
-    addAndMakeVisible(masterPanel);
+    addAndMakeVisible(slidersGroup);
+    addAndMakeVisible(plotsGroup);
+    addAndMakeVisible(designGroup);
+    addAndMakeVisible(masterGroup);
 }
 void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
 {
@@ -32,6 +33,7 @@ void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
         sizeRatio = pf->getDoubleValue("sizeRatio", sizeRatio);
+    claf.setResizeRatio(sizeRatio);
 
     setResizable(true, true);
     setSize(static_cast<int>(
@@ -57,6 +59,7 @@ void PolesAndZerosEQAudioProcessorEditor::resized()
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
         pf->setValue("sizeRatio", sizeRatio);
+    claf.setResizeRatio(sizeRatio);
 
     juce::Rectangle<float> panels_box = getLocalBounds().toFloat();
     juce::Rectangle<float> header_bar = panels_box.removeFromTop(40.0f);
@@ -71,10 +74,10 @@ void PolesAndZerosEQAudioProcessorEditor::resized()
     juce::Rectangle<float> design_panel_box
         = panels_box.removeFromTop(396.0f * sizeRatio);
 
-    slidersPanel.setBounds(sliders_panel_box.toNearestInt());
-    plotsPanel.setBounds(plots_panel_box.toNearestInt());
-    designPanel.setBounds(design_panel_box.toNearestInt());
-    masterPanel.setBounds(panels_box.toNearestInt());
+    slidersGroup.setBounds(sliders_panel_box.toNearestIntEdges());
+    plotsGroup.setBounds(plots_panel_box.toNearestIntEdges());
+    designGroup.setBounds(design_panel_box.toNearestIntEdges());
+    masterGroup.setBounds(panels_box.toNearestIntEdges());
 }
 
 // =============================================================================
