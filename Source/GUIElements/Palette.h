@@ -34,6 +34,8 @@ public:
     void setColour(Label, ColourType);
     /** Get colour for the specified label */
     juce::Colour getColour(Label);
+    /** Get colour for the specified label */
+    juce::Colour operator[](Label);
 
 private:
     // =========================================================================

@@ -41,6 +41,6 @@ void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
 // =============================================================================
 void PolesAndZerosEQAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    g.fillAll(palette.getColour(ColourLabels::BACKGROUND));
+    g.fillAll(palette[ColourLabels::BACKGROUND]);
 }
 void PolesAndZerosEQAudioProcessorEditor::resized() {}

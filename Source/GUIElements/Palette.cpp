@@ -29,5 +29,9 @@ void PolesAndZerosEQColourScheme::setColour(Label label, ColourType colour)
 juce::Colour
 PolesAndZerosEQColourScheme::getColour(PolesAndZerosEQColourScheme::Label label)
 {
+    return (*this)[label];
+}
+juce::Colour PolesAndZerosEQColourScheme::operator[](Label label)
+{
     return colours[label];
 }
