@@ -82,6 +82,21 @@ void VTSAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 }
 
 //==============================================================================
+template <typename AttachmentType, typename ComponentType>
+AttachmentType* VTSAudioProcessor::makeAttachment(juce::StringRef parameterID,
+                                                  ComponentType& component)
+{
+    return new AttachmentType(valueTreeState, parameterID, component);
+}
+
+template juce::AudioProcessorValueTreeState::SliderAttachment*
+VTSAudioProcessor::makeAttachment(juce::StringRef parameterID,
+                                  juce::Slider& component);
+template juce::AudioProcessorValueTreeState::ButtonAttachment*
+VTSAudioProcessor::makeAttachment(juce::StringRef parameterID,
+                                  juce::Button& component);
+
+//==============================================================================
 float VTSAudioProcessor::formatParameterValue(juce::StringRef parameterID,
                                               float value)
 {

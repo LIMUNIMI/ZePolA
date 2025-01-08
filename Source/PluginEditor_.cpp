@@ -3,14 +3,17 @@
 // =============================================================================
 PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     PolesAndZerosEQAudioProcessor& p)
-    : juce::AudioProcessorEditor(&p), processor(p), aspectRatioConstrainer()
+    : juce::AudioProcessorEditor(&p)
+    , processor(p)
+    , aspectRatioConstrainer()
+    , parameterPanel(processor, processor.getNElements())
 {
     setLookAndFeel(&claf);
-    sizeSetup();
-    addAndMakeVisible(slidersGroup);
+    addAndMakeVisible(parameterPanel);
     addAndMakeVisible(plotsGroup);
     addAndMakeVisible(designGroup);
     addAndMakeVisible(masterGroup);
+    sizeSetup();
 }
 void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
 {
@@ -56,7 +59,7 @@ void PolesAndZerosEQAudioProcessorEditor::resized()
         = claf.splitProportionalPanels(v_panels[2], {396, 324}, true);
     jassert(h_panels_2.size() == 2);
 
-    slidersGroup.setBounds(v_panels[0]);
+    parameterPanel.setBounds(v_panels[0]);
     plotsGroup.setBounds(v_panels[1]);
     designGroup.setBounds(h_panels_2[0]);
     masterGroup.setBounds(h_panels_2[1]);

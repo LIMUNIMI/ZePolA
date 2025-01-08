@@ -101,6 +101,8 @@ public:
     void setElementTypeF(int i, float v);
 
     // =========================================================================
+    /** Get the number of filter elements */
+    int getNElements() const;
     /** Clear filter memory */
     void resetMemory();
     /** Activate or deactivate all filter elements */
