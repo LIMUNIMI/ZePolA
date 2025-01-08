@@ -48,8 +48,8 @@ float CustomLookAndFeel::getAspectRatio()
 // =============================================================================
 void CustomLookAndFeel::drawGroupComponentOutline(juce::Graphics& g, int w,
                                                   int h,
-                                                  const juce::String& text,
-                                                  const juce::Justification& j,
+                                                  const juce::String&,
+                                                  const juce::Justification&,
                                                   juce::GroupComponent& gp)
 {
     juce::Rectangle<float> b(0.0f, 0.0f, w, h);
