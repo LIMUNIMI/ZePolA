@@ -52,7 +52,7 @@ void CustomLookAndFeel::drawGroupComponentOutline(juce::Graphics& g, int w,
                                                   const juce::Justification&,
                                                   juce::GroupComponent& gp)
 {
-    juce::Rectangle<float> b(0.0f, 0.0f, w, h);
+    juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(w), static_cast<float>(h));
     b = b.reduced(groupComponentThickness * resizeRatio);
     g.setColour(
         gp.findColour(CustomLookAndFeel::GroupComponent_backgroundColourId));
