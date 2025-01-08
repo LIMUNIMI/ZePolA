@@ -46,20 +46,18 @@ void PolesAndZerosEQAudioProcessorEditor::resized()
         = applicationProperties.getCommonSettings(true))
         pf->setValue("sizeRatio", claf.getResizeRatio());
 
-    juce::Rectangle<float> panels_box = getLocalBounds().toFloat();
-    juce::Rectangle<float> header_bar = panels_box.removeFromTop(40.0f);
+    auto panels_box = getLocalBounds();
+    auto header_bar = panels_box.removeFromTop(40);
+    panels_box      = panels_box.reduced(claf.getResizedPanelOuterMargin());
 
-    panels_box = panels_box.reduced(claf.getResizedPanelOuterMargin());
+    auto v_panels = claf.splitProportionalPanels(panels_box, {510, 480, 180});
+    jassert(v_panels.size() == 3);
+    auto h_panels_2
+        = claf.splitProportionalPanels(v_panels[2], {396, 324}, true);
+    jassert(h_panels_2.size() == 2);
 
-    juce::Rectangle<float> sliders_panel_box
-        = panels_box.removeFromLeft(claf.resizeSize(510.0f));
-    juce::Rectangle<float> plots_panel_box
-        = panels_box.removeFromLeft(claf.resizeSize(480.0f));
-    juce::Rectangle<float> design_panel_box
-        = panels_box.removeFromTop(claf.resizeSize(396.0f));
-
-    slidersGroup.setBounds(sliders_panel_box.toNearestIntEdges());
-    plotsGroup.setBounds(plots_panel_box.toNearestIntEdges());
-    designGroup.setBounds(design_panel_box.toNearestIntEdges());
-    masterGroup.setBounds(panels_box.toNearestIntEdges());
+    slidersGroup.setBounds(v_panels[0]);
+    plotsGroup.setBounds(v_panels[1]);
+    designGroup.setBounds(h_panels_2[0]);
+    masterGroup.setBounds(h_panels_2[1]);
 }

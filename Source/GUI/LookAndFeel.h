@@ -40,10 +40,42 @@ public:
     /** Get the intended aspect ratio */
     float getAspectRatio();
 
+    // ===========================================================================
+    /**
+     * @brief Split rectangle in proportional rectangles
+     *
+     * @param r Rectangle to split
+     * @param fractions Proportional size of each rectangle
+     * @param vertical If true, then split rectangle vertically. If false
+     * (default), horizontally
+     * @param fullMargin Space between rectangles (when GUI is at full size)
+     * @return Vector of proportional rectangles
+     */
+    template <typename RectType>
+    std::vector<juce::Rectangle<RectType>>
+    splitProportional(const juce::Rectangle<RectType>& r,
+                      const std::vector<RectType>& fractions,
+                      bool vertical = false, float fullMargin = 0.0f);
+    /**
+     * @brief Split rectangle in proportional rectangles, with resized panel
+     * margin
+     *
+     * @param r Rectangle to split
+     * @param fractions Proportional size of each rectangle
+     * @param vertical If true, then split rectangle vertically. If false
+     * (default), horizontally
+     * @return Vector of proportional rectangles
+     */
+    template <typename RectType>
+    std::vector<juce::Rectangle<RectType>>
+    splitProportionalPanels(const juce::Rectangle<RectType>& r,
+                            const std::vector<RectType>& fractions,
+                            bool vertical = false);
+
 private:
     // ===========================================================================
     int fullWidth, fullHeight;
     float resizeRatio;
-    int fullPanelOuterMargin;
+    float fullPanelOuterMargin, fullPanelMargin;
     float groupComponentThickness, groupComponentCornerSize;
 };
