@@ -9,10 +9,25 @@ class ParameterStrip : public InvisibleGroupComponent
 {
 public:
     // =========================================================================
+    class ParentRepaintButtonListener : public juce::Button::Listener
+    {
+    public:
+        // =====================================================================
+        ParentRepaintButtonListener();
+
+        // =====================================================================
+        virtual void buttonClicked(juce::Button*) override;
+        virtual void buttonStateChanged(juce::Button*) override;
+    };
+
+    // =========================================================================
     ParameterStrip(VTSAudioProcessor&, int index);
 
     //==========================================================================
     void resized() override;
+
+    //==========================================================================
+    bool isActive();
 
 private:
     // =========================================================================
@@ -24,6 +39,7 @@ private:
         mSliderAttachment, pSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
         aButtonAttachment, tButtonAttachment;
+    ParentRepaintButtonListener aButtonListener;
 };
 
 // =============================================================================

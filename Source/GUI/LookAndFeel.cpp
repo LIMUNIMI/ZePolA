@@ -1,5 +1,6 @@
 #include "LookAndFeel.h"
 #include "../Macros.h"
+#include "ParameterPanel.h"
 
 // =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
@@ -16,12 +17,22 @@ CustomLookAndFeel::CustomLookAndFeel()
     , panelRowProportions({5, 45, 5, 45})
     , panelProportions({510, 480, 180})
     , lastPanelProportions({396, 324})
+    , fontName("Gill Sans")
+    , fullLabelFontSize(13.0f)
+    , fullSliderHeight(2.0f)
+    , fullSliderThumbRadius(6.0f)
+    , inactiveBrightness(0.8f)
 {
+    // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
               juce::Colour(0xffecf0f1));
     setColour(juce::GroupComponent::outlineColourId, juce::Colour(0xff383838));
     setColour(CustomLookAndFeel::GroupComponent_backgroundColourId,
               juce::Colour(0x17b1b1b1));
+    // Slider
+    setColour(juce::Slider::trackColourId, juce::Colour(0xff797d7f));
+    setColour(juce::Slider::thumbColourId, juce::Colour(0xff383838));
+    setColour(juce::Slider::backgroundColourId, juce::Colour(0x88ffffff));
 }
 
 // =============================================================================
@@ -159,7 +170,46 @@ void CustomLookAndFeel::dontDrawGroupComponent(
     ONLY_ON_DEBUG({
         juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(width),
                                  static_cast<float>(height));
-        g.setColour(juce::Colour(0xaaff0000));
+        g.setColour(juce::Colour(0x88ff0000));
         g.drawRect(b, resizeSize(1.0f));
-    })
+    });
+}
+juce::Font CustomLookAndFeel::getLabelFont(juce::Label&)
+{
+    return juce::Font(fontName, resizeSize(fullLabelFontSize),
+                      juce::Font::plain);
+}
+void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y,
+                                         int width, int height, float sliderPos,
+                                         float minSliderPos, float maxSliderPos,
+                                         const juce::Slider::SliderStyle,
+                                         juce::Slider& slider)
+{
+    juce::Colour trackColour = slider.findColour(juce::Slider::trackColourId);
+    juce::Colour thumbColour = slider.findColour(juce::Slider::thumbColourId);
+    juce::Colour backgroundColour
+        = slider.findColour(juce::Slider::backgroundColourId);
+
+    auto ps = dynamic_cast<ParameterStrip*>(slider.getParentComponent());
+    if (ps && ps->isActive())
+    {
+        trackColour      = trackColour.brighter(inactiveBrightness);
+        thumbColour      = thumbColour.brighter(inactiveBrightness);
+        backgroundColour = backgroundColour.brighter(inactiveBrightness);
+    }
+
+    auto sh = resizeSize(fullSliderHeight);
+    g.setColour(trackColour);
+    g.fillRoundedRectangle(static_cast<float>(x), y + (height - sh) / 2.0f,
+                           static_cast<float>(width), sh, sh / 2.0f);
+
+    auto st_rad = resizeSize(fullSliderThumbRadius);
+    juce::Rectangle<float> st_rect(sliderPos - st_rad,
+                                   y + height / 2.0f - st_rad, 2.0f * st_rad,
+                                   2.0f * st_rad);
+
+    g.setColour(thumbColour);
+    g.fillEllipse(st_rect);
+    g.setColour(backgroundColour);
+    g.drawEllipse(st_rect, resizeSize(1.0f));
 }

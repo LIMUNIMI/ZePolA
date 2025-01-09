@@ -2,6 +2,20 @@
 #include "LookAndFeel.h"
 
 // =============================================================================
+ParameterStrip::ParentRepaintButtonListener::ParentRepaintButtonListener() { }
+
+// =============================================================================
+void ParameterStrip::ParentRepaintButtonListener::buttonClicked(juce::Button* b)
+{
+    b->getParentComponent()->repaint();
+}
+void ParameterStrip::ParentRepaintButtonListener::buttonStateChanged(
+    juce::Button* b)
+{
+    buttonClicked(b);
+}
+
+// =============================================================================
 ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     : mSliderAttachment(
         p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
@@ -20,6 +34,7 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
                            juce::Button>(TYPE_ID_PREFIX + juce::String(i),
                                          tButton))
 {
+    aButton.addListener(&aButtonListener);
     addAndMakeVisible(mSlider);
     addAndMakeVisible(pSlider);
     addAndMakeVisible(aButton);
@@ -39,6 +54,9 @@ void ParameterStrip::resized()
         aButton.setBounds(rects[4]);
     }
 }
+
+// =============================================================================
+bool ParameterStrip::isActive() { return !aButton.getToggleState(); }
 
 // =============================================================================
 ParameterPanel::ParameterPanel(VTSAudioProcessor& p, size_t n)

@@ -27,6 +27,11 @@ public:
                                 const juce::String& text,
                                 const juce::Justification&,
                                 juce::GroupComponent&) override;
+    juce::Font getLabelFont(juce::Label&) override;
+    void drawLinearSlider(juce::Graphics& g, int x, int y, int width,
+                          int height, float sliderPos, float minSliderPos,
+                          float maxSliderPos, const juce::Slider::SliderStyle,
+                          juce::Slider& slider) override;
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -103,4 +108,9 @@ private:
         groupComponentCornerSize;
     std::vector<int> stripColumnProportions, panelRowProportions,
         panelProportions, lastPanelProportions;
+
+    // =========================================================================
+    float fullLabelFontSize, fullSliderHeight, fullSliderThumbRadius,
+        inactiveBrightness;
+    juce::String fontName;
 };
