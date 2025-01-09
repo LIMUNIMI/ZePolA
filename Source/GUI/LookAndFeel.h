@@ -42,8 +42,6 @@ public:
     int getResizedWidth() const;
     /** Get the current height */
     int getResizedHeight() const;
-    /** Get the current panel outer margin */
-    int getResizedPanelOuterMargin() const;
     /** Get the intended aspect ratio */
     float getAspectRatio() const;
 
@@ -83,11 +81,26 @@ public:
     template <typename RectType>
     juce::Rectangle<RectType>
     getPanelInnerRect(const juce::Rectangle<RectType>&) const;
+    /**
+     * Divide GUI area in panels
+     *
+     * @return Header bar, parameters panel, plots panel, designer panel, master
+     * panel
+     */
+    std::vector<juce::Rectangle<int>>
+    divideInPanels(const juce::Rectangle<int>&) const;
+    /** Split rectangle for a parameter strip */
+    std::vector<juce::Rectangle<int>>
+    splitProportionalStrip(const juce::Rectangle<int>&) const;
+    /** Split rectangle for a panel */
+    std::vector<juce::Rectangle<int>>
+    splitProportionalPanel(const juce::Rectangle<int>&) const;
 
 private:
     // =========================================================================
-    int fullWidth, fullHeight;
-    float resizeRatio;
-    float fullPanelOuterMargin, fullPanelMargin;
-    float groupComponentThickness, groupComponentCornerSize;
+    int fullWidth, fullHeight, fullHeaderHeight, fullPanelOuterMargin;
+    float resizeRatio, fullPanelMargin, groupComponentThickness,
+        groupComponentCornerSize;
+    std::vector<int> stripColumnProportions, panelRowProportions,
+        panelProportions, lastPanelProportions;
 };

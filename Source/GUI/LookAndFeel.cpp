@@ -6,10 +6,16 @@ CustomLookAndFeel::CustomLookAndFeel()
     : resizeRatio(1.0f)
     , fullWidth(1200)
     , fullHeight(790)
-    , fullPanelOuterMargin(15.0f)
+    , fullHeaderHeight(40)
+    , fullPanelOuterMargin(15)
     , fullPanelMargin(0.0f)
     , groupComponentThickness(1.5f)
     , groupComponentCornerSize(14.5f)
+    // radius, angle, frequency, type, active, gain
+    , stripColumnProportions({120, 120, 60, 50, 50, 50})
+    , panelRowProportions({5, 45, 5, 45})
+    , panelProportions({510, 480, 180})
+    , lastPanelProportions({396, 324})
 {
     setColour(juce::ResizableWindow::backgroundColourId,
               juce::Colour(0xffecf0f1));
@@ -27,22 +33,14 @@ void CustomLookAndFeel::setResizeRatio(int w, int h)
     setResizeRatio(fminf(rW, rH));
 }
 template <typename ValueType>
-
 ValueType CustomLookAndFeel::resizeSize(ValueType f) const
 {
     return static_cast<ValueType>(f * resizeRatio);
 }
-template float CustomLookAndFeel::resizeSize<float>(float) const;
-template int CustomLookAndFeel::resizeSize<int>(int) const;
-
 int CustomLookAndFeel::getResizedWidth() const { return resizeSize(fullWidth); }
 int CustomLookAndFeel::getResizedHeight() const
 {
     return resizeSize(fullHeight);
-}
-int CustomLookAndFeel::getResizedPanelOuterMargin() const
-{
-    return juce::roundToInt(resizeSize(fullPanelOuterMargin));
 }
 float CustomLookAndFeel::getResizeRatio() const { return resizeRatio; }
 float CustomLookAndFeel::getAspectRatio() const
@@ -95,26 +93,47 @@ CustomLookAndFeel::splitProportionalPanels(
     return splitProportional(r, fractions, vertical, fullPanelMargin);
 }
 
-template std::vector<juce::Rectangle<float>>
-CustomLookAndFeel::splitProportionalPanels(const juce::Rectangle<float>& r,
-                                           const std::vector<float>& fractions,
-                                           bool vertical) const;
-template std::vector<juce::Rectangle<int>>
-CustomLookAndFeel::splitProportionalPanels(const juce::Rectangle<int>& r,
-                                           const std::vector<int>& fractions,
-                                           bool vertical) const;
-
 template <typename RectType>
 juce::Rectangle<RectType>
 CustomLookAndFeel::getPanelInnerRect(const juce::Rectangle<RectType>& r) const
 {
-    return r.reduced(juce::roundToInt(resizeSize(groupComponentCornerSize)));
+    auto delta = static_cast<RectType>(resizeSize(groupComponentCornerSize));
+    return r.reduced(delta, delta);
 }
 
 template juce::Rectangle<int>
 CustomLookAndFeel::getPanelInnerRect(const juce::Rectangle<int>&) const;
-template juce::Rectangle<float>
-CustomLookAndFeel::getPanelInnerRect(const juce::Rectangle<float>&) const;
+
+std::vector<juce::Rectangle<int>>
+CustomLookAndFeel::divideInPanels(const juce::Rectangle<int>& r) const
+{
+    std::vector<juce::Rectangle<int>> rects;
+
+    auto panels_box(r);
+    rects.push_back(panels_box.removeFromTop(resizeSize(fullHeaderHeight)));
+    panels_box = panels_box.reduced(resizeSize(fullPanelOuterMargin));
+
+    auto v_panels = splitProportionalPanels(panels_box, panelProportions);
+    auto n        = v_panels.size() - 1;
+    for (auto i = 0; i < n; ++i) rects.push_back(v_panels[i]);
+    for (auto r_i :
+         splitProportionalPanels(v_panels[n], lastPanelProportions, true))
+        rects.push_back(r_i);
+
+    return rects;
+}
+
+std::vector<juce::Rectangle<int>>
+CustomLookAndFeel::splitProportionalStrip(const juce::Rectangle<int>& r) const
+{
+    return splitProportional(r, stripColumnProportions);
+}
+
+std::vector<juce::Rectangle<int>>
+CustomLookAndFeel::splitProportionalPanel(const juce::Rectangle<int>& r) const
+{
+    return splitProportional(r, panelRowProportions, true);
+}
 
 // =============================================================================
 void CustomLookAndFeel::drawGroupComponentOutline(juce::Graphics& g, int width,

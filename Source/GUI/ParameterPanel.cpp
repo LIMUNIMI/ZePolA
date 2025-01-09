@@ -31,9 +31,7 @@ void ParameterStrip::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
-        auto b = getLocalBounds();
-        // radius, angle, frequency, type, active, gain
-        auto rects = claf->splitProportional(b, {120, 120, 60, 50, 50, 50});
+        auto rects = claf->splitProportionalStrip(getLocalBounds());
         jassert(rects.size() == 6);
         mSlider.setBounds(rects[0]);
         pSlider.setBounds(rects[1]);
@@ -55,8 +53,8 @@ void ParameterPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
-        auto b       = claf->getPanelInnerRect(getLocalBounds());
-        auto regions = claf->splitProportional(b, {5, 45, 5, 45}, true);
+        auto regions = claf->splitProportionalPanel(
+            claf->getPanelInnerRect(getLocalBounds()));
         jassert(regions.size() == 4);
 
         auto n = strips.size();
