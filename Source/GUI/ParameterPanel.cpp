@@ -27,12 +27,6 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
 }
 
 // =============================================================================
-void ParameterStrip::paint(juce::Graphics& g)
-{
-    if (auto laf
-        = dynamic_cast<ParameterStripLookAndFeelMethods*>(&getLookAndFeel()))
-        laf->drawParameterStrip(g, getWidth(), getHeight(), *this);
-}
 void ParameterStrip::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))

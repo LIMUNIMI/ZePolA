@@ -1,17 +1,17 @@
 #pragma once
 #include "../Parameters.h"
+#include "InvisibleGroupComponent.h"
 #include <JuceHeader.h>
 
 // =============================================================================
 /** Single parameter row  */
-class ParameterStrip : public juce::GroupComponent
+class ParameterStrip : public InvisibleGroupComponent
 {
 public:
     // =========================================================================
     ParameterStrip(VTSAudioProcessor&, int index);
 
     //==========================================================================
-    void paint(juce::Graphics& g) override;
     void resized() override;
 
 private:
@@ -24,17 +24,6 @@ private:
         mSliderAttachment, pSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
         aButtonAttachment, tButtonAttachment;
-};
-
-// =============================================================================
-/** Look and feel methods for parameter strips  */
-class ParameterStripLookAndFeelMethods
-{
-public:
-    // =========================================================================
-    virtual void drawParameterStrip(juce::Graphics&, int width, int height,
-                                    ParameterStrip&)
-        = 0;
 };
 
 // =============================================================================

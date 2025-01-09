@@ -1,11 +1,12 @@
 #pragma once
+#include "InvisibleGroupComponent.h"
 #include "ParameterPanel.h"
 #include <JuceHeader.h>
 
 // =============================================================================
 /** Custom look and feel for the GUI  */
 class CustomLookAndFeel : public juce::LookAndFeel_V4,
-                          public ParameterStripLookAndFeelMethods
+                          public InvisibleGroupComponentLookAndFeelMethods
 {
 public:
     // =========================================================================
@@ -22,8 +23,10 @@ public:
                                    const juce::String& text,
                                    const juce::Justification&,
                                    juce::GroupComponent&) override;
-    virtual void drawParameterStrip(juce::Graphics&, int width, int height,
-                                    ParameterStrip&) override;
+    void dontDrawGroupComponent(juce::Graphics&, int width, int height,
+                                const juce::String& text,
+                                const juce::Justification&,
+                                juce::GroupComponent&) override;
 
     // =========================================================================
     /** Set the new resize ratio */

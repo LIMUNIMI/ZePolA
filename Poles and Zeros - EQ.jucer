@@ -17,6 +17,10 @@
       <FILE id="NcDhiw" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>
       <FILE id="VocETI" name="Macros.h" compile="0" resource="0" file="Source/Macros.h"/>
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
+        <FILE id="Snee80" name="InvisibleGroupComponent.cpp" compile="1" resource="0"
+              file="Source/GUI/InvisibleGroupComponent.cpp"/>
+        <FILE id="iqhzFU" name="InvisibleGroupComponent.h" compile="0" resource="0"
+              file="Source/GUI/InvisibleGroupComponent.h"/>
         <FILE id="KxMZBI" name="ParameterPanel.cpp" compile="1" resource="0"
               file="Source/GUI/ParameterPanel.cpp"/>
         <FILE id="tMRXMR" name="ParameterPanel.h" compile="0" resource="0"

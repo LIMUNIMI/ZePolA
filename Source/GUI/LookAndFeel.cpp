@@ -1,4 +1,5 @@
 #include "LookAndFeel.h"
+#include "../Macros.h"
 
 // =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
@@ -132,11 +133,14 @@ void CustomLookAndFeel::drawGroupComponentOutline(juce::Graphics& g, int width,
     g.drawRoundedRectangle(b, resizeSize(groupComponentCornerSize),
                            resizeSize(groupComponentThickness));
 }
-void CustomLookAndFeel::drawParameterStrip(juce::Graphics& g, int width,
-                                           int height, ParameterStrip&)
+void CustomLookAndFeel::dontDrawGroupComponent(
+    juce::Graphics& g, int ONLY_ON_DEBUG(width), int ONLY_ON_DEBUG(height),
+    const juce::String&, const juce::Justification&, juce::GroupComponent&)
 {
-    juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(width),
-                             static_cast<float>(height));
-    g.setColour(juce::Colour(0xffff0000));
-    g.drawRect(b, resizeSize(1.0f));
+    ONLY_ON_DEBUG({
+        juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(width),
+                                 static_cast<float>(height));
+        g.setColour(juce::Colour(0xaaff0000));
+        g.drawRect(b, resizeSize(1.0f));
+    })
 }
