@@ -14,7 +14,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , groupComponentCornerSize(14.5f)
     // radius, angle, frequency, type, active, gain
     , stripColumnProportions({120, 120, 60, 50, 50, 50})
-    , panelRowProportions({5, 45, 5, 45})
+    , panelRowProportions({25, 450, 75, 450})
     , panelProportions({510, 480, 180})
     , lastPanelProportions({396, 324})
     , fontName("Gill Sans")
@@ -34,6 +34,11 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(InvisibleGroupComponent_outlineColourId,
               DEBUG_VS_RELEASE(juce::Colour(0x88ff0000),
                                juce::Colours::transparentBlack));
+    // Labels
+    setColour(juce::Label::textColourId, juce::Colour(0xff383838));
+    setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    setColour(juce::TextEditor::backgroundColourId,
+              juce::Colours::transparentBlack);
     // Slider
     setColour(juce::Slider::trackColourId, juce::Colour(0xff797d7f));
     setColour(juce::Slider::thumbColourId, juce::Colour(0xff383838));
@@ -228,4 +233,45 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y,
     g.fillEllipse(st_rect);
     g.setColour(backgroundColour);
     g.drawEllipse(st_rect, resizeSize(1.0f));
+}
+void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
+{
+    auto textColour       = label.findColour(Label::textColourId);
+    auto outlineColour    = label.findColour(Label::outlineColourId);
+    auto backgroundColour = label.findColour(Label::backgroundColourId);
+    // Check if label is inside a ParameterStrip slider
+    if (!ParameterStrip::parentComponentIsActive(*label.getParentComponent()))
+    {
+        textColour       = textColour.brighter(inactiveBrightness);
+        outlineColour    = outlineColour.brighter(inactiveBrightness);
+        backgroundColour = backgroundColour.brighter(inactiveBrightness);
+    }
+
+    // --- Code edited from juce::LookAndFeel_V2::drawLabel --------------------
+    g.fillAll(backgroundColour);
+    if (!label.isBeingEdited())
+    {
+        auto alpha = label.isEnabled() ? 1.0f : 0.5f;
+        const juce::Font font(getLabelFont(label));
+
+        g.setColour(textColour.withMultipliedAlpha(alpha));
+        g.setFont(font);
+
+        auto textArea
+            = getLabelBorderSize(label).subtractedFrom(label.getLocalBounds());
+
+        g.drawFittedText(label.getText(), textArea,
+                         label.getJustificationType(),
+                         juce::jmax(1, (int)((float)textArea.getHeight()
+                                             / font.getHeight())),
+                         label.getMinimumHorizontalScale());
+
+        g.setColour(outlineColour.withMultipliedAlpha(alpha));
+    }
+    else if (label.isEnabled())
+    {
+        g.setColour(outlineColour);
+    }
+    g.drawRect(label.getLocalBounds());
+    // --- End of code edited from juce::LookAndFeel_V2::drawLabel -------------
 }

@@ -33,6 +33,7 @@ public:
                           int height, float sliderPos, float minSliderPos,
                           float maxSliderPos, const juce::Slider::SliderStyle,
                           juce::Slider& slider) override;
+    void drawLabel(juce::Graphics&, juce::Label&) override;
 
     // =========================================================================
     /** Set the new resize ratio */
