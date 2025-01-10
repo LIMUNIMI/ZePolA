@@ -190,8 +190,7 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y,
     juce::Colour backgroundColour
         = slider.findColour(juce::Slider::backgroundColourId);
 
-    auto ps = dynamic_cast<ParameterStrip*>(slider.getParentComponent());
-    if (ps && ps->isActive())
+    if (!ParameterStrip::parentComponentIsActive(slider))
     {
         trackColour      = trackColour.brighter(inactiveBrightness);
         thumbColour      = thumbColour.brighter(inactiveBrightness);

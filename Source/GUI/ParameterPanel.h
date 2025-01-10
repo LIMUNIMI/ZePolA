@@ -27,7 +27,11 @@ public:
     void resized() override;
 
     //==========================================================================
+    /** Return true if the active button is down */
     bool isActive();
+    /** Return true if the parent component is an active ParameterStrip or not a
+     * ParameterStrip */
+    static bool parentComponentIsActive(const juce::Component&);
 
 private:
     // =========================================================================

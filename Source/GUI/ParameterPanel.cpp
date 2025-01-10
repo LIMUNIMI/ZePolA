@@ -56,7 +56,12 @@ void ParameterStrip::resized()
 }
 
 // =============================================================================
-bool ParameterStrip::isActive() { return !aButton.getToggleState(); }
+bool ParameterStrip::isActive() { return aButton.getToggleState(); }
+bool ParameterStrip::parentComponentIsActive(const juce::Component& c)
+{
+    auto ps = dynamic_cast<ParameterStrip*>(c.getParentComponent());
+    return !ps || ps->isActive();
+}
 
 // =============================================================================
 ParameterPanel::ParameterPanel(VTSAudioProcessor& p, size_t n)
