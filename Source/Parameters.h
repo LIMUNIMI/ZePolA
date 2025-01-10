@@ -65,6 +65,8 @@ public:
                                    ComponentType& slider);
 
     //==============================================================================
+    /** Get parameter by ID */
+    juce::RangedAudioParameter* getParameterById(juce::StringRef);
     /** Format parameter value, so that it is in range */
     float formatParameterValue(juce::StringRef parameterID, float value);
     /** Set parameter value, enclosing the operation in a gesture */

@@ -1,4 +1,5 @@
 #include "Parameters.h"
+#include "GUI/DraggableLabel.h"
 
 // =============================================================================
 void Parameters::setParameterValue(juce::RangedAudioParameter* parameter,
@@ -29,6 +30,8 @@ VTSAudioProcessor::~VTSAudioProcessor()
     jassert(listeners_ids.size() == listeners.size());
 
     size_t n = std::min(listeners.size(), listeners_ids.size());
+    for (size_t i = 0; i < n; ++i)
+        valueTreeState.removeParameterListener(listeners_ids[i], listeners[i]);
     for (size_t i = 0; i < n; ++i)
         if (listeners[i] != nullptr)
         {
@@ -95,8 +98,16 @@ VTSAudioProcessor::makeAttachment(juce::StringRef parameterID,
 template juce::AudioProcessorValueTreeState::ButtonAttachment*
 VTSAudioProcessor::makeAttachment(juce::StringRef parameterID,
                                   juce::Button& component);
+template DraggableLabelAttachment*
+VTSAudioProcessor::makeAttachment(juce::StringRef parameterID,
+                                  DraggableLabel& component);
 
 //==============================================================================
+juce::RangedAudioParameter*
+VTSAudioProcessor::getParameterById(juce::StringRef parameterID)
+{
+    return valueTreeState.getParameter(parameterID);
+}
 float VTSAudioProcessor::formatParameterValue(juce::StringRef parameterID,
                                               float value)
 {
@@ -107,12 +118,11 @@ float VTSAudioProcessor::formatParameterValue(juce::StringRef parameterID,
 void VTSAudioProcessor::setParameterValue(juce::StringRef parameterID,
                                           float value)
 {
-    Parameters::setParameterValue(valueTreeState.getParameter(parameterID),
-                                  value);
+    Parameters::setParameterValue(getParameterById(parameterID), value);
 }
 void VTSAudioProcessor::resetParameterValue(juce::StringRef parameterID)
 {
-    Parameters::resetParameterValue(valueTreeState.getParameter(parameterID));
+    Parameters::resetParameterValue(getParameterById(parameterID));
 }
 void VTSAudioProcessor::resetParameters()
 {

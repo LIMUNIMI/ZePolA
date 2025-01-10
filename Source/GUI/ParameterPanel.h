@@ -1,5 +1,6 @@
 #pragma once
 #include "../Parameters.h"
+#include "DraggableLabel.h"
 #include "InvisibleGroupComponent.h"
 #include <JuceHeader.h>
 
@@ -50,12 +51,15 @@ private:
     // =========================================================================
     ParameterSlider mSlider, pSlider;
     juce::ToggleButton aButton, tButton;
+    DraggableLabel gLabel;
 
     // =========================================================================
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
-        mSliderAttachment, pSliderAttachment;
+        mSliderAttachment, pSliderAttachment, gSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
         aButtonAttachment, tButtonAttachment;
+    std::unique_ptr<DraggableLabelAttachment> gLabelAttachment;
+
     ParentRepaintButtonListener aButtonListener;
 };
 

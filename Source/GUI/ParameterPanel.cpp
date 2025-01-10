@@ -41,12 +41,17 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(TYPE_ID_PREFIX + juce::String(i),
                                          tButton))
+    , gLabelAttachment(
+          p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
+              GAIN_ID_PREFIX + juce::String(i), gLabel))
 {
     aButton.addListener(&aButtonListener);
+
     addAndMakeVisible(mSlider);
     addAndMakeVisible(pSlider);
     addAndMakeVisible(aButton);
     addAndMakeVisible(tButton);
+    addAndMakeVisible(gLabel);
 }
 
 // =============================================================================
@@ -60,6 +65,10 @@ void ParameterStrip::resized()
         pSlider.setBounds(rects[1]);
         tButton.setBounds(rects[3]);
         aButton.setBounds(rects[4]);
+        gLabel.setBounds(rects[5]
+                             .withHeight(gLabel.getFont().getHeight())
+                             .withCentre(rects[5].getCentre()));
+
         claf->resizeSlider(mSlider);
         claf->resizeSlider(pSlider);
     }
