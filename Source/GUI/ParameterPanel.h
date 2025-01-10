@@ -56,4 +56,5 @@ public:
 private:
     // =========================================================================
     std::vector<std::unique_ptr<ParameterStrip>> strips;
+    std::vector<std::unique_ptr<juce::Label>> headerLabels;
 };

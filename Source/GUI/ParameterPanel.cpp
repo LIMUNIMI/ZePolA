@@ -61,9 +61,18 @@ bool ParameterStrip::isActive() { return !aButton.getToggleState(); }
 // =============================================================================
 ParameterPanel::ParameterPanel(VTSAudioProcessor& p, size_t n)
 {
+    for (auto s : {"RADIUS", "ANGLE", "TYPE", "ACTIVE", "GAIN"})
+        headerLabels.push_back(
+            std::make_unique<juce::Label>(juce::String(), s));
     for (auto i = 0; i < n; ++i)
         strips.push_back(std::make_unique<ParameterStrip>(p, i));
-    for (auto& strip : strips) addAndMakeVisible(*strip.get());
+
+    for (auto& l : headerLabels)
+    {
+        l->setJustificationType(juce::Justification::centred);
+        addAndMakeVisible(*l.get());
+    }
+    for (auto& s : strips) addAndMakeVisible(*s.get());
 }
 
 // =============================================================================
@@ -75,9 +84,18 @@ void ParameterPanel::resized()
             claf->getPanelInnerRect(getLocalBounds()));
         jassert(regions.size() == 4);
 
-        auto n = strips.size();
-        auto rects
+        auto header_rects = claf->splitProportionalStrip(regions[0]);
+        jassert(header_rects.size() == 6);
+        header_rects[1].setRight(header_rects[2].getRight());
+        header_rects.erase(header_rects.begin() + 2);
+        jassert(headerLabels.size() <= header_rects.size());
+        auto n = headerLabels.size();
+        for (auto i = 0; i < n; ++i)
+            headerLabels[i]->setBounds(header_rects[i]);
+
+        n = strips.size();
+        auto strip_rects
             = claf->splitProportional(regions[1], std::vector<int>(n, 1), true);
-        for (auto i = 0; i < n; ++i) strips[i]->setBounds(rects[i]);
+        for (auto i = 0; i < n; ++i) strips[i]->setBounds(strip_rects[i]);
     }
 }
