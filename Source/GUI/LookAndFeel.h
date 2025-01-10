@@ -112,6 +112,9 @@ public:
 
 private:
     // =========================================================================
+    static const juce::Typeface::Ptr ltAvocadoRegular;
+
+    // =========================================================================
     int fullWidth, fullHeight, fullHeaderHeight, fullPanelOuterMargin;
     float resizeRatio, fullPanelMargin, groupComponentThickness,
         groupComponentCornerSize, fullSeparatorThickness;

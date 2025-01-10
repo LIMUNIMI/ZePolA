@@ -3,6 +3,11 @@
 #include "ParameterPanel.h"
 
 // =============================================================================
+const juce::Typeface::Ptr CustomLookAndFeel::ltAvocadoRegular
+    = Typeface::createSystemTypefaceFor(BinaryData::LTAvocadoRegular_ttf,
+                                        BinaryData::LTAvocadoRegular_ttfSize);
+
+// =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
     : resizeRatio(1.0f)
     , fullWidth(1200)
@@ -198,8 +203,10 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
 }
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label&)
 {
-    return juce::Font(fontName, resizeSize(fullLabelFontSize),
-                      juce::Font::plain);
+    juce::Font f(ltAvocadoRegular);
+    f.setSizeAndStyle(resizeSize(fullLabelFontSize), f.getStyleFlags(),
+                      f.getHorizontalScale(), f.getExtraKerningFactor());
+    return f;
 }
 void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y,
                                          int width, int height, float sliderPos,
