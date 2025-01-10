@@ -77,6 +77,14 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(juce::TextEditor::textColourId, juce::Colours::black);
     setColour(juce::TextEditor::backgroundColourId,
               juce::Colours::transparentBlack);
+    setColour(juce::Label::outlineColourId, juce::Colours::transparentBlack);
+    setColour(juce::Label::backgroundColourId, juce::Colours::transparentBlack);
+    setColour(juce::Label::backgroundWhenEditingColourId,
+              findColour(juce::Label::backgroundColourId));
+    setColour(juce::Label::textWhenEditingColourId,
+              findColour(juce::Label::textColourId));
+    setColour(juce::Label::outlineWhenEditingColourId,
+              findColour(juce::Label::outlineColourId));
     // Slider
     setColour(juce::Slider::trackColourId, juce::Colour(0xff797d7f));
     setColour(juce::Slider::thumbColourId, juce::Colour(0xff383838));
@@ -291,8 +299,11 @@ void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
     auto textColour       = label.findColour(Label::textColourId);
     auto outlineColour    = label.findColour(Label::outlineColourId);
     auto backgroundColour = label.findColour(Label::backgroundColourId);
-    // Check if label is inside a ParameterStrip slider
-    if (!ParameterStrip::parentComponentIsActive(*label.getParentComponent()))
+
+    // Also check if label is inside a ParameterStrip slider
+    if (!ParameterStrip::parentComponentIsActive(label)
+        || !ParameterStrip::parentComponentIsActive(
+            *label.getParentComponent()))
     {
         textColour       = textColour.brighter(inactiveBrightness);
         outlineColour    = outlineColour.brighter(inactiveBrightness);
@@ -384,7 +395,9 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
 
     juce::String txt((on) ? "ON" : "OFF");
     g.setColour(tc);
-    g.setFont(getLabelFont().boldened());
+    auto font = getLabelFont().boldened();
+    font.setHeight(font.getHeight() * 0.9);
+    g.setFont(font);
     g.drawText(txt, text_rect, juce::Justification::centred);
 
     g.setColour(lc);
