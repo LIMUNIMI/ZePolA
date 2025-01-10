@@ -67,11 +67,24 @@ public:
     // =========================================================================
     ParameterPanel(VTSAudioProcessor&, size_t);
 
-    //===================================================================
+    //==========================================================================
+    void paint(Graphics&) override;
     void resized() override;
 
 private:
     // =========================================================================
     std::vector<std::unique_ptr<ParameterStrip>> strips;
     std::vector<std::unique_ptr<juce::Label>> headerLabels;
+};
+
+// =============================================================================
+/** Look and Feel methods for parameter control panel  */
+class ParameterPanelLookAndFeelMethods
+{
+public:
+    // =========================================================================
+    virtual void drawParameterStripSeparators(juce::Graphics&, float x,
+                                              std::vector<float> y, float width,
+                                              ParameterPanel&)
+        = 0;
 };

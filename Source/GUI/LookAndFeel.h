@@ -6,14 +6,16 @@
 // =============================================================================
 /** Custom look and feel for the GUI  */
 class CustomLookAndFeel : public juce::LookAndFeel_V4,
-                          public InvisibleGroupComponentLookAndFeelMethods
+                          public InvisibleGroupComponentLookAndFeelMethods,
+                          public ParameterPanelLookAndFeelMethods
 {
 public:
     // =========================================================================
     enum ColourIDs
     {
         GroupComponent_backgroundColourId = 0,
-        InvisibleGroupComponent_outlineColourId
+        InvisibleGroupComponent_outlineColourId,
+        ParameterStripSeparator_fillColourId
     };
 
     // =========================================================================
@@ -34,6 +36,9 @@ public:
                           float maxSliderPos, const juce::Slider::SliderStyle,
                           juce::Slider& slider) override;
     void drawLabel(juce::Graphics&, juce::Label&) override;
+    void drawParameterStripSeparators(juce::Graphics&, float x,
+                                      std::vector<float> y, float width,
+                                      ParameterPanel&) override;
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -109,7 +114,7 @@ private:
     // =========================================================================
     int fullWidth, fullHeight, fullHeaderHeight, fullPanelOuterMargin;
     float resizeRatio, fullPanelMargin, groupComponentThickness,
-        groupComponentCornerSize;
+        groupComponentCornerSize, fullSeparatorThickness;
     std::vector<int> stripColumnProportions, panelRowProportions,
         panelProportions, lastPanelProportions;
 

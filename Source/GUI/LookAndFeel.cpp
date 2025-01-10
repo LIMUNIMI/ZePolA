@@ -14,26 +14,26 @@ CustomLookAndFeel::CustomLookAndFeel()
     , groupComponentCornerSize(14.5f)
     // radius, angle, frequency, type, active, gain
     , stripColumnProportions({120, 120, 60, 50, 50, 50})
-    , panelRowProportions({25, 450, 75, 450})
+    , panelRowProportions({40, 460, 40, 460})
     , panelProportions({510, 480, 180})
     , lastPanelProportions({396, 324})
     , fontName("Gill Sans")
     , fullLabelFontSize(13.0f)
     , fullSliderHeight(2.0f)
-    , fullSliderThumbRadius(6.0f)
+    , fullSliderThumbRadius(4.5f)
     , inactiveBrightness(0.8f)
     , sliderTextBoxProportionW(50.0f / 120.0f)
     , sliderTextBoxProportionH(0.5f)
+    , fullSeparatorThickness(1.0f)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
               juce::Colour(0xffecf0f1));
     setColour(juce::GroupComponent::outlineColourId, juce::Colour(0xff383838));
-    setColour(CustomLookAndFeel::GroupComponent_backgroundColourId,
-              juce::Colour(0x17b1b1b1));
+    setColour(GroupComponent_backgroundColourId, juce::Colour(0x17b1b1b1));
     setColour(InvisibleGroupComponent_outlineColourId,
-              DEBUG_VS_RELEASE(juce::Colour(0x88ff0000),
-                               juce::Colours::transparentBlack));
+              juce::Colours::transparentBlack);
+    setColour(ParameterStripSeparator_fillColourId, juce::Colour(0xffdee0e1));
     // Labels
     setColour(juce::Label::textColourId, juce::Colour(0xff383838));
     setColour(juce::TextEditor::textColourId, juce::Colours::black);
@@ -42,7 +42,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     // Slider
     setColour(juce::Slider::trackColourId, juce::Colour(0xff797d7f));
     setColour(juce::Slider::thumbColourId, juce::Colour(0xff383838));
-    setColour(juce::Slider::backgroundColourId, juce::Colour(0x88ffffff));
+    setColour(juce::Slider::backgroundColourId,
+              juce::Colours::black.withAlpha(0.25f));
     setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
     setColour(juce::Slider::textBoxBackgroundColourId,
               juce::Colours::transparentBlack);
@@ -178,9 +179,8 @@ void CustomLookAndFeel::drawGroupComponentOutline(juce::Graphics& g, int width,
 {
     juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(width),
                              static_cast<float>(height));
-    b = b.reduced(groupComponentThickness * resizeRatio);
-    g.setColour(
-        gp.findColour(CustomLookAndFeel::GroupComponent_backgroundColourId));
+    b = b.reduced(resizeSize(groupComponentThickness));
+    g.setColour(gp.findColour(GroupComponent_backgroundColourId));
     g.fillRoundedRectangle(b, resizeSize(groupComponentCornerSize));
     g.setColour(gp.findColour(juce::GroupComponent::outlineColourId));
     g.drawRoundedRectangle(b, resizeSize(groupComponentCornerSize),
@@ -274,4 +274,15 @@ void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
     }
     g.drawRect(label.getLocalBounds());
     // --- End of code edited from juce::LookAndFeel_V2::drawLabel -------------
+}
+void CustomLookAndFeel::drawParameterStripSeparators(juce::Graphics& g, float,
+                                                     std::vector<float> y,
+                                                     float width,
+                                                     ParameterPanel& pp)
+{
+    float x = resizeSize(2.0f * groupComponentThickness);
+    float h = resizeSize(fullSeparatorThickness);
+    width -= 2.0f * x;
+    g.setColour(pp.findColour(ParameterStripSeparator_fillColourId));
+    for (auto i : y) g.fillRect(x, i - h / 2.0f, width, h);
 }

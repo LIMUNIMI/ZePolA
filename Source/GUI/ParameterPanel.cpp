@@ -91,6 +91,19 @@ ParameterPanel::ParameterPanel(VTSAudioProcessor& p, size_t n)
 }
 
 // =============================================================================
+void ParameterPanel::paint(Graphics& g)
+{
+    juce::GroupComponent::paint(g);
+    if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
+    {
+        float x     = static_cast<float>(getX());
+        float width = static_cast<float>(getWidth());
+        std::vector<float> y;
+        if (!strips.empty()) y.push_back(static_cast<float>(strips[0]->getY()));
+        for (auto& s : strips) y.push_back(static_cast<float>(s->getBottom()));
+        claf->drawParameterStripSeparators(g, x, y, width, *this);
+    }
+}
 void ParameterPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
@@ -99,6 +112,7 @@ void ParameterPanel::resized()
             claf->getPanelInnerRect(getLocalBounds()));
         jassert(regions.size() == 4);
 
+        regions[0].setTop(0);
         auto header_rects = claf->splitProportionalStrip(regions[0]);
         jassert(header_rects.size() == 6);
         header_rects[1].setRight(header_rects[2].getRight());
