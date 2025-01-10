@@ -31,10 +31,19 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(juce::GroupComponent::outlineColourId, juce::Colour(0xff383838));
     setColour(CustomLookAndFeel::GroupComponent_backgroundColourId,
               juce::Colour(0x17b1b1b1));
+    setColour(InvisibleGroupComponent_outlineColourId,
+              DEBUG_VS_RELEASE(juce::Colour(0x88ff0000),
+                               juce::Colours::transparentBlack));
     // Slider
     setColour(juce::Slider::trackColourId, juce::Colour(0xff797d7f));
     setColour(juce::Slider::thumbColourId, juce::Colour(0xff383838));
     setColour(juce::Slider::backgroundColourId, juce::Colour(0x88ffffff));
+    setColour(juce::Slider::textBoxTextColourId, juce::Colour(0xff333333));
+    setColour(juce::Slider::textBoxBackgroundColourId,
+              juce::Colours::transparentBlack);
+    setColour(juce::Slider::textBoxHighlightColourId, juce::Colour(0x66686868));
+    setColour(juce::Slider::textBoxOutlineColourId,
+              juce::Colours::transparentBlack);
 }
 
 // =============================================================================
@@ -151,8 +160,8 @@ CustomLookAndFeel::splitProportionalPanel(const juce::Rectangle<int>& r) const
 void CustomLookAndFeel::resizeSlider(juce::Slider& s) const
 {
     s.setTextBoxStyle(s.getTextBoxPosition(), false,
-                      s.getWidth() * sliderTextBoxProportionW,
-                      s.getHeight() * sliderTextBoxProportionH);
+                      s.getBounds().getWidth() * sliderTextBoxProportionW,
+                      s.getBounds().getHeight() * sliderTextBoxProportionH);
 }
 
 // =============================================================================
@@ -172,16 +181,15 @@ void CustomLookAndFeel::drawGroupComponentOutline(juce::Graphics& g, int width,
     g.drawRoundedRectangle(b, resizeSize(groupComponentCornerSize),
                            resizeSize(groupComponentThickness));
 }
-void CustomLookAndFeel::dontDrawGroupComponent(
-    juce::Graphics& g, int ONLY_ON_DEBUG(width), int ONLY_ON_DEBUG(height),
-    const juce::String&, const juce::Justification&, juce::GroupComponent&)
+void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
+                                               int height, const juce::String&,
+                                               const juce::Justification&,
+                                               juce::GroupComponent& gc)
 {
-    ONLY_ON_DEBUG({
-        juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(width),
-                                 static_cast<float>(height));
-        g.setColour(juce::Colour(0x88ff0000));
-        g.drawRect(b, resizeSize(1.0f));
-    });
+    juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(width),
+                             static_cast<float>(height));
+    g.setColour(gc.findColour(InvisibleGroupComponent_outlineColourId));
+    g.drawRect(b, resizeSize(1.0f));
 }
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label&)
 {

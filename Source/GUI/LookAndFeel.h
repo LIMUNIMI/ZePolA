@@ -13,6 +13,7 @@ public:
     enum ColourIDs
     {
         GroupComponent_backgroundColourId = 0,
+        InvisibleGroupComponent_outlineColourId
     };
 
     // =========================================================================
