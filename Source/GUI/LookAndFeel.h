@@ -4,6 +4,22 @@
 #include <JuceHeader.h>
 
 // =============================================================================
+/** Transpose rectangle */
+template <typename RectType>
+juce::Rectangle<RectType>
+transposeRectangle(const juce::Rectangle<RectType>& r);
+/**
+ * Force rectangle to a specific aspect ratio by shrinking it and centering it
+ *
+ * @param r Outer rectangle
+ * @param a Aspect ratio
+ * @return Inner rectangle
+ */
+template <typename RectType>
+juce::Rectangle<RectType>
+forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a);
+
+// =============================================================================
 /** Custom look and feel for the GUI  */
 class CustomLookAndFeel : public juce::LookAndFeel_V4,
                           public InvisibleGroupComponentLookAndFeelMethods,
@@ -15,7 +31,14 @@ public:
     {
         GroupComponent_backgroundColourId = 0,
         InvisibleGroupComponent_outlineColourId,
-        ParameterStripSeparator_fillColourId
+        ParameterStripSeparator_fillColourId,
+        OnOffButton_backgroundOnColourId,
+        OnOffButton_backgroundOffColourId,
+        OnOffButton_ledOnColourId,
+        OnOffButton_ledOffColourId,
+        OnOffButton_textOnColourId,
+        OnOffButton_textOffColourId,
+        OnOffButton_outlineColourId
     };
 
     // =========================================================================
@@ -31,6 +54,7 @@ public:
                                 const juce::Justification&,
                                 juce::GroupComponent&) override;
     juce::Font getLabelFont(juce::Label&) override;
+    juce::Font getLabelFont();
     void drawLinearSlider(juce::Graphics& g, int x, int y, int width,
                           int height, float sliderPos, float minSliderPos,
                           float maxSliderPos, const juce::Slider::SliderStyle,
@@ -39,6 +63,9 @@ public:
     void drawParameterStripSeparators(juce::Graphics&, float x,
                                       std::vector<float> y, float width,
                                       ParameterPanel&) override;
+    void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
+                          bool shouldDrawButtonAsHighlighted,
+                          bool shouldDrawButtonAsDown) override;
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -125,4 +152,8 @@ private:
     float fullLabelFontSize, fullSliderHeight, fullSliderThumbRadius,
         sliderTextBoxProportionW, sliderTextBoxProportionH, inactiveBrightness;
     juce::String fontName;
+
+    // =========================================================================
+    float buttonAspectRatio, fullButtonPadding, fullButtonOutline,
+        fullButtonRadius;
 };
