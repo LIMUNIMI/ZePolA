@@ -100,6 +100,8 @@ public:
     /** Split rectangle for a panel */
     std::vector<juce::Rectangle<int>>
     splitProportionalPanel(const juce::Rectangle<int>&) const;
+    /** Resize a slider */
+    void resizeSlider(juce::Slider&) const;
 
 private:
     // =========================================================================
@@ -111,6 +113,6 @@ private:
 
     // =========================================================================
     float fullLabelFontSize, fullSliderHeight, fullSliderThumbRadius,
-        inactiveBrightness;
+        sliderTextBoxProportionW, sliderTextBoxProportionH, inactiveBrightness;
     juce::String fontName;
 };

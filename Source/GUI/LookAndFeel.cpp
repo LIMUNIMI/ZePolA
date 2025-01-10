@@ -22,6 +22,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , fullSliderHeight(2.0f)
     , fullSliderThumbRadius(6.0f)
     , inactiveBrightness(0.8f)
+    , sliderTextBoxProportionW(50.0f / 120.0f)
+    , sliderTextBoxProportionH(0.5f)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -144,6 +146,13 @@ std::vector<juce::Rectangle<int>>
 CustomLookAndFeel::splitProportionalPanel(const juce::Rectangle<int>& r) const
 {
     return splitProportional(r, panelRowProportions, true);
+}
+
+void CustomLookAndFeel::resizeSlider(juce::Slider& s) const
+{
+    s.setTextBoxStyle(s.getTextBoxPosition(), false,
+                      s.getWidth() * sliderTextBoxProportionW,
+                      s.getHeight() * sliderTextBoxProportionH);
 }
 
 // =============================================================================

@@ -2,6 +2,14 @@
 #include "LookAndFeel.h"
 
 // =============================================================================
+ParameterSlider::ParameterSlider()
+{
+    setSliderStyle(juce::Slider::LinearHorizontal);
+    setTextBoxStyle(juce::Slider::TextBoxRight, false, getTextBoxWidth(),
+                    getTextBoxHeight());
+}
+
+// =============================================================================
 ParameterStrip::ParentRepaintButtonListener::ParentRepaintButtonListener() { }
 
 // =============================================================================
@@ -52,6 +60,8 @@ void ParameterStrip::resized()
         pSlider.setBounds(rects[1]);
         tButton.setBounds(rects[3]);
         aButton.setBounds(rects[4]);
+        claf->resizeSlider(mSlider);
+        claf->resizeSlider(pSlider);
     }
 }
 

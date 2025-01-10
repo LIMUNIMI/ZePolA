@@ -4,6 +4,19 @@
 #include <JuceHeader.h>
 
 // =============================================================================
+/** Parameter slider for parameter strip */
+class ParameterSlider : public juce::Slider
+{
+public:
+    // =========================================================================
+    ParameterSlider();
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterSlider)
+};
+
+// =============================================================================
 /** Single parameter row  */
 class ParameterStrip : public InvisibleGroupComponent
 {
@@ -35,7 +48,7 @@ public:
 
 private:
     // =========================================================================
-    juce::Slider mSlider, pSlider;
+    ParameterSlider mSlider, pSlider;
     juce::ToggleButton aButton, tButton;
 
     // =========================================================================
