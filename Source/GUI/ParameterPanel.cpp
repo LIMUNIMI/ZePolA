@@ -133,6 +133,7 @@ void ParameterPanel::resized()
         jassert(regions.size() == 4);
 
         regions[0].setTop(0);
+        regions[1].setBottom(regions[2].getCentreY());
         auto header_rects = claf->splitProportionalStrip(regions[0]);
         jassert(header_rects.size() == 6);
         header_rects[1].setRight(header_rects[2].getRight());
