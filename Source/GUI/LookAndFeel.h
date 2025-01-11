@@ -1,6 +1,7 @@
 #pragma once
 #include "InvisibleGroupComponent.h"
 #include "ParameterPanel.h"
+#include "PlotsPanel.h"
 #include <JuceHeader.h>
 
 // =============================================================================
@@ -23,6 +24,7 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a);
 /** Custom look and feel for the GUI  */
 class CustomLookAndFeel : public juce::LookAndFeel_V4,
                           public InvisibleGroupComponentLookAndFeelMethods,
+                          public PlotComponentLookAndFeelMethods,
                           public ParameterPanelLookAndFeelMethods
 {
 public:
@@ -38,7 +40,11 @@ public:
         OnOffButton_ledOffColourId,
         OnOffButton_textOnColourId,
         OnOffButton_textOffColourId,
-        OnOffButton_outlineColourId
+        OnOffButton_outlineColourId,
+        PlotComponent_backgroundColourId,
+        PlotComponent_gridColourId,
+        PlotComponent_lineColourId,
+        PlotComponent_tickLabelColourId
     };
 
     // =========================================================================
@@ -66,6 +72,9 @@ public:
     void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
                           bool shouldDrawButtonAsHighlighted,
                           bool shouldDrawButtonAsDown) override;
+    void drawPlotComponent(juce::Graphics&, float x, float y, float width,
+                           float height, const std::vector<float>& y_values,
+                           float y_min, float y_max, PlotComponent&) override;
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -158,4 +167,7 @@ private:
     // =========================================================================
     float buttonAspectRatio, fullButtonPadding, fullButtonOutline,
         fullButtonRadius;
+
+    // =========================================================================
+    float plotComponentCornerSize;
 };

@@ -63,6 +63,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , fullButtonPadding(5.0f)
     , fullButtonOutline(2.5f)
     , fullButtonRadius(5.0f)
+    , plotComponentCornerSize(6.0f)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -104,6 +105,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(OnOffButton_textOnColourId, juce::Colours::white);
     setColour(OnOffButton_textOffColourId, juce::Colours::black);
     setColour(OnOffButton_outlineColourId, juce::Colours::black);
+    // Plots
+    setColour(PlotComponent_backgroundColourId, juce::Colour(0x45979a9a));
 }
 
 // =============================================================================
@@ -412,4 +415,54 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     if (led_rect.getWidth() >= 1.0f && led_rect.getHeight() >= 1.0f)
         g.setColour(oc);
     g.drawEllipse(led_rect, othick / 2.0f);
+}
+
+template <typename ValueType>
+class LinearMapper
+{
+public:
+    LinearMapper(ValueType x_min, ValueType x_max, ValueType y_min,
+                 ValueType y_max)
+        : m((y_max - y_min) / (x_max - x_min))
+        , q((y_max - y_min) * x_min / (x_min - x_max) + y_min) {
+
+          };
+    ValueType map(ValueType x) { return m * x + q; };
+
+private:
+    ValueType m, q;
+};
+
+void CustomLookAndFeel::drawPlotComponent(juce::Graphics& g, float x, float y,
+                                          float width, float height,
+                                          const std::vector<float>& y_values,
+                                          float y_min, float y_max,
+                                          PlotComponent& pc)
+{
+    g.setColour(pc.findColour(PlotComponent_backgroundColourId));
+    g.fillRoundedRectangle(0.0f, 0.0f, width, height,
+                           resizeSize(plotComponentCornerSize));
+
+    size_t n = y_values.size();
+    LinearMapper<float> y_mapper(y_min, y_max, height, 0.0f);
+    LinearMapper<float> x_mapper(0.0f, n - 1.0f, 0.0f, width);
+
+    // Grid
+    
+
+    // Plot
+    juce::Path plot;
+    // Prepare path closure outside plot area
+    plot.startNewSubPath(2.0f * width, height / 2.0f);
+    plot.lineTo(2.0f * width, -height / 2.0f);
+    plot.lineTo(-width, -height / 2.0f);
+    plot.lineTo(-width, height / 2.0f);
+
+    for (auto i = 0; i < n; ++i)
+        plot.lineTo(x_mapper.map(static_cast<float>(i)),
+                             y_mapper.map(y_values[i]));
+
+    plot.closeSubPath();
+    g.setColour(juce::Colours::black);
+    g.strokePath(plot, juce::PathStrokeType(resizeSize(1.5f)));
 }

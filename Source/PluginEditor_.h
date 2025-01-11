@@ -1,6 +1,7 @@
 #pragma once
 #include "GUI/LookAndFeel.h"
 #include "GUI/ParameterPanel.h"
+#include "GUI/PlotsPanel.h"
 #include "PluginProcessor.h"
 #include <JuceHeader.h>
 
@@ -25,8 +26,9 @@ private:
     PolesAndZerosEQAudioProcessor& processor;
 
     // ===========================================================================
-    juce::GroupComponent plotsGroup, designGroup, masterGroup;
+    juce::GroupComponent designGroup, masterGroup;
     ParameterPanel parameterPanel;
+    PlotsPanel plotsPanel;
 
     // ===========================================================================
     juce::ComponentBoundsConstrainer aspectRatioConstrainer;
