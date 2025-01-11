@@ -2,12 +2,13 @@
 #include "../Parameters.h"
 
 // =============================================================================
-DraggableLabel::DraggableLabel(int ndp)
+DraggableLabel::DraggableLabel(float v, int ndp)
     : numberOfDecimalPlaces(ndp)
     , eventStartY(0)
     , eventStartValue(0.0f)
     , deltaScale(0.01f)
     , deltaGamma(1.75f)
+    , defaultValue(v)
 {
     setJustificationType(juce::Justification::centred);
     setEditable(true, true, false);
@@ -44,8 +45,13 @@ void DraggableLabel::mouseDown(const juce::MouseEvent& event)
 {
     if (isEnabled())
     {
+        if (event.mods.isCommandDown() || event.mods.isMiddleButtonDown())
+        {
+            setTextFromFloat(defaultValue,
+                             juce::NotificationType::sendNotification);
+        }
         eventStartY     = event.getPosition().getY();
-        eventStartValue = getText().getDoubleValue();
+        eventStartValue = static_cast<float>(getText().getDoubleValue());
     }
 }
 void DraggableLabel::mouseDrag(const juce::MouseEvent& event)
@@ -60,6 +66,10 @@ void DraggableLabel::mouseDrag(const juce::MouseEvent& event)
         setTextFromFloat(eventStartValue + delta,
                          juce::NotificationType::sendNotification);
     }
+}
+void DraggableLabel::mouseDoubleClick(const juce::MouseEvent&)
+{
+    setTextFromFloat(defaultValue, juce::NotificationType::sendNotification);
 }
 
 // =============================================================================
@@ -84,8 +94,8 @@ DraggableLabelParameterListener::DraggableLabelParameterListener(juce::Label& l)
 }
 
 // =============================================================================
-void DraggableLabelParameterListener::parameterChanged(
-    const juce::String& parameterID, float f)
+void DraggableLabelParameterListener::parameterChanged(const juce::String&,
+                                                       float f)
 {
     setTextFromFloatDynamicCast(&label, f,
                                 juce::NotificationType::dontSendNotification);

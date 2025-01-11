@@ -7,7 +7,7 @@ class DraggableLabel : public juce::Label
 {
 public:
     // =========================================================================
-    DraggableLabel(int numberOfDecimalPlaces = 3);
+    DraggableLabel(float defaultValue = 0.0f, int numberOfDecimalPlaces = 3);
 
     // =========================================================================
     /** Set text from a float value */
@@ -16,13 +16,14 @@ public:
     // =========================================================================
     void mouseEnter(const juce::MouseEvent&) override;
     void mouseExit(const juce::MouseEvent&) override;
-    void mouseDown(const juce::MouseEvent& event) override;
-    void mouseDrag(const juce::MouseEvent& event) override;
+    void mouseDown(const juce::MouseEvent&) override;
+    void mouseDrag(const juce::MouseEvent&) override;
+    void mouseDoubleClick(const juce::MouseEvent&) override;
 
 private:
     //==========================================================================
     int numberOfDecimalPlaces, eventStartY;
-    float eventStartValue, deltaScale, deltaGamma;
+    float eventStartValue, deltaScale, deltaGamma, defaultValue;
 };
 
 // =============================================================================
