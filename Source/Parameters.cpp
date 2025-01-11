@@ -139,6 +139,16 @@ std::vector<juce::StringRef> VTSAudioProcessor::parameterIDs()
         v.push_back(element->getStringAttribute("id"));
     return v;
 }
+void VTSAudioProcessor::addParameterListener(
+    juce::StringRef i, juce::AudioProcessorValueTreeState::Listener* l)
+{
+    valueTreeState.addParameterListener(i, l);
+}
+void VTSAudioProcessor::removeParameterListener(
+    juce::StringRef i, juce::AudioProcessorValueTreeState::Listener* l)
+{
+    valueTreeState.removeParameterListener(i, l);
+}
 void VTSAudioProcessor::sendValueChangedMessageToAllListeners()
 {
     DBG("--- sendValueChangedMessageToAllListeners ------------------------");

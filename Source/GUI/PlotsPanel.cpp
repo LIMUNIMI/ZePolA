@@ -35,43 +35,40 @@ void PlotComponent::paint(juce::Graphics& g)
 // =============================================================================
 PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p)
     : processor(p)
-    , timer_ms(1000)
+    , timer_ms(20)
     , callbackTimer(std::bind(&PlotsPanel::updateValues, this))
 {
     addAndMakeVisible(mPlot);
     addAndMakeVisible(pPlot);
-    // for (auto i : processor.parameterIDs())
-    //   processor.addParameterListener(i, this);
-    std::cout << "startTimer()" << std::endl;
+    for (auto i : processor.parameterIDs())
+        processor.addParameterListener(i, this);
     callbackTimer.startTimer(timer_ms);
 }
 PlotsPanel::~PlotsPanel()
 {
-  // for (auto i : processor.parameterIDs())
-  //   processor.removeParameterListener(i, this);
+    for (auto i : processor.parameterIDs())
+        processor.removeParameterListener(i, this);
 }
 
 // =============================================================================
 void PlotsPanel::updateValues()
 {
-    std::cout << "Updating values" << std::endl;
     callbackTimer.stopTimer();
     auto n = mPlot.getSize();
     mPlot.setYMin(0.0);
     mPlot.setYMax(2.0);
-    for(auto i = 0; i < n; ++i)
+    for (auto i = 0; i < n; ++i)
     {
-      auto omega = (i * juce::MathConstants<double>::pi) / (n - 1);
-      auto h = processor.dtft(omega);
-      mPlot.setPoint(i, static_cast<float>(abs(h)));
+        auto omega = (i * juce::MathConstants<double>::pi) / (n - 1);
+        auto h     = processor.dtft(omega);
+        mPlot.setPoint(i, static_cast<float>(abs(h)));
     }
 }
 
 // =============================================================================
 void PlotsPanel::parameterChanged(const juce::String&, float)
 {
-    std::cout << "startTimer()" << std::endl;
-    callbackTimer.startTimer(timer_ms);
+    if (!callbackTimer.isTimerRunning()) callbackTimer.startTimer(timer_ms);
 }
 void PlotsPanel::resized()
 {
