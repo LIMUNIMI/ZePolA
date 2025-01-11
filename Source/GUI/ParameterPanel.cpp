@@ -78,6 +78,8 @@ void ParameterStrip::resized()
                              .withHeight(gLabel.getFont().getHeight())
                              .withCentre(rects[5].getCentre()));
 
+        claf->resizeToggleButton(tButton);
+        claf->resizeToggleButton(aButton);
         claf->resizeSlider(mSlider);
         claf->resizeSlider(pSlider);
     }

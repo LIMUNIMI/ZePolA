@@ -47,8 +47,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , groupComponentThickness(1.5f)
     , groupComponentCornerSize(14.5f)
     // radius, angle, frequency, type, active, gain
-    , stripColumnProportions({120, 120, 60, 50, 50, 50})
-    , panelRowProportions({40, 460, 40, 460})
+    , stripColumnProportions({100, 100, 50, 50, 50, 50})
+    , panelRowProportions({30, 470, 30, 470})
     , panelProportions({510, 480, 180})
     , lastPanelProportions({396, 324})
     , fontName("Gill Sans")
@@ -223,6 +223,13 @@ void CustomLookAndFeel::resizeSlider(juce::Slider& s) const
                       s.getBounds().getWidth() * sliderTextBoxProportionW,
                       s.getBounds().getHeight() * sliderTextBoxProportionH);
 }
+void CustomLookAndFeel::resizeToggleButton(juce::Component& c) const
+{
+    c.setBounds(forceAspectRatioCentered(
+                    c.getBounds().reduced(resizeSize(fullButtonPadding)),
+                    buttonAspectRatio)
+                    .expanded(resizeSize(fullButtonOutline / 2.0f)));
+}
 
 // =============================================================================
 void CustomLookAndFeel::drawGroupComponentOutline(juce::Graphics& g, int width,
@@ -362,7 +369,7 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     juce::Rectangle<float> rect(0.0f, 0.0f,
                                 static_cast<float>(button.getWidth()),
                                 static_cast<float>(button.getHeight()));
-    rect = forceAspectRatioCentered(rect.reduced(bpad), buttonAspectRatio);
+    rect = rect.reduced(othick / 2.0f);
 
     auto bgc = button.findColour((on) ? OnOffButton_backgroundOnColourId
                                       : OnOffButton_backgroundOffColourId);
@@ -384,10 +391,10 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     g.setColour(oc);
     g.drawRoundedRectangle(rect, radius, othick);
 
-    float led_diam = rect.getHeight() - 2.0f * bpad;
-    juce::Rectangle<float> led_rect(rect.getRight() - othick / 2.0f - bpad
-                                        - led_diam,
-                                    rect.getY() + bpad, led_diam, led_diam);
+    float led_diam = rect.getHeight() - 2.0f * bpad - othick;
+    juce::Rectangle<float> led_rect(
+        rect.getRight() - othick / 2.0f - bpad - led_diam,
+        rect.getY() + bpad + othick / 2.0f, led_diam, led_diam);
     juce::Rectangle<float> text_rect(
         rect.getX() + othick / 2.0f + bpad, rect.getY() + othick / 2.0f + bpad,
         rect.getWidth(), rect.getHeight() - othick - 2.0 * bpad);
@@ -396,12 +403,13 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     juce::String txt((on) ? "ON" : "OFF");
     g.setColour(tc);
     auto font = getLabelFont().boldened();
-    font.setHeight(font.getHeight() * 0.9);
+    font.setHeight(text_rect.getHeight() + bpad);
     g.setFont(font);
     g.drawText(txt, text_rect, juce::Justification::centred);
 
     g.setColour(lc);
     g.fillEllipse(led_rect);
-    g.setColour(oc);
+    if (led_rect.getWidth() >= 1.0f && led_rect.getHeight() >= 1.0f)
+        g.setColour(oc);
     g.drawEllipse(led_rect, othick / 2.0f);
 }

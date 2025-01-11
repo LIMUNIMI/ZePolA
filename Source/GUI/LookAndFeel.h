@@ -136,6 +136,8 @@ public:
     splitProportionalPanel(const juce::Rectangle<int>&) const;
     /** Resize a slider */
     void resizeSlider(juce::Slider&) const;
+    /** Resize a toggle button */
+    void resizeToggleButton(juce::Component&) const;
 
 private:
     // =========================================================================
