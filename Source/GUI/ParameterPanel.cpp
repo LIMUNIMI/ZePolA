@@ -33,6 +33,10 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
           p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
                            juce::Slider>(PHASE_ID_PREFIX + juce::String(i),
                                          pSlider))
+    , fLabel(0.0f, 0)
+    , fLabelAttachment(
+          p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
+              PHASE_ID_PREFIX + juce::String(i), fLabel))
     , aButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(ACTIVE_ID_PREFIX + juce::String(i),
@@ -46,9 +50,11 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
               GAIN_ID_PREFIX + juce::String(i), gLabel))
 {
     aButton.addListener(&aButtonListener);
+    fLabelAttachment->setScale(static_cast<float>(p.getSampleRate() / 2.0));
 
     addAndMakeVisible(mSlider);
     addAndMakeVisible(pSlider);
+    addAndMakeVisible(fLabel);
     addAndMakeVisible(aButton);
     addAndMakeVisible(tButton);
     addAndMakeVisible(gLabel);
@@ -63,6 +69,9 @@ void ParameterStrip::resized()
         jassert(rects.size() == 6);
         mSlider.setBounds(rects[0]);
         pSlider.setBounds(rects[1]);
+        fLabel.setBounds(rects[2]
+                             .withHeight(fLabel.getFont().getHeight())
+                             .withCentre(rects[2].getCentre()));
         tButton.setBounds(rects[3]);
         aButton.setBounds(rects[4]);
         gLabel.setBounds(rects[5]

@@ -35,9 +35,14 @@ public:
     DraggableLabelListener(juce::RangedAudioParameter*);
     void labelTextChanged(juce::Label*) override;
 
+    // =========================================================================
+    /** Set the conversion scale between parameter value and text */
+    void setScale(float);
+
 private:
     //==========================================================================
     juce::RangedAudioParameter* param;
+    float scale;
 };
 
 // =============================================================================
@@ -50,9 +55,14 @@ public:
     DraggableLabelParameterListener(juce::Label&);
     void parameterChanged(const juce::String&, float) override;
 
+    // =========================================================================
+    /** Set the conversion scale between parameter value and text */
+    void setScale(float);
+
 private:
     //==========================================================================
     juce::Label& label;
+    float scale;
 };
 
 // =============================================================================
@@ -65,6 +75,10 @@ public:
                              const juce::String& parameterID,
                              juce::Label& label);
     ~DraggableLabelAttachment();
+
+    // =========================================================================
+    /** Set the conversion scale between parameter value and text */
+    void setScale(float);
 
 private:
     //==========================================================================

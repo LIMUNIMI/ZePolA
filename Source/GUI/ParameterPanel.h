@@ -51,14 +51,15 @@ private:
     // =========================================================================
     ParameterSlider mSlider, pSlider;
     juce::ToggleButton aButton, tButton;
-    DraggableLabel gLabel;
+    DraggableLabel gLabel, fLabel;
 
     // =========================================================================
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
         mSliderAttachment, pSliderAttachment, gSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
         aButtonAttachment, tButtonAttachment;
-    std::unique_ptr<DraggableLabelAttachment> gLabelAttachment;
+    std::unique_ptr<DraggableLabelAttachment> gLabelAttachment,
+        fLabelAttachment;
 
     ParentRepaintButtonListener aButtonListener;
 };
