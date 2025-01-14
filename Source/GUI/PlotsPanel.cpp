@@ -5,24 +5,33 @@
 PlotComponent::PlotComponent(size_t n_points)
     : y_values(n_points, 0.0f)
     , x_values(n_points, 0.0f)
-    , y_min(-1.0f)
-    , y_max(1.0f)
     , period(-1.0f)
-    , y_grid({})
+    , y_grid({-1.0f, 1.0f})
+    , y_labels({"-1", "1"})
 {
 }
 
 // =============================================================================
 void PlotComponent::setPeriod(float p) { period = p; }
-void PlotComponent::setYMin(float f) { y_min = f; }
-void PlotComponent::setYMax(float f) { y_max = f; }
 size_t PlotComponent::getSize() { return y_values.size(); }
 void PlotComponent::setPoint(int i, float f)
 {
     y_values[i] = f;
     repaint();
 }
-void PlotComponent::setYGrid(const std::vector<float>& g) { y_grid = g; }
+void PlotComponent::setYGrid(const std::vector<float>& ticks,
+                             const std::vector<juce::String>& labels)
+{
+    jassert(labels.size() == ticks.size());
+    y_grid   = ticks;
+    y_labels = labels;
+}
+void PlotComponent::setYGrid(const std::vector<float>& ticks)
+{
+    std::vector<juce::String> labels;
+    for (auto t : ticks) labels.push_back(juce::String(t));
+    setYGrid(ticks, labels);
+}
 
 // =============================================================================
 void PlotComponent::paint(juce::Graphics& g)
@@ -32,7 +41,7 @@ void PlotComponent::paint(juce::Graphics& g)
         laf->drawPlotComponent(
             g, static_cast<float>(getX()), static_cast<float>(getY()),
             static_cast<float>(getWidth()), static_cast<float>(getHeight()),
-            y_values, y_min, y_max, period, y_grid, *this);
+            y_values, period, y_grid, y_labels, *this);
 }
 
 // =============================================================================

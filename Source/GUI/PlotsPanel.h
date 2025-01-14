@@ -14,15 +14,20 @@ public:
     //==========================================================================
     /** Set period. Set a negative value for non-periodic plot */
     void setPeriod(float p = -1.0f);
-    /** Set minimum y value */
-    void setYMin(float);
-    /** Set maximum y value */
-    void setYMax(float);
     /** Get number of points */
     size_t getSize();
     /** Set point value */
     void setPoint(int, float);
-    /** Set y grid values */
+    /**
+     * Set y grid values and labels
+     *
+     * @param ticks Tick values
+     * @param labels Labels, including the label for the minimum
+     *   value (labels[0]) and for the maximum value (labels[labels.size() - 1])
+     */
+    void setYGrid(const std::vector<float>& ticks,
+                  const std::vector<juce::String>& labels);
+    /** Set y grid values and automatic labels */
     void setYGrid(const std::vector<float>&);
 
     //==========================================================================
@@ -30,8 +35,9 @@ public:
 
 private:
     // =========================================================================
+    std::vector<juce::String> y_labels;
     std::vector<float> y_values, x_values, y_grid;
-    float y_min, y_max, period;
+    float period;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlotComponent);
@@ -46,8 +52,8 @@ public:
     virtual void
     drawPlotComponent(juce::Graphics&, float x, float y, float width,
                       float height, const std::vector<float>& y_values,
-                      float y_min, float y_max, float period,
-                      const std::vector<float>& y_grid, PlotComponent&)
+                      float period, const std::vector<float>& y_grid,
+                      const std::vector<juce::String>& y_labels, PlotComponent&)
         = 0;
 };
 

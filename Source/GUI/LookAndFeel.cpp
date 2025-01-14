@@ -111,6 +111,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(PlotComponent_backgroundColourId, juce::Colour(0x45979a9a));
     setColour(PlotComponent_lineColourId, juce::Colours::black);
     setColour(PlotComponent_gridColourId, juce::Colour(0x28979a9a));
+    setColour(PlotComponent_gridLabelsColourId, juce::Colour(0xff797d7f));
 }
 
 // =============================================================================
@@ -140,18 +141,23 @@ float CustomLookAndFeel::getAspectRatio() const
 // =============================================================================
 void CustomLookAndFeel::setMagnitudePlotProperties(PlotComponent& pc)
 {
-    pc.setYMin(0.0f);
-    pc.setYMax(2.0f);
     pc.setPeriod();
-    pc.setYGrid({0.5f, 1.0f, 1.5f});
+    pc.setYGrid({0.0f, 0.5f, 1.0f, 1.5f, 2.0f});
 }
 void CustomLookAndFeel::setPhasePlotProperties(PlotComponent& pc)
 {
-    pc.setYMin(-juce::MathConstants<float>::pi);
-    pc.setYMax(juce::MathConstants<float>::pi);
     pc.setPeriod(juce::MathConstants<float>::twoPi);
-    pc.setYGrid({-juce::MathConstants<float>::halfPi, 0.0f,
-                 juce::MathConstants<float>::halfPi});
+    pc.setYGrid({-juce::MathConstants<float>::pi,
+                 -juce::MathConstants<float>::halfPi, 0.0f,
+                 juce::MathConstants<float>::halfPi,
+                 juce::MathConstants<float>::pi},
+                {
+                    CharPointer_UTF8("-π"),
+                    CharPointer_UTF8("-π/2"),
+                    CharPointer_UTF8("0"),
+                    CharPointer_UTF8("+π/2"),
+                    CharPointer_UTF8("+π"),
+                });
 }
 
 // =============================================================================
@@ -456,17 +462,26 @@ private:
 
 void CustomLookAndFeel::drawPlotComponent(
     juce::Graphics& g, float x, float y, float width, float height,
-    const std::vector<float>& y_values, float y_min, float y_max, float period,
-    const std::vector<float>& y_grid, PlotComponent& pc)
+    const std::vector<float>& y_values, float period,
+    const std::vector<float>& y_grid, const std::vector<juce::String>& y_labels,
+    PlotComponent& pc)
 {
+    // Check sizes
+    auto n_y_ticks = y_grid.size();
+    auto n_points  = y_values.size();
+    jassert(n_points > 1);
+    jassert(n_y_ticks > 1);
+    jassert(n_y_ticks == y_labels.size());
+
+    // Background
     g.setColour(pc.findColour(PlotComponent_backgroundColourId));
     g.fillRoundedRectangle(0.0f, 0.0f, width, height,
                            resizeSize(fullPlotComponentCornerSize));
 
-    size_t n = y_values.size();
-    jassert(n > 1);
-    LinearMapper<float> y_mapper(y_min, y_max, height, 0.0f);
-    LinearMapper<float> x_mapper(0.0f, n - 1.0f, 0.0f, width);
+    // Coordinate mapper
+    LinearMapper<float> y_mapper(y_grid[0], y_grid[n_y_ticks - 1], height,
+                                 0.0f);
+    LinearMapper<float> x_mapper(0.0f, n_points - 1.0f, 0.0f, width);
 
     // Grid
     juce::Path gridlines;
@@ -474,11 +489,26 @@ void CustomLookAndFeel::drawPlotComponent(
     {
         auto f_mapped = y_mapper.map(f);
         gridlines.startNewSubPath(x_mapper.map(0.0f), f_mapped);
-        gridlines.lineTo(x_mapper.map(n - 1.0f), f_mapped);
+        gridlines.lineTo(x_mapper.map(n_points - 1.0f), f_mapped);
     }
     g.setColour(pc.findColour(PlotComponent_gridColourId));
     g.strokePath(gridlines,
                  juce::PathStrokeType(resizeSize(fullPlotGridThickness)));
+
+    // Grid labels
+    auto f      = getLabelFont();
+    auto gt_pad = resizeSize(fullPlotComponentCornerSize * 0.5f);
+    juce::Rectangle r(gt_pad, 0.0f, width - 2.0f * gt_pad, f.getHeight());
+    g.setFont(f);
+    g.setColour(pc.findColour(PlotComponent_gridLabelsColourId));
+    for (auto i = 0; i < n_y_ticks; ++i)
+    {
+        r.setY((i) ? ((i == n_y_ticks - 1)
+                          ? gt_pad
+                          : y_mapper.map(y_grid[i]) - f.getHeight() * 0.5f)
+                   : height - gt_pad - f.getHeight());
+        g.drawText(y_labels[i], r, juce::Justification::centredLeft);
+    }
 
     // Plot
     juce::Path plot;
@@ -486,7 +516,7 @@ void CustomLookAndFeel::drawPlotComponent(
                          y_mapper.map(y_values[0]));
     auto period_half = period * 0.5f;
     auto is_periodic = period > 0.0f;
-    for (auto i = 1; i < n; ++i)
+    for (auto i = 1; i < n_points; ++i)
     {
         if (is_periodic && abs(y_values[i] - y_values[i - 1]) > period_half)
         {
@@ -499,7 +529,6 @@ void CustomLookAndFeel::drawPlotComponent(
         plot.lineTo(x_mapper.map(static_cast<float>(i)),
                     y_mapper.map(y_values[i]));
     }
-
     g.setColour(pc.findColour(PlotComponent_lineColourId));
     g.strokePath(plot,
                  juce::PathStrokeType(resizeSize(fullPlotStrokeThickness)));

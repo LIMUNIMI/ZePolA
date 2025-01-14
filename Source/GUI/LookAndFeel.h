@@ -43,6 +43,7 @@ public:
         OnOffButton_outlineColourId,
         PlotComponent_backgroundColourId,
         PlotComponent_gridColourId,
+        PlotComponent_gridLabelsColourId,
         PlotComponent_lineColourId,
         PlotComponent_tickLabelColourId
     };
@@ -74,8 +75,8 @@ public:
                           bool shouldDrawButtonAsDown) override;
     void drawPlotComponent(juce::Graphics&, float x, float y, float width,
                            float height, const std::vector<float>& y_values,
-                           float y_min, float y_max, float period,
-                           const std::vector<float>& y_grid,
+                           float period, const std::vector<float>& y_grid,
+                           const std::vector<juce::String>& y_labels,
                            PlotComponent&) override;
 
     // =========================================================================
