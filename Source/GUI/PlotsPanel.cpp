@@ -57,11 +57,14 @@ void PlotsPanel::updateValues()
     auto n = mPlot.getSize();
     mPlot.setYMin(0.0);
     mPlot.setYMax(2.0);
+    pPlot.setYMin(-juce::MathConstants<float>::pi);
+    pPlot.setYMax(juce::MathConstants<float>::pi);
     for (auto i = 0; i < n; ++i)
     {
         auto omega = (i * juce::MathConstants<double>::pi) / (n - 1);
         auto h     = processor.dtft(omega);
         mPlot.setPoint(i, static_cast<float>(abs(h)));
+        pPlot.setPoint(i, static_cast<float>(std::arg(h)));
     }
 }
 
