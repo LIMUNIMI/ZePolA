@@ -5,7 +5,7 @@
 
 // =============================================================================
 /** Plots panel  */
-class PlotComponent : public juce::GroupComponent
+class PlotComponent : public juce::Component
 {
 public:
     // =========================================================================
