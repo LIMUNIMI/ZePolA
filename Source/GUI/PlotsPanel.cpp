@@ -1,6 +1,5 @@
 #include "PlotsPanel.h"
 #include "LookAndFeel.h"
-#include <ctime>
 
 // =============================================================================
 PlotComponent::PlotComponent(size_t n_points)
@@ -8,10 +7,12 @@ PlotComponent::PlotComponent(size_t n_points)
     , x_values(n_points, 0.0f)
     , y_min(-1.0f)
     , y_max(1.0f)
+    , period(-1.0f)
 {
 }
 
 // =============================================================================
+void PlotComponent::setPeriod(float p) { period = p; }
 void PlotComponent::setYMin(float f) { y_min = f; }
 void PlotComponent::setYMax(float f) { y_max = f; }
 size_t PlotComponent::getSize() { return y_values.size(); }
@@ -29,7 +30,7 @@ void PlotComponent::paint(juce::Graphics& g)
         laf->drawPlotComponent(
             g, static_cast<float>(getX()), static_cast<float>(getY()),
             static_cast<float>(getWidth()), static_cast<float>(getHeight()),
-            y_values, y_min, y_max, *this);
+            y_values, y_min, y_max, period, *this);
 }
 
 // =============================================================================
@@ -57,8 +58,10 @@ void PlotsPanel::updateValues()
     auto n = mPlot.getSize();
     mPlot.setYMin(0.0);
     mPlot.setYMax(2.0);
+    mPlot.setPeriod();
     pPlot.setYMin(-juce::MathConstants<float>::pi);
     pPlot.setYMax(juce::MathConstants<float>::pi);
+    pPlot.setPeriod(juce::MathConstants<float>::twoPi);
     for (auto i = 0; i < n; ++i)
     {
         auto omega = (i * juce::MathConstants<double>::pi) / (n - 1);

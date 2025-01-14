@@ -437,32 +437,39 @@ void CustomLookAndFeel::drawPlotComponent(juce::Graphics& g, float x, float y,
                                           float width, float height,
                                           const std::vector<float>& y_values,
                                           float y_min, float y_max,
-                                          PlotComponent& pc)
+                                          float period, PlotComponent& pc)
 {
     g.setColour(pc.findColour(PlotComponent_backgroundColourId));
     g.fillRoundedRectangle(0.0f, 0.0f, width, height,
                            resizeSize(plotComponentCornerSize));
 
     size_t n = y_values.size();
+    jassert(n > 1);
     LinearMapper<float> y_mapper(y_min, y_max, height, 0.0f);
     LinearMapper<float> x_mapper(0.0f, n - 1.0f, 0.0f, width);
 
     // Grid
-    
 
     // Plot
     juce::Path plot;
-    // Prepare path closure outside plot area
-    plot.startNewSubPath(2.0f * width, height / 2.0f);
-    plot.lineTo(2.0f * width, -height / 2.0f);
-    plot.lineTo(-width, -height / 2.0f);
-    plot.lineTo(-width, height / 2.0f);
-
-    for (auto i = 0; i < n; ++i)
+    plot.startNewSubPath(x_mapper.map(static_cast<float>(0)),
+                         y_mapper.map(y_values[0]));
+    auto period_half = period * 0.5f;
+    auto is_periodic = period > 0.0f;
+    for (auto i = 1; i < n; ++i)
+    {
+        if (is_periodic && abs(y_values[i] - y_values[i - 1]) > period_half)
+        {
+            float offset = (y_values[i] > y_values[i - 1]) ? -period : period;
+            plot.lineTo(x_mapper.map(static_cast<float>(i)),
+                        y_mapper.map(y_values[i] + offset));
+            plot.startNewSubPath(x_mapper.map(i - 1.0f),
+                                 y_mapper.map(y_values[i - 1] - offset));
+        }
         plot.lineTo(x_mapper.map(static_cast<float>(i)),
-                             y_mapper.map(y_values[i]));
+                    y_mapper.map(y_values[i]));
+    }
 
-    plot.closeSubPath();
     g.setColour(juce::Colours::black);
     g.strokePath(plot, juce::PathStrokeType(resizeSize(1.5f)));
 }

@@ -74,7 +74,8 @@ public:
                           bool shouldDrawButtonAsDown) override;
     void drawPlotComponent(juce::Graphics&, float x, float y, float width,
                            float height, const std::vector<float>& y_values,
-                           float y_min, float y_max, PlotComponent&) override;
+                           float y_min, float y_max, float period,
+                           PlotComponent&) override;
 
     // =========================================================================
     /** Set the new resize ratio */

@@ -12,6 +12,8 @@ public:
     PlotComponent(size_t n_points = 1024);
 
     //==========================================================================
+    /** Set period. Set a negative value for non-periodic plot */
+    void setPeriod(float p = -1.0f);
     /** Set minimum y value */
     void setYMin(float);
     /** Set maximum y value */
@@ -27,7 +29,7 @@ public:
 private:
     // =========================================================================
     std::vector<float> y_values, x_values;
-    float y_min, y_max;
+    float y_min, y_max, period;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlotComponent);
@@ -39,10 +41,10 @@ class PlotComponentLookAndFeelMethods
 {
 public:
     // =========================================================================
-    virtual void drawPlotComponent(juce::Graphics&, float x, float y,
-                                   float width, float height,
-                                   const std::vector<float>& y_values,
-                                   float y_min, float y_max, PlotComponent&)
+    virtual void
+    drawPlotComponent(juce::Graphics&, float x, float y, float width,
+                      float height, const std::vector<float>& y_values,
+                      float y_min, float y_max, float period, PlotComponent&)
         = 0;
 };
 
