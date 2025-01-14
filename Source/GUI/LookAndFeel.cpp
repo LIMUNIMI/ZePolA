@@ -258,7 +258,7 @@ void CustomLookAndFeel::resizeToggleButton(juce::Component& c) const
     c.setBounds(forceAspectRatioCentered(
                     c.getBounds().reduced(resizeSize(fullButtonPadding)),
                     buttonAspectRatio)
-                    .expanded(resizeSize(fullButtonOutline / 2.0f)));
+                    .expanded(resizeSize(fullButtonOutline * 0.5f)));
 }
 
 // =============================================================================
@@ -318,12 +318,12 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y,
 
     auto sh = resizeSize(fullSliderHeight);
     g.setColour(trackColour);
-    g.fillRoundedRectangle(static_cast<float>(x), y + (height - sh) / 2.0f,
-                           static_cast<float>(width), sh, sh / 2.0f);
+    g.fillRoundedRectangle(static_cast<float>(x), y + (height - sh) * 0.5f,
+                           static_cast<float>(width), sh, sh * 0.5f);
 
     auto st_rad = resizeSize(fullSliderThumbRadius);
     juce::Rectangle<float> st_rect(sliderPos - st_rad,
-                                   y + height / 2.0f - st_rad, 2.0f * st_rad,
+                                   y + height * 0.5f - st_rad, 2.0f * st_rad,
                                    2.0f * st_rad);
 
     g.setColour(thumbColour);
@@ -384,7 +384,7 @@ void CustomLookAndFeel::drawParameterStripSeparators(juce::Graphics& g, float,
     float h = resizeSize(fullSeparatorThickness);
     width -= 2.0f * x;
     g.setColour(pp.findColour(ParameterStripSeparator_fillColourId));
-    for (auto i : y) g.fillRect(x, i - h / 2.0f, width, h);
+    for (auto i : y) g.fillRect(x, i - h * 0.5f, width, h);
 }
 void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
                                          juce::ToggleButton& button,
@@ -399,7 +399,7 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     juce::Rectangle<float> rect(0.0f, 0.0f,
                                 static_cast<float>(button.getWidth()),
                                 static_cast<float>(button.getHeight()));
-    rect = rect.reduced(othick / 2.0f);
+    rect = rect.reduced(othick * 0.5f);
 
     auto bgc = button.findColour((on) ? OnOffButton_backgroundOnColourId
                                       : OnOffButton_backgroundOffColourId);
@@ -423,10 +423,10 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
 
     float led_diam = rect.getHeight() - 2.0f * bpad - othick;
     juce::Rectangle<float> led_rect(
-        rect.getRight() - othick / 2.0f - bpad - led_diam,
-        rect.getY() + bpad + othick / 2.0f, led_diam, led_diam);
+        rect.getRight() - othick * 0.5f - bpad - led_diam,
+        rect.getY() + bpad + othick * 0.5f, led_diam, led_diam);
     juce::Rectangle<float> text_rect(
-        rect.getX() + othick / 2.0f + bpad, rect.getY() + othick / 2.0f + bpad,
+        rect.getX() + othick * 0.5f + bpad, rect.getY() + othick * 0.5f + bpad,
         rect.getWidth(), rect.getHeight() - othick - 2.0 * bpad);
     text_rect.setRight(led_rect.getX() - bpad);
 
@@ -441,7 +441,7 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     g.fillEllipse(led_rect);
     if (led_rect.getWidth() >= 1.0f && led_rect.getHeight() >= 1.0f)
         g.setColour(oc);
-    g.drawEllipse(led_rect, othick / 2.0f);
+    g.drawEllipse(led_rect, othick * 0.5f);
 }
 
 template <typename ValueType>

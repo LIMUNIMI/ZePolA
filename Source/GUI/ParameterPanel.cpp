@@ -50,7 +50,7 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
               GAIN_ID_PREFIX + juce::String(i), gLabel))
 {
     aButton.addListener(&aButtonListener);
-    fLabelAttachment->setScale(static_cast<float>(p.getSampleRate() / 2.0));
+    fLabelAttachment->setScale(static_cast<float>(p.getSampleRate() * 0.5));
 
     addAndMakeVisible(mSlider);
     addAndMakeVisible(pSlider);
