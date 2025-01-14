@@ -75,6 +75,7 @@ public:
     void drawPlotComponent(juce::Graphics&, float x, float y, float width,
                            float height, const std::vector<float>& y_values,
                            float y_min, float y_max, float period,
+                           const std::vector<float>& y_grid,
                            PlotComponent&) override;
 
     // =========================================================================
@@ -93,6 +94,12 @@ public:
     int getResizedHeight() const;
     /** Get the intended aspect ratio */
     float getAspectRatio() const;
+
+    // =========================================================================
+    /** Set the properties of the magnitude plot */
+    void setMagnitudePlotProperties(PlotComponent&);
+    /** Set the properties of the phase plot */
+    void setPhasePlotProperties(PlotComponent&);
 
     // =========================================================================
     /**
@@ -170,5 +177,6 @@ private:
         fullButtonRadius;
 
     // =========================================================================
-    float plotComponentCornerSize;
+    float fullPlotComponentCornerSize, fullPlotStrokeThickness,
+        fullPlotGridThickness;
 };

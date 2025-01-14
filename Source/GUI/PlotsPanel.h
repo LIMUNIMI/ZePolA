@@ -22,13 +22,15 @@ public:
     size_t getSize();
     /** Set point value */
     void setPoint(int, float);
+    /** Set y grid values */
+    void setYGrid(const std::vector<float>&);
 
     //==========================================================================
     void paint(juce::Graphics&) override;
 
 private:
     // =========================================================================
-    std::vector<float> y_values, x_values;
+    std::vector<float> y_values, x_values, y_grid;
     float y_min, y_max, period;
 
     // =========================================================================
@@ -44,7 +46,8 @@ public:
     virtual void
     drawPlotComponent(juce::Graphics&, float x, float y, float width,
                       float height, const std::vector<float>& y_values,
-                      float y_min, float y_max, float period, PlotComponent&)
+                      float y_min, float y_max, float period,
+                      const std::vector<float>& y_grid, PlotComponent&)
         = 0;
 };
 

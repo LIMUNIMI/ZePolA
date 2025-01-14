@@ -63,7 +63,9 @@ CustomLookAndFeel::CustomLookAndFeel()
     , fullButtonPadding(5.0f)
     , fullButtonOutline(2.5f)
     , fullButtonRadius(5.0f)
-    , plotComponentCornerSize(6.0f)
+    , fullPlotComponentCornerSize(6.0f)
+    , fullPlotStrokeThickness(1.5f)
+    , fullPlotGridThickness(1.0f)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -107,6 +109,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(OnOffButton_outlineColourId, juce::Colours::black);
     // Plots
     setColour(PlotComponent_backgroundColourId, juce::Colour(0x45979a9a));
+    setColour(PlotComponent_lineColourId, juce::Colours::black);
+    setColour(PlotComponent_gridColourId, juce::Colour(0x28979a9a));
 }
 
 // =============================================================================
@@ -131,6 +135,23 @@ float CustomLookAndFeel::getResizeRatio() const { return resizeRatio; }
 float CustomLookAndFeel::getAspectRatio() const
 {
     return static_cast<float>(fullWidth) / fullHeight;
+}
+
+// =============================================================================
+void CustomLookAndFeel::setMagnitudePlotProperties(PlotComponent& pc)
+{
+    pc.setYMin(0.0f);
+    pc.setYMax(2.0f);
+    pc.setPeriod();
+    pc.setYGrid({0.5f, 1.0f, 1.5f});
+}
+void CustomLookAndFeel::setPhasePlotProperties(PlotComponent& pc)
+{
+    pc.setYMin(-juce::MathConstants<float>::pi);
+    pc.setYMax(juce::MathConstants<float>::pi);
+    pc.setPeriod(juce::MathConstants<float>::twoPi);
+    pc.setYGrid({-juce::MathConstants<float>::halfPi, 0.0f,
+                 juce::MathConstants<float>::halfPi});
 }
 
 // =============================================================================
@@ -433,15 +454,14 @@ private:
     ValueType m, q;
 };
 
-void CustomLookAndFeel::drawPlotComponent(juce::Graphics& g, float x, float y,
-                                          float width, float height,
-                                          const std::vector<float>& y_values,
-                                          float y_min, float y_max,
-                                          float period, PlotComponent& pc)
+void CustomLookAndFeel::drawPlotComponent(
+    juce::Graphics& g, float x, float y, float width, float height,
+    const std::vector<float>& y_values, float y_min, float y_max, float period,
+    const std::vector<float>& y_grid, PlotComponent& pc)
 {
     g.setColour(pc.findColour(PlotComponent_backgroundColourId));
     g.fillRoundedRectangle(0.0f, 0.0f, width, height,
-                           resizeSize(plotComponentCornerSize));
+                           resizeSize(fullPlotComponentCornerSize));
 
     size_t n = y_values.size();
     jassert(n > 1);
@@ -449,6 +469,16 @@ void CustomLookAndFeel::drawPlotComponent(juce::Graphics& g, float x, float y,
     LinearMapper<float> x_mapper(0.0f, n - 1.0f, 0.0f, width);
 
     // Grid
+    juce::Path gridlines;
+    for (auto f : y_grid)
+    {
+        auto f_mapped = y_mapper.map(f);
+        gridlines.startNewSubPath(x_mapper.map(0.0f), f_mapped);
+        gridlines.lineTo(x_mapper.map(n - 1.0f), f_mapped);
+    }
+    g.setColour(pc.findColour(PlotComponent_gridColourId));
+    g.strokePath(gridlines,
+                 juce::PathStrokeType(resizeSize(fullPlotGridThickness)));
 
     // Plot
     juce::Path plot;
@@ -470,6 +500,7 @@ void CustomLookAndFeel::drawPlotComponent(juce::Graphics& g, float x, float y,
                     y_mapper.map(y_values[i]));
     }
 
-    g.setColour(juce::Colours::black);
-    g.strokePath(plot, juce::PathStrokeType(resizeSize(1.5f)));
+    g.setColour(pc.findColour(PlotComponent_lineColourId));
+    g.strokePath(plot,
+                 juce::PathStrokeType(resizeSize(fullPlotStrokeThickness)));
 }

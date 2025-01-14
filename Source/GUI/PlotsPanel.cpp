@@ -8,6 +8,7 @@ PlotComponent::PlotComponent(size_t n_points)
     , y_min(-1.0f)
     , y_max(1.0f)
     , period(-1.0f)
+    , y_grid({})
 {
 }
 
@@ -21,6 +22,7 @@ void PlotComponent::setPoint(int i, float f)
     y_values[i] = f;
     repaint();
 }
+void PlotComponent::setYGrid(const std::vector<float>& g) { y_grid = g; }
 
 // =============================================================================
 void PlotComponent::paint(juce::Graphics& g)
@@ -30,7 +32,7 @@ void PlotComponent::paint(juce::Graphics& g)
         laf->drawPlotComponent(
             g, static_cast<float>(getX()), static_cast<float>(getY()),
             static_cast<float>(getWidth()), static_cast<float>(getHeight()),
-            y_values, y_min, y_max, period, *this);
+            y_values, y_min, y_max, period, y_grid, *this);
 }
 
 // =============================================================================
@@ -56,12 +58,11 @@ void PlotsPanel::updateValues()
 {
     callbackTimer.stopTimer();
     auto n = mPlot.getSize();
-    mPlot.setYMin(0.0);
-    mPlot.setYMax(2.0);
-    mPlot.setPeriod();
-    pPlot.setYMin(-juce::MathConstants<float>::pi);
-    pPlot.setYMax(juce::MathConstants<float>::pi);
-    pPlot.setPeriod(juce::MathConstants<float>::twoPi);
+    if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
+    {
+        claf->setMagnitudePlotProperties(mPlot);
+        claf->setPhasePlotProperties(pPlot);
+    }
     for (auto i = 0; i < n; ++i)
     {
         auto omega = (i * juce::MathConstants<double>::pi) / (n - 1);
