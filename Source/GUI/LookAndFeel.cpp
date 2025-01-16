@@ -32,9 +32,9 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a)
 }
 
 // =============================================================================
-const juce::Typeface::Ptr CustomLookAndFeel::ltAvocadoRegular
-    = Typeface::createSystemTypefaceFor(BinaryData::LTAvocadoRegular_ttf,
-                                        BinaryData::LTAvocadoRegular_ttfSize);
+const juce::Typeface::Ptr CustomLookAndFeel::muktaRegular
+    = Typeface::createSystemTypefaceFor(BinaryData::MuktaRegular_ttf,
+                                        BinaryData::MuktaRegular_ttfSize);
 
 // =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
@@ -287,12 +287,16 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
     g.setColour(gc.findColour(InvisibleGroupComponent_outlineColourId));
     g.drawRect(b, resizeSize(1.0f));
 }
-juce::Font CustomLookAndFeel::getLabelFont()
+juce::Font CustomLookAndFeel::getLabelFont(float fullFontSize)
 {
-    juce::Font f(ltAvocadoRegular);
-    f.setSizeAndStyle(resizeSize(fullLabelFontSize), f.getStyleFlags(),
+    juce::Font f(muktaRegular);
+    f.setSizeAndStyle(resizeSize(fullFontSize * 1.5), f.getStyleFlags(),
                       f.getHorizontalScale(), f.getExtraKerningFactor());
     return f;
+}
+juce::Font CustomLookAndFeel::getLabelFont()
+{
+    return getLabelFont(fullLabelFontSize);
 }
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label&)
 {
@@ -432,8 +436,9 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
 
     juce::String txt((on) ? "ON" : "OFF");
     g.setColour(tc);
-    auto font = getLabelFont().boldened();
-    font.setHeight(text_rect.getHeight() + bpad);
+    auto font = getLabelFont();
+    font.setHeight((text_rect.getHeight() + bpad) * 1.5);
+    font.setBold(true);
     g.setFont(font);
     g.drawText(txt, text_rect, juce::Justification::centred);
 
@@ -496,7 +501,7 @@ void CustomLookAndFeel::drawPlotComponent(
                  juce::PathStrokeType(resizeSize(fullPlotGridThickness)));
 
     // Grid labels
-    auto f      = getLabelFont();
+    auto f      = getLabelFont(10.0f);
     auto gt_pad = resizeSize(fullPlotComponentCornerSize * 0.5f);
     juce::Rectangle r(gt_pad, 0.0f, width - 2.0f * gt_pad, f.getHeight());
     g.setFont(f);

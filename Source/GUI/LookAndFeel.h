@@ -61,6 +61,7 @@ public:
                                 const juce::Justification&,
                                 juce::GroupComponent&) override;
     juce::Font getLabelFont(juce::Label&) override;
+    juce::Font getLabelFont(float fullFontSize);
     juce::Font getLabelFont();
     void drawLinearSlider(juce::Graphics& g, int x, int y, int width,
                           int height, float sliderPos, float minSliderPos,
@@ -159,7 +160,7 @@ public:
 
 private:
     // =========================================================================
-    static const juce::Typeface::Ptr ltAvocadoRegular;
+    static const juce::Typeface::Ptr muktaRegular;
 
     // =========================================================================
     int fullWidth, fullHeight, fullHeaderHeight, fullPanelOuterMargin;

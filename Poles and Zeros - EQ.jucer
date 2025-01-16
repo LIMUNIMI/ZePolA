@@ -6,8 +6,8 @@
               displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED = 1">
   <MAINGROUP id="ZGYPR9" name="Poles and Zeros - EQ">
     <GROUP id="{211C8D6A-C6EB-B051-1B84-6C521685D404}" name="Fonts">
-      <FILE id="pptT7d" name="LTAvocado-Regular.ttf" compile="0" resource="1"
-            file="Fonts/LT Avocado/LTAvocado-Regular.ttf"/>
+      <FILE id="k4OeoL" name="Mukta-Regular.ttf" compile="0" resource="1"
+            file="Fonts/Mukta/Mukta-Regular.ttf"/>
     </GROUP>
     <GROUP id="{482B7901-6351-0DFB-794C-CC9F2AF6F30B}" name="Graphics">
       <FILE id="qjFJhK" name="anticlockwise_arrow.svg" compile="0" resource="1"
