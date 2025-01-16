@@ -81,7 +81,7 @@ public:
                            const std::vector<float>& y_grid,
                            const std::vector<juce::String>& x_labels,
                            const std::vector<juce::String>& y_labels,
-                           PlotComponent&) override;
+                           bool log_x, PlotComponent&) override;
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -99,6 +99,8 @@ public:
     int getResizedHeight() const;
     /** Get the intended aspect ratio */
     float getAspectRatio() const;
+    /** Get the lower frequency for the log plot */
+    double getLogPlotLowFreq(double sr) const;
 
     // =========================================================================
     /** Set the properties of the magnitude plot */
@@ -188,5 +190,6 @@ private:
     // =========================================================================
     int n_x_ticks;
     float fullPlotComponentCornerSize, fullPlotStrokeThickness,
-        fullPlotGridThickness;
+        fullPlotGridThickness, logPlotCenterFreq;
+    std::vector<float> logPlotCenterFreqUnits;
 };

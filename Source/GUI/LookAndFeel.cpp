@@ -1,5 +1,6 @@
 #include "LookAndFeel.h"
 #include "../Macros.h"
+#include "../Mappers.h"
 #include "ParameterPanel.h"
 
 // =============================================================================
@@ -67,6 +68,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , fullPlotStrokeThickness(1.5f)
     , fullPlotGridThickness(1.0f)
     , n_x_ticks(9)
+    , logPlotCenterFreq(1000.0f)
+    , logPlotCenterFreqUnits({1.0f, 2.0f, 5.0f})
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -138,6 +141,10 @@ float CustomLookAndFeel::getAspectRatio() const
 {
     return static_cast<float>(fullWidth) / fullHeight;
 }
+double CustomLookAndFeel::getLogPlotLowFreq(double sr) const
+{
+    return logPlotCenterFreq * logPlotCenterFreq * 2.0 / sr;
+}
 
 // =============================================================================
 std::vector<float> CustomLookAndFeel::makeLinearXTicks(double sr)
@@ -151,11 +158,33 @@ std::vector<float> CustomLookAndFeel::makeLinearXTicks(double sr)
     ticks.push_back(x_max);
     return ticks;
 }
+std::vector<float> CustomLookAndFeel::makeLogXTicks(double sr)
+{
+    float x_max = static_cast<float>(sr * 0.5);
+    float x_min = getLogPlotLowFreq(sr);
+    std::vector<float> ticks({x_min});
+    float pow_10 = pow(10, floor(log10(x_min)));
+    auto n_units = logPlotCenterFreqUnits.size();
+    float x;
+    for (int i = 0;; ++i)
+    {
+        if (i >= n_units)
+        {
+            i %= n_units;
+            pow_10 *= 10.0f;
+        }
+        x = pow_10 * logPlotCenterFreqUnits[i];
+        if (x > x_max) break;
+        if (x > x_min) ticks.push_back(x);
+    }
+    ticks.push_back(x_max);
+    return ticks;
+}
 void CustomLookAndFeel::setMagnitudePlotProperties(PlotComponent& pc, double sr)
 {
     pc.setPeriod();
     pc.setYGrid({0.0f, 0.5f, 1.0f, 1.5f, 2.0f});
-    pc.setXGrid(makeLinearXTicks(sr));
+    pc.setXGrid((pc.getLogX()) ? makeLogXTicks(sr) : makeLinearXTicks(sr));
 }
 void CustomLookAndFeel::setPhasePlotProperties(PlotComponent& pc, double sr)
 {
@@ -171,7 +200,7 @@ void CustomLookAndFeel::setPhasePlotProperties(PlotComponent& pc, double sr)
                     CharPointer_UTF8("+π/2"),
                     CharPointer_UTF8("+π"),
                 });
-    pc.setXGrid(makeLinearXTicks(sr));
+    pc.setXGrid((pc.getLogX()) ? makeLogXTicks(sr) : makeLinearXTicks(sr));
 }
 
 // =============================================================================
@@ -463,28 +492,16 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     g.drawEllipse(led_rect, othick * 0.5f);
 }
 
-template <typename ValueType>
-class LinearMapper
-{
-public:
-    LinearMapper(ValueType x_min, ValueType x_max, ValueType y_min,
-                 ValueType y_max)
-        : m((y_max - y_min) / (x_max - x_min))
-        , q((y_max - y_min) * x_min / (x_min - x_max) + y_min) {
-
-          };
-    ValueType map(ValueType x) { return m * x + q; };
-
-private:
-    ValueType m, q;
-};
+// Helps resolve overloads
+static float _identity_map(float x) { return x; }
+static float _log_map(float x) { return log(x); }
 
 void CustomLookAndFeel::drawPlotComponent(
     juce::Graphics& g, float x, float y, float width, float height,
     const std::vector<float>& x_values, const std::vector<float>& y_values,
     float period, const std::vector<float>& x_grid,
     const std::vector<float>& y_grid, const std::vector<juce::String>& x_labels,
-    const std::vector<juce::String>& y_labels, PlotComponent& pc)
+    const std::vector<juce::String>& y_labels, bool log_x, PlotComponent& pc)
 {
     // Check sizes
     auto n_y_ticks = y_grid.size();
@@ -502,9 +519,11 @@ void CustomLookAndFeel::drawPlotComponent(
                            resizeSize(fullPlotComponentCornerSize));
 
     // Coordinate mapper
-    LinearMapper<float> y_mapper(y_grid[0], y_grid[n_y_ticks - 1], height,
+    LinearMapper<float> y_mapper(y_grid[0], height, y_grid[n_y_ticks - 1],
                                  0.0f);
-    LinearMapper<float> x_mapper(x_grid[0], x_grid[n_x_ticks - 1], 0.0f, width);
+    InputTransformMapper<float> x_mapper(
+        x_grid[0], 0.0f, x_grid[n_x_ticks - 1], width,
+        (log_x) ? static_cast<float (*)(float)>(log) : identity<float>);
 
     // Grid
     juce::Path gridlines;
