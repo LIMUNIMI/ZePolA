@@ -75,8 +75,11 @@ public:
                           bool shouldDrawButtonAsHighlighted,
                           bool shouldDrawButtonAsDown) override;
     void drawPlotComponent(juce::Graphics&, float x, float y, float width,
-                           float height, const std::vector<float>& y_values,
-                           float period, const std::vector<float>& y_grid,
+                           float height, const std::vector<float>& x_values,
+                           const std::vector<float>& y_values, float period,
+                           const std::vector<float>& x_grid,
+                           const std::vector<float>& y_grid,
+                           const std::vector<juce::String>& x_labels,
                            const std::vector<juce::String>& y_labels,
                            PlotComponent&) override;
 
@@ -99,9 +102,13 @@ public:
 
     // =========================================================================
     /** Set the properties of the magnitude plot */
-    void setMagnitudePlotProperties(PlotComponent&);
+    void setMagnitudePlotProperties(PlotComponent&, double sr);
     /** Set the properties of the phase plot */
-    void setPhasePlotProperties(PlotComponent&);
+    void setPhasePlotProperties(PlotComponent&, double sr);
+    /** Make linear x ticks */
+    std::vector<float> makeLinearXTicks(double sr);
+    /** Make logarithmic x ticks */
+    std::vector<float> makeLogXTicks(double sr);
 
     // =========================================================================
     /**
@@ -179,6 +186,7 @@ private:
         fullButtonRadius;
 
     // =========================================================================
+    int n_x_ticks;
     float fullPlotComponentCornerSize, fullPlotStrokeThickness,
         fullPlotGridThickness;
 };

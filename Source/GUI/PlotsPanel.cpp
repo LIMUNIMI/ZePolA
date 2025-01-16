@@ -8,15 +8,18 @@ PlotComponent::PlotComponent(size_t n_points)
     , period(-1.0f)
     , y_grid({-1.0f, 1.0f})
     , y_labels({"-1", "1"})
+    , x_grid({-1.0f, 1.0f})
+    , x_labels({"-1", "1"})
 {
 }
 
 // =============================================================================
 void PlotComponent::setPeriod(float p) { period = p; }
 size_t PlotComponent::getSize() { return y_values.size(); }
-void PlotComponent::setPoint(int i, float f)
+void PlotComponent::setPoint(int i, float x, float y)
 {
-    y_values[i] = f;
+    x_values[i] = x;
+    y_values[i] = y;
     repaint();
 }
 void PlotComponent::setYGrid(const std::vector<float>& ticks,
@@ -29,8 +32,21 @@ void PlotComponent::setYGrid(const std::vector<float>& ticks,
 void PlotComponent::setYGrid(const std::vector<float>& ticks)
 {
     std::vector<juce::String> labels;
-    for (auto t : ticks) labels.push_back(juce::String(t));
+    for (auto s : ticks) labels.push_back(juce::String(s));
     setYGrid(ticks, labels);
+}
+void PlotComponent::setXGrid(const std::vector<float>& ticks,
+                             const std::vector<juce::String>& labels)
+{
+    jassert(labels.size() == ticks.size());
+    x_grid   = ticks;
+    x_labels = labels;
+}
+void PlotComponent::setXGrid(const std::vector<float>& ticks)
+{
+    std::vector<juce::String> labels;
+    for (auto s : ticks) labels.push_back(juce::String(s));
+    setXGrid(ticks, labels);
 }
 
 // =============================================================================
@@ -41,7 +57,8 @@ void PlotComponent::paint(juce::Graphics& g)
         laf->drawPlotComponent(
             g, static_cast<float>(getX()), static_cast<float>(getY()),
             static_cast<float>(getWidth()), static_cast<float>(getHeight()),
-            y_values, period, y_grid, y_labels, *this);
+            x_values, y_values, period, x_grid, y_grid, x_labels, y_labels,
+            *this);
 }
 
 // =============================================================================
@@ -66,18 +83,21 @@ PlotsPanel::~PlotsPanel()
 void PlotsPanel::updateValues()
 {
     callbackTimer.stopTimer();
-    auto n = mPlot.getSize();
+    auto n  = mPlot.getSize();
+    auto sr = processor.getSampleRate();
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
-        claf->setMagnitudePlotProperties(mPlot);
-        claf->setPhasePlotProperties(pPlot);
+        claf->setMagnitudePlotProperties(mPlot, sr);
+        claf->setPhasePlotProperties(pPlot, sr);
     }
     for (auto i = 0; i < n; ++i)
     {
         auto omega = (i * juce::MathConstants<double>::pi) / (n - 1);
+        auto nu    = static_cast<float>(omega * sr
+                                     / juce::MathConstants<double>::twoPi);
         auto h     = processor.dtft(omega);
-        mPlot.setPoint(i, static_cast<float>(abs(h)));
-        pPlot.setPoint(i, static_cast<float>(std::arg(h)));
+        mPlot.setPoint(i, nu, static_cast<float>(abs(h)));
+        pPlot.setPoint(i, nu, static_cast<float>(std::arg(h)));
     }
 }
 
@@ -92,7 +112,7 @@ void PlotsPanel::resized()
     {
         auto regions = claf->splitProportionalPanel(
             claf->getPanelInnerRect(getLocalBounds()));
-        jassert(regions.size() == 4);
+        jassert(regions.size() == 5);
 
         mPlot.setBounds(regions[1]);
         pPlot.setBounds(regions[3]);

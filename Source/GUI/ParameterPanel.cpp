@@ -130,7 +130,7 @@ void ParameterPanel::resized()
     {
         auto regions = claf->splitProportionalPanel(
             claf->getPanelInnerRect(getLocalBounds()));
-        jassert(regions.size() == 4);
+        jassert(regions.size() == 5);
 
         regions[0].setTop(0);
         regions[1].setBottom(regions[2].getCentreY());
