@@ -561,8 +561,13 @@ void CustomLookAndFeel::drawPlotComponent(
     r.setY(height / 2.0f + gt_pad);
     for (auto i = 1; i < n_x_ticks - 1; ++i)
     {
-        r.setCentre(x_mapper.map(x_grid[i]), r.getCentreY());
-        g.drawText(x_labels[i], r, juce::Justification::centredTop);
+        auto x_pos = x_mapper.map(x_grid[i]);
+        // Avoid labels near the vertical edges
+        if (!width || (0.5f - abs(x_pos / width - 0.5f)) > 0.05f)
+        {
+            r.setCentre(x_pos, r.getCentreY());
+            g.drawText(x_labels[i], r, juce::Justification::centredTop);
+        }
     }
 
     // Plot
