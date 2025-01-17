@@ -193,7 +193,10 @@ void CustomLookAndFeel::setMagnitudePlotProperties(PlotComponent& pc, double sr,
             ticks.push_back(t);
             ticks.insert(ticks.begin(), -t);
         }
-        pc.setYGrid(ticks);
+        juce::String suffix(" dB");
+        std::vector<juce::String> labels;
+        for (auto t : ticks) labels.push_back(juce::String(t) + suffix);
+        pc.setYGrid(ticks, labels);
     }
     else
         pc.setYGrid({0.0f, 0.5f, 1.0f, 1.5f, 2.0f});
