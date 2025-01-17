@@ -95,6 +95,7 @@ public:
 private:
     // =========================================================================
     PolesAndZerosEQAudioProcessor& processor;
+    juce::ToggleButton linLogFreqButton, linLogAmpButton;
     PlotComponent mPlot, pPlot;
     juce::TimedCallback callbackTimer;
     int timer_ms;

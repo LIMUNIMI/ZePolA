@@ -73,8 +73,8 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p)
     , timer_ms(20)
     , callbackTimer(std::bind(&PlotsPanel::updateValues, this))
 {
-    mPlot.setLogX();
-    pPlot.setLogX();
+    addAndMakeVisible(linLogFreqButton);
+    addAndMakeVisible(linLogAmpButton);
     addAndMakeVisible(mPlot);
     addAndMakeVisible(pPlot);
     for (auto i : processor.parameterIDs())
@@ -131,8 +131,17 @@ void PlotsPanel::resized()
         auto regions = claf->splitProportionalPanel(
             claf->getPanelInnerRect(getLocalBounds()));
         jassert(regions.size() == 5);
+        auto middle_regions
+            = claf->splitProportional(regions[2], {1, 4, 1}, true);
+        jassert(middle_regions.size() == 3);
+        middle_regions
+            = claf->splitProportional(middle_regions[1], {1, 8, 62, 8, 1});
+        jassert(middle_regions.size() == 5);
 
         mPlot.setBounds(regions[1]);
         pPlot.setBounds(regions[3]);
+
+        linLogAmpButton.setBounds(middle_regions[1]);
+        linLogFreqButton.setBounds(middle_regions[3]);
     }
 }
