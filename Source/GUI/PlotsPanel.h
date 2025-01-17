@@ -16,6 +16,8 @@ public:
     void buttonStateChanged(juce::Button*) override;
 
     //==========================================================================
+    /** Set text to print in the top right */
+    void setTopRightText(const juce::String&);
     /** Set x scale as logarithmic or not */
     void setLogX(bool b = true);
     /** Get if x scale as logarithmic or not */
@@ -60,6 +62,7 @@ private:
     // =========================================================================
     std::vector<juce::String> y_labels, x_labels;
     std::vector<float> y_values, x_values, y_grid, x_grid;
+    juce::String topRightText;
     float period;
     bool log_x;
 
@@ -73,13 +76,15 @@ class PlotComponentLookAndFeelMethods
 {
 public:
     // =========================================================================
-    virtual void drawPlotComponent(
-        juce::Graphics&, float x, float y, float width, float height,
-        const std::vector<float>& x_values, const std::vector<float>& y_values,
-        float period, const std::vector<float>& x_grid,
-        const std::vector<float>& y_grid,
-        const std::vector<juce::String>& x_labels,
-        const std::vector<juce::String>& y_labels, bool log_x, PlotComponent&)
+    virtual void
+    drawPlotComponent(juce::Graphics&, float x, float y, float width,
+                      float height, const std::vector<float>& x_values,
+                      const std::vector<float>& y_values, float period,
+                      const std::vector<float>& x_grid,
+                      const std::vector<float>& y_grid,
+                      const std::vector<juce::String>& x_labels,
+                      const std::vector<juce::String>& y_labels, bool log_x,
+                      const juce::String& topRightText, PlotComponent&)
         = 0;
 };
 

@@ -81,7 +81,8 @@ public:
                            const std::vector<float>& y_grid,
                            const std::vector<juce::String>& x_labels,
                            const std::vector<juce::String>& y_labels,
-                           bool log_x, PlotComponent&) override;
+                           bool log_x, const juce::String& topRightText,
+                           PlotComponent&) override;
 
     // =========================================================================
     /** Set the new resize ratio */

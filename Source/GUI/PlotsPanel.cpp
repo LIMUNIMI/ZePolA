@@ -12,6 +12,7 @@ PlotComponent::PlotComponent(size_t n_points)
     , x_grid({1.0f, 2.0f})
     , x_labels({"1", "2"})
     , log_x(false)
+    , topRightText()
 {
 }
 
@@ -26,6 +27,7 @@ void PlotComponent::buttonStateChanged(juce::Button* b)
 }
 
 // =============================================================================
+void PlotComponent::setTopRightText(const juce::String& s) { topRightText = s; }
 void PlotComponent::setLogX(bool b)
 {
     log_x = b;
@@ -81,7 +83,7 @@ void PlotComponent::paint(juce::Graphics& g)
             g, static_cast<float>(getX()), static_cast<float>(getY()),
             static_cast<float>(getWidth()), static_cast<float>(getHeight()),
             x_values, y_values, period, x_grid, y_grid, x_labels, y_labels,
-            log_x, *this);
+            log_x, topRightText, *this);
 }
 
 // =============================================================================
@@ -117,8 +119,9 @@ PlotsPanel::~PlotsPanel()
 void PlotsPanel::updateValues()
 {
     callbackTimer.stopTimer();
-    auto n        = mPlot.getSize();
-    auto sr       = processor.getSampleRate();
+    auto n  = mPlot.getSize();
+    auto sr = processor.getSampleRate();
+    mPlot.setTopRightText("Sample rate: " + juce::String(sr) + " Hz");
     double loFreq = (mPlot.getLogX()) ? 10.0 : 0.0;
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {

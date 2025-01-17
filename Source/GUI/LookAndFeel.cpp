@@ -517,7 +517,8 @@ void CustomLookAndFeel::drawPlotComponent(
     const std::vector<float>& x_values, const std::vector<float>& y_values,
     float period, const std::vector<float>& x_grid,
     const std::vector<float>& y_grid, const std::vector<juce::String>& x_labels,
-    const std::vector<juce::String>& y_labels, bool log_x, PlotComponent& pc)
+    const std::vector<juce::String>& y_labels, bool log_x,
+    const juce::String& topRightText, PlotComponent& pc)
 {
     // Check sizes
     auto n_y_ticks = y_grid.size();
@@ -530,9 +531,18 @@ void CustomLookAndFeel::drawPlotComponent(
     jassert(n_x_ticks == x_labels.size());
 
     // Background
+    auto corner_s = resizeSize(fullPlotComponentCornerSize);
     g.setColour(pc.findColour(PlotComponent_backgroundColourId));
-    g.fillRoundedRectangle(0.0f, 0.0f, width, height,
-                           resizeSize(fullPlotComponentCornerSize));
+    g.fillRoundedRectangle(0.0f, 0.0f, width, height, corner_s);
+
+    // Top right text
+    auto f = getLabelFont(10.0f);
+    g.setFont(f);
+    g.setColour(pc.findColour(PlotComponent_gridLabelsColourId));
+    g.drawText(topRightText,
+               juce::Rectangle<float>(0.0f, 0.0f, width, height)
+                   .reduced(corner_s, corner_s * 0.5f),
+               juce::Justification::topRight);
 
     // Coordinate mapper
     LinearMapper<float> y_mapper(y_grid[0], height, y_grid[n_y_ticks - 1],
@@ -560,11 +570,9 @@ void CustomLookAndFeel::drawPlotComponent(
                  juce::PathStrokeType(resizeSize(fullPlotGridThickness)));
 
     // Grid labels
-    auto f      = getLabelFont(10.0f);
-    auto gt_pad = resizeSize(fullPlotComponentCornerSize * 0.5f);
+    auto gt_pad = corner_s * 0.5f;
     juce::Rectangle r(gt_pad * 2.0f, gt_pad, width - 4.0f * gt_pad,
                       f.getHeight() - 2.0f * gt_pad);
-    g.setFont(f);
     g.setColour(pc.findColour(PlotComponent_gridLabelsColourId));
     for (auto i = 0; i < n_y_ticks; ++i)
     {
