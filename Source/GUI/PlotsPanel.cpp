@@ -88,7 +88,7 @@ void PlotComponent::paint(juce::Graphics& g)
 PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p)
     : processor(p)
     , timer_ms(20)
-    , db(true)
+    , db(false)
     , callbackTimer(std::bind(&PlotsPanel::updateValues, this))
 {
     addAndMakeVisible(linLogFreqButton);
@@ -101,6 +101,7 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p)
     linLogFreqButton.addListener(&mPlot);
     linLogFreqButton.addListener(&pPlot);
     linLogFreqButton.addListener(this);
+    linLogAmpButton.addListener(this);
 }
 PlotsPanel::~PlotsPanel()
 {
@@ -109,6 +110,7 @@ PlotsPanel::~PlotsPanel()
     linLogFreqButton.removeListener(&mPlot);
     linLogFreqButton.removeListener(&pPlot);
     linLogFreqButton.removeListener(this);
+    linLogAmpButton.removeListener(this);
 }
 
 // =============================================================================
@@ -151,8 +153,22 @@ void PlotsPanel::startTimer()
 {
     if (!callbackTimer.isTimerRunning()) callbackTimer.startTimer(timer_ms);
 }
-void PlotsPanel::buttonClicked(juce::Button*) { startTimer(); }
-void PlotsPanel::buttonStateChanged(juce::Button*) { startTimer(); }
+void PlotsPanel::buttonClicked(juce::Button* b)
+{
+    if (b == &linLogAmpButton)
+    {
+        db = b->getToggleState();
+    }
+    startTimer();
+}
+void PlotsPanel::buttonStateChanged(juce::Button* b)
+{
+    if (b == &linLogAmpButton)
+    {
+        db = b->getToggleState();
+    }
+    startTimer();
+}
 void PlotsPanel::parameterChanged(const juce::String&, float) { startTimer(); }
 void PlotsPanel::resized()
 {
