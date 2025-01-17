@@ -48,6 +48,10 @@ public:
                   const std::vector<juce::String>& labels);
     /** Set x grid values and automatic labels */
     void setXGrid(const std::vector<float>&);
+    /** Get minimum y value in the plot */
+    float getYMin();
+    /** Get maximum y value in the plot */
+    float getYMax();
 
     //==========================================================================
     void paint(juce::Graphics&) override;
@@ -109,6 +113,7 @@ private:
     PlotComponent mPlot, pPlot;
     juce::TimedCallback callbackTimer;
     int timer_ms;
+    bool db;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlotsPanel);

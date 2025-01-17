@@ -104,7 +104,7 @@ public:
 
     // =========================================================================
     /** Set the properties of the magnitude plot */
-    void setMagnitudePlotProperties(PlotComponent&, double sr);
+    void setMagnitudePlotProperties(PlotComponent&, double sr, bool db = false);
     /** Set the properties of the phase plot */
     void setPhasePlotProperties(PlotComponent&, double sr);
     /** Make linear x ticks */
@@ -192,4 +192,5 @@ private:
     float fullPlotComponentCornerSize, fullPlotStrokeThickness,
         fullPlotGridThickness, logPlotCenterFreq;
     std::vector<float> logPlotCenterFreqUnits;
+    std::vector<float> dbPlotTicks;
 };

@@ -43,6 +43,7 @@ void PlotComponent::setPoint(int i, float x, float y)
 void PlotComponent::setYGrid(const std::vector<float>& ticks,
                              const std::vector<juce::String>& labels)
 {
+    jassert(ticks.size() > 1);
     jassert(labels.size() == ticks.size());
     y_grid   = ticks;
     y_labels = labels;
@@ -68,6 +69,8 @@ void PlotComponent::setXGrid(const std::vector<float>& ticks)
                                     : juce::String(s / 1000) + "k");
     setXGrid(ticks, labels);
 }
+float PlotComponent::getYMin() { return y_grid[0]; }
+float PlotComponent::getYMax() { return y_grid[y_grid.size() - 1]; }
 
 // =============================================================================
 void PlotComponent::paint(juce::Graphics& g)
@@ -85,6 +88,7 @@ void PlotComponent::paint(juce::Graphics& g)
 PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p)
     : processor(p)
     , timer_ms(20)
+    , db(true)
     , callbackTimer(std::bind(&PlotsPanel::updateValues, this))
 {
     addAndMakeVisible(linLogFreqButton);
@@ -116,7 +120,7 @@ void PlotsPanel::updateValues()
     double loFreq = (mPlot.getLogX()) ? 10.0 : 0.0;
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
-        claf->setMagnitudePlotProperties(mPlot, sr);
+        claf->setMagnitudePlotProperties(mPlot, sr, db);
         claf->setPhasePlotProperties(pPlot, sr);
         if (mPlot.getLogX()) loFreq = claf->getLogPlotLowFreq(sr);
     }
@@ -128,13 +132,16 @@ void PlotsPanel::updateValues()
                           : identity<float>,
         (mPlot.getLogX()) ? static_cast<float (*)(float)>(exp)
                           : identity<float>);
+    auto m_min_db = mPlot.getYMin() - 6.0f;
     for (auto i = 0; i < n; ++i)
     {
         auto omega = omegaTransform.map(static_cast<float>(i));
         auto nu    = static_cast<float>(omega * sr
                                      / juce::MathConstants<double>::twoPi);
         auto h     = processor.dtft(omega);
-        mPlot.setPoint(i, nu, static_cast<float>(abs(h)));
+        auto m     = static_cast<float>(abs(h));
+        if (db) m = juce::Decibels::gainToDecibels(m, m_min_db);
+        mPlot.setPoint(i, nu, m);
         pPlot.setPoint(i, nu, static_cast<float>(std::arg(h)));
     }
 }

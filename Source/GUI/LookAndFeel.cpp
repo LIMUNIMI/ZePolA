@@ -70,6 +70,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , n_x_ticks(9)
     , logPlotCenterFreq(1000.0f)
     , logPlotCenterFreqUnits({1.0f, 2.0f, 5.0f})
+    , dbPlotTicks({6.0f, 12.0f, 20.0f, 40.0f, 60.f})
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -180,10 +181,22 @@ std::vector<float> CustomLookAndFeel::makeLogXTicks(double sr)
     ticks.push_back(x_max);
     return ticks;
 }
-void CustomLookAndFeel::setMagnitudePlotProperties(PlotComponent& pc, double sr)
+void CustomLookAndFeel::setMagnitudePlotProperties(PlotComponent& pc, double sr,
+                                                   bool db)
 {
     pc.setPeriod();
-    pc.setYGrid({0.0f, 0.5f, 1.0f, 1.5f, 2.0f});
+    if (db)
+    {
+        std::vector<float> ticks({0.0f});
+        for (auto t : dbPlotTicks)
+        {
+            ticks.push_back(t);
+            ticks.insert(ticks.begin(), -t);
+        }
+        pc.setYGrid(ticks);
+    }
+    else
+        pc.setYGrid({0.0f, 0.5f, 1.0f, 1.5f, 2.0f});
     pc.setXGrid((pc.getLogX()) ? makeLogXTicks(sr) : makeLinearXTicks(sr));
 }
 void CustomLookAndFeel::setPhasePlotProperties(PlotComponent& pc, double sr)
