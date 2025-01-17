@@ -5,11 +5,15 @@
 
 // =============================================================================
 /** Plots panel  */
-class PlotComponent : public juce::Component
+class PlotComponent : public juce::Component, public juce::Button::Listener
 {
 public:
     // =========================================================================
     PlotComponent(size_t n_points = 1024);
+
+    // =====================================================================
+    void buttonClicked(juce::Button*) override;
+    void buttonStateChanged(juce::Button*) override;
 
     //==========================================================================
     /** Set x scale as logarithmic or not */
@@ -78,7 +82,8 @@ public:
 // =============================================================================
 /** Plots panel  */
 class PlotsPanel : public juce::GroupComponent,
-                   public juce::AudioProcessorValueTreeState::Listener
+                   public juce::AudioProcessorValueTreeState::Listener,
+                   public juce::Button::Listener
 {
 public:
     // =========================================================================
@@ -89,10 +94,15 @@ public:
     void updateValues();
 
     //==========================================================================
+    void buttonClicked(juce::Button*) override;
+    void buttonStateChanged(juce::Button*) override;
     void parameterChanged(const juce::String&, float);
     void resized() override;
 
 private:
+    // =========================================================================
+    void startTimer();
+
     // =========================================================================
     PolesAndZerosEQAudioProcessor& processor;
     juce::ToggleButton linLogFreqButton, linLogAmpButton;

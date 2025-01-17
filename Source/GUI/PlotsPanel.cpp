@@ -16,7 +16,21 @@ PlotComponent::PlotComponent(size_t n_points)
 }
 
 // =============================================================================
-void PlotComponent::setLogX(bool b) { log_x = b; }
+void PlotComponent::buttonClicked(juce::Button* b)
+{
+    setLogX(b->getToggleState());
+}
+void PlotComponent::buttonStateChanged(juce::Button* b)
+{
+    setLogX(b->getToggleState());
+}
+
+// =============================================================================
+void PlotComponent::setLogX(bool b)
+{
+    log_x = b;
+    repaint();
+}
 bool PlotComponent::getLogX() { return log_x; }
 void PlotComponent::setPeriod(float p) { period = p; }
 size_t PlotComponent::getSize() { return y_values.size(); }
@@ -80,11 +94,17 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p)
     for (auto i : processor.parameterIDs())
         processor.addParameterListener(i, this);
     callbackTimer.startTimer(timer_ms);
+    linLogFreqButton.addListener(&mPlot);
+    linLogFreqButton.addListener(&pPlot);
+    linLogFreqButton.addListener(this);
 }
 PlotsPanel::~PlotsPanel()
 {
     for (auto i : processor.parameterIDs())
         processor.removeParameterListener(i, this);
+    linLogFreqButton.removeListener(&mPlot);
+    linLogFreqButton.removeListener(&pPlot);
+    linLogFreqButton.removeListener(this);
 }
 
 // =============================================================================
@@ -120,10 +140,13 @@ void PlotsPanel::updateValues()
 }
 
 // =============================================================================
-void PlotsPanel::parameterChanged(const juce::String&, float)
+void PlotsPanel::startTimer()
 {
     if (!callbackTimer.isTimerRunning()) callbackTimer.startTimer(timer_ms);
 }
+void PlotsPanel::buttonClicked(juce::Button*) { startTimer(); }
+void PlotsPanel::buttonStateChanged(juce::Button*) { startTimer(); }
+void PlotsPanel::parameterChanged(const juce::String&, float) { startTimer(); }
 void PlotsPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
