@@ -59,6 +59,14 @@ public:
     virtual void setStateInformation(const void* data, int sizeInBytes);
 
     //==============================================================================
+    /** Make an attachment for the value tree state */
+    template <typename AttachmentType, typename ComponentType>
+    AttachmentType* makeAttachment(juce::StringRef parameterID,
+                                   ComponentType& slider);
+
+    //==============================================================================
+    /** Get parameter by ID */
+    juce::RangedAudioParameter* getParameterById(juce::StringRef);
     /** Format parameter value, so that it is in range */
     float formatParameterValue(juce::StringRef parameterID, float value);
     /** Set parameter value, enclosing the operation in a gesture */

@@ -1,5 +1,5 @@
 #include "PluginProcessor.h"
-#include "Filter.h"
+#include "DSP/Filter.h"
 #include "Macros.h"
 #include "Parameters.h"
 #include "PluginEditor_.h"
@@ -222,7 +222,7 @@ double PolesAndZerosEQAudioProcessor::getTailLengthSeconds() const
 // =============================================================================
 int PolesAndZerosEQAudioProcessor::getNumPrograms() { return 1; }
 int PolesAndZerosEQAudioProcessor::getCurrentProgram() { return 0; }
-void PolesAndZerosEQAudioProcessor::setCurrentProgram(int) {}
+void PolesAndZerosEQAudioProcessor::setCurrentProgram(int) { }
 const juce::String PolesAndZerosEQAudioProcessor::getProgramName(int)
 {
     return {};
@@ -262,6 +262,7 @@ void PolesAndZerosEQAudioProcessor::setElementTypeF(int i, float v)
 }
 
 // =============================================================================
+int PolesAndZerosEQAudioProcessor::getNElements() const { return n_elements; }
 void PolesAndZerosEQAudioProcessor::resetMemory()
 {
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();

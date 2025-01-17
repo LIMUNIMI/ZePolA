@@ -1,20 +1,23 @@
 #include "PluginEditor_.h"
 
 // =============================================================================
-const int PolesAndZerosEQAudioProcessorEditor::originalWidth  = 1200;
-const int PolesAndZerosEQAudioProcessorEditor::originalHeight = 790;
-
-// =============================================================================
 PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     PolesAndZerosEQAudioProcessor& p)
-    : juce::AudioProcessorEditor(&p), processor(p), aspectRatioConstrainer()
+    : juce::AudioProcessorEditor(&p)
+    , processor(p)
+    , aspectRatioConstrainer()
+    , parameterPanel(processor, processor.getNElements())
 {
+    setLookAndFeel(&claf);
+    addAndMakeVisible(parameterPanel);
+    addAndMakeVisible(plotsGroup);
+    addAndMakeVisible(designGroup);
+    addAndMakeVisible(masterGroup);
     sizeSetup();
 }
 void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
 {
-    aspectRatioConstrainer.setFixedAspectRatio(
-        static_cast<double>(originalWidth) / originalHeight);
+    aspectRatioConstrainer.setFixedAspectRatio(claf.getAspectRatio());
     setConstrainer(&aspectRatioConstrainer);
 
     juce::PropertiesFile::Options options;
@@ -24,16 +27,33 @@ void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
     options.osxLibrarySubFolder = "Application Support";
 
     applicationProperties.setStorageParameters(options);
-
-    auto sizeRatio = 1.0;
-    if (auto* properties = applicationProperties.getCommonSettings(true))
-        sizeRatio = properties->getDoubleValue("sizeRatio", 1.0);
+    if (juce::PropertiesFile* pf
+        = applicationProperties.getCommonSettings(true))
+        claf.setResizeRatio(static_cast<float>(
+            pf->getDoubleValue("sizeRatio", claf.getResizeRatio())));
 
     setResizable(true, true);
-    setSize(static_cast<int>(originalWidth * sizeRatio),
-            static_cast<int>(originalHeight * sizeRatio));
+    setSize(claf.getResizedWidth(), claf.getResizedHeight());
 }
 
 // =============================================================================
-void PolesAndZerosEQAudioProcessorEditor::paint(juce::Graphics& g) {}
-void PolesAndZerosEQAudioProcessorEditor::resized() {}
+void PolesAndZerosEQAudioProcessorEditor::paint(juce::Graphics& g)
+{
+    g.fillAll(
+        getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+}
+void PolesAndZerosEQAudioProcessorEditor::resized()
+{
+    claf.setResizeRatio(getWidth(), getHeight());
+    if (juce::PropertiesFile* pf
+        = applicationProperties.getCommonSettings(true))
+        pf->setValue("sizeRatio", claf.getResizeRatio());
+
+    auto panel_rects = claf.divideInPanels(getLocalBounds());
+    jassert(panel_rects.size() == 5);
+
+    parameterPanel.setBounds(panel_rects[1]);
+    plotsGroup.setBounds(panel_rects[2]);
+    designGroup.setBounds(panel_rects[3]);
+    masterGroup.setBounds(panel_rects[4]);
+}

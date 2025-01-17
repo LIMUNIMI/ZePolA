@@ -1,4 +1,6 @@
 #pragma once
+#include "GUI/LookAndFeel.h"
+#include "GUI/ParameterPanel.h"
 #include "PluginProcessor.h"
 #include <JuceHeader.h>
 
@@ -23,10 +25,13 @@ private:
     PolesAndZerosEQAudioProcessor& processor;
 
     // ===========================================================================
-    juce::ApplicationProperties applicationProperties;
+    juce::GroupComponent plotsGroup, designGroup, masterGroup;
+    ParameterPanel parameterPanel;
+
+    // ===========================================================================
     juce::ComponentBoundsConstrainer aspectRatioConstrainer;
-    static const int originalWidth;
-    static const int originalHeight;
+    juce::ApplicationProperties applicationProperties;
+    CustomLookAndFeel claf;
 
     // ===========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
