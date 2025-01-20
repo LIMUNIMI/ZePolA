@@ -16,6 +16,8 @@ ValueType LinearMapper<ValueType>::map(ValueType x) const
     return m * x + q;
 }
 
+template class LinearMapper<float>;
+
 // =============================================================================
 template <typename ValueType>
 ValueType identity(ValueType x)
@@ -29,14 +31,14 @@ template <typename ValueType>
 InputTransformMapper<ValueType>::InputTransformMapper(
     ValueType x0, ValueType y0, ValueType x1, ValueType y1,
     std::function<ValueType(ValueType)> t)
-    : LinearMapper(t(x0), y0, t(x1), y1), transform(t)
+    : LinearMapper<ValueType>(t(x0), y0, t(x1), y1), transform(t)
 {
 }
 
 template <typename ValueType>
 ValueType InputTransformMapper<ValueType>::map(ValueType x) const
 {
-    return LinearMapper::map(transform(x));
+    return LinearMapper<ValueType>::map(transform(x));
 }
 
 template class InputTransformMapper<float>;
@@ -47,14 +49,14 @@ OutputTransformMapper<ValueType>::OutputTransformMapper(
     ValueType x0, ValueType y0, ValueType x1, ValueType y1,
     std::function<ValueType(ValueType)> t,
     std::function<ValueType(ValueType)> t_i)
-    : transform_inverse(t_i), LinearMapper(x0, t(y0), x1, t(y1))
+    : transform_inverse(t_i), LinearMapper<ValueType>(x0, t(y0), x1, t(y1))
 {
 }
 
 template <typename ValueType>
 ValueType OutputTransformMapper<ValueType>::map(ValueType x) const
 {
-    return transform_inverse(LinearMapper::map(x));
+    return transform_inverse(LinearMapper<ValueType>::map(x));
 }
 
 template class OutputTransformMapper<float>;
