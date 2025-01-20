@@ -229,8 +229,6 @@ CustomLookAndFeel::splitProportional(const juce::Rectangle<RectType>& r,
     std::vector<juce::Rectangle<RectType>> rects;
     if (!fractions.empty())
     {
-        auto take = (vertical) ? &(juce::Rectangle<float>::removeFromTop)
-                               : &(juce::Rectangle<float>::removeFromLeft);
         float fullSize
             = static_cast<float>((vertical) ? r.getHeight() : r.getWidth());
         float resizedMargin = resizeSize(fullMargin);
@@ -247,8 +245,19 @@ CustomLookAndFeel::splitProportional(const juce::Rectangle<RectType>& r,
         juce::Rectangle<float> t(r.toFloat());
         for (auto f : fractions)
         {
-            rects.push_back(((t.*take)(f * fractionsK)).toType<RectType>());
-            (t.*take)(resizedMargin);
+            float amnt = f * fractionsK;
+            juce::Rectangle<float> r_f;
+            if (vertical)
+            {
+                r_f = t.removeFromTop(amnt);
+                t.removeFromTop(resizedMargin);
+            }
+            else
+            {
+                r_f = t.removeFromLeft(amnt);
+                t.removeFromLeft(resizedMargin);
+            }
+            rects.push_back(r_f.toType<RectType>());
         }
     }
 
