@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="AyGleg" name="Poles and Zeros - EQ" projectType="audioplug"
+<JUCERPROJECT id="AyGleg" name="PolesAndZerosEQ" projectType="audioplug"
               jucerFormatVersion="1" companyName="Andrea Casati" pluginCode="pz3q"
               pluginFormats="buildAU,buildStandalone,buildVST3" pluginAUMainType="'aufx'"
               displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED = 1">
-  <MAINGROUP id="ZGYPR9" name="Poles and Zeros - EQ">
+  <MAINGROUP id="ZGYPR9" name="PolesAndZerosEQ">
     <GROUP id="{211C8D6A-C6EB-B051-1B84-6C521685D404}" name="Fonts">
       <FILE id="k4OeoL" name="Mukta-Regular.ttf" compile="0" resource="1"
             file="Fonts/Mukta/Mukta-Regular.ttf"/>
