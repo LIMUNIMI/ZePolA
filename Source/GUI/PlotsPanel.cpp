@@ -133,9 +133,9 @@ void PlotsPanel::updateValues()
         0.0f,
         static_cast<float>(loFreq * juce::MathConstants<double>::twoPi / sr),
         n - 1.0f, juce::MathConstants<float>::pi,
-        (mPlot.getLogX()) ? static_cast<float (*)(float)>(log)
+        (mPlot.getLogX()) ? static_cast<float (*)(float)>(logf)
                           : identity<float>,
-        (mPlot.getLogX()) ? static_cast<float (*)(float)>(exp)
+        (mPlot.getLogX()) ? static_cast<float (*)(float)>(expf)
                           : identity<float>);
     auto m_min_db = mPlot.getYMin() - 6.0f;
     for (auto i = 0; i < n; ++i)

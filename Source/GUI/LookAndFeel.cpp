@@ -549,7 +549,7 @@ void CustomLookAndFeel::drawPlotComponent(
                                  0.0f);
     InputTransformMapper<float> x_mapper(
         x_grid[0], 0.0f, x_grid[n_x_ticks - 1], width,
-        (log_x) ? static_cast<float (*)(float)>(log) : identity<float>);
+        (log_x) ? static_cast<float (*)(float)>(logf) : identity<float>);
 
     // Grid
     juce::Path gridlines;
