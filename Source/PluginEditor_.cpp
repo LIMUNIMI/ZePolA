@@ -7,10 +7,11 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     , processor(p)
     , aspectRatioConstrainer()
     , parameterPanel(processor, processor.getNElements())
+    , plotsPanel(processor)
 {
     setLookAndFeel(&claf);
     addAndMakeVisible(parameterPanel);
-    addAndMakeVisible(plotsGroup);
+    addAndMakeVisible(plotsPanel);
     addAndMakeVisible(designGroup);
     addAndMakeVisible(masterGroup);
     sizeSetup();
@@ -53,7 +54,7 @@ void PolesAndZerosEQAudioProcessorEditor::resized()
     jassert(panel_rects.size() == 5);
 
     parameterPanel.setBounds(panel_rects[1]);
-    plotsGroup.setBounds(panel_rects[2]);
+    plotsPanel.setBounds(panel_rects[2]);
     designGroup.setBounds(panel_rects[3]);
     masterGroup.setBounds(panel_rects[4]);
 }

@@ -263,6 +263,10 @@ void PolesAndZerosEQAudioProcessor::setElementTypeF(int i, float v)
 
 // =============================================================================
 int PolesAndZerosEQAudioProcessor::getNElements() const { return n_elements; }
+std::complex<double> PolesAndZerosEQAudioProcessor::dtft(double omega) const
+{
+    return multiChannelCascade[0].dtft(omega);
+}
 void PolesAndZerosEQAudioProcessor::resetMemory()
 {
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();

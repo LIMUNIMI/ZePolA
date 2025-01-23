@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="AyGleg" name="Poles and Zeros - EQ" projectType="audioplug"
+<JUCERPROJECT id="AyGleg" name="PolesAndZerosEQ" projectType="audioplug"
               jucerFormatVersion="1" companyName="Andrea Casati" pluginCode="pz3q"
               pluginFormats="buildAU,buildStandalone,buildVST3" pluginAUMainType="'aufx'"
               displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED = 1">
-  <MAINGROUP id="ZGYPR9" name="Poles and Zeros - EQ">
+  <MAINGROUP id="ZGYPR9" name="PolesAndZerosEQ">
     <GROUP id="{211C8D6A-C6EB-B051-1B84-6C521685D404}" name="Fonts">
-      <FILE id="pptT7d" name="LTAvocado-Regular.ttf" compile="0" resource="1"
-            file="Fonts/LT Avocado/LTAvocado-Regular.ttf"/>
+      <FILE id="k4OeoL" name="Mukta-Regular.ttf" compile="0" resource="1"
+            file="Fonts/Mukta/Mukta-Regular.ttf"/>
     </GROUP>
     <GROUP id="{482B7901-6351-0DFB-794C-CC9F2AF6F30B}" name="Graphics">
       <FILE id="qjFJhK" name="anticlockwise_arrow.svg" compile="0" resource="1"
@@ -18,9 +18,13 @@
       <FILE id="juXqX7" name="save_icon.svg" compile="0" resource="1" file="Graphics/save_icon.svg"/>
     </GROUP>
     <GROUP id="{7D61AFCF-4618-4DA8-96D3-B0DC7D2A26DB}" name="Source">
+      <FILE id="llmHwa" name="Mappers.cpp" compile="1" resource="0" file="Source/Mappers.cpp"/>
+      <FILE id="UGwiqN" name="Mappers.h" compile="0" resource="0" file="Source/Mappers.h"/>
       <FILE id="NcDhiw" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>
       <FILE id="VocETI" name="Macros.h" compile="0" resource="0" file="Source/Macros.h"/>
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
+        <FILE id="P77Sdq" name="PlotsPanel.cpp" compile="1" resource="0" file="Source/GUI/PlotsPanel.cpp"/>
+        <FILE id="emM8iu" name="PlotsPanel.h" compile="0" resource="0" file="Source/GUI/PlotsPanel.h"/>
         <FILE id="A9OxkJ" name="DraggableLabel.cpp" compile="1" resource="0"
               file="Source/GUI/DraggableLabel.cpp"/>
         <FILE id="CC41Tr" name="DraggableLabel.h" compile="0" resource="0"

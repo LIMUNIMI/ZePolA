@@ -1,5 +1,6 @@
 #include "LookAndFeel.h"
 #include "../Macros.h"
+#include "../Mappers.h"
 #include "ParameterPanel.h"
 
 // =============================================================================
@@ -32,9 +33,9 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a)
 }
 
 // =============================================================================
-const juce::Typeface::Ptr CustomLookAndFeel::ltAvocadoRegular
-    = Typeface::createSystemTypefaceFor(BinaryData::LTAvocadoRegular_ttf,
-                                        BinaryData::LTAvocadoRegular_ttfSize);
+const juce::Typeface::Ptr CustomLookAndFeel::muktaRegular
+    = Typeface::createSystemTypefaceFor(BinaryData::MuktaRegular_ttf,
+                                        BinaryData::MuktaRegular_ttfSize);
 
 // =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
@@ -48,7 +49,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , groupComponentCornerSize(14.5f)
     // radius, angle, frequency, type, active, gain
     , stripColumnProportions({100, 100, 50, 50, 50, 50})
-    , panelRowProportions({30, 470, 30, 470})
+    , panelRowProportions({25, 450, 50, 450, 25})
     , panelProportions({510, 480, 180})
     , lastPanelProportions({396, 324})
     , fontName("Gill Sans")
@@ -63,6 +64,13 @@ CustomLookAndFeel::CustomLookAndFeel()
     , fullButtonPadding(5.0f)
     , fullButtonOutline(2.5f)
     , fullButtonRadius(5.0f)
+    , fullPlotComponentCornerSize(6.0f)
+    , fullPlotStrokeThickness(1.5f)
+    , fullPlotGridThickness(1.0f)
+    , n_x_ticks(9)
+    , logPlotCenterFreq(1000.0f)
+    , logPlotCenterFreqUnits({1.0f, 2.0f, 5.0f})
+    , dbPlotTicks({6.0f, 12.0f, 20.0f, 40.0f, 60.f})
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -104,6 +112,11 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(OnOffButton_textOnColourId, juce::Colours::white);
     setColour(OnOffButton_textOffColourId, juce::Colours::black);
     setColour(OnOffButton_outlineColourId, juce::Colours::black);
+    // Plots
+    setColour(PlotComponent_backgroundColourId, juce::Colour(0x45979a9a));
+    setColour(PlotComponent_lineColourId, juce::Colours::black);
+    setColour(PlotComponent_gridColourId, juce::Colour(0x28979a9a));
+    setColour(PlotComponent_gridLabelsColourId, juce::Colour(0xff797d7f));
 }
 
 // =============================================================================
@@ -129,6 +142,82 @@ float CustomLookAndFeel::getAspectRatio() const
 {
     return static_cast<float>(fullWidth) / fullHeight;
 }
+double CustomLookAndFeel::getLogPlotLowFreq(double sr) const
+{
+    return logPlotCenterFreq * logPlotCenterFreq * 2.0 / sr;
+}
+
+// =============================================================================
+std::vector<float> CustomLookAndFeel::makeLinearXTicks(double sr)
+{
+    float x_max = static_cast<float>(sr * 0.5);
+    auto q      = pow(10, juce::roundToInt(log10(x_max))) / 200.0;
+    auto step   = static_cast<float>(
+        juce::roundToInt(x_max / (q * (n_x_ticks - 1))) * q);
+    std::vector<float> ticks({0.0f});
+    for (float t = step; t < x_max - step * 0.5f; t += step) ticks.push_back(t);
+    ticks.push_back(x_max);
+    return ticks;
+}
+std::vector<float> CustomLookAndFeel::makeLogXTicks(double sr)
+{
+    float x_max = static_cast<float>(sr * 0.5);
+    float x_min = getLogPlotLowFreq(sr);
+    std::vector<float> ticks({x_min});
+    float pow_10 = pow(10, floor(log10(x_min)));
+    auto n_units = logPlotCenterFreqUnits.size();
+    float x;
+    for (int i = 0;; ++i)
+    {
+        if (i >= n_units)
+        {
+            i %= n_units;
+            pow_10 *= 10.0f;
+        }
+        x = pow_10 * logPlotCenterFreqUnits[i];
+        if (x > x_max) break;
+        if (x > x_min) ticks.push_back(x);
+    }
+    ticks.push_back(x_max);
+    return ticks;
+}
+void CustomLookAndFeel::setMagnitudePlotProperties(PlotComponent& pc, double sr,
+                                                   bool db)
+{
+    pc.setPeriod();
+    if (db)
+    {
+        std::vector<float> ticks({0.0f});
+        for (auto t : dbPlotTicks)
+        {
+            ticks.push_back(t);
+            ticks.insert(ticks.begin(), -t);
+        }
+        juce::String suffix(" dB");
+        std::vector<juce::String> labels;
+        for (auto t : ticks) labels.push_back(juce::String(t) + suffix);
+        pc.setYGrid(ticks, labels);
+    }
+    else
+        pc.setYGrid({0.0f, 0.5f, 1.0f, 1.5f, 2.0f});
+    pc.setXGrid((pc.getLogX()) ? makeLogXTicks(sr) : makeLinearXTicks(sr));
+}
+void CustomLookAndFeel::setPhasePlotProperties(PlotComponent& pc, double sr)
+{
+    pc.setPeriod(juce::MathConstants<float>::twoPi);
+    pc.setYGrid({-juce::MathConstants<float>::pi,
+                 -juce::MathConstants<float>::halfPi, 0.0f,
+                 juce::MathConstants<float>::halfPi,
+                 juce::MathConstants<float>::pi},
+                {
+                    CharPointer_UTF8("-π"),
+                    CharPointer_UTF8("-π/2"),
+                    CharPointer_UTF8("0"),
+                    CharPointer_UTF8("+π/2"),
+                    CharPointer_UTF8("+π"),
+                });
+    pc.setXGrid((pc.getLogX()) ? makeLogXTicks(sr) : makeLinearXTicks(sr));
+}
 
 // =============================================================================
 template <typename RectType>
@@ -140,8 +229,6 @@ CustomLookAndFeel::splitProportional(const juce::Rectangle<RectType>& r,
     std::vector<juce::Rectangle<RectType>> rects;
     if (!fractions.empty())
     {
-        auto take = (vertical) ? &(juce::Rectangle<float>::removeFromTop)
-                               : &(juce::Rectangle<float>::removeFromLeft);
         float fullSize
             = static_cast<float>((vertical) ? r.getHeight() : r.getWidth());
         float resizedMargin = resizeSize(fullMargin);
@@ -158,8 +245,19 @@ CustomLookAndFeel::splitProportional(const juce::Rectangle<RectType>& r,
         juce::Rectangle<float> t(r.toFloat());
         for (auto f : fractions)
         {
-            rects.push_back(((t.*take)(f * fractionsK)).toType<RectType>());
-            (t.*take)(resizedMargin);
+            float amnt = f * fractionsK;
+            juce::Rectangle<float> r_f;
+            if (vertical)
+            {
+                r_f = t.removeFromTop(amnt);
+                t.removeFromTop(resizedMargin);
+            }
+            else
+            {
+                r_f = t.removeFromLeft(amnt);
+                t.removeFromLeft(resizedMargin);
+            }
+            rects.push_back(r_f.toType<RectType>());
         }
     }
 
@@ -228,7 +326,7 @@ void CustomLookAndFeel::resizeToggleButton(juce::Component& c) const
     c.setBounds(forceAspectRatioCentered(
                     c.getBounds().reduced(resizeSize(fullButtonPadding)),
                     buttonAspectRatio)
-                    .expanded(resizeSize(fullButtonOutline / 2.0f)));
+                    .expanded(resizeSize(fullButtonOutline * 0.5f)));
 }
 
 // =============================================================================
@@ -257,12 +355,16 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
     g.setColour(gc.findColour(InvisibleGroupComponent_outlineColourId));
     g.drawRect(b, resizeSize(1.0f));
 }
-juce::Font CustomLookAndFeel::getLabelFont()
+juce::Font CustomLookAndFeel::getLabelFont(float fullFontSize)
 {
-    juce::Font f(ltAvocadoRegular);
-    f.setSizeAndStyle(resizeSize(fullLabelFontSize), f.getStyleFlags(),
+    juce::Font f(muktaRegular);
+    f.setSizeAndStyle(resizeSize(fullFontSize * 1.5), f.getStyleFlags(),
                       f.getHorizontalScale(), f.getExtraKerningFactor());
     return f;
+}
+juce::Font CustomLookAndFeel::getLabelFont()
+{
+    return getLabelFont(fullLabelFontSize);
 }
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label&)
 {
@@ -288,12 +390,12 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y,
 
     auto sh = resizeSize(fullSliderHeight);
     g.setColour(trackColour);
-    g.fillRoundedRectangle(static_cast<float>(x), y + (height - sh) / 2.0f,
-                           static_cast<float>(width), sh, sh / 2.0f);
+    g.fillRoundedRectangle(static_cast<float>(x), y + (height - sh) * 0.5f,
+                           static_cast<float>(width), sh, sh * 0.5f);
 
     auto st_rad = resizeSize(fullSliderThumbRadius);
     juce::Rectangle<float> st_rect(sliderPos - st_rad,
-                                   y + height / 2.0f - st_rad, 2.0f * st_rad,
+                                   y + height * 0.5f - st_rad, 2.0f * st_rad,
                                    2.0f * st_rad);
 
     g.setColour(thumbColour);
@@ -354,7 +456,7 @@ void CustomLookAndFeel::drawParameterStripSeparators(juce::Graphics& g, float,
     float h = resizeSize(fullSeparatorThickness);
     width -= 2.0f * x;
     g.setColour(pp.findColour(ParameterStripSeparator_fillColourId));
-    for (auto i : y) g.fillRect(x, i - h / 2.0f, width, h);
+    for (auto i : y) g.fillRect(x, i - h * 0.5f, width, h);
 }
 void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
                                          juce::ToggleButton& button,
@@ -369,7 +471,7 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     juce::Rectangle<float> rect(0.0f, 0.0f,
                                 static_cast<float>(button.getWidth()),
                                 static_cast<float>(button.getHeight()));
-    rect = rect.reduced(othick / 2.0f);
+    rect = rect.reduced(othick * 0.5f);
 
     auto bgc = button.findColour((on) ? OnOffButton_backgroundOnColourId
                                       : OnOffButton_backgroundOffColourId);
@@ -393,17 +495,18 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
 
     float led_diam = rect.getHeight() - 2.0f * bpad - othick;
     juce::Rectangle<float> led_rect(
-        rect.getRight() - othick / 2.0f - bpad - led_diam,
-        rect.getY() + bpad + othick / 2.0f, led_diam, led_diam);
+        rect.getRight() - othick * 0.5f - bpad - led_diam,
+        rect.getY() + bpad + othick * 0.5f, led_diam, led_diam);
     juce::Rectangle<float> text_rect(
-        rect.getX() + othick / 2.0f + bpad, rect.getY() + othick / 2.0f + bpad,
+        rect.getX() + othick * 0.5f + bpad, rect.getY() + othick * 0.5f + bpad,
         rect.getWidth(), rect.getHeight() - othick - 2.0 * bpad);
     text_rect.setRight(led_rect.getX() - bpad);
 
     juce::String txt((on) ? "ON" : "OFF");
     g.setColour(tc);
-    auto font = getLabelFont().boldened();
-    font.setHeight(text_rect.getHeight() + bpad);
+    auto font = getLabelFont();
+    font.setHeight((text_rect.getHeight() + bpad) * 1.5);
+    font.setBold(true);
     g.setFont(font);
     g.drawText(txt, text_rect, juce::Justification::centred);
 
@@ -411,5 +514,113 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     g.fillEllipse(led_rect);
     if (led_rect.getWidth() >= 1.0f && led_rect.getHeight() >= 1.0f)
         g.setColour(oc);
-    g.drawEllipse(led_rect, othick / 2.0f);
+    g.drawEllipse(led_rect, othick * 0.5f);
+}
+
+// Helps resolve overloads
+static float _identity_map(float x) { return x; }
+static float _log_map(float x) { return log(x); }
+
+void CustomLookAndFeel::drawPlotComponent(
+    juce::Graphics& g, float x, float y, float width, float height,
+    const std::vector<float>& x_values, const std::vector<float>& y_values,
+    float period, const std::vector<float>& x_grid,
+    const std::vector<float>& y_grid, const std::vector<juce::String>& x_labels,
+    const std::vector<juce::String>& y_labels, bool log_x,
+    const juce::String& topRightText, PlotComponent& pc)
+{
+    // Check sizes
+    auto n_y_ticks = y_grid.size();
+    auto n_x_ticks = x_grid.size();
+    auto n_points  = y_values.size();
+    jassert(n_points > 1);
+    jassert(n_y_ticks > 1);
+    jassert(n_y_ticks == y_labels.size());
+    jassert(n_x_ticks > 1);
+    jassert(n_x_ticks == x_labels.size());
+
+    // Background
+    auto corner_s = resizeSize(fullPlotComponentCornerSize);
+    g.setColour(pc.findColour(PlotComponent_backgroundColourId));
+    g.fillRoundedRectangle(0.0f, 0.0f, width, height, corner_s);
+
+    // Top right text
+    auto f = getLabelFont(10.0f);
+    g.setFont(f);
+    g.setColour(pc.findColour(PlotComponent_gridLabelsColourId));
+    g.drawText(topRightText,
+               juce::Rectangle<float>(0.0f, 0.0f, width, height)
+                   .reduced(corner_s, corner_s * 0.5f),
+               juce::Justification::topRight);
+
+    // Coordinate mapper
+    LinearMapper<float> y_mapper(y_grid[0], height, y_grid[n_y_ticks - 1],
+                                 0.0f);
+    InputTransformMapper<float> x_mapper(
+        x_grid[0], 0.0f, x_grid[n_x_ticks - 1], width,
+        (log_x) ? static_cast<float (*)(float)>(logf) : identity<float>);
+
+    // Grid
+    juce::Path gridlines;
+    for (auto f : std::vector<float>(y_grid.begin() + 1, y_grid.end() - 1))
+    {
+        auto f_mapped = y_mapper.map(f);
+        gridlines.startNewSubPath(0.0f, f_mapped);
+        gridlines.lineTo(width, f_mapped);
+    }
+    for (auto f : std::vector<float>(x_grid.begin() + 1, x_grid.end() - 1))
+    {
+        auto f_mapped = x_mapper.map(f);
+        gridlines.startNewSubPath(f_mapped, 0.0f);
+        gridlines.lineTo(f_mapped, height);
+    }
+    g.setColour(pc.findColour(PlotComponent_gridColourId));
+    g.strokePath(gridlines,
+                 juce::PathStrokeType(resizeSize(fullPlotGridThickness)));
+
+    // Grid labels
+    auto gt_pad = corner_s * 0.5f;
+    juce::Rectangle r(gt_pad * 2.0f, gt_pad, width - 4.0f * gt_pad,
+                      f.getHeight() - 2.0f * gt_pad);
+    g.setColour(pc.findColour(PlotComponent_gridLabelsColourId));
+    for (auto i = 0; i < n_y_ticks; ++i)
+    {
+        r.setY((i) ? ((i == n_y_ticks - 1)
+                          ? gt_pad
+                          : y_mapper.map(y_grid[i]) - f.getHeight() * 0.5f)
+                   : height - gt_pad - f.getHeight());
+        g.drawText(y_labels[i], r, juce::Justification::topLeft);
+    }
+    r.setY(height / 2.0f + gt_pad);
+    for (auto i = 1; i < n_x_ticks - 1; ++i)
+    {
+        auto x_pos = x_mapper.map(x_grid[i]);
+        // Avoid labels near the vertical edges
+        if (!width || (0.5f - abs(x_pos / width - 0.5f)) > 0.05f)
+        {
+            r.setCentre(x_pos, r.getCentreY());
+            g.drawText(x_labels[i], r, juce::Justification::centredTop);
+        }
+    }
+
+    // Plot
+    juce::Path plot;
+    plot.startNewSubPath(x_mapper.map(x_values[0]), y_mapper.map(y_values[0]));
+    auto period_half = period * 0.5f;
+    auto is_periodic = period > 0.0f;
+    for (auto i = 1; i < n_points; ++i)
+    {
+        if (is_periodic && abs(y_values[i] - y_values[i - 1]) > period_half)
+        {
+            float offset = (y_values[i] > y_values[i - 1]) ? -period : period;
+            plot.lineTo(x_mapper.map(x_values[i]),
+                        y_mapper.map(y_values[i] + offset));
+            plot.startNewSubPath(x_mapper.map(x_values[i - 1]),
+                                 y_mapper.map(y_values[i - 1] - offset));
+        }
+        plot.lineTo(x_mapper.map(x_values[i]), y_mapper.map(y_values[i]));
+    }
+    g.setColour(pc.findColour(PlotComponent_lineColourId));
+    g.strokePath(plot,
+                 juce::PathStrokeType(resizeSize(fullPlotStrokeThickness)));
 }

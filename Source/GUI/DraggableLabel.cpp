@@ -61,7 +61,7 @@ void DraggableLabel::mouseDrag(const juce::MouseEvent& event)
         float delta
             = static_cast<float>(eventStartY - event.getPosition().getY());
         delta = ((delta < 0) ? -deltaScale : deltaScale)
-                * std::powf(std::fabs(delta), deltaGamma);
+                * std::pow(std::fabs(delta), deltaGamma);
 
         setTextFromFloat(eventStartValue + delta,
                          juce::NotificationType::sendNotification);

@@ -103,6 +103,8 @@ public:
     // =========================================================================
     /** Get the number of filter elements */
     int getNElements() const;
+    /** Get the DTFT of the filter */
+    std::complex<double> dtft(double omega) const;
     /** Clear filter memory */
     void resetMemory();
     /** Activate or deactivate all filter elements */

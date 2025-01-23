@@ -1,6 +1,7 @@
 #pragma once
 #include "InvisibleGroupComponent.h"
 #include "ParameterPanel.h"
+#include "PlotsPanel.h"
 #include <JuceHeader.h>
 
 // =============================================================================
@@ -23,6 +24,7 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a);
 /** Custom look and feel for the GUI  */
 class CustomLookAndFeel : public juce::LookAndFeel_V4,
                           public InvisibleGroupComponentLookAndFeelMethods,
+                          public PlotComponentLookAndFeelMethods,
                           public ParameterPanelLookAndFeelMethods
 {
 public:
@@ -38,7 +40,12 @@ public:
         OnOffButton_ledOffColourId,
         OnOffButton_textOnColourId,
         OnOffButton_textOffColourId,
-        OnOffButton_outlineColourId
+        OnOffButton_outlineColourId,
+        PlotComponent_backgroundColourId,
+        PlotComponent_gridColourId,
+        PlotComponent_gridLabelsColourId,
+        PlotComponent_lineColourId,
+        PlotComponent_tickLabelColourId
     };
 
     // =========================================================================
@@ -54,6 +61,7 @@ public:
                                 const juce::Justification&,
                                 juce::GroupComponent&) override;
     juce::Font getLabelFont(juce::Label&) override;
+    juce::Font getLabelFont(float fullFontSize);
     juce::Font getLabelFont();
     void drawLinearSlider(juce::Graphics& g, int x, int y, int width,
                           int height, float sliderPos, float minSliderPos,
@@ -66,6 +74,15 @@ public:
     void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
                           bool shouldDrawButtonAsHighlighted,
                           bool shouldDrawButtonAsDown) override;
+    void drawPlotComponent(juce::Graphics&, float x, float y, float width,
+                           float height, const std::vector<float>& x_values,
+                           const std::vector<float>& y_values, float period,
+                           const std::vector<float>& x_grid,
+                           const std::vector<float>& y_grid,
+                           const std::vector<juce::String>& x_labels,
+                           const std::vector<juce::String>& y_labels,
+                           bool log_x, const juce::String& topRightText,
+                           PlotComponent&) override;
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -83,6 +100,18 @@ public:
     int getResizedHeight() const;
     /** Get the intended aspect ratio */
     float getAspectRatio() const;
+    /** Get the lower frequency for the log plot */
+    double getLogPlotLowFreq(double sr) const;
+
+    // =========================================================================
+    /** Set the properties of the magnitude plot */
+    void setMagnitudePlotProperties(PlotComponent&, double sr, bool db = false);
+    /** Set the properties of the phase plot */
+    void setPhasePlotProperties(PlotComponent&, double sr);
+    /** Make linear x ticks */
+    std::vector<float> makeLinearXTicks(double sr);
+    /** Make logarithmic x ticks */
+    std::vector<float> makeLogXTicks(double sr);
 
     // =========================================================================
     /**
@@ -141,7 +170,7 @@ public:
 
 private:
     // =========================================================================
-    static const juce::Typeface::Ptr ltAvocadoRegular;
+    static const juce::Typeface::Ptr muktaRegular;
 
     // =========================================================================
     int fullWidth, fullHeight, fullHeaderHeight, fullPanelOuterMargin;
@@ -158,4 +187,11 @@ private:
     // =========================================================================
     float buttonAspectRatio, fullButtonPadding, fullButtonOutline,
         fullButtonRadius;
+
+    // =========================================================================
+    int n_x_ticks;
+    float fullPlotComponentCornerSize, fullPlotStrokeThickness,
+        fullPlotGridThickness, logPlotCenterFreq;
+    std::vector<float> logPlotCenterFreqUnits;
+    std::vector<float> dbPlotTicks;
 };

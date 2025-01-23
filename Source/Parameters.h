@@ -75,6 +75,14 @@ public:
     void resetParameterValue(juce::StringRef);
     /** Reset value of all parameters */
     void resetParameters();
+    /** Gets the vector of all parameter identifiers */
+    std::vector<juce::StringRef> parameterIDs();
+    /** Add parameter listener to value tree state */
+    void addParameterListener(juce::StringRef,
+                              juce::AudioProcessorValueTreeState::Listener*);
+    /** Remove parameter listener from value tree state */
+    void removeParameterListener(juce::StringRef,
+                                 juce::AudioProcessorValueTreeState::Listener*);
 
 protected:
     //==============================================================================
@@ -104,8 +112,6 @@ protected:
 
 private:
     //==============================================================================
-    /** Gets the vector of all parameter identifiers */
-    std::vector<juce::StringRef> parameterIDs();
     /**
      * Helper function for notifying all listeners of a value change. Used by
      * setStateInformation()
