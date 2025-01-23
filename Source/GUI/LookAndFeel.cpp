@@ -335,11 +335,9 @@ void CustomLookAndFeel::resizeToggleButton(juce::Component& c) const
 }
 
 // =============================================================================
-void CustomLookAndFeel::drawGroupComponentOutline(juce::Graphics& g, int width,
-                                                  int height,
-                                                  const juce::String& text,
-                                                  const juce::Justification&,
-                                                  juce::GroupComponent& gp)
+void CustomLookAndFeel::drawGroupComponentOutline(
+    juce::Graphics& g, int width, int height, const juce::String& /* text */,
+    const juce::Justification&, juce::GroupComponent& gp)
 {
     juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(width),
                              static_cast<float>(height));
