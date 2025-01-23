@@ -69,14 +69,16 @@ void ParameterStrip::resized()
         jassert(rects.size() == 6);
         mSlider.setBounds(rects[0]);
         pSlider.setBounds(rects[1]);
-        fLabel.setBounds(rects[2]
-                             .withHeight(fLabel.getFont().getHeight())
-                             .withCentre(rects[2].getCentre()));
+        fLabel.setBounds(
+            rects[2]
+                .withHeight(juce::roundToInt(fLabel.getFont().getHeight()))
+                .withCentre(rects[2].getCentre()));
         tButton.setBounds(rects[3]);
         aButton.setBounds(rects[4]);
-        gLabel.setBounds(rects[5]
-                             .withHeight(gLabel.getFont().getHeight())
-                             .withCentre(rects[5].getCentre()));
+        gLabel.setBounds(
+            rects[5]
+                .withHeight(juce::roundToInt(gLabel.getFont().getHeight()))
+                .withCentre(rects[5].getCentre()));
 
         claf->resizeToggleButton(tButton);
         claf->resizeToggleButton(aButton);
