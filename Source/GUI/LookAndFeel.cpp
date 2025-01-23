@@ -21,7 +21,7 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a)
     juce::Rectangle<RectType> out_r(r);
     if (transpose)
     {
-        scale = 1.0 / scale;
+        scale = 1.0f / scale;
         out_r = transposeRectangle(out_r);
     }
 
