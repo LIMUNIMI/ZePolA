@@ -42,11 +42,6 @@
         <FILE id="JkWQf9" name="PluginEditor_.cpp" compile="1" resource="0"
               file="Source/PluginEditor_.cpp"/>
         <FILE id="HcmWXE" name="PluginEditor_.h" compile="0" resource="0" file="Source/PluginEditor_.h"/>
-        <FILE id="uMM33l" name="GraphicTheme.h" compile="0" resource="0" file="Source/GraphicTheme.h"/>
-        <FILE id="HNvN2h" name="PluginEditor.cpp" compile="1" resource="0"
-              file="Source/PluginEditor.cpp"/>
-        <FILE id="KJdboJ" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-        <FILE id="htO7Xe" name="Graphs.h" compile="0" resource="0" file="Source/Graphs.h"/>
       </GROUP>
       <GROUP id="{D2A8AF86-7D3D-AB40-6162-437A1EDBDD1A}" name="DSP">
         <FILE id="qBik1j" name="Filter.cpp" compile="1" resource="0" file="Source/DSP/Filter.cpp"/>
