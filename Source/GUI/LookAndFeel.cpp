@@ -162,9 +162,9 @@ std::vector<float> CustomLookAndFeel::makeLinearXTicks(double sr)
 std::vector<float> CustomLookAndFeel::makeLogXTicks(double sr)
 {
     float x_max = static_cast<float>(sr * 0.5);
-    float x_min = getLogPlotLowFreq(sr);
+    float x_min = static_cast<float>(getLogPlotLowFreq(sr));
     std::vector<float> ticks({x_min});
-    float pow_10 = pow(10, floor(log10(x_min)));
+    float pow_10 = pow(10.0f, floor(log10(x_min)));
     auto n_units = logPlotCenterFreqUnits.size();
     float x;
     for (int i = 0;; ++i)
