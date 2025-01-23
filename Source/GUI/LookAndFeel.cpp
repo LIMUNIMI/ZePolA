@@ -25,7 +25,7 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a)
         out_r = transposeRectangle(out_r);
     }
 
-    out_r.setWidth(out_r.getWidth() * scale);
+    out_r.setWidth(static_cast<RectType>(out_r.getWidth() * scale));
 
     if (transpose) out_r = transposeRectangle(out_r);
     out_r.setCentre(r.getCentre());
