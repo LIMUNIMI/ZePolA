@@ -324,10 +324,14 @@ void CustomLookAndFeel::resizeSlider(juce::Slider& s) const
 }
 void CustomLookAndFeel::resizeToggleButton(juce::Component& c) const
 {
-    c.setBounds(forceAspectRatioCentered(
-                    c.getBounds().reduced(resizeSize(fullButtonPadding)),
-                    buttonAspectRatio)
-                    .expanded(resizeSize(fullButtonOutline * 0.5f)));
+    auto r = juce::roundToInt(resizeSize(fullButtonPadding));
+    auto e = juce::roundToInt(resizeSize(fullButtonOutline * 0.5f));
+
+    auto bounds = c.getBounds();
+    bounds.reduce(r, r);
+    bounds = forceAspectRatioCentered(bounds, buttonAspectRatio);
+    bounds.expand(e, e);
+    c.setBounds(bounds);
 }
 
 // =============================================================================
