@@ -560,17 +560,17 @@ void CustomLookAndFeel::drawPlotComponent(
 
     // Grid
     juce::Path gridlines;
-    for (auto f : std::vector<float>(y_grid.begin() + 1, y_grid.end() - 1))
+    for (auto yt : std::vector<float>(y_grid.begin() + 1, y_grid.end() - 1))
     {
-        auto f_mapped = y_mapper.map(f);
-        gridlines.startNewSubPath(0.0f, f_mapped);
-        gridlines.lineTo(width, f_mapped);
+        auto yt_mapped = y_mapper.map(yt);
+        gridlines.startNewSubPath(0.0f, yt_mapped);
+        gridlines.lineTo(width, yt_mapped);
     }
-    for (auto f : std::vector<float>(x_grid.begin() + 1, x_grid.end() - 1))
+    for (auto xt : std::vector<float>(x_grid.begin() + 1, x_grid.end() - 1))
     {
-        auto f_mapped = x_mapper.map(f);
-        gridlines.startNewSubPath(f_mapped, 0.0f);
-        gridlines.lineTo(f_mapped, height);
+        auto xt_mapped = x_mapper.map(xt);
+        gridlines.startNewSubPath(xt_mapped, 0.0f);
+        gridlines.lineTo(xt_mapped, height);
     }
     g.setColour(pc.findColour(PlotComponent_gridColourId));
     g.strokePath(gridlines,
