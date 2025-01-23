@@ -15,7 +15,7 @@ createParameterLayout(int n_elements)
         std::make_unique<AudioParameterBool>(BYPASS_ID, "Bypass", false));
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
         GAIN_ID, "Gain", juce::NormalisableRange<float>(-48.0f, 48.0f, 0.01f),
-        0.0f, "dB"));
+        0.0f, juce::AudioParameterFloatAttributes {}.withLabel("dB")));
 
     for (int i = 0; i < n_elements; ++i)
     {
@@ -27,10 +27,13 @@ createParameterLayout(int n_elements)
             juce::NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
             PHASE_ID_PREFIX + i_str, "Phase " + ip1_str,
-            juce::NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f));
+            juce::NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f,
+            juce::AudioParameterFloatAttributes {}.withLabel(
+                juce::CharPointer_UTF8("×π rad"))));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
             GAIN_ID_PREFIX + i_str, "Gain " + ip1_str,
-            juce::NormalisableRange<float>(-128.0f, 24.0f, 0.1f), 0.0f));
+            juce::NormalisableRange<float>(-128.0f, 24.0f, 0.1f), 0.0f,
+            juce::AudioParameterFloatAttributes {}.withLabel("dB")));
         params.push_back(std::make_unique<juce::AudioParameterChoice>(
             TYPE_ID_PREFIX + i_str, "Type" + ip1_str,
             juce::StringArray {FilterElement::typeToString(0),
