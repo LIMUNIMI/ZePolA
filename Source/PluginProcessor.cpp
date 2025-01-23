@@ -2,7 +2,7 @@
 #include "DSP/Filter.h"
 #include "Macros.h"
 #include "Parameters.h"
-#include "PluginEditor_.h"
+#include "PluginEditor.h"
 #include <JuceHeader.h>
 
 // =============================================================================
