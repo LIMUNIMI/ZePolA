@@ -503,7 +503,7 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
         rect.getY() + bpad + othick * 0.5f, led_diam, led_diam);
     juce::Rectangle<float> text_rect(
         rect.getX() + othick * 0.5f + bpad, rect.getY() + othick * 0.5f + bpad,
-        rect.getWidth(), rect.getHeight() - othick - 2.0 * bpad);
+        rect.getWidth(), rect.getHeight() - othick - 2.0f * bpad);
     text_rect.setRight(led_rect.getX() - bpad);
 
     juce::String txt((on) ? "ON" : "OFF");
