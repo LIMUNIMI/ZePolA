@@ -317,9 +317,10 @@ CustomLookAndFeel::splitProportionalPanel(const juce::Rectangle<int>& r) const
 
 void CustomLookAndFeel::resizeSlider(juce::Slider& s) const
 {
-    s.setTextBoxStyle(s.getTextBoxPosition(), false,
-                      s.getBounds().getWidth() * sliderTextBoxProportionW,
-                      s.getBounds().getHeight() * sliderTextBoxProportionH);
+    s.setTextBoxStyle(
+        s.getTextBoxPosition(), false,
+        juce::roundToInt(s.getBounds().getWidth() * sliderTextBoxProportionW),
+        juce::roundToInt(s.getBounds().getHeight() * sliderTextBoxProportionH));
 }
 void CustomLookAndFeel::resizeToggleButton(juce::Component& c) const
 {
