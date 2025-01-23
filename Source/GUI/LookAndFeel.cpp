@@ -509,7 +509,7 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     juce::String txt((on) ? "ON" : "OFF");
     g.setColour(tc);
     auto font = getLabelFont();
-    font.setHeight((text_rect.getHeight() + bpad) * 1.5);
+    font.setHeight((text_rect.getHeight() + bpad) * 1.5f);
     font.setBold(true);
     g.setFont(font);
     g.drawText(txt, text_rect, juce::Justification::centred);
