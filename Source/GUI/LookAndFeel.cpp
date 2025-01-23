@@ -462,10 +462,9 @@ void CustomLookAndFeel::drawParameterStripSeparators(juce::Graphics& g, float,
     g.setColour(pp.findColour(ParameterStripSeparator_fillColourId));
     for (auto i : y) g.fillRect(x, i - h * 0.5f, width, h);
 }
-void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
-                                         juce::ToggleButton& button,
-                                         bool shouldDrawButtonAsHighlighted,
-                                         bool shouldDrawButtonAsDown)
+void CustomLookAndFeel::drawToggleButton(
+    juce::Graphics& g, juce::ToggleButton& button,
+    bool /* shouldDrawButtonAsHighlighted */, bool /* shouldDrawButtonAsDown */)
 {
     bool on      = button.getToggleState();
     float radius = resizeSize(fullButtonRadius);
