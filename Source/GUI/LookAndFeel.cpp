@@ -520,7 +520,7 @@ void CustomLookAndFeel::drawToggleButton(
     g.drawEllipse(led_rect, othick * 0.5f);
 }
 void CustomLookAndFeel::drawPlotComponent(
-    juce::Graphics& g, float x, float y, float width, float height,
+    juce::Graphics& g, float /* x */, float /* y */, float width, float height,
     const std::vector<float>& x_values, const std::vector<float>& y_values,
     float period, const std::vector<float>& x_grid,
     const std::vector<float>& y_grid, const std::vector<juce::String>& x_labels,
