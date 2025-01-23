@@ -289,8 +289,9 @@ void PolesAndZerosEQAudioProcessor::markAsSafe(float)
 void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
 {
     for (int i = 0; i < n_elements; ++i)
-        setParameterValue(PHASE_ID_PREFIX + juce::String(i),
-                          multiChannelCascade[0][i].getPhase() * k);
+        setParameterValue(
+            PHASE_ID_PREFIX + juce::String(i),
+            static_cast<float>(multiChannelCascade[0][i].getPhase() * k));
 }
 void PolesAndZerosEQAudioProcessor::doublePhases() { multiplyPhases(2.0); }
 void PolesAndZerosEQAudioProcessor::halfPhases() { multiplyPhases(0.5); }
@@ -326,15 +327,15 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
     auto i_str = juce::String(elementNr - 1);
     setParameterValue(ACTIVE_ID_PREFIX + i_str, false);
 
-    float gain
-        = Decibels::gainToDecibels(linearGain, FilterElement::gain_floor_db);
-
     setParameterValue(ACTIVE_ID_PREFIX + i_str, false);
-    setParameterValue(MAGNITUDE_ID_PREFIX + i_str, magnitude);
-    setParameterValue(PHASE_ID_PREFIX + i_str, phase);
+    setParameterValue(MAGNITUDE_ID_PREFIX + i_str,
+                      static_cast<float>(magnitude));
+    setParameterValue(PHASE_ID_PREFIX + i_str, static_cast<float>(phase));
     setParameterValue(TYPE_ID_PREFIX + i_str, FilterElement::typeToFloat(type));
     setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
-    setParameterValue(GAIN_ID_PREFIX + i_str, gain);
+    setParameterValue(GAIN_ID_PREFIX + i_str,
+                      static_cast<float>(Decibels::gainToDecibels(
+                          linearGain, FilterElement::gain_floor_db)));
 }
 
 // =============================================================================
