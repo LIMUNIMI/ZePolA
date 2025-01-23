@@ -528,14 +528,14 @@ void CustomLookAndFeel::drawPlotComponent(
     const juce::String& topRightText, PlotComponent& pc)
 {
     // Check sizes
-    auto n_y_ticks = y_grid.size();
-    auto n_x_ticks = x_grid.size();
-    auto n_points  = y_values.size();
+    auto num_y_ticks = y_grid.size();
+    auto num_x_ticks = x_grid.size();
+    auto n_points    = y_values.size();
     jassert(n_points > 1);
-    jassert(n_y_ticks > 1);
-    jassert(n_y_ticks == y_labels.size());
-    jassert(n_x_ticks > 1);
-    jassert(n_x_ticks == x_labels.size());
+    jassert(num_y_ticks > 1);
+    jassert(num_y_ticks == y_labels.size());
+    jassert(num_x_ticks > 1);
+    jassert(num_x_ticks == x_labels.size());
 
     // Background
     auto corner_s = resizeSize(fullPlotComponentCornerSize);
@@ -552,10 +552,10 @@ void CustomLookAndFeel::drawPlotComponent(
                juce::Justification::topRight);
 
     // Coordinate mapper
-    LinearMapper<float> y_mapper(y_grid[0], height, y_grid[n_y_ticks - 1],
+    LinearMapper<float> y_mapper(y_grid[0], height, y_grid[num_y_ticks - 1],
                                  0.0f);
     InputTransformMapper<float> x_mapper(
-        x_grid[0], 0.0f, x_grid[n_x_ticks - 1], width,
+        x_grid[0], 0.0f, x_grid[num_x_ticks - 1], width,
         (log_x) ? static_cast<float (*)(float)>(logf) : identity<float>);
 
     // Grid
@@ -581,16 +581,16 @@ void CustomLookAndFeel::drawPlotComponent(
     juce::Rectangle r(gt_pad * 2.0f, gt_pad, width - 4.0f * gt_pad,
                       f.getHeight() - 2.0f * gt_pad);
     g.setColour(pc.findColour(PlotComponent_gridLabelsColourId));
-    for (auto i = 0; i < n_y_ticks; ++i)
+    for (auto i = 0; i < num_y_ticks; ++i)
     {
-        r.setY((i) ? ((i == n_y_ticks - 1)
+        r.setY((i) ? ((i == num_y_ticks - 1)
                           ? gt_pad
                           : y_mapper.map(y_grid[i]) - f.getHeight() * 0.5f)
                    : height - gt_pad - f.getHeight());
         g.drawText(y_labels[i], r, juce::Justification::topLeft);
     }
     r.setY(height / 2.0f + gt_pad);
-    for (auto i = 1; i < n_x_ticks - 1; ++i)
+    for (auto i = 1; i < num_x_ticks - 1; ++i)
     {
         auto x_pos = x_mapper.map(x_grid[i]);
         // Avoid labels near the vertical edges
