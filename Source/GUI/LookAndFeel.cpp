@@ -516,11 +516,6 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
         g.setColour(oc);
     g.drawEllipse(led_rect, othick * 0.5f);
 }
-
-// Helps resolve overloads
-static float _identity_map(float x) { return x; }
-static float _log_map(float x) { return log(x); }
-
 void CustomLookAndFeel::drawPlotComponent(
     juce::Graphics& g, float x, float y, float width, float height,
     const std::vector<float>& x_values, const std::vector<float>& y_values,
