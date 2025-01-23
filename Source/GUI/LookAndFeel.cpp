@@ -375,7 +375,8 @@ juce::Font CustomLookAndFeel::getLabelFont(juce::Label&)
 }
 void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y,
                                          int width, int height, float sliderPos,
-                                         float minSliderPos, float maxSliderPos,
+                                         float /* minSliderPos */,
+                                         float /* maxSliderPos */,
                                          const juce::Slider::SliderStyle,
                                          juce::Slider& slider)
 {
