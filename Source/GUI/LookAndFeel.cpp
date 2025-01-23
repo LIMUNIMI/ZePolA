@@ -361,7 +361,7 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
 juce::Font CustomLookAndFeel::getLabelFont(float fullFontSize)
 {
     juce::Font f(muktaRegular);
-    f.setSizeAndStyle(resizeSize(fullFontSize * 1.5), f.getStyleFlags(),
+    f.setSizeAndStyle(resizeSize(fullFontSize * 1.5f), f.getStyleFlags(),
                       f.getHorizontalScale(), f.getExtraKerningFactor());
     return f;
 }
