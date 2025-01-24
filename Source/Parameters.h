@@ -132,11 +132,14 @@ private:
 class SimpleListener : public juce::AudioProcessorValueTreeState::Listener
 {
 public:
+    //==============================================================================
     SimpleListener(std::function<void(float)>);
     void parameterChanged(const juce::String&, float) override;
 
 private:
+    //==============================================================================
     std::function<void(float)> setterFunction;
 
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleListener)
 };

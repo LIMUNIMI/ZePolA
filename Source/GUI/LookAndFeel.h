@@ -194,4 +194,7 @@ private:
         fullPlotGridThickness, logPlotCenterFreq;
     std::vector<float> logPlotCenterFreqUnits;
     std::vector<float> dbPlotTicks;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)
 };
