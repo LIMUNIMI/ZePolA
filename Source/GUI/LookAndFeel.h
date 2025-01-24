@@ -170,7 +170,7 @@ public:
 
 private:
     // =========================================================================
-    static const juce::Typeface::Ptr muktaRegular;
+    juce::Typeface::Ptr typeface;
 
     // =========================================================================
     int fullWidth, fullHeight, fullHeaderHeight, fullPanelOuterMargin;

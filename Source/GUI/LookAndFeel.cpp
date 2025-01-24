@@ -33,11 +33,6 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a)
 }
 
 // =============================================================================
-const juce::Typeface::Ptr CustomLookAndFeel::muktaRegular
-    = Typeface::createSystemTypefaceFor(BinaryData::MuktaRegular_ttf,
-                                        BinaryData::MuktaRegular_ttfSize);
-
-// =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
     : resizeRatio(1.0f)
     , fullWidth(1200)
@@ -71,6 +66,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , logPlotCenterFreq(1000.0f)
     , logPlotCenterFreqUnits({1.0f, 2.0f, 5.0f})
     , dbPlotTicks({6.0f, 12.0f, 20.0f, 40.0f, 60.f})
+    , typeface(juce::Typeface::createSystemTypefaceFor(
+          BinaryData::MuktaRegular_ttf, BinaryData::MuktaRegular_ttfSize))
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -360,7 +357,7 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
 }
 juce::Font CustomLookAndFeel::getLabelFont(float fullFontSize)
 {
-    juce::Font f(muktaRegular);
+    juce::Font f(typeface);
     f.setSizeAndStyle(resizeSize(fullFontSize * 1.5f), f.getStyleFlags(),
                       f.getHorizontalScale(), f.getExtraKerningFactor());
     return f;
