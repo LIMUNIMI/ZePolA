@@ -12,6 +12,7 @@ class PolesAndZerosEQAudioProcessorEditor : public juce::AudioProcessorEditor
 public:
     // ===========================================================================
     PolesAndZerosEQAudioProcessorEditor(PolesAndZerosEQAudioProcessor&);
+    ~PolesAndZerosEQAudioProcessorEditor();
 
     //===================================================================
     void paint(juce::Graphics&) override;

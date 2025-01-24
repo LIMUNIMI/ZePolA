@@ -16,6 +16,10 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     addAndMakeVisible(masterGroup);
     sizeSetup();
 }
+PolesAndZerosEQAudioProcessorEditor::~PolesAndZerosEQAudioProcessorEditor()
+{
+    setLookAndFeel(nullptr);
+}
 void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
 {
     aspectRatioConstrainer.setFixedAspectRatio(claf.getAspectRatio());
