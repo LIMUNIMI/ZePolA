@@ -479,10 +479,10 @@ void CustomLookAndFeel::drawToggleButton(
     auto bgc = button.findColour((on) ? OnOffButton_backgroundOnColourId
                                       : OnOffButton_backgroundOffColourId);
     auto lc  = button.findColour((on) ? OnOffButton_ledOnColourId
-                                      : OnOffButton_ledOffColourId);
+                                     : OnOffButton_ledOffColourId);
     auto oc  = button.findColour(OnOffButton_outlineColourId);
     auto tc  = button.findColour((on) ? OnOffButton_textOnColourId
-                                      : OnOffButton_textOffColourId);
+                                     : OnOffButton_textOffColourId);
     if (!ParameterStrip::parentComponentIsActive(button))
     {
         bgc = bgc.brighter(inactiveBrightness);
@@ -536,6 +536,11 @@ void CustomLookAndFeel::drawPlotComponent(
     jassert(num_y_ticks == y_labels.size());
     jassert(num_x_ticks > 1);
     jassert(num_x_ticks == x_labels.size());
+
+    // If plot is inconsistent, force linear scale.
+    // This happens when paint is called after changing between log and lin, but
+    // before changing the x ticks
+    if (x_grid[0] <= 0) log_x = false;
 
     // Background
     auto corner_s = resizeSize(fullPlotComponentCornerSize);
