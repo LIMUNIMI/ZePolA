@@ -21,7 +21,7 @@ public:
 private:
     // ===========================================================================
     /** Setup function for size-related settings */
-    void sizeSetup();
+    void sizeAndSetup();
 
     // ===========================================================================
     PolesAndZerosEQAudioProcessor& processor;

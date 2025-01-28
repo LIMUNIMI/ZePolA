@@ -10,17 +10,17 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     , plotsPanel(processor)
 {
     setLookAndFeel(&claf);
+    sizeAndSetup();
     addAndMakeVisible(parameterPanel);
     addAndMakeVisible(plotsPanel);
     addAndMakeVisible(designGroup);
     addAndMakeVisible(masterGroup);
-    sizeSetup();
 }
 PolesAndZerosEQAudioProcessorEditor::~PolesAndZerosEQAudioProcessorEditor()
 {
     setLookAndFeel(nullptr);
 }
-void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
+void PolesAndZerosEQAudioProcessorEditor::sizeAndSetup()
 {
     aspectRatioConstrainer.setFixedAspectRatio(claf.getAspectRatio());
     setConstrainer(&aspectRatioConstrainer);
@@ -34,8 +34,10 @@ void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
     applicationProperties.setStorageParameters(options);
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
+    {
         claf.setResizeRatio(static_cast<float>(
             pf->getDoubleValue("sizeRatio", claf.getResizeRatio())));
+    }
 
     setResizable(true, true);
     setSize(claf.getResizedWidth(), claf.getResizedHeight());
