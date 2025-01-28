@@ -24,6 +24,9 @@ private:
     //==========================================================================
     int numberOfDecimalPlaces, eventStartY;
     float eventStartValue, deltaScale, deltaGamma, defaultValue;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DraggableLabel)
 };
 
 // =============================================================================
@@ -43,6 +46,9 @@ private:
     //==========================================================================
     juce::RangedAudioParameter* param;
     float scale;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DraggableLabelListener)
 };
 
 // =============================================================================
@@ -63,6 +69,10 @@ private:
     //==========================================================================
     juce::Label& label;
     float scale;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+        DraggableLabelParameterListener)
 };
 
 // =============================================================================
@@ -87,4 +97,7 @@ private:
     juce::Label& label;
     DraggableLabelParameterListener paramListener;
     DraggableLabelListener labelListener;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DraggableLabelAttachment)
 };

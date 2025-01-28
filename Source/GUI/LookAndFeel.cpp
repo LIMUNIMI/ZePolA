@@ -33,11 +33,6 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a)
 }
 
 // =============================================================================
-const juce::Typeface::Ptr CustomLookAndFeel::muktaRegular
-    = Typeface::createSystemTypefaceFor(BinaryData::MuktaRegular_ttf,
-                                        BinaryData::MuktaRegular_ttfSize);
-
-// =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
     : resizeRatio(1.0f)
     , fullWidth(1200)
@@ -71,6 +66,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , logPlotCenterFreq(1000.0f)
     , logPlotCenterFreqUnits({1.0f, 2.0f, 5.0f})
     , dbPlotTicks({6.0f, 12.0f, 20.0f, 40.0f, 60.f})
+    , typeface(juce::Typeface::createSystemTypefaceFor(
+          BinaryData::MuktaRegular_ttf, BinaryData::MuktaRegular_ttfSize))
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -360,7 +357,7 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
 }
 juce::Font CustomLookAndFeel::getLabelFont(float fullFontSize)
 {
-    juce::Font f(muktaRegular);
+    juce::Font f(typeface);
     f.setSizeAndStyle(resizeSize(fullFontSize * 1.5f), f.getStyleFlags(),
                       f.getHorizontalScale(), f.getExtraKerningFactor());
     return f;
@@ -479,10 +476,10 @@ void CustomLookAndFeel::drawToggleButton(
     auto bgc = button.findColour((on) ? OnOffButton_backgroundOnColourId
                                       : OnOffButton_backgroundOffColourId);
     auto lc  = button.findColour((on) ? OnOffButton_ledOnColourId
-                                      : OnOffButton_ledOffColourId);
+                                     : OnOffButton_ledOffColourId);
     auto oc  = button.findColour(OnOffButton_outlineColourId);
     auto tc  = button.findColour((on) ? OnOffButton_textOnColourId
-                                      : OnOffButton_textOffColourId);
+                                     : OnOffButton_textOffColourId);
     if (!ParameterStrip::parentComponentIsActive(button))
     {
         bgc = bgc.brighter(inactiveBrightness);
@@ -536,6 +533,11 @@ void CustomLookAndFeel::drawPlotComponent(
     jassert(num_y_ticks == y_labels.size());
     jassert(num_x_ticks > 1);
     jassert(num_x_ticks == x_labels.size());
+
+    // If plot is inconsistent, force linear scale.
+    // This happens when paint is called after changing between log and lin, but
+    // before changing the x ticks
+    if (x_grid[0] <= 0) log_x = false;
 
     // Background
     auto corner_s = resizeSize(fullPlotComponentCornerSize);

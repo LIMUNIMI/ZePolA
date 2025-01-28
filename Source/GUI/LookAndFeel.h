@@ -170,7 +170,7 @@ public:
 
 private:
     // =========================================================================
-    static const juce::Typeface::Ptr muktaRegular;
+    juce::Typeface::Ptr typeface;
 
     // =========================================================================
     int fullWidth, fullHeight, fullHeaderHeight, fullPanelOuterMargin;
@@ -194,4 +194,7 @@ private:
         fullPlotGridThickness, logPlotCenterFreq;
     std::vector<float> logPlotCenterFreqUnits;
     std::vector<float> dbPlotTicks;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)
 };

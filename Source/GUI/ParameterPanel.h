@@ -62,6 +62,9 @@ private:
         fLabelAttachment;
 
     ParentRepaintButtonListener aButtonListener;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterStrip)
 };
 
 // =============================================================================
@@ -80,6 +83,9 @@ private:
     // =========================================================================
     std::vector<std::unique_ptr<ParameterStrip>> strips;
     std::vector<std::unique_ptr<juce::Label>> headerLabels;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterPanel)
 };
 
 // =============================================================================
