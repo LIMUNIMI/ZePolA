@@ -25,6 +25,28 @@ private:
 };
 
 // =============================================================================
+/** Application property listener for a button */
+class ButtonApplicationPropertyListener : public juce::ChangeListener
+{
+public:
+    // =========================================================================
+    ButtonApplicationPropertyListener(const juce::String& propertyID,
+                                      std::shared_ptr<juce::Button> button);
+
+    // =========================================================================
+    virtual void changeListenerCallback(juce::ChangeBroadcaster*) override;
+
+private:
+    // =========================================================================
+    std::shared_ptr<juce::Button> button;
+    juce::String propertyID;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+        ButtonApplicationPropertyListener)
+};
+
+// =============================================================================
 /** Attachment for a button and an application property */
 class ApplicationPropertiesButtonAttachment
 {
@@ -41,6 +63,7 @@ private:
     juce::String propertyID;
     std::shared_ptr<juce::Button> button;
     ApplicationPropertyButtonListener buttonListener;
+    ButtonApplicationPropertyListener propertyListener;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
