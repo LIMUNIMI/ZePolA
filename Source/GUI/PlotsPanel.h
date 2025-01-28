@@ -114,12 +114,12 @@ private:
     void startTimer();
 
     // =========================================================================
-    std::unique_ptr<ApplicationPropertiesButtonAttachment> linLogFreqAttachment;
+    std::unique_ptr<ApplicationPropertiesButtonAttachment>
+        linLogFreqAPAttachment, linLogAmpAPAttachment;
+    std::shared_ptr<juce::ToggleButton> linLogFreqButton, linLogAmpButton;
     PolesAndZerosEQAudioProcessor& processor;
-    juce::ToggleButton linLogAmpButton;
-    std::shared_ptr<juce::ToggleButton> linLogFreqButton;
-    PlotComponent mPlot, pPlot;
     juce::TimedCallback callbackTimer;
+    PlotComponent mPlot, pPlot;
     int timer_ms;
     bool db;
 

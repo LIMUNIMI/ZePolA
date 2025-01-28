@@ -91,9 +91,10 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
     , db(false)
     , callbackTimer(std::bind(&PlotsPanel::updateValues, this))
     , linLogFreqButton(new juce::ToggleButton())
+    , linLogAmpButton(new juce::ToggleButton())
 {
     addAndMakeVisible(*linLogFreqButton.get());
-    addAndMakeVisible(linLogAmpButton);
+    addAndMakeVisible(*linLogAmpButton.get());
     addAndMakeVisible(mPlot);
     addAndMakeVisible(pPlot);
     for (auto i : processor.parameterIDs())
@@ -102,9 +103,11 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
     linLogFreqButton->addListener(&mPlot);
     linLogFreqButton->addListener(&pPlot);
     linLogFreqButton->addListener(this);
-    linLogAmpButton.addListener(this);
-    linLogFreqAttachment.reset(new ApplicationPropertiesButtonAttachment(
+    linLogAmpButton->addListener(this);
+    linLogFreqAPAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, "linLogFreq", linLogFreqButton));
+    linLogAmpAPAttachment.reset(new ApplicationPropertiesButtonAttachment(
+        properties, "linLogAmp", linLogAmpButton));
 }
 PlotsPanel::~PlotsPanel()
 {
@@ -113,7 +116,7 @@ PlotsPanel::~PlotsPanel()
     linLogFreqButton->removeListener(&mPlot);
     linLogFreqButton->removeListener(&pPlot);
     linLogFreqButton->removeListener(this);
-    linLogAmpButton.removeListener(this);
+    linLogAmpButton->removeListener(this);
 }
 
 // =============================================================================
@@ -159,10 +162,7 @@ void PlotsPanel::startTimer()
 }
 void PlotsPanel::buttonClicked(juce::Button* b)
 {
-    if (b == &linLogAmpButton)
-    {
-        db = b->getToggleState();
-    }
+    if (b == linLogAmpButton.get()) db = b->getToggleState();
     startTimer();
 }
 void PlotsPanel::buttonStateChanged(juce::Button*) {}
@@ -184,7 +184,7 @@ void PlotsPanel::resized()
         mPlot.setBounds(regions[1]);
         pPlot.setBounds(regions[3]);
 
-        linLogAmpButton.setBounds(middle_regions[1]);
+        linLogAmpButton->setBounds(middle_regions[1]);
         linLogFreqButton->setBounds(middle_regions[3]);
     }
 }
