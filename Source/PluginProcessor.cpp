@@ -116,6 +116,7 @@ void PolesAndZerosEQAudioProcessor::resetChannels()
 void PolesAndZerosEQAudioProcessor::prepareToPlay(double sampleRate,
                                                   int samplesPerBlock)
 {
+    VTSAudioProcessor::prepareToPlay(sampleRate, samplesPerBlock);
     juce::dsp::ProcessSpec spec;
     spec.sampleRate       = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
@@ -225,7 +226,7 @@ double PolesAndZerosEQAudioProcessor::getTailLengthSeconds() const
 // =============================================================================
 int PolesAndZerosEQAudioProcessor::getNumPrograms() { return 1; }
 int PolesAndZerosEQAudioProcessor::getCurrentProgram() { return 0; }
-void PolesAndZerosEQAudioProcessor::setCurrentProgram(int) { }
+void PolesAndZerosEQAudioProcessor::setCurrentProgram(int) {}
 const juce::String PolesAndZerosEQAudioProcessor::getProgramName(int)
 {
     return {};

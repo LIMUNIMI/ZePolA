@@ -42,6 +42,15 @@ void resetParameterValue(juce::RangedAudioParameter*);
 }  // namespace Parameters
 
 // =============================================================================
+/** Sample rate listener abstract base class */
+class SampleRateListener
+{
+public:
+    // =========================================================================
+    virtual void sampleRateChangedCallback(double) = 0;
+};
+
+// =============================================================================
 /**
  * A class for audio processors with a value tree state
  */
@@ -63,6 +72,13 @@ public:
     template <typename AttachmentType, typename ComponentType>
     AttachmentType* makeAttachment(juce::StringRef parameterID,
                                    ComponentType& slider);
+
+    //==============================================================================
+    /** Add a sample rate listener to this processor */
+    void addSampleRateListener(SampleRateListener*);
+    /** Remove a sample rate listener from this processor */
+    void removeSampleRateListener(SampleRateListener*);
+    virtual void prepareToPlay(double sampleRate, int samplesPerBlock) override;
 
     //==============================================================================
     /** Get parameter by ID */
@@ -121,11 +137,13 @@ private:
     //==============================================================================
     std::vector<juce::AudioProcessorValueTreeState::Listener*> listeners;
     std::vector<juce::String> listeners_ids;
+    std::vector<SampleRateListener*> sr_listeners;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VTSAudioProcessor)
 };
 
+// =============================================================================
 /**
  * A simple value tree state parameter change listener
  */
