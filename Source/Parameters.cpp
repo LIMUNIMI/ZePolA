@@ -112,6 +112,7 @@ void VTSAudioProcessor::addSampleRateListener(SampleRateListener* srl)
                   = std::find(sr_listeners.begin(), sr_listeners.end(), srl);
                   jassert(pos == sr_listeners.end());)
     sr_listeners.push_back(srl);
+    sendSampleRateToListener(srl);
 }
 void VTSAudioProcessor::removeSampleRateListener(SampleRateListener* srl)
 {
