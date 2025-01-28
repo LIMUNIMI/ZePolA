@@ -20,21 +20,17 @@ public:
 
 private:
     // ===========================================================================
-    /** Setup function for size-related settings */
-    void sizeSetup();
-
-    // ===========================================================================
     PolesAndZerosEQAudioProcessor& processor;
-
-    // ===========================================================================
-    juce::GroupComponent designGroup, masterGroup;
-    ParameterPanel parameterPanel;
-    PlotsPanel plotsPanel;
 
     // ===========================================================================
     juce::ComponentBoundsConstrainer aspectRatioConstrainer;
     juce::ApplicationProperties applicationProperties;
     CustomLookAndFeel claf;
+
+    // ===========================================================================
+    juce::GroupComponent designGroup, masterGroup;
+    std::unique_ptr<ParameterPanel> parameterPanel;
+    std::unique_ptr<PlotsPanel> plotsPanel;
 
     // ===========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(

@@ -21,10 +21,7 @@ void PlotComponent::buttonClicked(juce::Button* b)
 {
     setLogX(b->getToggleState());
 }
-void PlotComponent::buttonStateChanged(juce::Button* b)
-{
-    setLogX(b->getToggleState());
-}
+void PlotComponent::buttonStateChanged(juce::Button*) {}
 
 // =============================================================================
 void PlotComponent::setTopRightText(const juce::String& s) { topRightText = s; }
@@ -87,32 +84,39 @@ void PlotComponent::paint(juce::Graphics& g)
 }
 
 // =============================================================================
-PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p)
+PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
+                       juce::ApplicationProperties& properties)
     : processor(p)
     , timer_ms(20)
     , db(false)
     , callbackTimer(std::bind(&PlotsPanel::updateValues, this))
+    , linLogFreqButton(new juce::ToggleButton())
+    , linLogAmpButton(new juce::ToggleButton())
 {
-    addAndMakeVisible(linLogFreqButton);
-    addAndMakeVisible(linLogAmpButton);
+    addAndMakeVisible(*linLogFreqButton.get());
+    addAndMakeVisible(*linLogAmpButton.get());
     addAndMakeVisible(mPlot);
     addAndMakeVisible(pPlot);
     for (auto i : processor.parameterIDs())
         processor.addParameterListener(i, this);
     callbackTimer.startTimer(timer_ms);
-    linLogFreqButton.addListener(&mPlot);
-    linLogFreqButton.addListener(&pPlot);
-    linLogFreqButton.addListener(this);
-    linLogAmpButton.addListener(this);
+    linLogFreqButton->addListener(&mPlot);
+    linLogFreqButton->addListener(&pPlot);
+    linLogFreqButton->addListener(this);
+    linLogAmpButton->addListener(this);
+    linLogFreqAPAttachment.reset(new ApplicationPropertiesButtonAttachment(
+        properties, "linLogFreq", linLogFreqButton));
+    linLogAmpAPAttachment.reset(new ApplicationPropertiesButtonAttachment(
+        properties, "linLogAmp", linLogAmpButton));
 }
 PlotsPanel::~PlotsPanel()
 {
     for (auto i : processor.parameterIDs())
         processor.removeParameterListener(i, this);
-    linLogFreqButton.removeListener(&mPlot);
-    linLogFreqButton.removeListener(&pPlot);
-    linLogFreqButton.removeListener(this);
-    linLogAmpButton.removeListener(this);
+    linLogFreqButton->removeListener(&mPlot);
+    linLogFreqButton->removeListener(&pPlot);
+    linLogFreqButton->removeListener(this);
+    linLogAmpButton->removeListener(this);
 }
 
 // =============================================================================
@@ -158,20 +162,10 @@ void PlotsPanel::startTimer()
 }
 void PlotsPanel::buttonClicked(juce::Button* b)
 {
-    if (b == &linLogAmpButton)
-    {
-        db = b->getToggleState();
-    }
+    if (b == linLogAmpButton.get()) db = b->getToggleState();
     startTimer();
 }
-void PlotsPanel::buttonStateChanged(juce::Button* b)
-{
-    if (b == &linLogAmpButton)
-    {
-        db = b->getToggleState();
-    }
-    startTimer();
-}
+void PlotsPanel::buttonStateChanged(juce::Button*) {}
 void PlotsPanel::parameterChanged(const juce::String&, float) { startTimer(); }
 void PlotsPanel::resized()
 {
@@ -190,7 +184,7 @@ void PlotsPanel::resized()
         mPlot.setBounds(regions[1]);
         pPlot.setBounds(regions[3]);
 
-        linLogAmpButton.setBounds(middle_regions[1]);
-        linLogFreqButton.setBounds(middle_regions[3]);
+        linLogAmpButton->setBounds(middle_regions[1]);
+        linLogFreqButton->setBounds(middle_regions[3]);
     }
 }

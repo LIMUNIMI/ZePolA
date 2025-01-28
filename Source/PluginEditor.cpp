@@ -3,42 +3,41 @@
 // =============================================================================
 PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     PolesAndZerosEQAudioProcessor& p)
-    : juce::AudioProcessorEditor(&p)
-    , processor(p)
-    , aspectRatioConstrainer()
-    , parameterPanel(processor, processor.getNElements())
-    , plotsPanel(processor)
+    : juce::AudioProcessorEditor(&p), processor(p), aspectRatioConstrainer()
 {
+    // Look and feel
+    setResizable(true, true);
     setLookAndFeel(&claf);
-    addAndMakeVisible(parameterPanel);
-    addAndMakeVisible(plotsPanel);
-    addAndMakeVisible(designGroup);
-    addAndMakeVisible(masterGroup);
-    sizeSetup();
-}
-PolesAndZerosEQAudioProcessorEditor::~PolesAndZerosEQAudioProcessorEditor()
-{
-    setLookAndFeel(nullptr);
-}
-void PolesAndZerosEQAudioProcessorEditor::sizeSetup()
-{
     aspectRatioConstrainer.setFixedAspectRatio(claf.getAspectRatio());
     setConstrainer(&aspectRatioConstrainer);
 
-    juce::PropertiesFile::Options options;
-    options.applicationName     = ProjectInfo::projectName;
-    options.commonToAllUsers    = true;
-    options.filenameSuffix      = "settings";
-    options.osxLibrarySubFolder = "Application Support";
+    // Application properties options
+    juce::PropertiesFile::Options storage_params;
+    storage_params.applicationName     = ProjectInfo::projectName;
+    storage_params.commonToAllUsers    = true;
+    storage_params.filenameSuffix      = "settings";
+    storage_params.osxLibrarySubFolder = "Application Support";
+    applicationProperties.setStorageParameters(storage_params);
 
-    applicationProperties.setStorageParameters(options);
+    // Load size from application properties
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
         claf.setResizeRatio(static_cast<float>(
             pf->getDoubleValue("sizeRatio", claf.getResizeRatio())));
-
-    setResizable(true, true);
     setSize(claf.getResizedWidth(), claf.getResizedHeight());
+
+    // Subcomponents
+    parameterPanel
+        = std::make_unique<ParameterPanel>(processor, processor.getNElements());
+    plotsPanel = std::make_unique<PlotsPanel>(processor, applicationProperties);
+    addAndMakeVisible(*parameterPanel.get());
+    addAndMakeVisible(*plotsPanel.get());
+    addAndMakeVisible(designGroup);
+    addAndMakeVisible(masterGroup);
+}
+PolesAndZerosEQAudioProcessorEditor::~PolesAndZerosEQAudioProcessorEditor()
+{
+    setLookAndFeel(nullptr);
 }
 
 // =============================================================================
@@ -57,8 +56,8 @@ void PolesAndZerosEQAudioProcessorEditor::resized()
     auto panel_rects = claf.divideInPanels(getLocalBounds());
     jassert(panel_rects.size() == 5);
 
-    parameterPanel.setBounds(panel_rects[1]);
-    plotsPanel.setBounds(panel_rects[2]);
+    if (parameterPanel) parameterPanel->setBounds(panel_rects[1]);
+    if (plotsPanel) plotsPanel->setBounds(panel_rects[2]);
     designGroup.setBounds(panel_rects[3]);
     masterGroup.setBounds(panel_rects[4]);
 }
