@@ -21,10 +21,7 @@ void PlotComponent::buttonClicked(juce::Button* b)
 {
     setLogX(b->getToggleState());
 }
-void PlotComponent::buttonStateChanged(juce::Button* b)
-{
-    setLogX(b->getToggleState());
-}
+void PlotComponent::buttonStateChanged(juce::Button*) {}
 
 // =============================================================================
 void PlotComponent::setTopRightText(const juce::String& s) { topRightText = s; }
@@ -168,14 +165,7 @@ void PlotsPanel::buttonClicked(juce::Button* b)
     }
     startTimer();
 }
-void PlotsPanel::buttonStateChanged(juce::Button* b)
-{
-    if (b == &linLogAmpButton)
-    {
-        db = b->getToggleState();
-    }
-    startTimer();
-}
+void PlotsPanel::buttonStateChanged(juce::Button*) {}
 void PlotsPanel::parameterChanged(const juce::String&, float) { startTimer(); }
 void PlotsPanel::resized()
 {

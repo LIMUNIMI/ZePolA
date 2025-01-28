@@ -10,7 +10,7 @@ ParameterSlider::ParameterSlider()
 }
 
 // =============================================================================
-ParameterStrip::ParentRepaintButtonListener::ParentRepaintButtonListener() { }
+ParameterStrip::ParentRepaintButtonListener::ParentRepaintButtonListener() {}
 
 // =============================================================================
 void ParameterStrip::ParentRepaintButtonListener::buttonClicked(juce::Button* b)
@@ -18,9 +18,8 @@ void ParameterStrip::ParentRepaintButtonListener::buttonClicked(juce::Button* b)
     b->getParentComponent()->repaint();
 }
 void ParameterStrip::ParentRepaintButtonListener::buttonStateChanged(
-    juce::Button* b)
+    juce::Button*)
 {
-    buttonClicked(b);
 }
 
 // =============================================================================
