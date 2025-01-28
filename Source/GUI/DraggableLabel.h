@@ -68,7 +68,7 @@ public:
 private:
     //==========================================================================
     juce::Label& label;
-    float scale;
+    float scale, oldParam;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(

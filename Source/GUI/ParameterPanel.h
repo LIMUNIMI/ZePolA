@@ -32,10 +32,35 @@ public:
         // =====================================================================
         virtual void buttonClicked(juce::Button*) override;
         virtual void buttonStateChanged(juce::Button*) override;
+
+    private:
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+            ParentRepaintButtonListener)
+    };
+
+    // =========================================================================
+    class FrequencyLabelSampleRateListener : public SampleRateListener
+    {
+    public:
+        // =====================================================================
+        FrequencyLabelSampleRateListener(DraggableLabelAttachment&);
+
+        // =====================================================================
+        virtual void sampleRateChangedCallback(double) override;
+
+    private:
+        // =====================================================================
+        DraggableLabelAttachment& dla;
+
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+            FrequencyLabelSampleRateListener)
     };
 
     // =========================================================================
     ParameterStrip(VTSAudioProcessor&, int index);
+    ~ParameterStrip();
 
     //==========================================================================
     void resized() override;
@@ -52,6 +77,7 @@ private:
     ParameterSlider mSlider, pSlider;
     juce::ToggleButton aButton, tButton;
     DraggableLabel gLabel, fLabel;
+    VTSAudioProcessor& processor;
 
     // =========================================================================
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
@@ -60,6 +86,7 @@ private:
         aButtonAttachment, tButtonAttachment;
     std::unique_ptr<DraggableLabelAttachment> gLabelAttachment,
         fLabelAttachment;
+    std::unique_ptr<FrequencyLabelSampleRateListener> srListener;
 
     ParentRepaintButtonListener aButtonListener;
 
