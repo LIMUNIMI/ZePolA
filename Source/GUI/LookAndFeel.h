@@ -180,8 +180,9 @@ private:
         panelProportions, lastPanelProportions;
 
     // =========================================================================
-    float fullLabelFontSize, fullSliderHeight, fullSliderThumbRadius,
-        sliderTextBoxProportionW, sliderTextBoxProportionH, inactiveBrightness;
+    float osFontScale, topRightTextScale, fullLabelFontSize, fullSliderHeight,
+        fullSliderThumbRadius, sliderTextBoxProportionW,
+        sliderTextBoxProportionH, inactiveBrightness;
     juce::String fontName;
 
     // =========================================================================

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="AyGleg" name="PolesAndZerosEQ" projectType="audioplug"
-              jucerFormatVersion="1" companyName="Andrea Casati" pluginCode="pz3q"
-              pluginFormats="buildAU,buildStandalone,buildVST3" pluginAUMainType="'aufx'"
-              displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED = 1">
+<JUCERPROJECT id="AyGleg" name="PolesAndZerosEQ" projectType="audioplug" jucerFormatVersion="1"
+              companyName="Andrea Casati" pluginCode="pz3q" pluginFormats="buildAU,buildStandalone,buildVST3"
+              pluginAUMainType="'aufx'" displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED = 1">
   <MAINGROUP id="ZGYPR9" name="PolesAndZerosEQ">
     <GROUP id="{211C8D6A-C6EB-B051-1B84-6C521685D404}" name="Fonts">
       <FILE id="k4OeoL" name="Mukta-Regular.ttf" compile="0" resource="1"
@@ -74,8 +73,8 @@
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug"/>
-        <CONFIGURATION isDebug="0" name="Release"/>
+        <CONFIGURATION isDebug="1" name="Debug" defines="PAND0_OSX"/>
+        <CONFIGURATION isDebug="0" name="Release" defines="PAND0_OSX"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
@@ -95,8 +94,8 @@
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug"/>
-        <CONFIGURATION isDebug="0" name="Release"/>
+        <CONFIGURATION isDebug="1" name="Debug" defines="PAND0_LNX"/>
+        <CONFIGURATION isDebug="0" name="Release" defines="PAND0_LNX"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
@@ -116,8 +115,8 @@
     </LINUX_MAKE>
     <VS2019 targetFolder="Builds/VisualStudio2019">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug"/>
-        <CONFIGURATION isDebug="0" name="Release"/>
+        <CONFIGURATION isDebug="1" name="Debug" defines="PAND0_WIN"/>
+        <CONFIGURATION isDebug="0" name="Release" defines="PAND0_WIN"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>

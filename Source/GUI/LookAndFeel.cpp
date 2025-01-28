@@ -48,7 +48,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , panelProportions({510, 480, 180})
     , lastPanelProportions({396, 324})
     , fontName("Gill Sans")
-    , fullLabelFontSize(13.0f)
+    , fullLabelFontSize(20.0f)
     , fullSliderHeight(2.0f)
     , fullSliderThumbRadius(4.5f)
     , inactiveBrightness(0.8f)
@@ -68,6 +68,22 @@ CustomLookAndFeel::CustomLookAndFeel()
     , dbPlotTicks({6.0f, 12.0f, 20.0f, 40.0f, 60.f})
     , typeface(juce::Typeface::createSystemTypefaceFor(
           BinaryData::MuktaRegular_ttf, BinaryData::MuktaRegular_ttfSize))
+    , osFontScale(
+#ifdef JUCE_WINDOWS
+          1.5f
+#else
+#ifdef JUCE_LINUX
+          1.0f
+#else
+#ifdef JUCE_MAC
+          1.0f
+#else
+          1.0f
+#endif
+#endif
+#endif
+          )
+    , topRightTextScale(0.75f)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -358,7 +374,7 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
 juce::Font CustomLookAndFeel::getLabelFont(float fullFontSize)
 {
     juce::Font f(typeface);
-    f.setSizeAndStyle(resizeSize(fullFontSize * 1.5f), f.getStyleFlags(),
+    f.setSizeAndStyle(resizeSize(fullFontSize) * osFontScale, f.getStyleFlags(),
                       f.getHorizontalScale(), f.getExtraKerningFactor());
     return f;
 }
@@ -505,10 +521,10 @@ void CustomLookAndFeel::drawToggleButton(
     juce::String txt((on) ? "ON" : "OFF");
     g.setColour(tc);
     auto font = getLabelFont();
-    font.setHeight((text_rect.getHeight() + bpad) * 1.5f);
+    font.setHeight((text_rect.getHeight() + bpad) * osFontScale);
     font.setBold(true);
     g.setFont(font);
-    g.drawText(txt, text_rect, juce::Justification::centred);
+    g.drawText(txt, text_rect, juce::Justification::centredBottom);
 
     g.setColour(lc);
     g.fillEllipse(led_rect);
@@ -545,7 +561,7 @@ void CustomLookAndFeel::drawPlotComponent(
     g.fillRoundedRectangle(0.0f, 0.0f, width, height, corner_s);
 
     // Top right text
-    auto f = getLabelFont(10.0f);
+    auto f = getLabelFont(fullLabelFontSize * topRightTextScale);
     g.setFont(f);
     g.setColour(pc.findColour(PlotComponent_gridLabelsColourId));
     g.drawText(topRightText,
