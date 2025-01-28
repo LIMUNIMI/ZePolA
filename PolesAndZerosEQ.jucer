@@ -22,6 +22,10 @@
       <FILE id="NcDhiw" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>
       <FILE id="VocETI" name="Macros.h" compile="0" resource="0" file="Source/Macros.h"/>
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
+        <FILE id="erLUvi" name="ApplicationPropertiesListeners.cpp" compile="1"
+              resource="0" file="Source/GUI/ApplicationPropertiesListeners.cpp"/>
+        <FILE id="gzLKJz" name="ApplicationPropertiesListeners.h" compile="0"
+              resource="0" file="Source/GUI/ApplicationPropertiesListeners.h"/>
         <FILE id="P77Sdq" name="PlotsPanel.cpp" compile="1" resource="0" file="Source/GUI/PlotsPanel.cpp"/>
         <FILE id="emM8iu" name="PlotsPanel.h" compile="0" resource="0" file="Source/GUI/PlotsPanel.h"/>
         <FILE id="A9OxkJ" name="DraggableLabel.cpp" compile="1" resource="0"

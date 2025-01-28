@@ -1,6 +1,7 @@
 #pragma once
 #include "../Parameters.h"
 #include "../PluginProcessor.h"
+#include "ApplicationPropertiesListeners.h"
 #include <JuceHeader.h>
 
 // =============================================================================
@@ -96,7 +97,7 @@ class PlotsPanel : public juce::GroupComponent,
 {
 public:
     // =========================================================================
-    PlotsPanel(PolesAndZerosEQAudioProcessor&);
+    PlotsPanel(PolesAndZerosEQAudioProcessor&, juce::ApplicationProperties&);
     ~PlotsPanel();
 
     //==========================================================================
@@ -113,8 +114,10 @@ private:
     void startTimer();
 
     // =========================================================================
+    std::unique_ptr<ApplicationPropertiesButtonAttachment> linLogFreqAttachment;
     PolesAndZerosEQAudioProcessor& processor;
-    juce::ToggleButton linLogFreqButton, linLogAmpButton;
+    juce::ToggleButton linLogAmpButton;
+    std::shared_ptr<juce::ToggleButton> linLogFreqButton;
     PlotComponent mPlot, pPlot;
     juce::TimedCallback callbackTimer;
     int timer_ms;

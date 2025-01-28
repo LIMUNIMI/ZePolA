@@ -7,7 +7,7 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     , processor(p)
     , aspectRatioConstrainer()
     , parameterPanel(processor, processor.getNElements())
-    , plotsPanel(processor)
+    , plotsPanel(processor, applicationProperties)
 {
     setLookAndFeel(&claf);
     sizeAndSetup();
