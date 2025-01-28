@@ -78,6 +78,14 @@ public:
     void addSampleRateListener(SampleRateListener*);
     /** Remove a sample rate listener from this processor */
     void removeSampleRateListener(SampleRateListener*);
+    /** Trigger a specific callback */
+    void sendSampleRateToListener(SampleRateListener*, double);
+    /** Trigger a specific callback */
+    void sendSampleRateToListener(SampleRateListener*);
+    /** Trigger all sample rate callbacks */
+    void sendSampleRateToAllListeners(double);
+    /** Trigger all sample rate callbacks */
+    void sendSampleRateToAllListeners();
     virtual void prepareToPlay(double sampleRate, int samplesPerBlock) override;
 
     //==============================================================================

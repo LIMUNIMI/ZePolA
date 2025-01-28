@@ -120,9 +120,26 @@ void VTSAudioProcessor::removeSampleRateListener(SampleRateListener* srl)
     if (pos != sr_listeners.end()) sr_listeners.erase(pos);
     ONLY_ON_DEBUG(else jassertfalse;)
 }
+void VTSAudioProcessor::sendSampleRateToListener(SampleRateListener* srl,
+                                                 double sampleRate)
+{
+    srl->sampleRateChangedCallback(sampleRate);
+}
+void VTSAudioProcessor::sendSampleRateToListener(SampleRateListener* srl)
+{
+    sendSampleRateToListener(srl, getSampleRate());
+}
+void VTSAudioProcessor::sendSampleRateToAllListeners(double sampleRate)
+{
+    for (auto srl : sr_listeners) sendSampleRateToListener(srl, sampleRate);
+}
+void VTSAudioProcessor::sendSampleRateToAllListeners()
+{
+    sendSampleRateToAllListeners(getSampleRate());
+}
 void VTSAudioProcessor::prepareToPlay(double sampleRate, int)
 {
-    for (auto srl : sr_listeners) srl->sampleRateChangedCallback(sampleRate);
+    sendSampleRateToAllListeners(sampleRate);
 }
 
 //==============================================================================
