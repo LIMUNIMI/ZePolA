@@ -91,7 +91,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , nGaussianCircleMajorTicks(4)
     , nGaussianCircleMinorTicksRadial(12)
     , nGaussianCircleMinorTicksCircular(5)
-
+    , relativePointSize(0.05f)
+    , fullPointThickness(3.0f)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -140,6 +141,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(PlotComponent_gridLabelsColourId, juce::Colour(0xff797d7f));
     setColour(GaussianPlanePanel_circleColourId, juce::Colours::black);
     setColour(GaussianPlanePanel_gridColourId, juce::Colour(0x67383838));
+    setColour(ZPoint_zerosColourId, juce::Colour(0xd79b59b6));
 }
 
 // =============================================================================
@@ -168,6 +170,10 @@ float CustomLookAndFeel::getAspectRatio() const
 double CustomLookAndFeel::getLogPlotLowFreq(double sr) const
 {
     return logPlotCenterFreq * logPlotCenterFreq * 2.0 / sr;
+}
+float CustomLookAndFeel::getRelativePointSize() const
+{
+    return relativePointSize;
 }
 
 // =============================================================================
@@ -767,4 +773,12 @@ void CustomLookAndFeel::drawGaussianPlane(juce::Graphics& g, float x, float y,
     g.setColour(gpp.findColour(GaussianPlanePanel_circleColourId));
     g.strokePath(majorTicks,
                  juce::PathStrokeType(resizeSize(fullGaussianCircleThickness)));
+}
+void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float x, float y,
+                                   float width, float height, float p_x,
+                                   float p_y, ZPoint& zp)
+{
+    float t = resizeSize(fullPointThickness);
+    g.setColour(zp.findColour(ZPoint_zerosColourId));
+    g.drawEllipse(0.5f * t, 0.5f * t, width - t, height - t, t);
 }

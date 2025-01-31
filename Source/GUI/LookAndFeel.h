@@ -26,7 +26,8 @@ class CustomLookAndFeel : public juce::LookAndFeel_V4,
                           public InvisibleGroupComponentLookAndFeelMethods,
                           public PlotComponentLookAndFeelMethods,
                           public ParameterPanelLookAndFeelMethods,
-                          public GaussianPlanePanel::LookAndFeelMethods
+                          public GaussianPlanePanel::LookAndFeelMethods,
+                          public ZPoint::LookAndFeelMethods
 {
 public:
     // =========================================================================
@@ -48,7 +49,8 @@ public:
         PlotComponent_lineColourId,
         PlotComponent_tickLabelColourId,
         GaussianPlanePanel_circleColourId,
-        GaussianPlanePanel_gridColourId
+        GaussianPlanePanel_gridColourId,
+        ZPoint_zerosColourId
     };
 
     // =========================================================================
@@ -91,7 +93,8 @@ public:
     void drawGaussianPlane(juce::Graphics&, float x, float y, float width,
                            float height, float radius,
                            GaussianPlanePanel&) override;
-
+    void drawZPoint(juce::Graphics&, float x, float y, float width,
+                    float height, float p_x, float p_y, ZPoint&);
     // =========================================================================
     /** Set the new resize ratio */
     void setResizeRatio(float);
@@ -110,6 +113,8 @@ public:
     float getAspectRatio() const;
     /** Get the lower frequency for the log plot */
     double getLogPlotLowFreq(double sr) const;
+    /** Get proportional size of the points in the Gaussian plane */
+    float getRelativePointSize() const;
 
     // =========================================================================
     /** Set the properties of the magnitude plot */
@@ -205,7 +210,8 @@ private:
     std::vector<float> dbPlotTicks;
 
     // =========================================================================
-    float fullGaussianCircleThickness, fullGaussianMinorThickness;
+    float fullGaussianCircleThickness, fullGaussianMinorThickness,
+        relativePointSize, fullPointThickness;
     int nGaussianCircleMajorTicks, nGaussianCircleMinorTicksRadial,
         nGaussianCircleMinorTicksCircular;
 

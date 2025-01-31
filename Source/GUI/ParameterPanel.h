@@ -1,5 +1,6 @@
 #pragma once
 #include "../Parameters.h"
+#include "../PluginProcessor.h"
 #include "DraggableLabel.h"
 #include "InvisibleGroupComponent.h"
 #include <JuceHeader.h>
@@ -95,6 +96,120 @@ private:
 };
 
 // =============================================================================
+/** Gaussian plane draggable point  */
+class ZPoint : public juce::Component
+{
+public:
+    // =========================================================================
+    class LookAndFeelMethods
+    {
+    public:
+        // =====================================================================
+        virtual void drawZPoint(juce::Graphics&, float x, float y, float width,
+                                float height, float p_x, float p_y, ZPoint&)
+            = 0;
+    };
+
+    // =========================================================================
+    class MagnitudeListener
+        : public juce::AudioProcessorValueTreeState::Listener
+    {
+    public:
+        // =====================================================================
+        MagnitudeListener(ZPoint* parent);
+
+        // =====================================================================
+        void parameterChanged(const juce::String&, float) override;
+
+    private:
+        // =====================================================================
+        ZPoint* parent;
+
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MagnitudeListener)
+    };
+
+    // =========================================================================
+    class ArgListener : public juce::AudioProcessorValueTreeState::Listener
+    {
+    public:
+        // =====================================================================
+        ArgListener(ZPoint* parent);
+
+        // =====================================================================
+        void parameterChanged(const juce::String&, float) override;
+
+    private:
+        // =====================================================================
+        ZPoint* parent;
+
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ArgListener)
+    };
+
+    // =========================================================================
+    class MultiAttachment
+    {
+    public:
+        // =====================================================================
+        MultiAttachment(VTSAudioProcessor&, ZPoint*, int idx);
+        ~MultiAttachment();
+
+    private:
+        // =====================================================================
+        MagnitudeListener m_listen;
+        ArgListener a_listen;
+        VTSAudioProcessor& processor;
+        int idx;
+
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MultiAttachment)
+    };
+
+    // =========================================================================
+    ZPoint();
+
+    // =========================================================================
+    /** Set the point X coordinate in the Gaussian plane (i.e. the real part) */
+    void setPointX(float);
+    /** Set the point Y coordinate in the Gaussian plane (i.e. the imaginary
+     * part) */
+    void setPointY(float);
+    /** Set the point distance from the origin of the Gaussian plane (i.e. the
+     * magnitude) */
+    void setPointMagnitude(float);
+    /** Set the point angle in radians in the Gaussian plane (i.e. the argument)
+     */
+    void setPointArg(float);
+    /** Get the point X coordinate in the Gaussian plane (i.e. the real part) */
+    float getPointX() const;
+    /** Get the point Y coordinate in the Gaussian plane (i.e. the imaginary
+     * part) */
+    float getPointY() const;
+    /** Get the point distance from the origin of the Gaussian plane (i.e. the
+     * magnitude) */
+    float getPointMagnitude() const;
+    /** Get the point angle in radians in the Gaussian plane (i.e. the argument)
+     */
+    float getPointArg() const;
+
+    // =========================================================================
+    void setBoundsRelativeToPlane(juce::Component*, float radius);
+    void setBoundsRelativeToPlane(juce::Component*);
+    void setBoundsRelativeToParent();
+
+    // =========================================================================
+    void paint(juce::Graphics&) override;
+
+private:
+    // =========================================================================
+    std::complex<float> z;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ZPoint)
+};
+
+// =============================================================================
 /** Gaussian plane with draggable points  */
 class GaussianPlanePanel : public juce::Component
 {
@@ -109,20 +224,26 @@ public:
                                        GaussianPlanePanel&)
             = 0;
     };
+
     // =========================================================================
-    GaussianPlanePanel();
+    GaussianPlanePanel(PolesAndZerosEQAudioProcessor&);
 
     // =========================================================================
     void paint(juce::Graphics&) override;
+    void resized() override;
 
     // =========================================================================
     /** Set the maximum represented value inside the plane. If 1, the unit
      * circle will touch the border of the panel. If bigger, it will be inside
      * the panel. */
     void setRadius(float);
+    /** Get the maximum represented value inside the plane. */
+    float getRadius() const;
 
 private:
     // =========================================================================
+    std::vector<std::unique_ptr<ZPoint::MultiAttachment>> point_attachments;
+    std::vector<std::unique_ptr<ZPoint>> points;
     float radius;
 
     // =========================================================================
@@ -135,7 +256,7 @@ class ParameterPanel : public juce::GroupComponent
 {
 public:
     // =========================================================================
-    ParameterPanel(VTSAudioProcessor&, size_t);
+    ParameterPanel(PolesAndZerosEQAudioProcessor&, size_t);
 
     //==========================================================================
     void paint(Graphics&) override;

@@ -116,7 +116,128 @@ bool ParameterStrip::parentComponentIsActive(const juce::Component& c)
 }
 
 // =============================================================================
-GaussianPlanePanel::GaussianPlanePanel() : radius(1.05f) {}
+ZPoint::MagnitudeListener::MagnitudeListener(ZPoint* p) : parent(p) {}
+void ZPoint::MagnitudeListener::parameterChanged(const juce::String&, float m)
+{
+    parent->setPointMagnitude(m);
+}
+
+// =============================================================================
+ZPoint::ArgListener::ArgListener(ZPoint* p) : parent(p) {}
+void ZPoint::ArgListener::parameterChanged(const juce::String&, float a)
+{
+    parent->setPointArg(juce::MathConstants<float>::pi * a);
+}
+
+// =============================================================================
+ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
+    : processor(p), idx(i), m_listen(z), a_listen(z)
+{
+    juce::String i_str(idx);
+    juce::String m_id = MAGNITUDE_ID_PREFIX + i_str;
+    juce::String a_id = PHASE_ID_PREFIX + i_str;
+
+    processor.addParameterListener(m_id, &m_listen);
+    processor.addParameterListener(a_id, &a_listen);
+    m_listen.parameterChanged(m_id, p.getParameterUnnormValue(m_id));
+    a_listen.parameterChanged(a_id, p.getParameterUnnormValue(a_id));
+}
+ZPoint::MultiAttachment::~MultiAttachment()
+{
+    processor.removeParameterListener(MAGNITUDE_ID_PREFIX + juce::String(idx),
+                                      &m_listen);
+    processor.removeParameterListener(PHASE_ID_PREFIX + juce::String(idx),
+                                      &a_listen);
+}
+
+// =============================================================================
+ZPoint::ZPoint() : z(0.0f, 0.0f) {}
+
+// =============================================================================
+void ZPoint::setPointX(float x)
+{
+    z = std::complex<float>(x, getPointY());
+    setBoundsRelativeToParent();
+}
+void ZPoint::setPointY(float y)
+{
+    z = std::complex<float>(getPointX(), y);
+    setBoundsRelativeToParent();
+}
+void ZPoint::setPointMagnitude(float m)
+{
+    z = std::polar<float>(m, getPointArg());
+    setBoundsRelativeToParent();
+}
+void ZPoint::setPointArg(float a)
+{
+    z = std::polar<float>(getPointMagnitude(), a);
+    setBoundsRelativeToParent();
+}
+float ZPoint::getPointX() const { return z.real(); }
+float ZPoint::getPointY() const { return z.imag(); }
+float ZPoint::getPointMagnitude() const { return abs(z); }
+float ZPoint::getPointArg() const { return arg(z); }
+
+// =============================================================================
+void ZPoint::setBoundsRelativeToPlane(juce::Component* parent, float radius)
+{
+    juce::Point<float> c(getPointX(), getPointY());
+    juce::Point<float> scale(parent->getWidth() * 0.5f / radius,
+                             parent->getHeight() * -0.5f / radius);
+    juce::Point<float> offset(0.5f * parent->getWidth(),
+                              0.5f * parent->getHeight());
+    c *= scale;
+    c += offset;
+
+    juce::Rectangle<float> r(0.0f, 0.0f, static_cast<float>(parent->getWidth()),
+                             static_cast<float>(parent->getHeight()));
+    if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
+    {
+        r *= claf->getRelativePointSize();
+    }
+    else
+    {
+        r *= 0.05f;
+    }
+    r.setCentre(c);
+
+    setBounds(r.toNearestInt());
+}
+void ZPoint::setBoundsRelativeToPlane(juce::Component* parent)
+{
+    float radius = 1.0f;
+    if (auto zplane = dynamic_cast<GaussianPlanePanel*>(parent))
+        radius = zplane->getRadius();
+    setBoundsRelativeToPlane(parent, radius);
+}
+void ZPoint::setBoundsRelativeToParent()
+{
+    setBoundsRelativeToPlane(getParentComponent());
+}
+
+// =============================================================================
+void ZPoint::paint(juce::Graphics& g)
+{
+    if (auto laf = dynamic_cast<ZPoint::LookAndFeelMethods*>(&getLookAndFeel()))
+        laf->drawZPoint(g, getX(), getY(), getWidth(), getHeight(), getPointX(),
+                        getPointY(), *this);
+}
+
+// =============================================================================
+GaussianPlanePanel::GaussianPlanePanel(PolesAndZerosEQAudioProcessor& p)
+    : radius(1.05f)
+{
+    jassert(radius > 0.0f);
+    for (auto i = 0; i < 1 /*p.getNElements()*/; ++i)
+    {
+        points.push_back(std::make_unique<ZPoint>());
+        addAndMakeVisible(*points[i].get());
+        point_attachments.push_back(
+            std::make_unique<ZPoint::MultiAttachment>(p, points[i].get(), i));
+    }
+    jassert(point_attachments.size() == points.size());
+}
 
 // =============================================================================
 void GaussianPlanePanel::paint(juce::Graphics& g)
@@ -126,12 +247,18 @@ void GaussianPlanePanel::paint(juce::Graphics& g)
         laf->drawGaussianPlane(g, getX(), getY(), getWidth(), getHeight(),
                                radius, *this);
 }
+void GaussianPlanePanel::resized()
+{
+    for (auto& p : points) p->setBoundsRelativeToPlane(this, radius);
+}
 
 // =============================================================================
 void GaussianPlanePanel::setRadius(float r) { radius = r; }
+float GaussianPlanePanel::getRadius() const { return radius; }
 
 // =============================================================================
-ParameterPanel::ParameterPanel(VTSAudioProcessor& p, size_t n)
+ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p, size_t n)
+    : zplane(p)
 {
     for (auto s : {"RADIUS", "ANGLE", "TYPE", "ACTIVE", "GAIN"})
         headerLabels.push_back(
