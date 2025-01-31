@@ -545,11 +545,11 @@ void CustomLookAndFeel::drawPlotComponent(
     g.setColour(pc.findColour(PlotComponent_backgroundColourId));
     g.fillRoundedRectangle(0.0f, 0.0f, width, height, corner_s);
 
-    // Top right text
     auto font = getLabelFont(fullLabelFontSize * topRightTextScale);
+    g.setFont(font);
+    // Top right text
     if (topRightText.length())
     {
-        g.setFont(font);
         g.setColour(pc.findColour(PlotComponent_gridLabelsColourId));
         g.drawText(topRightText,
                    juce::Rectangle<float>(0.0f, 0.0f, width, height)
