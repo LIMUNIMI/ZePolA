@@ -92,7 +92,7 @@ void DraggableLabelListener::setScale(float f) { scale = f; }
 
 // =============================================================================
 DraggableLabelParameterListener::DraggableLabelParameterListener(juce::Label& l)
-    : label(l), scale(1.0f)
+    : label(l), scale(1.0f), oldParam(0.0f)
 {
 }
 
@@ -100,12 +100,17 @@ DraggableLabelParameterListener::DraggableLabelParameterListener(juce::Label& l)
 void DraggableLabelParameterListener::parameterChanged(const juce::String&,
                                                        float f)
 {
+    oldParam = f;
     setTextFromFloatDynamicCast(&label, f * scale,
                                 juce::NotificationType::dontSendNotification);
 }
 
 // =============================================================================
-void DraggableLabelParameterListener::setScale(float f) { scale = f; }
+void DraggableLabelParameterListener::setScale(float f)
+{
+    scale = f;
+    parameterChanged("", oldParam);
+}
 
 // =============================================================================
 DraggableLabelAttachment::DraggableLabelAttachment(

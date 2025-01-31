@@ -93,7 +93,8 @@ public:
 /** Plots panel  */
 class PlotsPanel : public juce::GroupComponent,
                    public juce::AudioProcessorValueTreeState::Listener,
-                   public juce::Button::Listener
+                   public juce::Button::Listener,
+                   public SampleRateListener
 {
 public:
     // =========================================================================
@@ -101,6 +102,7 @@ public:
     ~PlotsPanel();
 
     //==========================================================================
+    virtual void sampleRateChangedCallback(double) override;
     void updateValues();
 
     //==========================================================================

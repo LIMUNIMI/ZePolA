@@ -1,5 +1,6 @@
 #include "Parameters.h"
 #include "GUI/DraggableLabel.h"
+#include "Macros.h"
 
 // =============================================================================
 void Parameters::setParameterValue(juce::RangedAudioParameter* parameter,
@@ -27,6 +28,7 @@ VTSAudioProcessor::VTSAudioProcessor(
 }
 VTSAudioProcessor::~VTSAudioProcessor()
 {
+    jassert(sr_listeners.size() == 0);
     jassert(listeners_ids.size() == listeners.size());
 
     size_t n = std::min(listeners.size(), listeners_ids.size());
@@ -42,7 +44,7 @@ VTSAudioProcessor::~VTSAudioProcessor()
 }
 
 // ============================================================================
-void VTSAudioProcessor::appendListeners() { }
+void VTSAudioProcessor::appendListeners() {}
 void VTSAudioProcessor::pushListener(
     juce::String id, juce::AudioProcessorValueTreeState::Listener* listener)
 {
@@ -101,6 +103,45 @@ VTSAudioProcessor::makeAttachment(juce::StringRef parameterID,
 template DraggableLabelAttachment*
 VTSAudioProcessor::makeAttachment(juce::StringRef parameterID,
                                   DraggableLabel& component);
+
+//==============================================================================
+void VTSAudioProcessor::addSampleRateListener(SampleRateListener* srl)
+{
+    // Check that listener is not already in the list
+    ONLY_ON_DEBUG(std::vector<SampleRateListener*>::iterator pos
+                  = std::find(sr_listeners.begin(), sr_listeners.end(), srl);
+                  jassert(pos == sr_listeners.end());)
+    sr_listeners.push_back(srl);
+    sendSampleRateToListener(srl);
+}
+void VTSAudioProcessor::removeSampleRateListener(SampleRateListener* srl)
+{
+    std::vector<SampleRateListener*>::iterator pos
+        = std::find(sr_listeners.begin(), sr_listeners.end(), srl);
+    if (pos != sr_listeners.end()) sr_listeners.erase(pos);
+    ONLY_ON_DEBUG(else jassertfalse;)
+}
+void VTSAudioProcessor::sendSampleRateToListener(SampleRateListener* srl,
+                                                 double sampleRate)
+{
+    srl->sampleRateChangedCallback(sampleRate);
+}
+void VTSAudioProcessor::sendSampleRateToListener(SampleRateListener* srl)
+{
+    sendSampleRateToListener(srl, getSampleRate());
+}
+void VTSAudioProcessor::sendSampleRateToAllListeners(double sampleRate)
+{
+    for (auto srl : sr_listeners) sendSampleRateToListener(srl, sampleRate);
+}
+void VTSAudioProcessor::sendSampleRateToAllListeners()
+{
+    sendSampleRateToAllListeners(getSampleRate());
+}
+void VTSAudioProcessor::prepareToPlay(double sampleRate, int)
+{
+    sendSampleRateToAllListeners(sampleRate);
+}
 
 //==============================================================================
 juce::RangedAudioParameter*

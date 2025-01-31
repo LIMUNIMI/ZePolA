@@ -23,11 +23,24 @@ void ParameterStrip::ParentRepaintButtonListener::buttonStateChanged(
 }
 
 // =============================================================================
+ParameterStrip::FrequencyLabelSampleRateListener::
+    FrequencyLabelSampleRateListener(DraggableLabelAttachment& a)
+    : dla(a)
+{
+}
+void ParameterStrip::FrequencyLabelSampleRateListener::
+    sampleRateChangedCallback(double sr)
+{
+    dla.setScale(static_cast<float>(sr * 0.5));
+}
+
+// =============================================================================
 ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
-    : mSliderAttachment(
-        p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
-                         juce::Slider>(MAGNITUDE_ID_PREFIX + juce::String(i),
-                                       mSlider))
+    : processor(p)
+    , mSliderAttachment(
+          p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
+                           juce::Slider>(MAGNITUDE_ID_PREFIX + juce::String(i),
+                                         mSlider))
     , pSliderAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
                            juce::Slider>(PHASE_ID_PREFIX + juce::String(i),
@@ -48,8 +61,10 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
           p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
               GAIN_ID_PREFIX + juce::String(i), gLabel))
 {
+    srListener = std::make_unique<FrequencyLabelSampleRateListener>(
+        *fLabelAttachment.get());
+    p.addSampleRateListener(srListener.get());
     aButton.addListener(&aButtonListener);
-    fLabelAttachment->setScale(static_cast<float>(p.getSampleRate() * 0.5));
 
     addAndMakeVisible(mSlider);
     addAndMakeVisible(pSlider);
@@ -57,6 +72,12 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     addAndMakeVisible(aButton);
     addAndMakeVisible(tButton);
     addAndMakeVisible(gLabel);
+}
+ParameterStrip::~ParameterStrip()
+{
+    processor.removeSampleRateListener(srListener.get());
+    // Reset this before the draggable label attachment
+    srListener.reset();
 }
 
 // =============================================================================

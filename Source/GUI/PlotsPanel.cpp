@@ -7,10 +7,10 @@ PlotComponent::PlotComponent(size_t n_points)
     : y_values(n_points, 0.0f)
     , x_values(n_points, 0.0f)
     , period(-1.0f)
-    , y_grid({1.0f, 2.0f})
-    , y_labels({"1", "2"})
-    , x_grid({1.0f, 2.0f})
-    , x_labels({"1", "2"})
+    , y_grid({0.0f})
+    , y_labels({""})
+    , x_grid({0.0f})
+    , x_labels({""})
     , log_x(false)
     , topRightText()
 {
@@ -108,9 +108,11 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
         properties, "linLogFreq", linLogFreqButton));
     linLogAmpAPAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, "linLogAmp", linLogAmpButton));
+    processor.addSampleRateListener(this);
 }
 PlotsPanel::~PlotsPanel()
 {
+    processor.removeSampleRateListener(this);
     for (auto i : processor.parameterIDs())
         processor.removeParameterListener(i, this);
     linLogFreqButton->removeListener(&mPlot);
@@ -118,6 +120,9 @@ PlotsPanel::~PlotsPanel()
     linLogFreqButton->removeListener(this);
     linLogAmpButton->removeListener(this);
 }
+
+// =============================================================================
+void PlotsPanel::sampleRateChangedCallback(double sr) { startTimer(); }
 
 // =============================================================================
 void PlotsPanel::updateValues()

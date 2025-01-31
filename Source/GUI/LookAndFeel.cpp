@@ -65,7 +65,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , n_x_ticks(9)
     , logPlotCenterFreq(1000.0f)
     , logPlotCenterFreqUnits({1.0f, 2.0f, 5.0f})
-    , dbPlotTicks({6.0f, 12.0f, 20.0f, 40.0f, 60.f})
+    , dbPlotTicks({6.0f, 12.0f, 20.0f, 40.0f, 60.0f})
     , typeface(juce::Typeface::createSystemTypefaceFor(
           BinaryData::MuktaRegular_ttf, BinaryData::MuktaRegular_ttfSize))
     , osFontScale(
@@ -540,56 +540,65 @@ void CustomLookAndFeel::drawPlotComponent(
     const std::vector<juce::String>& y_labels, bool log_x,
     const juce::String& topRightText, PlotComponent& pc)
 {
-    // Check sizes
-    auto num_y_ticks = y_grid.size();
-    auto num_x_ticks = x_grid.size();
-    auto n_points    = y_values.size();
-    jassert(n_points > 1);
-    jassert(num_y_ticks > 1);
-    jassert(num_y_ticks == y_labels.size());
-    jassert(num_x_ticks > 1);
-    jassert(num_x_ticks == x_labels.size());
-
-    // If plot is inconsistent, force linear scale.
-    // This happens when paint is called after changing between log and lin, but
-    // before changing the x ticks
-    if (x_grid[0] <= 0) log_x = false;
-
     // Background
     auto corner_s = resizeSize(fullPlotComponentCornerSize);
     g.setColour(pc.findColour(PlotComponent_backgroundColourId));
     g.fillRoundedRectangle(0.0f, 0.0f, width, height, corner_s);
 
     // Top right text
-    auto f = getLabelFont(fullLabelFontSize * topRightTextScale);
-    g.setFont(f);
-    g.setColour(pc.findColour(PlotComponent_gridLabelsColourId));
-    g.drawText(topRightText,
-               juce::Rectangle<float>(0.0f, 0.0f, width, height)
-                   .reduced(corner_s, corner_s * 0.5f),
-               juce::Justification::topRight);
-
-    // Coordinate mapper
-    LinearMapper<float> y_mapper(y_grid[0], height, y_grid[num_y_ticks - 1],
-                                 0.0f);
-    InputTransformMapper<float> x_mapper(
-        x_grid[0], 0.0f, x_grid[num_x_ticks - 1], width,
-        (log_x) ? static_cast<float (*)(float)>(logf) : identity<float>);
+    auto font = getLabelFont(fullLabelFontSize * topRightTextScale);
+    if (topRightText.length())
+    {
+        g.setFont(font);
+        g.setColour(pc.findColour(PlotComponent_gridLabelsColourId));
+        g.drawText(topRightText,
+                   juce::Rectangle<float>(0.0f, 0.0f, width, height)
+                       .reduced(corner_s, corner_s * 0.5f),
+                   juce::Justification::topRight);
+    }
 
     // Grid
     juce::Path gridlines;
-    for (auto yt : std::vector<float>(y_grid.begin() + 1, y_grid.end() - 1))
+    auto num_x_ticks = x_grid.size();
+    auto num_y_ticks = y_grid.size();
+    if (num_x_ticks < 2)
     {
-        auto yt_mapped = y_mapper.map(yt);
-        gridlines.startNewSubPath(0.0f, yt_mapped);
-        gridlines.lineTo(width, yt_mapped);
+        // Too few x ticks for defining a grid. Don't plot anything
+        return;
     }
+    if (num_y_ticks < 2)
+    {
+        // Too few y ticks for defining a grid. Don't plot anything
+        return;
+    }
+    //   Vertical grid lines
+    if (x_grid[0] <= 0)
+    {
+        // jassert(!log_x);
+        // If plot is inconsistent, force linear scale. This happens when
+        // paint is called after changing between log and lin, but before
+        // changing the x ticks
+        log_x = false;
+    }
+    InputTransformMapper<float> x_mapper(
+        x_grid[0], 0.0f, x_grid[num_x_ticks - 1], width,
+        (log_x) ? static_cast<float (*)(float)>(logf) : identity<float>);
     for (auto xt : std::vector<float>(x_grid.begin() + 1, x_grid.end() - 1))
     {
         auto xt_mapped = x_mapper.map(xt);
         gridlines.startNewSubPath(xt_mapped, 0.0f);
         gridlines.lineTo(xt_mapped, height);
     }
+    //   Horizontal grid lines
+    LinearMapper<float> y_mapper(y_grid[0], height, y_grid[num_y_ticks - 1],
+                                 0.0f);
+    for (auto yt : std::vector<float>(y_grid.begin() + 1, y_grid.end() - 1))
+    {
+        auto yt_mapped = y_mapper.map(yt);
+        gridlines.startNewSubPath(0.0f, yt_mapped);
+        gridlines.lineTo(width, yt_mapped);
+    }
+    //   Stroke all grid lines
     g.setColour(pc.findColour(PlotComponent_gridColourId));
     g.strokePath(gridlines,
                  juce::PathStrokeType(resizeSize(fullPlotGridThickness)));
@@ -597,17 +606,33 @@ void CustomLookAndFeel::drawPlotComponent(
     // Grid labels
     auto gt_pad = corner_s * 0.5f;
     juce::Rectangle r(gt_pad * 2.0f, gt_pad, width - 4.0f * gt_pad,
-                      f.getHeight() - 2.0f * gt_pad);
+                      font.getHeight() - 2.0f * gt_pad);
     g.setColour(pc.findColour(PlotComponent_gridLabelsColourId));
+    //   Y tick labels
+    // Tick labels count mismatch
+    jassert(num_y_ticks >= y_labels.size());
+    if (num_y_ticks > y_labels.size())
+    {
+        jassertfalse;
+        num_y_ticks = y_labels.size();
+    }
     for (auto i = 0; i < num_y_ticks; ++i)
     {
         r.setY((i) ? ((i == num_y_ticks - 1)
                           ? gt_pad
-                          : y_mapper.map(y_grid[i]) - f.getHeight() * 0.5f)
-                   : height - gt_pad - f.getHeight());
+                          : y_mapper.map(y_grid[i]) - font.getHeight() * 0.5f)
+                   : height - gt_pad - font.getHeight());
         g.drawText(y_labels[i], r, juce::Justification::topLeft);
     }
+    //   X tick labels
     r.setY(height / 2.0f + gt_pad);
+    // Tick labels count mismatch
+    jassert(num_x_ticks >= x_labels.size());
+    if (num_x_ticks > x_labels.size())
+    {
+        jassertfalse;
+        num_x_ticks = x_labels.size();
+    }
     for (auto i = 1; i < num_x_ticks - 1; ++i)
     {
         auto x_pos = x_mapper.map(x_grid[i]);
@@ -619,24 +644,42 @@ void CustomLookAndFeel::drawPlotComponent(
         }
     }
 
-    // Plot
-    juce::Path plot;
-    plot.startNewSubPath(x_mapper.map(x_values[0]), y_mapper.map(y_values[0]));
-    auto period_half = period * 0.5f;
-    auto is_periodic = period > 0.0f;
-    for (auto i = 1; i < n_points; ++i)
+    // Plot lines
+    auto n_points = x_values.size();
+    // Value counts mismatch
+    jassert(n_points >= y_values.size());
+    if (n_points > y_values.size())
     {
-        if (is_periodic && abs(y_values[i] - y_values[i - 1]) > period_half)
-        {
-            float offset = (y_values[i] > y_values[i - 1]) ? -period : period;
-            plot.lineTo(x_mapper.map(x_values[i]),
-                        y_mapper.map(y_values[i] + offset));
-            plot.startNewSubPath(x_mapper.map(x_values[i - 1]),
-                                 y_mapper.map(y_values[i - 1] - offset));
-        }
-        plot.lineTo(x_mapper.map(x_values[i]), y_mapper.map(y_values[i]));
+        jassertfalse;
+        n_points = y_values.size();
     }
-    g.setColour(pc.findColour(PlotComponent_lineColourId));
-    g.strokePath(plot,
-                 juce::PathStrokeType(resizeSize(fullPlotStrokeThickness)));
+    if (n_points < 2)
+    {
+        // Can't plot lines if less than 2 points
+        jassertfalse;
+    }
+    else
+    {
+        juce::Path plot;
+        plot.startNewSubPath(x_mapper.map(x_values[0]),
+                             y_mapper.map(y_values[0]));
+        auto period_half = period * 0.5f;
+        auto is_periodic = period > 0.0f;
+        for (auto i = 1; i < n_points; ++i)
+        {
+            if (is_periodic && abs(y_values[i] - y_values[i - 1]) > period_half)
+            {
+                float offset
+                    = (y_values[i] > y_values[i - 1]) ? -period : period;
+                plot.lineTo(x_mapper.map(x_values[i]),
+                            y_mapper.map(y_values[i] + offset));
+                plot.startNewSubPath(x_mapper.map(x_values[i - 1]),
+                                     y_mapper.map(y_values[i - 1] - offset));
+            }
+            plot.lineTo(x_mapper.map(x_values[i]), y_mapper.map(y_values[i]));
+        }
+        g.setColour(pc.findColour(PlotComponent_lineColourId));
+        g.strokePath(plot,
+                     juce::PathStrokeType(resizeSize(fullPlotStrokeThickness)));
+    }
 }
