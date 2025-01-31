@@ -96,13 +96,35 @@ private:
 
 // =============================================================================
 /** Gaussian plane with draggable points  */
-class GaussianPlanePanel : public juce::GroupComponent
+class GaussianPlanePanel : public juce::Component
 {
 public:
     // =========================================================================
+    class LookAndFeelMethods
+    {
+    public:
+        // =====================================================================
+        virtual void drawGaussianPlane(juce::Graphics&, float x, float y,
+                                       float width, float height, float radius,
+                                       GaussianPlanePanel&)
+            = 0;
+    };
+    // =========================================================================
     GaussianPlanePanel();
 
+    // =========================================================================
+    void paint(juce::Graphics&) override;
+
+    // =========================================================================
+    /** Set the maximum represented value inside the plane. If 1, the unit
+     * circle will touch the border of the panel. If bigger, it will be inside
+     * the panel. */
+    void setRadius(float);
+
 private:
+    // =========================================================================
+    float radius;
+
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GaussianPlanePanel)
 };

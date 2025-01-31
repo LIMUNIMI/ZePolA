@@ -116,7 +116,19 @@ bool ParameterStrip::parentComponentIsActive(const juce::Component& c)
 }
 
 // =============================================================================
-GaussianPlanePanel::GaussianPlanePanel() {}
+GaussianPlanePanel::GaussianPlanePanel() : radius(1.05f) {}
+
+// =============================================================================
+void GaussianPlanePanel::paint(juce::Graphics& g)
+{
+    if (auto laf = dynamic_cast<GaussianPlanePanel::LookAndFeelMethods*>(
+            &getLookAndFeel()))
+        laf->drawGaussianPlane(g, getX(), getY(), getWidth(), getHeight(),
+                               radius, *this);
+}
+
+// =============================================================================
+void GaussianPlanePanel::setRadius(float r) { radius = r; }
 
 // =============================================================================
 ParameterPanel::ParameterPanel(VTSAudioProcessor& p, size_t n)

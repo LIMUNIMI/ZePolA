@@ -25,7 +25,8 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a);
 class CustomLookAndFeel : public juce::LookAndFeel_V4,
                           public InvisibleGroupComponentLookAndFeelMethods,
                           public PlotComponentLookAndFeelMethods,
-                          public ParameterPanelLookAndFeelMethods
+                          public ParameterPanelLookAndFeelMethods,
+                          public GaussianPlanePanel::LookAndFeelMethods
 {
 public:
     // =========================================================================
@@ -45,7 +46,9 @@ public:
         PlotComponent_gridColourId,
         PlotComponent_gridLabelsColourId,
         PlotComponent_lineColourId,
-        PlotComponent_tickLabelColourId
+        PlotComponent_tickLabelColourId,
+        GaussianPlanePanel_circleColourId,
+        GaussianPlanePanel_gridColourId
     };
 
     // =========================================================================
@@ -85,6 +88,9 @@ public:
                            const std::vector<juce::String>& y_labels,
                            bool log_x, const juce::String& topRightText,
                            PlotComponent&) override;
+    void drawGaussianPlane(juce::Graphics&, float x, float y, float width,
+                           float height, float radius,
+                           GaussianPlanePanel&) override;
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -197,6 +203,11 @@ private:
         fullPlotGridThickness, logPlotCenterFreq;
     std::vector<float> logPlotCenterFreqUnits;
     std::vector<float> dbPlotTicks;
+
+    // =========================================================================
+    float fullGaussianCircleThickness, fullGaussianMinorThickness;
+    int nGaussianCircleMajorTicks, nGaussianCircleMinorTicksRadial,
+        nGaussianCircleMinorTicksCircular;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)

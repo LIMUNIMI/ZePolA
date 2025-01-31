@@ -86,6 +86,12 @@ CustomLookAndFeel::CustomLookAndFeel()
 #endif
           )
     , topRightTextScale(0.75f)
+    , fullGaussianCircleThickness(1.5f)
+    , fullGaussianMinorThickness(0.5f)
+    , nGaussianCircleMajorTicks(4)
+    , nGaussianCircleMinorTicksRadial(12)
+    , nGaussianCircleMinorTicksCircular(5)
+
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -132,6 +138,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(PlotComponent_lineColourId, juce::Colours::black);
     setColour(PlotComponent_gridColourId, juce::Colour(0x28979a9a));
     setColour(PlotComponent_gridLabelsColourId, juce::Colour(0xff797d7f));
+    setColour(GaussianPlanePanel_circleColourId, juce::Colours::black);
+    setColour(GaussianPlanePanel_gridColourId, juce::Colour(0x67383838));
 }
 
 // =============================================================================
@@ -696,4 +704,67 @@ void CustomLookAndFeel::drawPlotComponent(
         g.strokePath(plot,
                      juce::PathStrokeType(resizeSize(fullPlotStrokeThickness)));
     }
+}
+void CustomLookAndFeel::drawGaussianPlane(juce::Graphics& g, float x, float y,
+                                          float width, float height,
+                                          float radius, GaussianPlanePanel& gpp)
+{
+    // Background
+    auto corner_s = resizeSize(fullPlotComponentCornerSize);
+    g.setColour(gpp.findColour(PlotComponent_backgroundColourId));
+    g.fillRoundedRectangle(0.0f, 0.0f, width, height, corner_s);
+
+    LinearMapper<float> x_mapper(-radius, 0.0f, radius, width);
+    LinearMapper<float> y_mapper(-radius, height, radius, 0.0f);
+
+    // Circle
+    g.setColour(gpp.findColour(GaussianPlanePanel_circleColourId));
+    float c_left   = x_mapper.map(-1.0f);
+    float c_right  = x_mapper.map(1.0f);
+    float c_top    = y_mapper.map(1.0f);
+    float c_bottom = y_mapper.map(-1.0f);
+    g.drawEllipse(c_left, c_top, c_right - c_left, c_bottom - c_top,
+                  resizeSize(fullGaussianCircleThickness));
+
+    // Ticks
+    float c_x = x_mapper.map(0.0f);
+    float c_y = y_mapper.map(0.0f);
+    // Minor ticks
+    juce::Path minorTicks;
+    for (auto i = 0; i < nGaussianCircleMinorTicksRadial; ++i)
+    {
+        auto z = exp(std::complex(
+            0.0f, static_cast<float>(i) * juce::MathConstants<float>::twoPi
+                      / static_cast<float>(nGaussianCircleMinorTicksRadial)));
+        minorTicks.startNewSubPath(c_x, c_y);
+        minorTicks.lineTo(x_mapper.map(z.real()), y_mapper.map(z.imag()));
+    }
+    g.setColour(gpp.findColour(GaussianPlanePanel_gridColourId));
+    g.strokePath(minorTicks,
+                 juce::PathStrokeType(resizeSize(fullGaussianMinorThickness)));
+    // Minor ticks (circular)
+    for (auto i = 1; i < nGaussianCircleMinorTicksCircular - 1; ++i)
+    {
+        float r = static_cast<float>(i)
+                  / static_cast<float>(nGaussianCircleMinorTicksCircular - 1);
+        c_left   = x_mapper.map(-r);
+        c_right  = x_mapper.map(r);
+        c_top    = y_mapper.map(r);
+        c_bottom = y_mapper.map(-r);
+        g.drawEllipse(c_left, c_top, c_right - c_left, c_bottom - c_top,
+                      resizeSize(fullGaussianMinorThickness));
+    }
+    // Major ticks
+    juce::Path majorTicks;
+    for (auto i = 0; i < nGaussianCircleMajorTicks; ++i)
+    {
+        auto z = exp(std::complex(
+            0.0f, static_cast<float>(i) * juce::MathConstants<float>::twoPi
+                      / static_cast<float>(nGaussianCircleMajorTicks)));
+        majorTicks.startNewSubPath(c_x, c_y);
+        majorTicks.lineTo(x_mapper.map(z.real()), y_mapper.map(z.imag()));
+    }
+    g.setColour(gpp.findColour(GaussianPlanePanel_circleColourId));
+    g.strokePath(majorTicks,
+                 juce::PathStrokeType(resizeSize(fullGaussianCircleThickness)));
 }
