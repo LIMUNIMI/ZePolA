@@ -189,7 +189,7 @@ private:
 
     // =========================================================================
     float buttonAspectRatio, fullButtonPadding, fullButtonOutline,
-        fullButtonRadius;
+        relativeButtonRadius;
 
     // =========================================================================
     int n_x_ticks;

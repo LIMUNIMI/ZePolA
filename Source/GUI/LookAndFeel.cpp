@@ -58,7 +58,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , buttonAspectRatio(2.5f)
     , fullButtonPadding(5.0f)
     , fullButtonOutline(2.5f)
-    , fullButtonRadius(5.0f)
+    , relativeButtonRadius(0.3f)
     , fullPlotComponentCornerSize(6.0f)
     , fullPlotStrokeThickness(1.5f)
     , fullPlotGridThickness(1.0f)
@@ -491,9 +491,9 @@ void CustomLookAndFeel::drawToggleButton(
     bool /* shouldDrawButtonAsHighlighted */, bool /* shouldDrawButtonAsDown */)
 {
     bool on      = button.getToggleState();
-    float radius = resizeSize(fullButtonRadius);
     float othick = resizeSize(fullButtonOutline);
     float bpad   = resizeSize(fullButtonPadding);
+    float radius = relativeButtonRadius * button.getHeight();
 
     juce::Rectangle<float> rect(0.0f, 0.0f,
                                 static_cast<float>(button.getWidth()),
@@ -524,11 +524,12 @@ void CustomLookAndFeel::drawToggleButton(
     juce::Rectangle<float> led_rect(
         rect.getRight() - othick * 0.5f - bpad - led_diam,
         rect.getY() + bpad + othick * 0.5f, led_diam, led_diam);
-    juce::Rectangle<float> text_rect(
-        rect.getX() + othick * 0.5f + bpad, rect.getY() + othick * 0.5f + bpad * 0.25f,
-        rect.getWidth(), rect.getHeight() - othick - 0.5f * bpad);
+    juce::Rectangle<float> text_rect(rect.getX() + othick * 0.5f + bpad,
+                                     rect.getY() + othick * 0.5f + bpad * 0.25f,
+                                     rect.getWidth(),
+                                     rect.getHeight() - othick - 0.5f * bpad);
     text_rect.setRight(led_rect.getX() - bpad);
-    
+
     // g.setColour(juce::Colours::red);
     // g.fillRect(text_rect);
 
