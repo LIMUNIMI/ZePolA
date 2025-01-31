@@ -95,6 +95,19 @@ private:
 };
 
 // =============================================================================
+/** Gaussian plane with draggable points  */
+class GaussianPlanePanel : public juce::GroupComponent
+{
+public:
+    // =========================================================================
+    GaussianPlanePanel();
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GaussianPlanePanel)
+};
+
+// =============================================================================
 /** Parameter control panel  */
 class ParameterPanel : public juce::GroupComponent
 {
@@ -110,6 +123,8 @@ private:
     // =========================================================================
     std::vector<std::unique_ptr<ParameterStrip>> strips;
     std::vector<std::unique_ptr<juce::Label>> headerLabels;
+    GaussianPlanePanel zplane;
+    juce::GroupComponent shortcutsPanel;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterPanel)

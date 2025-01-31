@@ -116,6 +116,9 @@ bool ParameterStrip::parentComponentIsActive(const juce::Component& c)
 }
 
 // =============================================================================
+GaussianPlanePanel::GaussianPlanePanel() {}
+
+// =============================================================================
 ParameterPanel::ParameterPanel(VTSAudioProcessor& p, size_t n)
 {
     for (auto s : {"RADIUS", "ANGLE", "TYPE", "ACTIVE", "GAIN"})
@@ -130,6 +133,8 @@ ParameterPanel::ParameterPanel(VTSAudioProcessor& p, size_t n)
         addAndMakeVisible(*l.get());
     }
     for (auto& s : strips) addAndMakeVisible(*s.get());
+    addAndMakeVisible(zplane);
+    addAndMakeVisible(shortcutsPanel);
 }
 
 // =============================================================================
@@ -169,5 +174,9 @@ void ParameterPanel::resized()
         auto strip_rects
             = claf->splitProportional(regions[1], std::vector<int>(n, 1), true);
         for (auto i = 0; i < n; ++i) strips[i]->setBounds(strip_rects[i]);
+
+        zplane.setBounds(regions[3].removeFromLeft(regions[3].getHeight()));
+        regions[3].setLeft(claf->getPanelInnerRect(regions[3]).getX());
+        shortcutsPanel.setBounds(regions[3]);
     }
 }
