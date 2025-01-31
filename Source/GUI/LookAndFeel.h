@@ -62,6 +62,8 @@ public:
                                 juce::GroupComponent&) override;
     juce::Font getLabelFont(juce::Label&) override;
     juce::Font getLabelFont(float fullFontSize);
+    juce::Font getLabelFont(juce::Typeface::Ptr);
+    juce::Font getLabelFont(juce::Typeface::Ptr, float fullFontSize);
     juce::Font getLabelFont();
     void drawLinearSlider(juce::Graphics& g, int x, int y, int width,
                           int height, float sliderPos, float minSliderPos,
@@ -170,7 +172,7 @@ public:
 
 private:
     // =========================================================================
-    juce::Typeface::Ptr typeface;
+    juce::Typeface::Ptr typeface, boldTypeface;
 
     // =========================================================================
     int fullWidth, fullHeight, fullHeaderHeight, fullPanelOuterMargin;

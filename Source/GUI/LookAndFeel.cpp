@@ -67,7 +67,9 @@ CustomLookAndFeel::CustomLookAndFeel()
     , logPlotCenterFreqUnits({1.0f, 2.0f, 5.0f})
     , dbPlotTicks({6.0f, 12.0f, 20.0f, 40.0f, 60.0f})
     , typeface(juce::Typeface::createSystemTypefaceFor(
-          BinaryData::MuktaRegular_ttf, BinaryData::MuktaRegular_ttfSize))
+          BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
+    , boldTypeface(juce::Typeface::createSystemTypefaceFor(
+          BinaryData::MuktaBold_ttf, BinaryData::MuktaBold_ttfSize))
     , osFontScale(
 #ifdef JUCE_WINDOWS
           1.5f
@@ -371,12 +373,21 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
     g.setColour(gc.findColour(InvisibleGroupComponent_outlineColourId));
     g.drawRect(b, resizeSize(1.0f));
 }
-juce::Font CustomLookAndFeel::getLabelFont(float fullFontSize)
+juce::Font CustomLookAndFeel::getLabelFont(juce::Typeface::Ptr t,
+                                           float fullFontSize)
 {
-    juce::Font f(typeface);
+    juce::Font f(t);
     f.setSizeAndStyle(resizeSize(fullFontSize) * osFontScale, f.getStyleFlags(),
                       f.getHorizontalScale(), f.getExtraKerningFactor());
     return f;
+}
+juce::Font CustomLookAndFeel::getLabelFont(juce::Typeface::Ptr t)
+{
+    return getLabelFont(t, fullLabelFontSize);
+}
+juce::Font CustomLookAndFeel::getLabelFont(float fullFontSize)
+{
+    return getLabelFont(typeface, fullFontSize);
 }
 juce::Font CustomLookAndFeel::getLabelFont()
 {
@@ -514,17 +525,19 @@ void CustomLookAndFeel::drawToggleButton(
         rect.getRight() - othick * 0.5f - bpad - led_diam,
         rect.getY() + bpad + othick * 0.5f, led_diam, led_diam);
     juce::Rectangle<float> text_rect(
-        rect.getX() + othick * 0.5f + bpad, rect.getY() + othick * 0.5f + bpad,
-        rect.getWidth(), rect.getHeight() - othick - 2.0f * bpad);
+        rect.getX() + othick * 0.5f + bpad, rect.getY() + othick * 0.5f + bpad * 0.25f,
+        rect.getWidth(), rect.getHeight() - othick - 0.5f * bpad);
     text_rect.setRight(led_rect.getX() - bpad);
+    
+    // g.setColour(juce::Colours::red);
+    // g.fillRect(text_rect);
 
     juce::String txt((on) ? "ON" : "OFF");
     g.setColour(tc);
-    auto font = getLabelFont();
+    auto font = getLabelFont(boldTypeface);
     font.setHeight((text_rect.getHeight() + bpad) * osFontScale);
-    font.setBold(true);
     g.setFont(font);
-    g.drawText(txt, text_rect, juce::Justification::centredBottom);
+    g.drawText(txt, text_rect, juce::Justification::centred);
 
     g.setColour(lc);
     g.fillEllipse(led_rect);
