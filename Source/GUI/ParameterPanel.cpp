@@ -180,6 +180,7 @@ float ZPoint::getPointArg() const { return a; }
 // =============================================================================
 void ZPoint::setBoundsRelativeToPlane(juce::Component* parent, float radius)
 {
+    jassert(parent);
     juce::Point<float> c(getPointX(), getPointY());
     juce::Point<float> scale(parent->getWidth() * 0.5f / radius,
                              parent->getHeight() * -0.5f / radius);
@@ -211,7 +212,9 @@ void ZPoint::setBoundsRelativeToPlane(juce::Component* parent)
 }
 void ZPoint::setBoundsRelativeToParent()
 {
-    setBoundsRelativeToPlane(getParentComponent());
+    auto parent = getParentComponent();
+    if (!parent) return;
+    setBoundsRelativeToPlane(parent);
 }
 
 // =============================================================================
