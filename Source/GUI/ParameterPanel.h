@@ -170,6 +170,8 @@ public:
     ZPoint();
 
     // =========================================================================
+    /** Set the point cartesian coordinates in the Gaussian plane */
+    void setPointXY(float x, float y);
     /** Set the point X coordinate in the Gaussian plane (i.e. the real part) */
     void setPointX(float);
     /** Set the point Y coordinate in the Gaussian plane (i.e. the imaginary
@@ -203,7 +205,7 @@ public:
 
 private:
     // =========================================================================
-    std::complex<float> z;
+    float r, a;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ZPoint)

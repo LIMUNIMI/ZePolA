@@ -151,33 +151,31 @@ ZPoint::MultiAttachment::~MultiAttachment()
 }
 
 // =============================================================================
-ZPoint::ZPoint() : z(0.0f, 0.0f) {}
+ZPoint::ZPoint() : r(0.0f), a(0.0f) {}
 
 // =============================================================================
-void ZPoint::setPointX(float x)
+void ZPoint::setPointXY(float x, float y)
 {
-    z = std::complex<float>(x, getPointY());
+    r = sqrt(x * x + y * y);
+    a = atan2(y, x);
     setBoundsRelativeToParent();
 }
-void ZPoint::setPointY(float y)
+void ZPoint::setPointX(float x) { setPointXY(x, getPointY()); }
+void ZPoint::setPointY(float y) { setPointXY(getPointX(), y); }
+void ZPoint::setPointMagnitude(float f)
 {
-    z = std::complex<float>(getPointX(), y);
+    r = f;
     setBoundsRelativeToParent();
 }
-void ZPoint::setPointMagnitude(float m)
+void ZPoint::setPointArg(float f)
 {
-    z = std::polar<float>(m, getPointArg());
+    a = f;
     setBoundsRelativeToParent();
 }
-void ZPoint::setPointArg(float a)
-{
-    z = std::polar<float>(getPointMagnitude(), a);
-    setBoundsRelativeToParent();
-}
-float ZPoint::getPointX() const { return z.real(); }
-float ZPoint::getPointY() const { return z.imag(); }
-float ZPoint::getPointMagnitude() const { return abs(z); }
-float ZPoint::getPointArg() const { return arg(z); }
+float ZPoint::getPointX() const { return r * cos(a); }
+float ZPoint::getPointY() const { return r * sin(a); }
+float ZPoint::getPointMagnitude() const { return r; }
+float ZPoint::getPointArg() const { return a; }
 
 // =============================================================================
 void ZPoint::setBoundsRelativeToPlane(juce::Component* parent, float radius)
