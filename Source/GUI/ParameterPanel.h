@@ -258,6 +258,7 @@ public:
     // =========================================================================
     virtual void setVisible(bool) override;
     void paint(juce::Graphics&) override;
+    void mouseDrag(const juce::MouseEvent& event) override;
 
 private:
     // =========================================================================

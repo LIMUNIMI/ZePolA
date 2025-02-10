@@ -275,25 +275,41 @@ void ZPoint::paint(juce::Graphics& g)
         laf->drawZPoint(g, getX(), getY(), getWidth(), getHeight(), getPointX(),
                         getPointY(), type, conjugate, *this);
 }
+void ZPoint::mouseDrag(const juce::MouseEvent& event)
+{
+    if (conjugate) return;
+    if (auto zplane = findParentComponentOfClass<GaussianPlanePanel>())
+    {
+        setPointXY(getPointX()
+                       + (event.x - getWidth() * 0.5f) * 0.5f
+                             * zplane->getRadius() / zplane->getWidth(),
+                   getPointY()
+                       - (event.y - getHeight() * 0.5f) * 0.5f
+                             * zplane->getRadius() / zplane->getHeight());
+    }
+}
 
 // =============================================================================
 GaussianPlanePanel::GaussianPlanePanel(PolesAndZerosEQAudioProcessor& p)
     : radius(1.05f)
 {
-    for (auto i = 0; i < p.getNElements(); ++i)
+    auto n = p.getNElements();
+    for (auto i = 0; i < n; ++i)
     {
         points.push_back(std::make_unique<ZPoint>());
         conj_points.push_back(std::make_unique<ZPoint>());
         points[i]->setConjugatePoint(conj_points[i].get());
         conj_points[i]->setConjugate(true);
-        addAndMakeVisible(*points[i].get());
-        addAndMakeVisible(*conj_points[i].get());
+
+        addChildComponent(*conj_points[i].get(), i);
+        addChildComponent(*points[i].get(), n + i);
+
         point_attachments.push_back(
             std::make_unique<ZPoint::MultiAttachment>(p, points[i].get(), i));
     }
-    jassert(points.size() == p.getNElements());
-    jassert(conj_points.size() == points.size());
-    jassert(point_attachments.size() == points.size());
+    jassert(points.size() == n);
+    jassert(conj_points.size() == n);
+    jassert(point_attachments.size() == n);
 }
 
 // =============================================================================
