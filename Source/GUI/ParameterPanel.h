@@ -113,6 +113,7 @@ public:
     };
 
     // =========================================================================
+    /** Listener for updating the point magnitude */
     class MagnitudeListener
         : public juce::AudioProcessorValueTreeState::Listener
     {
@@ -132,6 +133,7 @@ public:
     };
 
     // =========================================================================
+    /** Listener for updating the point angle */
     class ArgListener : public juce::AudioProcessorValueTreeState::Listener
     {
     public:
@@ -150,6 +152,7 @@ public:
     };
 
     // =========================================================================
+    /** Listener for updating the point visibility */
     class ActiveListener : public juce::AudioProcessorValueTreeState::Listener
     {
     public:
@@ -168,6 +171,7 @@ public:
     };
 
     // =========================================================================
+    /** Listener for updating the point type */
     class TypeListener : public juce::AudioProcessorValueTreeState::Listener
     {
     public:
@@ -185,6 +189,24 @@ public:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TypeListener)
     };
 
+    // =============================================================================
+    /** Listener for listening to dragging the point with the mouse */
+    class DraggablePointListener
+    {
+    public:
+        // =========================================================================
+        DraggablePointListener(juce::RangedAudioParameter* r,
+                               juce::RangedAudioParameter* a);
+        virtual void pointWasDragged(ZPoint*);
+
+    private:
+        //==========================================================================
+        juce::RangedAudioParameter *r_param, *a_param;
+
+        // =========================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DraggablePointListener)
+    };
+
     // =========================================================================
     class MultiAttachment
     {
@@ -195,10 +217,12 @@ public:
 
     private:
         // =====================================================================
+        ZPoint* point;
         MagnitudeListener m_listen;
         ArgListener a_listen;
         ActiveListener v_listen;
         TypeListener t_listen;
+        std::unique_ptr<DraggablePointListener> z_listen;
         VTSAudioProcessor& processor;
         int idx;
 
@@ -208,6 +232,7 @@ public:
 
     // =========================================================================
     ZPoint();
+    ~ZPoint();
 
     // =========================================================================
     /** Set the point cartesian coordinates in the Gaussian plane */
@@ -260,12 +285,18 @@ public:
     void paint(juce::Graphics&) override;
     void mouseDrag(const juce::MouseEvent& event) override;
 
+    void addDraggablePointListener(DraggablePointListener*);
+    void removeDraggablePointListener(DraggablePointListener*);
+
 private:
     // =========================================================================
     FilterElement::Type type;
     float r, a;
     bool conjugate;
     ZPoint* z_conj;
+
+    // =========================================================================
+    std::vector<DraggablePointListener*> dp_listeners;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ZPoint)
@@ -289,6 +320,7 @@ public:
 
     // =========================================================================
     GaussianPlanePanel(PolesAndZerosEQAudioProcessor&);
+    ~GaussianPlanePanel();
 
     // =========================================================================
     void paint(juce::Graphics&) override;
