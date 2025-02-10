@@ -214,23 +214,27 @@ ZPoint::~ZPoint()
 // =============================================================================
 void ZPoint::setPointXY(float x, float y)
 {
-    r = sqrt(x * x + y * y);
-    a = atan2(y, x);
-    if (z_conj) z_conj->setPointXY(x, -y);
-    setBoundsRelativeToParent();
+    setPointMagnitude(sqrt(x * x + y * y));
+    setPointArg(atan2(y, x));
 }
 void ZPoint::setPointX(float x) { setPointXY(x, getPointY()); }
 void ZPoint::setPointY(float y) { setPointXY(getPointX(), y); }
 void ZPoint::setPointMagnitude(float f)
 {
-    r = f;
-    if (z_conj) z_conj->setPointMagnitude(f);
+    r = std::clamp(f, 0.0f, 1.0f);
+    if (z_conj) z_conj->setPointMagnitude(r);
     setBoundsRelativeToParent();
 }
 void ZPoint::setPointArg(float f)
 {
-    a = f;
-    if (z_conj) z_conj->setPointArg(-f);
+    a = std::fmod((conjugate) ? -f : f, juce::MathConstants<float>::twoPi);
+    if (a < 0.0f) a += juce::MathConstants<float>::twoPi;
+    if (a > 3 * juce::MathConstants<float>::halfPi)
+        a = 0.0f;
+    else if (a > juce::MathConstants<float>::pi)
+        a = juce::MathConstants<float>::pi;
+    if (conjugate) a = -a;
+    if (z_conj) z_conj->setPointArg(-a);
     setBoundsRelativeToParent();
 }
 float ZPoint::getPointX() const { return r * cos(a); }
