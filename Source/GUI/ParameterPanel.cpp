@@ -130,28 +130,49 @@ void ZPoint::ArgListener::parameterChanged(const juce::String&, float a)
 }
 
 // =============================================================================
+ZPoint::ActiveListener::ActiveListener(ZPoint* p) : parent(p) {}
+void ZPoint::ActiveListener::parameterChanged(const juce::String&, float a)
+{
+    parent->setVisible(a);
+}
+
+// =============================================================================
+ZPoint::TypeListener::TypeListener(ZPoint* p) : parent(p) {}
+void ZPoint::TypeListener::parameterChanged(const juce::String&, float a)
+{
+    parent->setType(FilterElement::floatToType(a));
+}
+
+// =============================================================================
 ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
-    : processor(p), idx(i), m_listen(z), a_listen(z)
+    : processor(p), idx(i), m_listen(z), a_listen(z), v_listen(z), t_listen(z)
 {
     juce::String i_str(idx);
     juce::String m_id = MAGNITUDE_ID_PREFIX + i_str;
     juce::String a_id = PHASE_ID_PREFIX + i_str;
+    juce::String v_id = ACTIVE_ID_PREFIX + i_str;
+    juce::String t_id = TYPE_ID_PREFIX + i_str;
 
     processor.addParameterListener(m_id, &m_listen);
     processor.addParameterListener(a_id, &a_listen);
+    processor.addParameterListener(v_id, &v_listen);
+    processor.addParameterListener(t_id, &t_listen);
     m_listen.parameterChanged(m_id, p.getParameterUnnormValue(m_id));
     a_listen.parameterChanged(a_id, p.getParameterUnnormValue(a_id));
+    v_listen.parameterChanged(v_id, p.getParameterUnnormValue(v_id));
+    t_listen.parameterChanged(t_id, p.getParameterUnnormValue(t_id));
 }
 ZPoint::MultiAttachment::~MultiAttachment()
 {
-    processor.removeParameterListener(MAGNITUDE_ID_PREFIX + juce::String(idx),
-                                      &m_listen);
-    processor.removeParameterListener(PHASE_ID_PREFIX + juce::String(idx),
-                                      &a_listen);
+    juce::String i_str(idx);
+    processor.removeParameterListener(MAGNITUDE_ID_PREFIX + i_str, &m_listen);
+    processor.removeParameterListener(PHASE_ID_PREFIX + i_str, &a_listen);
+    processor.removeParameterListener(ACTIVE_ID_PREFIX + i_str, &v_listen);
+    processor.removeParameterListener(TYPE_ID_PREFIX + i_str, &t_listen);
 }
 
 // =============================================================================
-ZPoint::ZPoint() : r(0.0f), a(0.0f) {}
+ZPoint::ZPoint() : r(0.0f), a(0.0f), type(FilterElement::Type::ZERO) {}
 
 // =============================================================================
 void ZPoint::setPointXY(float x, float y)
@@ -176,6 +197,12 @@ float ZPoint::getPointX() const { return r * cos(a); }
 float ZPoint::getPointY() const { return r * sin(a); }
 float ZPoint::getPointMagnitude() const { return r; }
 float ZPoint::getPointArg() const { return a; }
+void ZPoint::setType(FilterElement::Type t)
+{
+    type = t;
+    repaint();
+}
+FilterElement::Type ZPoint::getType() const { return type; }
 
 // =============================================================================
 void ZPoint::setBoundsRelativeToPlane(juce::Component* parent, float radius)
@@ -222,7 +249,7 @@ void ZPoint::paint(juce::Graphics& g)
 {
     if (auto laf = dynamic_cast<ZPoint::LookAndFeelMethods*>(&getLookAndFeel()))
         laf->drawZPoint(g, getX(), getY(), getWidth(), getHeight(), getPointX(),
-                        getPointY(), *this);
+                        getPointY(), type, *this);
 }
 
 // =============================================================================

@@ -1,4 +1,5 @@
 #pragma once
+#include "../DSP/Filter.h"
 #include "../Parameters.h"
 #include "../PluginProcessor.h"
 #include "DraggableLabel.h"
@@ -106,7 +107,8 @@ public:
     public:
         // =====================================================================
         virtual void drawZPoint(juce::Graphics&, float x, float y, float width,
-                                float height, float p_x, float p_y, ZPoint&)
+                                float height, float p_x, float p_y,
+                                FilterElement::Type, ZPoint&)
             = 0;
     };
 
@@ -148,6 +150,42 @@ public:
     };
 
     // =========================================================================
+    class ActiveListener : public juce::AudioProcessorValueTreeState::Listener
+    {
+    public:
+        // =====================================================================
+        ActiveListener(ZPoint* parent);
+
+        // =====================================================================
+        void parameterChanged(const juce::String&, float) override;
+
+    private:
+        // =====================================================================
+        ZPoint* parent;
+
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ActiveListener)
+    };
+
+    // =========================================================================
+    class TypeListener : public juce::AudioProcessorValueTreeState::Listener
+    {
+    public:
+        // =====================================================================
+        TypeListener(ZPoint* parent);
+
+        // =====================================================================
+        void parameterChanged(const juce::String&, float) override;
+
+    private:
+        // =====================================================================
+        ZPoint* parent;
+
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TypeListener)
+    };
+
+    // =========================================================================
     class MultiAttachment
     {
     public:
@@ -159,6 +197,8 @@ public:
         // =====================================================================
         MagnitudeListener m_listen;
         ArgListener a_listen;
+        ActiveListener v_listen;
+        TypeListener t_listen;
         VTSAudioProcessor& processor;
         int idx;
 
@@ -195,9 +235,17 @@ public:
      */
     float getPointArg() const;
 
+    /** Set the point type */
+    void setType(FilterElement::Type);
+    /** Get the point type */
+    FilterElement::Type getType() const;
+
     // =========================================================================
+    /** Set the point bounds based on its coordinates and the plane bounds */
     void setBoundsRelativeToPlane(juce::Component*, float radius);
+    /** Set the point bounds based on its coordinates and the plane bounds */
     void setBoundsRelativeToPlane(juce::Component*);
+    /** Set the point bounds based on its coordinates and the parent bounds */
     void setBoundsRelativeToParent();
 
     // =========================================================================
@@ -205,6 +253,7 @@ public:
 
 private:
     // =========================================================================
+    FilterElement::Type type;
     float r, a;
 
     // =========================================================================

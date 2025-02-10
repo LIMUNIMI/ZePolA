@@ -142,6 +142,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(GaussianPlanePanel_circleColourId, juce::Colours::black);
     setColour(GaussianPlanePanel_gridColourId, juce::Colour(0x67383838));
     setColour(ZPoint_zerosColourId, juce::Colour(0xd79b59b6));
+    setColour(ZPoint_polesColourId, juce::Colour(0xffffbc2e));
 }
 
 // =============================================================================
@@ -776,9 +777,25 @@ void CustomLookAndFeel::drawGaussianPlane(juce::Graphics& g, float x, float y,
 }
 void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float x, float y,
                                    float width, float height, float p_x,
-                                   float p_y, ZPoint& zp)
+                                   float p_y, FilterElement::Type type,
+                                   ZPoint& zp)
 {
     float t = resizeSize(fullPointThickness);
-    g.setColour(zp.findColour(ZPoint_zerosColourId));
-    g.drawEllipse(0.5f * t, 0.5f * t, width - t, height - t, t);
+    juce::Rectangle r(0.5f * t, 0.5f * t, width - t, height - t);
+
+    switch (type)
+    {
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for filter element type. Defaulting to 'ZERO'");
+    case (FilterElement::Type::ZERO):
+        g.setColour(zp.findColour(ZPoint_zerosColourId));
+        g.drawEllipse(r, t);
+        break;
+    case (FilterElement::Type::POLE):
+        g.setColour(zp.findColour(ZPoint_polesColourId));
+        g.drawLine(r.getX(), r.getY(), r.getRight(), r.getBottom(), t);
+        g.drawLine(r.getX(), r.getBottom(), r.getRight(), r.getY(), t);
+        break;
+    }
 }

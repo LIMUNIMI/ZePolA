@@ -50,7 +50,8 @@ public:
         PlotComponent_tickLabelColourId,
         GaussianPlanePanel_circleColourId,
         GaussianPlanePanel_gridColourId,
-        ZPoint_zerosColourId
+        ZPoint_zerosColourId,
+        ZPoint_polesColourId
     };
 
     // =========================================================================
@@ -94,7 +95,9 @@ public:
                            float height, float radius,
                            GaussianPlanePanel&) override;
     void drawZPoint(juce::Graphics&, float x, float y, float width,
-                    float height, float p_x, float p_y, ZPoint&);
+                    float height, float p_x, float p_y, FilterElement::Type,
+                    ZPoint&);
+
     // =========================================================================
     /** Set the new resize ratio */
     void setResizeRatio(float);
