@@ -93,6 +93,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , nGaussianCircleMinorTicksCircular(5)
     , relativePointSize(0.05f)
     , fullPointThickness(3.0f)
+    , conjugateAlpha(0.5f)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -778,7 +779,7 @@ void CustomLookAndFeel::drawGaussianPlane(juce::Graphics& g, float x, float y,
 void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float x, float y,
                                    float width, float height, float p_x,
                                    float p_y, FilterElement::Type type,
-                                   ZPoint& zp)
+                                   bool conjugate, ZPoint& zp)
 {
     float t = resizeSize(fullPointThickness);
     juce::Rectangle r(0.5f * t, 0.5f * t, width - t, height - t);
@@ -789,11 +790,13 @@ void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float x, float y,
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter element type. Defaulting to 'ZERO'");
     case (FilterElement::Type::ZERO):
-        g.setColour(zp.findColour(ZPoint_zerosColourId));
+        g.setColour(zp.findColour(ZPoint_zerosColourId)
+                        .withAlpha((conjugate) ? conjugateAlpha : 1.0f));
         g.drawEllipse(r, t);
         break;
     case (FilterElement::Type::POLE):
-        g.setColour(zp.findColour(ZPoint_polesColourId));
+        g.setColour(zp.findColour(ZPoint_polesColourId)
+                        .withAlpha((conjugate) ? conjugateAlpha : 1.0f));
         g.drawLine(r.getX(), r.getY(), r.getRight(), r.getBottom(), t);
         g.drawLine(r.getX(), r.getBottom(), r.getRight(), r.getY(), t);
         break;

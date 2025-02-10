@@ -172,13 +172,21 @@ ZPoint::MultiAttachment::~MultiAttachment()
 }
 
 // =============================================================================
-ZPoint::ZPoint() : r(0.0f), a(0.0f), type(FilterElement::Type::ZERO) {}
+ZPoint::ZPoint()
+    : r(0.0f)
+    , a(0.0f)
+    , type(FilterElement::Type::ZERO)
+    , conjugate(false)
+    , z_conj(nullptr)
+{
+}
 
 // =============================================================================
 void ZPoint::setPointXY(float x, float y)
 {
     r = sqrt(x * x + y * y);
     a = atan2(y, x);
+    if (z_conj) z_conj->setPointXY(x, -y);
     setBoundsRelativeToParent();
 }
 void ZPoint::setPointX(float x) { setPointXY(x, getPointY()); }
@@ -186,11 +194,13 @@ void ZPoint::setPointY(float y) { setPointXY(getPointX(), y); }
 void ZPoint::setPointMagnitude(float f)
 {
     r = f;
+    if (z_conj) z_conj->setPointMagnitude(f);
     setBoundsRelativeToParent();
 }
 void ZPoint::setPointArg(float f)
 {
     a = f;
+    if (z_conj) z_conj->setPointArg(-f);
     setBoundsRelativeToParent();
 }
 float ZPoint::getPointX() const { return r * cos(a); }
@@ -200,9 +210,16 @@ float ZPoint::getPointArg() const { return a; }
 void ZPoint::setType(FilterElement::Type t)
 {
     type = t;
+    if (z_conj) z_conj->setType(t);
     repaint();
 }
 FilterElement::Type ZPoint::getType() const { return type; }
+void ZPoint::setConjugate(bool c)
+{
+    conjugate = c;
+    repaint();
+}
+bool ZPoint::getConjugate() const { return conjugate; }
 
 // =============================================================================
 void ZPoint::setBoundsRelativeToPlane(juce::Component* parent, float radius)
@@ -229,6 +246,7 @@ void ZPoint::setBoundsRelativeToPlane(juce::Component* parent, float radius)
     r.setCentre(c);
 
     setBounds(r.toNearestInt());
+    if (z_conj) z_conj->setBoundsRelativeToPlane(parent, radius);
 }
 void ZPoint::setBoundsRelativeToPlane(juce::Component* parent)
 {
@@ -243,27 +261,38 @@ void ZPoint::setBoundsRelativeToParent()
     if (!parent) return;
     setBoundsRelativeToPlane(parent);
 }
+void ZPoint::setConjugatePoint(ZPoint* z) { z_conj = z; }
 
 // =============================================================================
+void ZPoint::setVisible(bool shouldBeVisible)
+{
+    juce::Component::setVisible(shouldBeVisible);
+    if (z_conj) z_conj->setVisible(shouldBeVisible);
+}
 void ZPoint::paint(juce::Graphics& g)
 {
     if (auto laf = dynamic_cast<ZPoint::LookAndFeelMethods*>(&getLookAndFeel()))
         laf->drawZPoint(g, getX(), getY(), getWidth(), getHeight(), getPointX(),
-                        getPointY(), type, *this);
+                        getPointY(), type, conjugate, *this);
 }
 
 // =============================================================================
 GaussianPlanePanel::GaussianPlanePanel(PolesAndZerosEQAudioProcessor& p)
     : radius(1.05f)
 {
-    jassert(radius > 0.0f);
-    for (auto i = 0; i < 1 /*p.getNElements()*/; ++i)
+    for (auto i = 0; i < p.getNElements(); ++i)
     {
         points.push_back(std::make_unique<ZPoint>());
+        conj_points.push_back(std::make_unique<ZPoint>());
+        points[i]->setConjugatePoint(conj_points[i].get());
+        conj_points[i]->setConjugate(true);
         addAndMakeVisible(*points[i].get());
+        addAndMakeVisible(*conj_points[i].get());
         point_attachments.push_back(
             std::make_unique<ZPoint::MultiAttachment>(p, points[i].get(), i));
     }
+    jassert(points.size() == p.getNElements());
+    jassert(conj_points.size() == points.size());
     jassert(point_attachments.size() == points.size());
 }
 
@@ -281,7 +310,11 @@ void GaussianPlanePanel::resized()
 }
 
 // =============================================================================
-void GaussianPlanePanel::setRadius(float r) { radius = r; }
+void GaussianPlanePanel::setRadius(float r)
+{
+    radius = r;
+    jassert(radius > 0.0f);
+}
 float GaussianPlanePanel::getRadius() const { return radius; }
 
 // =============================================================================

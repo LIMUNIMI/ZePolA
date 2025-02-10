@@ -96,7 +96,7 @@ public:
                            GaussianPlanePanel&) override;
     void drawZPoint(juce::Graphics&, float x, float y, float width,
                     float height, float p_x, float p_y, FilterElement::Type,
-                    ZPoint&);
+                    bool conjugate, ZPoint&);
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -214,7 +214,7 @@ private:
 
     // =========================================================================
     float fullGaussianCircleThickness, fullGaussianMinorThickness,
-        relativePointSize, fullPointThickness;
+        relativePointSize, fullPointThickness, conjugateAlpha;
     int nGaussianCircleMajorTicks, nGaussianCircleMinorTicksRadial,
         nGaussianCircleMinorTicksCircular;
 

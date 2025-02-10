@@ -108,7 +108,7 @@ public:
         // =====================================================================
         virtual void drawZPoint(juce::Graphics&, float x, float y, float width,
                                 float height, float p_x, float p_y,
-                                FilterElement::Type, ZPoint&)
+                                FilterElement::Type, bool conjugate, ZPoint&)
             = 0;
     };
 
@@ -239,6 +239,10 @@ public:
     void setType(FilterElement::Type);
     /** Get the point type */
     FilterElement::Type getType() const;
+    /** Set the point as conjugate or not */
+    void setConjugate(bool);
+    /** Get the conjugate state of the point */
+    bool getConjugate() const;
 
     // =========================================================================
     /** Set the point bounds based on its coordinates and the plane bounds */
@@ -249,12 +253,18 @@ public:
     void setBoundsRelativeToParent();
 
     // =========================================================================
+    void setConjugatePoint(ZPoint* z = nullptr);
+
+    // =========================================================================
+    virtual void setVisible(bool) override;
     void paint(juce::Graphics&) override;
 
 private:
     // =========================================================================
     FilterElement::Type type;
     float r, a;
+    bool conjugate;
+    ZPoint* z_conj;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ZPoint)
@@ -295,6 +305,7 @@ private:
     // =========================================================================
     std::vector<std::unique_ptr<ZPoint::MultiAttachment>> point_attachments;
     std::vector<std::unique_ptr<ZPoint>> points;
+    std::vector<std::unique_ptr<ZPoint>> conj_points;
     float radius;
 
     // =========================================================================
