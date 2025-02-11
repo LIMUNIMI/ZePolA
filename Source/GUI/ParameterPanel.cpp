@@ -150,11 +150,14 @@ ZPoint::DraggablePointListener::DraggablePointListener(
     : r_param(r), a_param(a)
 {
 }
-void ZPoint::DraggablePointListener::pointWasDragged(ZPoint* z)
+void ZPoint::DraggablePointListener::mouseDrag(const juce::MouseEvent& event)
 {
-    Parameters::setParameterValue(r_param, z->getPointMagnitude());
-    Parameters::setParameterValue(
-        a_param, z->getPointArg() / juce::MathConstants<float>::pi);
+    if (auto z = dynamic_cast<ZPoint*>(event.eventComponent))
+    {
+        Parameters::setParameterValue(r_param, z->getPointMagnitude());
+        Parameters::setParameterValue(
+            a_param, z->getPointArg() / juce::MathConstants<float>::pi);
+    }
 }
 
 // =============================================================================
@@ -180,7 +183,7 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     processor.addParameterListener(a_id, &a_listen);
     processor.addParameterListener(v_id, &v_listen);
     processor.addParameterListener(t_id, &t_listen);
-    z->addDraggablePointListener(z_listen.get());
+    point->addMouseListener(z_listen.get(), false);
     m_listen.parameterChanged(m_id, p.getParameterUnnormValue(m_id));
     a_listen.parameterChanged(a_id, p.getParameterUnnormValue(a_id));
     v_listen.parameterChanged(v_id, p.getParameterUnnormValue(v_id));
@@ -188,7 +191,7 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
 }
 ZPoint::MultiAttachment::~MultiAttachment()
 {
-    point->removeDraggablePointListener(z_listen.get());
+    point->removeMouseListener(z_listen.get());
     juce::String i_str(idx);
     processor.removeParameterListener(MAGNITUDE_ID_PREFIX + i_str, &m_listen);
     processor.removeParameterListener(PHASE_ID_PREFIX + i_str, &a_listen);
@@ -204,11 +207,6 @@ ZPoint::ZPoint()
     , conjugate(false)
     , z_conj(nullptr)
 {
-}
-ZPoint::~ZPoint()
-{
-    // Check that all listeners have been removed
-    jassert(dp_listeners.size() == 0);
 }
 
 // =============================================================================
@@ -327,23 +325,7 @@ void ZPoint::mouseDrag(const juce::MouseEvent& event)
                    getPointY()
                        - (event.y - getHeight() * 0.5f) * 0.5f
                              * zplane->getRadius() / zplane->getHeight());
-        for (auto dpl : dp_listeners) dpl->pointWasDragged(this);
     }
-}
-void ZPoint::addDraggablePointListener(ZPoint::DraggablePointListener* dpl)
-{
-    // Check that listener is not already in the list
-    ONLY_ON_DEBUG(std::vector<DraggablePointListener*>::iterator pos
-                  = std::find(dp_listeners.begin(), dp_listeners.end(), dpl);
-                  jassert(pos == dp_listeners.end());)
-    dp_listeners.push_back(dpl);
-}
-void ZPoint::removeDraggablePointListener(ZPoint::DraggablePointListener* dpl)
-{
-    std::vector<DraggablePointListener*>::iterator pos
-        = std::find(dp_listeners.begin(), dp_listeners.end(), dpl);
-    if (pos != dp_listeners.end()) dp_listeners.erase(pos);
-    ONLY_ON_DEBUG(else jassertfalse;)
 }
 
 // =============================================================================

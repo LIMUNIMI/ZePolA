@@ -191,13 +191,13 @@ public:
 
     // =============================================================================
     /** Listener for listening to dragging the point with the mouse */
-    class DraggablePointListener
+    class DraggablePointListener : public juce::MouseListener
     {
     public:
         // =========================================================================
         DraggablePointListener(juce::RangedAudioParameter* r,
                                juce::RangedAudioParameter* a);
-        virtual void pointWasDragged(ZPoint*);
+        void mouseDrag(const juce::MouseEvent&) override;
 
     private:
         //==========================================================================
@@ -232,7 +232,6 @@ public:
 
     // =========================================================================
     ZPoint();
-    ~ZPoint();
 
     // =========================================================================
     /** Set the point cartesian coordinates in the Gaussian plane */
@@ -285,18 +284,12 @@ public:
     void paint(juce::Graphics&) override;
     void mouseDrag(const juce::MouseEvent& event) override;
 
-    void addDraggablePointListener(DraggablePointListener*);
-    void removeDraggablePointListener(DraggablePointListener*);
-
 private:
     // =========================================================================
     FilterElement::Type type;
     float r, a;
     bool conjugate;
     ZPoint* z_conj;
-
-    // =========================================================================
-    std::vector<DraggablePointListener*> dp_listeners;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ZPoint)
