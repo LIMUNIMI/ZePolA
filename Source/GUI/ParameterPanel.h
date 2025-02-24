@@ -230,6 +230,24 @@ public:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ScrollablePointListener)
     };
 
+    // =============================================================================
+    /** Listener for toggling the type parameter when double-clicking the point
+     * with the mouse */
+    class TogglableTypePointListener : public juce::MouseListener
+    {
+    public:
+        // =========================================================================
+        TogglableTypePointListener(juce::RangedAudioParameter*);
+        void mouseDoubleClick(const juce::MouseEvent&) override;
+
+    private:
+        //==========================================================================
+        juce::RangedAudioParameter* param;
+
+        // =========================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TogglableTypePointListener)
+    };
+
     // =========================================================================
     class MultiAttachment
     {
@@ -249,6 +267,7 @@ public:
         TypeListener t_listen;
         DraggablePointListener z_p_listen;
         ScrollablePointListener g_p_listen;
+        TogglableTypePointListener t_p_listen;
 
         // =====================================================================
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MultiAttachment)

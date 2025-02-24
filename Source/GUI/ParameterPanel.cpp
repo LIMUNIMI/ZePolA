@@ -177,6 +177,28 @@ void ZPoint::ScrollablePointListener::setDeltaGain(float f) { deltaGain = f; }
 float ZPoint::ScrollablePointListener::getDeltaGain() { return deltaGain; }
 
 // =============================================================================
+ZPoint::TogglableTypePointListener::TogglableTypePointListener(
+    juce::RangedAudioParameter* p)
+    : param(p)
+{
+}
+void ZPoint::TogglableTypePointListener::mouseDoubleClick(
+    const juce::MouseEvent&)
+{
+    FilterElement::Type t = FilterElement::ZERO;
+    switch (
+        FilterElement::floatToType(param->convertFrom0to1(param->getValue())))
+    {
+    default:
+        UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
+                              "Switching to type 'ZERO'");
+    case FilterElement::POLE: break;
+    case FilterElement::ZERO: t = FilterElement::POLE; break;
+    }
+    Parameters::setParameterValue(param, FilterElement::typeToFloat(t));
+}
+
+// =============================================================================
 ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     : processor(p)
     , point(z)
@@ -191,6 +213,7 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     , t_listen(z)
     , z_p_listen(p.getParameterById(m_id), p.getParameterById(a_id))
     , g_p_listen(p.getParameterById(g_id))
+    , t_p_listen(p.getParameterById(t_id))
 {
     processor.addParameterListener(m_id, &m_listen);
     processor.addParameterListener(a_id, &a_listen);
@@ -198,6 +221,7 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     processor.addParameterListener(t_id, &t_listen);
     point->addMouseListener(&z_p_listen, false);
     point->addMouseListener(&g_p_listen, false);
+    point->addMouseListener(&t_p_listen, false);
 
     m_listen.parameterChanged(m_id, p.getParameterUnnormValue(m_id));
     a_listen.parameterChanged(a_id, p.getParameterUnnormValue(a_id));
@@ -208,6 +232,7 @@ ZPoint::MultiAttachment::~MultiAttachment()
 {
     point->removeMouseListener(&z_p_listen);
     point->removeMouseListener(&g_p_listen);
+    point->removeMouseListener(&t_p_listen);
     processor.removeParameterListener(m_id, &m_listen);
     processor.removeParameterListener(a_id, &a_listen);
     processor.removeParameterListener(v_id, &v_listen);
