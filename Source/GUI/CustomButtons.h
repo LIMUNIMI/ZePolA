@@ -7,10 +7,15 @@ class LabelledToggleButton : public juce::ToggleButton
 {
 public:
     // =========================================================================
-    LabelledToggleButton(const std::vector<juce::String>& labels);
+    LabelledToggleButton(const std::vector<juce::String>& labels,
+                         const std::vector<int>& colourIDs,
+                         const std::vector<bool>& ledPositions);
 
     // =========================================================================
-    const juce::String& getCurrentLabel();
+    size_t getCurrentState() const;
+    const juce::String& getCurrentLabel() const;
+    int getCurrentColourID() const;
+    bool getCurrentLedPosition() const;
 
     // =========================================================================
     void clicked() override;
@@ -19,6 +24,8 @@ public:
 private:
     // =========================================================================
     std::vector<juce::String> labels;
+    std::vector<int> colourIDs;
+    std::vector<bool> ledPositions;
     size_t state;
 
     // =========================================================================

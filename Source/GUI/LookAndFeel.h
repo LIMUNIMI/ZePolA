@@ -225,5 +225,16 @@ private:
         nGaussianCircleMinorTicksCircular;
 
     // =========================================================================
+    void _drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
+                           bool shouldDrawButtonAsHighlighted,
+                           bool shouldDrawButtonAsDown, float buttonOutline,
+                           float buttonPadding, float relativeRadius,
+                           juce::Colour backgroundColour,
+                           juce::Colour ledColour, juce::Colour outlineColour,
+                           juce::Colour ledOutlineColour,
+                           juce::Colour textColour, const juce::String& label,
+                           bool ledSide);
+
+    // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)
 };

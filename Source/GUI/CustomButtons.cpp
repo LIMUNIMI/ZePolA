@@ -1,14 +1,27 @@
 #include "CustomButtons.h"
 
 // =============================================================================
-LabelledToggleButton::LabelledToggleButton(const std::vector<juce::String>& l)
-    : labels(l), state(0)
+LabelledToggleButton::LabelledToggleButton(const std::vector<juce::String>& l,
+                                           const std::vector<int>& c,
+                                           const std::vector<bool>& p)
+    : labels(l), colourIDs(c), ledPositions(p), state(0)
 {
     jassert(labels.size());
+    jassert(labels.size() == colourIDs.size());
+    jassert(labels.size() == ledPositions.size());
 }
-const juce::String& LabelledToggleButton::getCurrentLabel()
+size_t LabelledToggleButton::getCurrentState() const { return state; }
+const juce::String& LabelledToggleButton::getCurrentLabel() const
 {
     return labels[state];
+}
+int LabelledToggleButton::getCurrentColourID() const
+{
+    return colourIDs[state];
+}
+bool LabelledToggleButton::getCurrentLedPosition() const
+{
+    return ledPositions[state];
 }
 void LabelledToggleButton::clicked()
 {
