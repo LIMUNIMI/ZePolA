@@ -207,6 +207,29 @@ public:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DraggablePointListener)
     };
 
+    // =============================================================================
+    /** Listener for listening to scrolling the point with the mouse */
+    class ScrollablePointListener : public juce::MouseListener
+    {
+    public:
+        // =========================================================================
+        ScrollablePointListener(juce::RangedAudioParameter*);
+        void mouseWheelMove(const juce::MouseEvent&,
+                            const juce::MouseWheelDetails&) override;
+
+        // =========================================================================
+        void setDeltaGain(float);
+        float getDeltaGain();
+
+    private:
+        //==========================================================================
+        juce::RangedAudioParameter* param;
+        float deltaGain;
+
+        // =========================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ScrollablePointListener)
+    };
+
     // =========================================================================
     class MultiAttachment
     {
@@ -223,6 +246,7 @@ public:
         ActiveListener v_listen;
         TypeListener t_listen;
         std::unique_ptr<DraggablePointListener> z_listen;
+        std::unique_ptr<ScrollablePointListener> g_listen;
         VTSAudioProcessor& processor;
         int idx;
 

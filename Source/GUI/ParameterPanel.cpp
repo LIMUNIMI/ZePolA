@@ -161,6 +161,22 @@ void ZPoint::DraggablePointListener::mouseDrag(const juce::MouseEvent& event)
 }
 
 // =============================================================================
+ZPoint::ScrollablePointListener::ScrollablePointListener(
+    juce::RangedAudioParameter* p)
+    : param(p), deltaGain(0.025f)
+{
+}
+void ZPoint::ScrollablePointListener::mouseWheelMove(
+    const juce::MouseEvent& /* event */, const juce::MouseWheelDetails& wheel)
+{
+    Parameters::setParameterValue(
+        param, param->convertFrom0to1(std::clamp(
+                   param->getValue() + deltaGain * wheel.deltaY, 0.0f, 1.0f)));
+}
+void ZPoint::ScrollablePointListener::setDeltaGain(float f) { deltaGain = f; }
+float ZPoint::ScrollablePointListener::getDeltaGain() { return deltaGain; }
+
+// =============================================================================
 ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     : processor(p)
     , point(z)
@@ -175,15 +191,19 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     juce::String a_id = PHASE_ID_PREFIX + i_str;
     juce::String v_id = ACTIVE_ID_PREFIX + i_str;
     juce::String t_id = TYPE_ID_PREFIX + i_str;
+    juce::String g_id = GAIN_ID_PREFIX + i_str;
 
     z_listen = std::make_unique<ZPoint::DraggablePointListener>(
         processor.getParameterById(m_id), processor.getParameterById(a_id));
+    g_listen = std::make_unique<ZPoint::ScrollablePointListener>(
+        processor.getParameterById(g_id));
 
     processor.addParameterListener(m_id, &m_listen);
     processor.addParameterListener(a_id, &a_listen);
     processor.addParameterListener(v_id, &v_listen);
     processor.addParameterListener(t_id, &t_listen);
     point->addMouseListener(z_listen.get(), false);
+    point->addMouseListener(g_listen.get(), false);
     m_listen.parameterChanged(m_id, p.getParameterUnnormValue(m_id));
     a_listen.parameterChanged(a_id, p.getParameterUnnormValue(a_id));
     v_listen.parameterChanged(v_id, p.getParameterUnnormValue(v_id));
@@ -192,6 +212,7 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
 ZPoint::MultiAttachment::~MultiAttachment()
 {
     point->removeMouseListener(z_listen.get());
+    point->removeMouseListener(g_listen.get());
     juce::String i_str(idx);
     processor.removeParameterListener(MAGNITUDE_ID_PREFIX + i_str, &m_listen);
     processor.removeParameterListener(PHASE_ID_PREFIX + i_str, &a_listen);
