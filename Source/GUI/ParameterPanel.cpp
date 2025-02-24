@@ -427,6 +427,33 @@ void GaussianPlanePanel::resized()
 {
     for (auto& p : points) p->setBoundsRelativeToPlane(this, radius);
 }
+void GaussianPlanePanel::mouseDown(const juce::MouseEvent& e)
+{
+    juce::Component::mouseDown(e);
+    if (e.mods.isRightButtonDown())
+        if (auto n = points.size())
+        {
+            auto pos    = e.getMouseDownPosition().toFloat();
+            auto i_min  = n;
+            float d_min = std::numeric_limits<float>::infinity(), d;
+            for (auto i = 0; i < n; ++i)
+                if (!points[i]->isShowing())
+                {
+                    juce::Point p(
+                        points[i]->getX() + points[i]->getWidth() * 0.5f,
+                        points[i]->getY() + points[i]->getHeight() * 0.5f);
+                    d = pos.getDistanceFrom(p);
+                    if (d < d_min)
+                    {
+                        i_min = i;
+                        d_min = d;
+                    }
+                }
+            if (i_min < n)
+                point_attachments[i_min]->v_p_listen.mouseDown(
+                    e.getEventRelativeTo(points[i_min].get()));
+        }
+}
 
 // =============================================================================
 void GaussianPlanePanel::setRadius(float r)

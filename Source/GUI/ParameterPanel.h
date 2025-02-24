@@ -272,6 +272,9 @@ public:
     {
     public:
         // =====================================================================
+        friend class GaussianPlanePanel;
+
+        // =====================================================================
         MultiAttachment(VTSAudioProcessor&, ZPoint*, int idx);
         ~MultiAttachment();
 
@@ -381,6 +384,7 @@ public:
     // =========================================================================
     void paint(juce::Graphics&) override;
     void resized() override;
+    void mouseDown(const juce::MouseEvent&) override;
 
     // =========================================================================
     /** Set the maximum represented value inside the plane. If 1, the unit
