@@ -156,6 +156,11 @@ float VTSAudioProcessor::formatParameterValue(juce::StringRef parameterID,
         = valueTreeState.getParameterRange(parameterID);
     return nr.convertFrom0to1(nr.convertTo0to1(value));
 }
+float VTSAudioProcessor::getParameterUnnormValue(juce::StringRef parameterID)
+{
+    return valueTreeState.getParameterRange(parameterID)
+        .convertFrom0to1(valueTreeState.getParameter(parameterID)->getValue());
+}
 void VTSAudioProcessor::setParameterValue(juce::StringRef parameterID,
                                           float value)
 {

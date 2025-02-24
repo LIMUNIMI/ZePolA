@@ -110,20 +110,19 @@ public:
     void buttonStateChanged(juce::Button*) override;
     void parameterChanged(const juce::String&, float);
     void resized() override;
+    void paint(juce::Graphics&) override;
+    /** Mark panel as to be recomputed */
+    void recomputePoints();
 
 private:
-    // =========================================================================
-    void startTimer();
-
     // =========================================================================
     std::unique_ptr<ApplicationPropertiesButtonAttachment>
         linLogFreqAPAttachment, linLogAmpAPAttachment;
     std::shared_ptr<juce::ToggleButton> linLogFreqButton, linLogAmpButton;
     PolesAndZerosEQAudioProcessor& processor;
-    juce::TimedCallback callbackTimer;
     PlotComponent mPlot, pPlot;
-    int timer_ms;
     bool db;
+    bool shouldRecomputePoints;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlotsPanel);

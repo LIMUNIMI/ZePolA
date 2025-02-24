@@ -87,11 +87,10 @@ void PlotComponent::paint(juce::Graphics& g)
 PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
                        juce::ApplicationProperties& properties)
     : processor(p)
-    , timer_ms(20)
     , db(false)
-    , callbackTimer(std::bind(&PlotsPanel::updateValues, this))
     , linLogFreqButton(new juce::ToggleButton())
     , linLogAmpButton(new juce::ToggleButton())
+    , shouldRecomputePoints(true)
 {
     addAndMakeVisible(*linLogFreqButton.get());
     addAndMakeVisible(*linLogAmpButton.get());
@@ -99,7 +98,6 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
     addAndMakeVisible(pPlot);
     for (auto i : processor.parameterIDs())
         processor.addParameterListener(i, this);
-    callbackTimer.startTimer(timer_ms);
     linLogFreqButton->addListener(&mPlot);
     linLogFreqButton->addListener(&pPlot);
     linLogFreqButton->addListener(this);
@@ -122,14 +120,14 @@ PlotsPanel::~PlotsPanel()
 }
 
 // =============================================================================
-void PlotsPanel::sampleRateChangedCallback(double sr) { startTimer(); }
+void PlotsPanel::sampleRateChangedCallback(double sr) { recomputePoints(); }
 
 // =============================================================================
 void PlotsPanel::updateValues()
 {
-    callbackTimer.stopTimer();
-    auto n  = mPlot.getSize();
-    auto sr = processor.getSampleRate();
+    shouldRecomputePoints = false;
+    auto n                = mPlot.getSize();
+    auto sr               = processor.getSampleRate();
     mPlot.setTopRightText("Sample rate: " + juce::String(sr) + " Hz");
     double loFreq = (mPlot.getLogX()) ? 10.0 : 0.0;
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
@@ -158,20 +156,22 @@ void PlotsPanel::updateValues()
         mPlot.setPoint(i, nu, m);
         pPlot.setPoint(i, nu, static_cast<float>(std::arg(h)));
     }
+    repaint();
+    mPlot.repaint();
+    pPlot.repaint();
 }
 
 // =============================================================================
-void PlotsPanel::startTimer()
-{
-    if (!callbackTimer.isTimerRunning()) callbackTimer.startTimer(timer_ms);
-}
 void PlotsPanel::buttonClicked(juce::Button* b)
 {
     if (b == linLogAmpButton.get()) db = b->getToggleState();
-    startTimer();
+    recomputePoints();
 }
 void PlotsPanel::buttonStateChanged(juce::Button*) {}
-void PlotsPanel::parameterChanged(const juce::String&, float) { startTimer(); }
+void PlotsPanel::parameterChanged(const juce::String&, float)
+{
+    recomputePoints();
+}
 void PlotsPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
@@ -192,4 +192,14 @@ void PlotsPanel::resized()
         linLogAmpButton->setBounds(middle_regions[1]);
         linLogFreqButton->setBounds(middle_regions[3]);
     }
+}
+void PlotsPanel::paint(juce::Graphics& g)
+{
+    if (shouldRecomputePoints) updateValues();
+    juce::GroupComponent::paint(g);
+}
+void PlotsPanel::recomputePoints()
+{
+    shouldRecomputePoints = true;
+    repaint();
 }

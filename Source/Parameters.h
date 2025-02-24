@@ -95,6 +95,8 @@ public:
     float formatParameterValue(juce::StringRef parameterID, float value);
     /** Set parameter value, enclosing the operation in a gesture */
     void setParameterValue(juce::StringRef parameterID, float value);
+    /** Get parameter unnormalized value by parameter ID */
+    float getParameterUnnormValue(juce::StringRef parameterID);
     /** Set parameter value to default, enclosing the operation in a gesture */
     void resetParameterValue(juce::StringRef);
     /** Reset value of all parameters */

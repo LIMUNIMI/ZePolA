@@ -25,7 +25,9 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a);
 class CustomLookAndFeel : public juce::LookAndFeel_V4,
                           public InvisibleGroupComponentLookAndFeelMethods,
                           public PlotComponentLookAndFeelMethods,
-                          public ParameterPanelLookAndFeelMethods
+                          public ParameterPanelLookAndFeelMethods,
+                          public GaussianPlanePanel::LookAndFeelMethods,
+                          public ZPoint::LookAndFeelMethods
 {
 public:
     // =========================================================================
@@ -45,7 +47,11 @@ public:
         PlotComponent_gridColourId,
         PlotComponent_gridLabelsColourId,
         PlotComponent_lineColourId,
-        PlotComponent_tickLabelColourId
+        PlotComponent_tickLabelColourId,
+        GaussianPlanePanel_circleColourId,
+        GaussianPlanePanel_gridColourId,
+        ZPoint_zerosColourId,
+        ZPoint_polesColourId
     };
 
     // =========================================================================
@@ -85,6 +91,12 @@ public:
                            const std::vector<juce::String>& y_labels,
                            bool log_x, const juce::String& topRightText,
                            PlotComponent&) override;
+    void drawGaussianPlane(juce::Graphics&, float x, float y, float width,
+                           float height, float radius,
+                           GaussianPlanePanel&) override;
+    void drawZPoint(juce::Graphics&, float x, float y, float width,
+                    float height, float p_x, float p_y, FilterElement::Type,
+                    bool conjugate, ZPoint&);
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -104,6 +116,8 @@ public:
     float getAspectRatio() const;
     /** Get the lower frequency for the log plot */
     double getLogPlotLowFreq(double sr) const;
+    /** Get proportional size of the points in the Gaussian plane */
+    float getRelativePointSize() const;
 
     // =========================================================================
     /** Set the properties of the magnitude plot */
@@ -197,6 +211,12 @@ private:
         fullPlotGridThickness, logPlotCenterFreq;
     std::vector<float> logPlotCenterFreqUnits;
     std::vector<float> dbPlotTicks;
+
+    // =========================================================================
+    float fullGaussianCircleThickness, fullGaussianMinorThickness,
+        relativePointSize, fullPointThickness, conjugateAlpha;
+    int nGaussianCircleMajorTicks, nGaussianCircleMinorTicksRadial,
+        nGaussianCircleMinorTicksCircular;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)

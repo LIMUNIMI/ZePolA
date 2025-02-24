@@ -34,6 +34,7 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     addAndMakeVisible(*plotsPanel.get());
     addAndMakeVisible(designGroup);
     addAndMakeVisible(masterGroup);
+    resized();
 }
 PolesAndZerosEQAudioProcessorEditor::~PolesAndZerosEQAudioProcessorEditor()
 {

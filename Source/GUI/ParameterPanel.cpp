@@ -1,4 +1,5 @@
 #include "ParameterPanel.h"
+#include "../Macros.h"
 #include "LookAndFeel.h"
 
 // =============================================================================
@@ -116,7 +117,355 @@ bool ParameterStrip::parentComponentIsActive(const juce::Component& c)
 }
 
 // =============================================================================
-ParameterPanel::ParameterPanel(VTSAudioProcessor& p, size_t n)
+ZPoint::MagnitudeListener::MagnitudeListener(ZPoint* p) : parent(p) {}
+void ZPoint::MagnitudeListener::parameterChanged(const juce::String&, float m)
+{
+    parent->setPointMagnitude(m);
+}
+
+// =============================================================================
+ZPoint::ArgListener::ArgListener(ZPoint* p) : parent(p) {}
+void ZPoint::ArgListener::parameterChanged(const juce::String&, float a)
+{
+    parent->setPointArg(juce::MathConstants<float>::pi * a);
+}
+
+// =============================================================================
+ZPoint::ActiveListener::ActiveListener(ZPoint* p) : parent(p) {}
+void ZPoint::ActiveListener::parameterChanged(const juce::String&, float a)
+{
+    parent->setVisible(a);
+}
+
+// =============================================================================
+ZPoint::TypeListener::TypeListener(ZPoint* p) : parent(p) {}
+void ZPoint::TypeListener::parameterChanged(const juce::String&, float a)
+{
+    parent->setType(FilterElement::floatToType(a));
+}
+
+// =============================================================================
+ZPoint::DraggablePointListener::DraggablePointListener(
+    juce::RangedAudioParameter* r, juce::RangedAudioParameter* a)
+    : r_param(r), a_param(a)
+{
+}
+void ZPoint::DraggablePointListener::mouseDrag(const juce::MouseEvent& event)
+{
+    if (auto z = dynamic_cast<ZPoint*>(event.eventComponent))
+    {
+        Parameters::setParameterValue(r_param, z->getPointMagnitude());
+        Parameters::setParameterValue(
+            a_param, z->getPointArg() / juce::MathConstants<float>::pi);
+    }
+}
+
+// =============================================================================
+ZPoint::ScrollablePointListener::ScrollablePointListener(
+    juce::RangedAudioParameter* p)
+    : param(p), deltaGain(0.025f)
+{
+}
+void ZPoint::ScrollablePointListener::mouseWheelMove(
+    const juce::MouseEvent& /* event */, const juce::MouseWheelDetails& wheel)
+{
+    Parameters::setParameterValue(
+        param, param->convertFrom0to1(std::clamp(
+                   param->getValue() + deltaGain * wheel.deltaY, 0.0f, 1.0f)));
+}
+void ZPoint::ScrollablePointListener::setDeltaGain(float f) { deltaGain = f; }
+float ZPoint::ScrollablePointListener::getDeltaGain() { return deltaGain; }
+
+// =============================================================================
+ZPoint::TogglableTypePointListener::TogglableTypePointListener(
+    juce::RangedAudioParameter* p)
+    : param(p)
+{
+}
+void ZPoint::TogglableTypePointListener::mouseDoubleClick(
+    const juce::MouseEvent&)
+{
+    FilterElement::Type t = FilterElement::ZERO;
+    switch (
+        FilterElement::floatToType(param->convertFrom0to1(param->getValue())))
+    {
+    default:
+        UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
+                              "Switching to type 'ZERO'");
+    case FilterElement::POLE: break;
+    case FilterElement::ZERO: t = FilterElement::POLE; break;
+    }
+    Parameters::setParameterValue(param, FilterElement::typeToFloat(t));
+}
+
+// =============================================================================
+ZPoint::RickClickableActivePointListener::RickClickableActivePointListener(
+    juce::RangedAudioParameter* p)
+    : param(p)
+{
+}
+void ZPoint::RickClickableActivePointListener::mouseDown(
+    const juce::MouseEvent& e)
+{
+    if (e.mods.isRightButtonDown())
+        Parameters::setParameterValue(
+            param, param->convertFrom0to1(1.0f - param->getValue()));
+}
+
+// =============================================================================
+ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
+    : processor(p)
+    , point(z)
+    , m_id(MAGNITUDE_ID_PREFIX + juce::String(i))
+    , a_id(PHASE_ID_PREFIX + juce::String(i))
+    , v_id(ACTIVE_ID_PREFIX + juce::String(i))
+    , t_id(TYPE_ID_PREFIX + juce::String(i))
+    , g_id(GAIN_ID_PREFIX + juce::String(i))
+    , m_listen(z)
+    , a_listen(z)
+    , v_listen(z)
+    , t_listen(z)
+    , z_p_listen(p.getParameterById(m_id), p.getParameterById(a_id))
+    , g_p_listen(p.getParameterById(g_id))
+    , t_p_listen(p.getParameterById(t_id))
+    , v_p_listen(p.getParameterById(v_id))
+{
+    processor.addParameterListener(m_id, &m_listen);
+    processor.addParameterListener(a_id, &a_listen);
+    processor.addParameterListener(v_id, &v_listen);
+    processor.addParameterListener(t_id, &t_listen);
+    point->addMouseListener(&z_p_listen, false);
+    point->addMouseListener(&g_p_listen, false);
+    point->addMouseListener(&t_p_listen, false);
+    point->addMouseListener(&v_p_listen, false);
+
+    m_listen.parameterChanged(m_id, p.getParameterUnnormValue(m_id));
+    a_listen.parameterChanged(a_id, p.getParameterUnnormValue(a_id));
+    v_listen.parameterChanged(v_id, p.getParameterUnnormValue(v_id));
+    t_listen.parameterChanged(t_id, p.getParameterUnnormValue(t_id));
+}
+ZPoint::MultiAttachment::~MultiAttachment()
+{
+    point->removeMouseListener(&z_p_listen);
+    point->removeMouseListener(&g_p_listen);
+    point->removeMouseListener(&t_p_listen);
+    point->removeMouseListener(&v_p_listen);
+    processor.removeParameterListener(m_id, &m_listen);
+    processor.removeParameterListener(a_id, &a_listen);
+    processor.removeParameterListener(v_id, &v_listen);
+    processor.removeParameterListener(t_id, &t_listen);
+}
+
+// =============================================================================
+ZPoint::ZPoint()
+    : r(0.0f)
+    , a(0.0f)
+    , type(FilterElement::Type::ZERO)
+    , conjugate(false)
+    , z_conj(nullptr)
+{
+}
+
+// =============================================================================
+void ZPoint::setPointXY(float x, float y)
+{
+    setPointMagnitude(sqrt(x * x + y * y));
+    setPointArg(atan2(y, x));
+}
+void ZPoint::setPointX(float x) { setPointXY(x, getPointY()); }
+void ZPoint::setPointY(float y) { setPointXY(getPointX(), y); }
+void ZPoint::setPointMagnitude(float f)
+{
+    r = std::clamp(f, 0.0f, 1.0f);
+    if (z_conj) z_conj->setPointMagnitude(r);
+    setBoundsRelativeToParent();
+}
+void ZPoint::setPointArg(float f)
+{
+    a = std::fmod((conjugate) ? -f : f, juce::MathConstants<float>::twoPi);
+    if (a < 0.0f) a += juce::MathConstants<float>::twoPi;
+    if (a > 3 * juce::MathConstants<float>::halfPi)
+        a = 0.0f;
+    else if (a > juce::MathConstants<float>::pi)
+        a = juce::MathConstants<float>::pi;
+    if (conjugate) a = -a;
+    if (z_conj) z_conj->setPointArg(-a);
+    setBoundsRelativeToParent();
+}
+float ZPoint::getPointX() const { return r * cos(a); }
+float ZPoint::getPointY() const { return r * sin(a); }
+float ZPoint::getPointMagnitude() const { return r; }
+float ZPoint::getPointArg() const { return a; }
+void ZPoint::setType(FilterElement::Type t)
+{
+    type = t;
+    if (z_conj) z_conj->setType(t);
+    repaint();
+}
+FilterElement::Type ZPoint::getType() const { return type; }
+void ZPoint::setConjugate(bool c)
+{
+    conjugate = c;
+    repaint();
+}
+bool ZPoint::getConjugate() const { return conjugate; }
+
+// =============================================================================
+void ZPoint::setBoundsRelativeToPlane(juce::Component* parent, float radius)
+{
+    jassert(parent);
+    juce::Point<float> c(getPointX(), getPointY());
+    juce::Point<float> scale(parent->getWidth() * 0.5f / radius,
+                             parent->getHeight() * -0.5f / radius);
+    juce::Point<float> offset(0.5f * parent->getWidth(),
+                              0.5f * parent->getHeight());
+    c *= scale;
+    c += offset;
+
+    juce::Rectangle<float> r(0.0f, 0.0f, static_cast<float>(parent->getWidth()),
+                             static_cast<float>(parent->getHeight()));
+    if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
+    {
+        r *= claf->getRelativePointSize();
+    }
+    else
+    {
+        r *= 0.05f;
+    }
+    r.setCentre(c);
+
+    if ((MessageManager::getInstanceWithoutCreating() != nullptr
+         && MessageManager::getInstanceWithoutCreating()
+                ->currentThreadHasLockedMessageManager())
+        || getPeer() == nullptr)
+    {
+        const MessageManagerLock mmLock;
+        setBounds(r.toNearestInt());
+    }
+    if (z_conj) z_conj->setBoundsRelativeToPlane(parent, radius);
+}
+void ZPoint::setBoundsRelativeToPlane(juce::Component* parent)
+{
+    float radius = 1.0f;
+    if (auto zplane = dynamic_cast<GaussianPlanePanel*>(parent))
+        radius = zplane->getRadius();
+    setBoundsRelativeToPlane(parent, radius);
+}
+void ZPoint::setBoundsRelativeToParent()
+{
+    auto parent = getParentComponent();
+    if (!parent) return;
+    setBoundsRelativeToPlane(parent);
+}
+void ZPoint::setConjugatePoint(ZPoint* z) { z_conj = z; }
+
+// =============================================================================
+void ZPoint::setVisible(bool shouldBeVisible)
+{
+    juce::Component::setVisible(shouldBeVisible);
+    if (z_conj) z_conj->setVisible(shouldBeVisible);
+}
+void ZPoint::paint(juce::Graphics& g)
+{
+    if (auto laf = dynamic_cast<ZPoint::LookAndFeelMethods*>(&getLookAndFeel()))
+        laf->drawZPoint(g, getX(), getY(), getWidth(), getHeight(), getPointX(),
+                        getPointY(), type, conjugate, *this);
+}
+void ZPoint::mouseDrag(const juce::MouseEvent& event)
+{
+    if (conjugate) return;
+    if (auto zplane = findParentComponentOfClass<GaussianPlanePanel>())
+    {
+        setPointXY(getPointX()
+                       + (event.x - getWidth() * 0.5f) * 0.5f
+                             * zplane->getRadius() / zplane->getWidth(),
+                   getPointY()
+                       - (event.y - getHeight() * 0.5f) * 0.5f
+                             * zplane->getRadius() / zplane->getHeight());
+    }
+}
+
+// =============================================================================
+GaussianPlanePanel::GaussianPlanePanel(PolesAndZerosEQAudioProcessor& p)
+    : radius(1.05f)
+{
+    auto n = p.getNElements();
+    for (auto i = 0; i < n; ++i)
+    {
+        points.push_back(std::make_unique<ZPoint>());
+        conj_points.push_back(std::make_unique<ZPoint>());
+        points[i]->setConjugatePoint(conj_points[i].get());
+        conj_points[i]->setConjugate(true);
+
+        addChildComponent(*conj_points[i].get(), i);
+        addChildComponent(*points[i].get(), n + i);
+
+        point_attachments.push_back(
+            std::make_unique<ZPoint::MultiAttachment>(p, points[i].get(), i));
+    }
+    jassert(points.size() == n);
+    jassert(conj_points.size() == n);
+    jassert(point_attachments.size() == n);
+}
+GaussianPlanePanel::~GaussianPlanePanel()
+{
+    // <!> Order matters <!>
+    point_attachments.clear();
+    points.clear();
+    conj_points.clear();
+}
+
+// =============================================================================
+void GaussianPlanePanel::paint(juce::Graphics& g)
+{
+    if (auto laf = dynamic_cast<GaussianPlanePanel::LookAndFeelMethods*>(
+            &getLookAndFeel()))
+        laf->drawGaussianPlane(g, getX(), getY(), getWidth(), getHeight(),
+                               radius, *this);
+}
+void GaussianPlanePanel::resized()
+{
+    for (auto& p : points) p->setBoundsRelativeToPlane(this, radius);
+}
+void GaussianPlanePanel::mouseDown(const juce::MouseEvent& e)
+{
+    juce::Component::mouseDown(e);
+    if (e.mods.isRightButtonDown())
+        if (auto n = points.size())
+        {
+            auto pos    = e.getMouseDownPosition().toFloat();
+            auto i_min  = n;
+            float d_min = std::numeric_limits<float>::infinity(), d;
+            for (auto i = 0; i < n; ++i)
+                if (!points[i]->isShowing())
+                {
+                    juce::Point p(
+                        points[i]->getX() + points[i]->getWidth() * 0.5f,
+                        points[i]->getY() + points[i]->getHeight() * 0.5f);
+                    d = pos.getDistanceFrom(p);
+                    if (d < d_min)
+                    {
+                        i_min = i;
+                        d_min = d;
+                    }
+                }
+            if (i_min < n)
+                point_attachments[i_min]->v_p_listen.mouseDown(
+                    e.getEventRelativeTo(points[i_min].get()));
+        }
+}
+
+// =============================================================================
+void GaussianPlanePanel::setRadius(float r)
+{
+    radius = r;
+    jassert(radius > 0.0f);
+}
+float GaussianPlanePanel::getRadius() const { return radius; }
+
+// =============================================================================
+ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p, size_t n)
+    : zplane(p)
 {
     for (auto s : {"RADIUS", "ANGLE", "TYPE", "ACTIVE", "GAIN"})
         headerLabels.push_back(
@@ -130,6 +479,8 @@ ParameterPanel::ParameterPanel(VTSAudioProcessor& p, size_t n)
         addAndMakeVisible(*l.get());
     }
     for (auto& s : strips) addAndMakeVisible(*s.get());
+    addAndMakeVisible(zplane);
+    addAndMakeVisible(shortcutsPanel);
 }
 
 // =============================================================================
@@ -169,5 +520,9 @@ void ParameterPanel::resized()
         auto strip_rects
             = claf->splitProportional(regions[1], std::vector<int>(n, 1), true);
         for (auto i = 0; i < n; ++i) strips[i]->setBounds(strip_rects[i]);
+
+        zplane.setBounds(regions[3].removeFromLeft(regions[3].getHeight()));
+        regions[3].setLeft(claf->getPanelInnerRect(regions[3]).getX());
+        shortcutsPanel.setBounds(regions[3]);
     }
 }
