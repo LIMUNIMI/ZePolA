@@ -248,6 +248,25 @@ public:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TogglableTypePointListener)
     };
 
+    // =============================================================================
+    /** Listener for toggling the activation state parameter when right-clicking
+     * the point with the mouse */
+    class RickClickableActivePointListener : public juce::MouseListener
+    {
+    public:
+        // =========================================================================
+        RickClickableActivePointListener(juce::RangedAudioParameter*);
+        void mouseDown(const juce::MouseEvent&) override;
+
+    private:
+        //==========================================================================
+        juce::RangedAudioParameter* param;
+
+        // =========================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+            RickClickableActivePointListener)
+    };
+
     // =========================================================================
     class MultiAttachment
     {
@@ -268,6 +287,7 @@ public:
         DraggablePointListener z_p_listen;
         ScrollablePointListener g_p_listen;
         TogglableTypePointListener t_p_listen;
+        RickClickableActivePointListener v_p_listen;
 
         // =====================================================================
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MultiAttachment)
