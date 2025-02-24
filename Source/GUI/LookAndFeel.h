@@ -53,7 +53,9 @@ public:
         GaussianPlanePanel_circleColourId,
         GaussianPlanePanel_gridColourId,
         ZPoint_zerosColourId,
-        ZPoint_polesColourId
+        ZPoint_polesColourId,
+        PlotButtons_linColourId,
+        PlotButtons_logColourId
     };
 
     // =========================================================================

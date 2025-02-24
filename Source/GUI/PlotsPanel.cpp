@@ -1,5 +1,6 @@
 #include "PlotsPanel.h"
 #include "../Mappers.h"
+#include "CustomButtons.h"
 #include "LookAndFeel.h"
 
 // =============================================================================
@@ -88,8 +89,16 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
                        juce::ApplicationProperties& properties)
     : processor(p)
     , db(false)
-    , linLogFreqButton(new juce::ToggleButton())
-    , linLogAmpButton(new juce::ToggleButton())
+    , linLogFreqButton(new LabelledToggleButton(
+          {"LIN", "LOG"},
+          {CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
+           CustomLookAndFeel::ColourIDs::PlotButtons_logColourId},
+          {false, true}))
+    , linLogAmpButton(new LabelledToggleButton(
+          {"LIN", "DB"},
+          {CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
+           CustomLookAndFeel::ColourIDs::PlotButtons_logColourId},
+          {false, true}))
     , shouldRecomputePoints(true)
 {
     addAndMakeVisible(*linLogFreqButton.get());
@@ -180,10 +189,10 @@ void PlotsPanel::resized()
             claf->getPanelInnerRect(getLocalBounds()));
         jassert(regions.size() == 5);
         auto middle_regions
-            = claf->splitProportional(regions[2], {1, 4, 1}, true);
+            = claf->splitProportional(regions[2], {20, 60, 20}, true);
         jassert(middle_regions.size() == 3);
         middle_regions
-            = claf->splitProportional(middle_regions[1], {1, 8, 62, 8, 1});
+            = claf->splitProportional(middle_regions[1], {1, 11, 76, 11, 1});
         jassert(middle_regions.size() == 5);
 
         mPlot.setBounds(regions[1]);

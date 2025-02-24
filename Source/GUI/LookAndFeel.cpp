@@ -144,6 +144,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(GaussianPlanePanel_gridColourId, juce::Colour(0x67383838));
     setColour(ZPoint_zerosColourId, juce::Colour(0xd79b59b6));
     setColour(ZPoint_polesColourId, juce::Colour(0xffffbc2e));
+    setColour(PlotButtons_linColourId, juce::Colour(0xcd3498d8));
+    setColour(PlotButtons_logColourId, juce::Colour(0xff73cc81));
 }
 
 // =============================================================================
