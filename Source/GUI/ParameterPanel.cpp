@@ -180,30 +180,25 @@ float ZPoint::ScrollablePointListener::getDeltaGain() { return deltaGain; }
 ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     : processor(p)
     , point(z)
-    , idx(i)
+    , m_id(MAGNITUDE_ID_PREFIX + juce::String(i))
+    , a_id(PHASE_ID_PREFIX + juce::String(i))
+    , v_id(ACTIVE_ID_PREFIX + juce::String(i))
+    , t_id(TYPE_ID_PREFIX + juce::String(i))
+    , g_id(GAIN_ID_PREFIX + juce::String(i))
     , m_listen(z)
     , a_listen(z)
     , v_listen(z)
     , t_listen(z)
+    , z_p_listen(p.getParameterById(m_id), p.getParameterById(a_id))
+    , g_p_listen(p.getParameterById(g_id))
 {
-    juce::String i_str(idx);
-    juce::String m_id = MAGNITUDE_ID_PREFIX + i_str;
-    juce::String a_id = PHASE_ID_PREFIX + i_str;
-    juce::String v_id = ACTIVE_ID_PREFIX + i_str;
-    juce::String t_id = TYPE_ID_PREFIX + i_str;
-    juce::String g_id = GAIN_ID_PREFIX + i_str;
-
-    z_listen = std::make_unique<ZPoint::DraggablePointListener>(
-        processor.getParameterById(m_id), processor.getParameterById(a_id));
-    g_listen = std::make_unique<ZPoint::ScrollablePointListener>(
-        processor.getParameterById(g_id));
-
     processor.addParameterListener(m_id, &m_listen);
     processor.addParameterListener(a_id, &a_listen);
     processor.addParameterListener(v_id, &v_listen);
     processor.addParameterListener(t_id, &t_listen);
-    point->addMouseListener(z_listen.get(), false);
-    point->addMouseListener(g_listen.get(), false);
+    point->addMouseListener(&z_p_listen, false);
+    point->addMouseListener(&g_p_listen, false);
+
     m_listen.parameterChanged(m_id, p.getParameterUnnormValue(m_id));
     a_listen.parameterChanged(a_id, p.getParameterUnnormValue(a_id));
     v_listen.parameterChanged(v_id, p.getParameterUnnormValue(v_id));
@@ -211,13 +206,12 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
 }
 ZPoint::MultiAttachment::~MultiAttachment()
 {
-    point->removeMouseListener(z_listen.get());
-    point->removeMouseListener(g_listen.get());
-    juce::String i_str(idx);
-    processor.removeParameterListener(MAGNITUDE_ID_PREFIX + i_str, &m_listen);
-    processor.removeParameterListener(PHASE_ID_PREFIX + i_str, &a_listen);
-    processor.removeParameterListener(ACTIVE_ID_PREFIX + i_str, &v_listen);
-    processor.removeParameterListener(TYPE_ID_PREFIX + i_str, &t_listen);
+    point->removeMouseListener(&z_p_listen);
+    point->removeMouseListener(&g_p_listen);
+    processor.removeParameterListener(m_id, &m_listen);
+    processor.removeParameterListener(a_id, &a_listen);
+    processor.removeParameterListener(v_id, &v_listen);
+    processor.removeParameterListener(t_id, &t_listen);
 }
 
 // =============================================================================

@@ -240,15 +240,15 @@ public:
 
     private:
         // =====================================================================
+        VTSAudioProcessor& processor;
         ZPoint* point;
+        juce::String m_id, a_id, v_id, t_id, g_id;
         MagnitudeListener m_listen;
         ArgListener a_listen;
         ActiveListener v_listen;
         TypeListener t_listen;
-        std::unique_ptr<DraggablePointListener> z_listen;
-        std::unique_ptr<ScrollablePointListener> g_listen;
-        VTSAudioProcessor& processor;
-        int idx;
+        DraggablePointListener z_p_listen;
+        ScrollablePointListener g_p_listen;
 
         // =====================================================================
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MultiAttachment)
