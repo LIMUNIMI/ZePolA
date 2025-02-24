@@ -38,6 +38,7 @@ void ParameterStrip::FrequencyLabelSampleRateListener::
 // =============================================================================
 ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     : processor(p)
+    , tButton({FilterElement::typeToString(0), FilterElement::typeToString(1)})
     , mSliderAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
                            juce::Slider>(MAGNITUDE_ID_PREFIX + juce::String(i),

@@ -562,6 +562,64 @@ void CustomLookAndFeel::drawToggleButton(
         g.setColour(oc);
     g.drawEllipse(led_rect, othick * 0.5f);
 }
+
+void CustomLookAndFeel::drawLabelledToggleButton(
+    juce::Graphics& g, LabelledToggleButton& button,
+    bool /* shouldDrawButtonAsHighlighted */, bool /* shouldDrawButtonAsDown */)
+{
+    bool on      = button.getToggleState();
+    float othick = resizeSize(fullButtonOutline);
+    float bpad   = resizeSize(fullButtonPadding);
+    float radius = relativeButtonRadius * button.getHeight();
+
+    juce::Rectangle<float> rect(0.0f, 0.0f,
+                                static_cast<float>(button.getWidth()),
+                                static_cast<float>(button.getHeight()));
+    rect = rect.reduced(othick * 0.5f);
+
+    auto bgc = button.findColour((on) ? OnOffButton_backgroundOnColourId
+                                      : OnOffButton_backgroundOffColourId);
+    auto lc  = button.findColour((on) ? OnOffButton_ledOnColourId
+                                     : OnOffButton_ledOffColourId);
+    auto oc  = button.findColour(OnOffButton_outlineColourId);
+    auto tc  = button.findColour((on) ? OnOffButton_textOnColourId
+                                     : OnOffButton_textOffColourId);
+    if (!ParameterStrip::parentComponentIsActive(button))
+    {
+        bgc = bgc.brighter(inactiveBrightness);
+        lc  = lc.brighter(inactiveBrightness);
+        oc  = oc.brighter(inactiveBrightness);
+        tc  = tc.brighter(inactiveBrightness);
+    }
+
+    g.setColour(bgc);
+    g.fillRoundedRectangle(rect, radius);
+    g.setColour(oc);
+    g.drawRoundedRectangle(rect, radius, othick);
+
+    float led_diam = rect.getHeight() - 2.0f * bpad - othick;
+    juce::Rectangle<float> led_rect(
+        rect.getRight() - othick * 0.5f - bpad - led_diam,
+        rect.getY() + bpad + othick * 0.5f, led_diam, led_diam);
+    juce::Rectangle<float> text_rect(rect.getX() + othick * 0.5f + bpad,
+                                     rect.getY() + othick * 0.5f + bpad * 0.25f,
+                                     rect.getWidth(),
+                                     rect.getHeight() - othick - 0.5f * bpad);
+    text_rect.setRight(led_rect.getX() - bpad);
+
+    juce::String txt(button.getCurrentLabel());
+    g.setColour(tc);
+    auto font = getLabelFont(boldTypeface);
+    font.setHeight((text_rect.getHeight() + bpad) * osFontScale);
+    g.setFont(font);
+    g.drawText(txt, text_rect, juce::Justification::centred);
+
+    g.setColour(lc);
+    g.fillEllipse(led_rect);
+    if (led_rect.getWidth() >= 1.0f && led_rect.getHeight() >= 1.0f)
+        g.setColour(oc);
+    g.drawEllipse(led_rect, othick * 0.5f);
+}
 void CustomLookAndFeel::drawPlotComponent(
     juce::Graphics& g, float /* x */, float /* y */, float width, float height,
     const std::vector<float>& x_values, const std::vector<float>& y_values,

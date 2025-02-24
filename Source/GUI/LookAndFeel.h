@@ -1,4 +1,5 @@
 #pragma once
+#include "CustomButtons.h"
 #include "InvisibleGroupComponent.h"
 #include "ParameterPanel.h"
 #include "PlotsPanel.h"
@@ -27,7 +28,8 @@ class CustomLookAndFeel : public juce::LookAndFeel_V4,
                           public PlotComponentLookAndFeelMethods,
                           public ParameterPanelLookAndFeelMethods,
                           public GaussianPlanePanel::LookAndFeelMethods,
-                          public ZPoint::LookAndFeelMethods
+                          public ZPoint::LookAndFeelMethods,
+                          public LabelledToggleButtonLookAndFeelMethods
 {
 public:
     // =========================================================================
@@ -82,6 +84,10 @@ public:
     void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
                           bool shouldDrawButtonAsHighlighted,
                           bool shouldDrawButtonAsDown) override;
+    void drawLabelledToggleButton(juce::Graphics& g,
+                                  LabelledToggleButton& button,
+                                  bool shouldDrawButtonAsHighlighted,
+                                  bool shouldDrawButtonAsDown) override;
     void drawPlotComponent(juce::Graphics&, float x, float y, float width,
                            float height, const std::vector<float>& x_values,
                            const std::vector<float>& y_values, float period,
