@@ -468,8 +468,38 @@ void GaussianPlanePanel::setRadius(float r)
 float GaussianPlanePanel::getRadius() const { return radius; }
 
 // =============================================================================
+ShortcutsPanel::ShortcutsPanel(PolesAndZerosEQAudioProcessor& p)
+    : processor(p)
+    , allOnButton("ALL ON")
+    , allOffButton("ALL OFF")
+    , doublePhaseButton(juce::CharPointer_UTF8("PHASES ×2"))
+    , halfPhaseButton(juce::CharPointer_UTF8("PHASES ÷2"))
+    , swapTypeButton("SWAP Ps/Zs")
+{
+    addAndMakeVisible(allOnButton);
+    addAndMakeVisible(allOffButton);
+    addAndMakeVisible(doublePhaseButton);
+    addAndMakeVisible(halfPhaseButton);
+    addAndMakeVisible(swapTypeButton);
+}
+void ShortcutsPanel::resized()
+{
+    if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
+    {
+        auto regions
+            = claf->splitProportional(getLocalBounds(), {1, 1, 1, 1, 1}, true);
+        jassert(regions.size() == 5);
+        allOnButton.setBounds(regions[0]);
+        allOffButton.setBounds(regions[1]);
+        doublePhaseButton.setBounds(regions[2]);
+        halfPhaseButton.setBounds(regions[3]);
+        swapTypeButton.setBounds(regions[4]);
+    }
+}
+
+// =============================================================================
 ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p)
-    : zplane(p), zplane_label("", "GAUSSIAN PLANE")
+    : zplane(p), zplane_label("", "GAUSSIAN PLANE"), shortcutsPanel(p)
 {
     for (auto s : {"RADIUS", "ANGLE", "TYPE", "ACTIVE", "GAIN"})
         headerLabels.push_back(

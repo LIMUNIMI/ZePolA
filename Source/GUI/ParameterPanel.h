@@ -408,6 +408,27 @@ private:
 };
 
 // =============================================================================
+/** Shortcuts panel  */
+class ShortcutsPanel : public juce::GroupComponent
+{
+public:
+    // =========================================================================
+    ShortcutsPanel(PolesAndZerosEQAudioProcessor&);
+
+    // =========================================================================
+    void resized() override;
+
+private:
+    // =========================================================================
+    PolesAndZerosEQAudioProcessor& processor;
+    juce::TextButton allOnButton, allOffButton, doublePhaseButton,
+        halfPhaseButton, swapTypeButton;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ShortcutsPanel)
+};
+
+// =============================================================================
 /** Parameter control panel  */
 class ParameterPanel : public juce::GroupComponent
 {
@@ -425,7 +446,7 @@ private:
     std::vector<std::unique_ptr<juce::Label>> headerLabels;
     juce::Label zplane_label;
     GaussianPlanePanel zplane;
-    juce::GroupComponent shortcutsPanel;
+    ShortcutsPanel shortcutsPanel;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterPanel)
