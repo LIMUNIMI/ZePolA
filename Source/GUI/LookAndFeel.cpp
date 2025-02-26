@@ -58,7 +58,9 @@ CustomLookAndFeel::CustomLookAndFeel()
     , buttonAspectRatio(2.75f)
     , fullButtonPadding(5.0f)
     , fullButtonOutline(2.5f)
+    , fullLabelledButtonOutline(1.25f)
     , relativeButtonRadius(0.3f)
+    , relativeLabelledButtonRadius(0.5f)
     , fullPlotComponentCornerSize(6.0f)
     , fullPlotStrokeThickness(1.5f)
     , fullPlotGridThickness(1.0f)
@@ -599,7 +601,8 @@ void CustomLookAndFeel::drawLabelledToggleButton(
 {
     _drawToggleButton(
         g, button, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown,
-        fullButtonOutline * 0.5f, fullButtonPadding, 0.5f,
+        fullLabelledButtonOutline, fullButtonPadding,
+        relativeLabelledButtonRadius,
         button.findColour(button.getCurrentColourID()), juce::Colours::white,
         button.findColour(OnOffButton_outlineColourId), juce::Colours::white,
         button.findColour(OnOffButton_textOffColourId),
