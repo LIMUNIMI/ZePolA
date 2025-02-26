@@ -476,6 +476,12 @@ ShortcutsPanel::ShortcutsPanel(PolesAndZerosEQAudioProcessor& p)
     , halfPhaseButton(juce::CharPointer_UTF8("PHASES ÷2"))
     , swapTypeButton("SWAP Ps/Zs")
 {
+    allOnButton.onClick       = [this] { triggerAllOn(); };
+    allOffButton.onClick      = [this] { triggerAllOff(); };
+    doublePhaseButton.onClick = [this] { triggerDoublePhases(); };
+    halfPhaseButton.onClick   = [this] { triggerHalfPhases(); };
+    swapTypeButton.onClick    = [this] { triggerSwapTypes(); };
+
     addAndMakeVisible(allOnButton);
     addAndMakeVisible(allOffButton);
     addAndMakeVisible(doublePhaseButton);
@@ -494,6 +500,63 @@ void ShortcutsPanel::resized()
         doublePhaseButton.setBounds(regions[2]);
         halfPhaseButton.setBounds(regions[3]);
         swapTypeButton.setBounds(regions[4]);
+    }
+}
+
+// =============================================================================
+void ShortcutsPanel::triggerAllOn()
+{
+    auto n = processor.getNElements();
+    for (auto i = 0; i < n; ++i)
+        processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(i), true);
+}
+void ShortcutsPanel::triggerAllOff()
+{
+    auto n = processor.getNElements();
+    for (auto i = 0; i < n; ++i)
+        processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(i), false);
+}
+void ShortcutsPanel::triggerDoublePhases()
+{
+    auto n = processor.getNElements();
+    for (auto i = 0; i < n; ++i)
+    {
+        auto id_i = PHASE_ID_PREFIX + juce::String(i);
+        processor.setParameterValue(
+            id_i, 2.0f
+                      * std::clamp(processor.getParameterUnnormValue(id_i),
+                                   0.0f, 1.0f));
+    }
+}
+void ShortcutsPanel::triggerHalfPhases()
+{
+    auto n = processor.getNElements();
+    for (auto i = 0; i < n; ++i)
+    {
+        auto id_i = PHASE_ID_PREFIX + juce::String(i);
+        processor.setParameterValue(
+            id_i, 0.5f
+                      * std::clamp(processor.getParameterUnnormValue(id_i),
+                                   0.0f, 1.0f));
+    }
+}
+void ShortcutsPanel::triggerSwapTypes()
+{
+    auto n = processor.getNElements();
+    for (auto i = 0; i < n; ++i)
+    {
+        auto id_i             = TYPE_ID_PREFIX + juce::String(i);
+        FilterElement::Type t = FilterElement::ZERO;
+        switch (
+            FilterElement::floatToType(processor.getParameterUnnormValue(id_i)))
+        {
+        default:
+            UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
+                                  "Switching to type 'ZERO'");
+        case FilterElement::POLE: break;
+        case FilterElement::ZERO: t = FilterElement::POLE; break;
+        }
+        processor.setParameterValue(id_i, FilterElement::typeToFloat(t));
     }
 }
 

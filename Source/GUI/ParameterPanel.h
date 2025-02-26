@@ -418,6 +418,13 @@ public:
     // =========================================================================
     void resized() override;
 
+    // =========================================================================
+    void triggerAllOn();
+    void triggerAllOff();
+    void triggerDoublePhases();
+    void triggerHalfPhases();
+    void triggerSwapTypes();
+
 private:
     // =========================================================================
     PolesAndZerosEQAudioProcessor& processor;
