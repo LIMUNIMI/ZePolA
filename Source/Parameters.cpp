@@ -199,12 +199,12 @@ void VTSAudioProcessor::sendValueChangedMessageToAllListeners()
 {
     DBG("--- sendValueChangedMessageToAllListeners ------------------------");
     for (auto id : parameterIDs())
-    {
-        auto* param = valueTreeState.getParameter(id);
-        auto val    = param->getValue();
-        DBG(id << "->sendValueChangedMessageToListeners (" << val << ")");
-        param->sendValueChangedMessageToListeners(val);
-    }
+        if (auto* param = valueTreeState.getParameter(id))
+        {
+            auto val = param->getValue();
+            DBG(id << "->sendValueChangedMessageToListeners (" << val << ")");
+            param->sendValueChangedMessageToListeners(val);
+        }
     DBG("------------------------------------------------------------------");
 }
 
