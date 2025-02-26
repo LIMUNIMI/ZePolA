@@ -100,11 +100,17 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
            CustomLookAndFeel::ColourIDs::PlotButtons_logColourId},
           {false, true}))
     , shouldRecomputePoints(true)
+    , mLabel("", "MAGNITUDE RESPONSE")
+    , pLabel("", "PHASE RESPONSE")
 {
     addAndMakeVisible(*linLogFreqButton.get());
     addAndMakeVisible(*linLogAmpButton.get());
     addAndMakeVisible(mPlot);
     addAndMakeVisible(pPlot);
+    addAndMakeVisible(mLabel);
+    addAndMakeVisible(pLabel);
+    mLabel.setJustificationType(juce::Justification::centred);
+    pLabel.setJustificationType(juce::Justification::centred);
     for (auto i : processor.parameterIDs())
         processor.addParameterListener(i, this);
     linLogFreqButton->addListener(&mPlot);
@@ -195,6 +201,13 @@ void PlotsPanel::resized()
         pPlot.setBounds(regions[3]);
         linLogAmpButton->setBounds(middle_row[1]);
         linLogFreqButton->setBounds(middle_row[3]);
+
+        regions[4].setX(middle_row[2].getX());
+        regions[4].setWidth(middle_row[2].getWidth());
+        regions[4].setBottom(getHeight());
+
+        mLabel.setBounds(middle_row[2]);
+        pLabel.setBounds(regions[4]);
     }
 }
 void PlotsPanel::paint(juce::Graphics& g)
