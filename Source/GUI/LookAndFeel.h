@@ -201,6 +201,9 @@ public:
     /** Split rectangle for the linear/logarithmic switches row */
     std::vector<juce::Rectangle<int>>
     splitProportionalLinLogRow(const juce::Rectangle<int>&) const;
+    /** Split rectangle for the shortcut buttons column */
+    std::vector<juce::Rectangle<int>>
+    splitProportionalShortcuts(const juce::Rectangle<int>&) const;
 
 private:
     // =========================================================================
@@ -212,7 +215,8 @@ private:
         groupComponentCornerSize, fullSeparatorThickness;
     std::vector<int> stripColumnProportions, panelRowProportions,
         panelProportions, lastPanelProportions, linLogSwitchesHeightProportions,
-        linLogSwitchesRowProportions;
+        linLogSwitchesRowProportions, shortcutsWidthProportions,
+        shortcutsColumnProportions;
 
     // =========================================================================
     float osFontScale, topRightTextScale, fullLabelFontSize, fullSliderHeight,

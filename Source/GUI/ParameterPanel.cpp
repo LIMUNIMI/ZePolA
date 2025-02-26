@@ -475,13 +475,16 @@ ShortcutsPanel::ShortcutsPanel(PolesAndZerosEQAudioProcessor& p)
     , doublePhaseButton(juce::CharPointer_UTF8("PHASES ×2"))
     , halfPhaseButton(juce::CharPointer_UTF8("PHASES ÷2"))
     , swapTypeButton("SWAP Ps/Zs")
+    , panelLabel("", "SHORTCUTS")
 {
     allOnButton.onClick       = [this] { triggerAllOn(); };
     allOffButton.onClick      = [this] { triggerAllOff(); };
     doublePhaseButton.onClick = [this] { triggerDoublePhases(); };
     halfPhaseButton.onClick   = [this] { triggerHalfPhases(); };
     swapTypeButton.onClick    = [this] { triggerSwapTypes(); };
+    panelLabel.setJustificationType(juce::Justification::centred);
 
+    addAndMakeVisible(panelLabel);
     addAndMakeVisible(allOnButton);
     addAndMakeVisible(allOffButton);
     addAndMakeVisible(doublePhaseButton);
@@ -492,14 +495,14 @@ void ShortcutsPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
-        auto regions
-            = claf->splitProportional(getLocalBounds(), {1, 1, 1, 1, 1}, true);
-        jassert(regions.size() == 5);
-        allOnButton.setBounds(regions[0]);
-        allOffButton.setBounds(regions[1]);
-        doublePhaseButton.setBounds(regions[2]);
-        halfPhaseButton.setBounds(regions[3]);
-        swapTypeButton.setBounds(regions[4]);
+        auto regions = claf->splitProportionalShortcuts(getLocalBounds());
+        jassert(regions.size() == 13);
+        panelLabel.setBounds(regions[1]);
+        allOnButton.setBounds(regions[3]);
+        allOffButton.setBounds(regions[5]);
+        doublePhaseButton.setBounds(regions[7]);
+        halfPhaseButton.setBounds(regions[9]);
+        swapTypeButton.setBounds(regions[11]);
     }
 }
 

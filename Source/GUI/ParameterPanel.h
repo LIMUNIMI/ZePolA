@@ -428,6 +428,7 @@ public:
 private:
     // =========================================================================
     PolesAndZerosEQAudioProcessor& processor;
+    juce::Label panelLabel;
     juce::TextButton allOnButton, allOffButton, doublePhaseButton,
         halfPhaseButton, swapTypeButton;
 

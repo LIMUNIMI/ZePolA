@@ -97,7 +97,10 @@ CustomLookAndFeel::CustomLookAndFeel()
     , fullPointThickness(3.0f)
     , conjugateAlpha(0.5f)
     , linLogSwitchesHeightProportions({20, 60, 20})
-    , linLogSwitchesRowProportions({1, 11, 76, 11, 1})
+    , linLogSwitchesRowProportions({1, 12, 74, 12, 1})
+    , shortcutsWidthProportions({15, 100, 15})
+    , shortcutsColumnProportions(
+          {66, 33, 225, 100, 66, 100, 66, 100, 66, 100, 66, 100, 66})
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -377,6 +380,13 @@ std::vector<juce::Rectangle<int>> CustomLookAndFeel::splitProportionalLinLogRow(
         = splitProportional(r, linLogSwitchesHeightProportions, true);
     jassert(padded_rows.size() == 3);
     return splitProportional(padded_rows[1], linLogSwitchesRowProportions);
+}
+std::vector<juce::Rectangle<int>> CustomLookAndFeel::splitProportionalShortcuts(
+    const juce::Rectangle<int>& r) const
+{
+    auto vert_slices = splitProportional(r, shortcutsWidthProportions);
+    jassert(vert_slices.size() == 3);
+    return splitProportional(vert_slices[1], shortcutsColumnProportions, true);
 }
 
 // =============================================================================
