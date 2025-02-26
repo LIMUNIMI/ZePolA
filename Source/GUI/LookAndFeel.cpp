@@ -555,7 +555,7 @@ void CustomLookAndFeel::_drawToggleButton(
     juce::Rectangle<float> text_rect(
         rect.getX() + othick * 0.5f + bpad,
         rect.getY() + bpad / (2.0f * buttonAspectRatio),
-        rect.getWidth() - othick - 2 * bpad,
+        rect.getWidth() - othick - 2.0f * bpad,
         rect.getHeight() - bpad / buttonAspectRatio);
     text_rect.setRight(led_rect.getX() - bpad);
     if (!ledSide)
@@ -607,6 +607,42 @@ void CustomLookAndFeel::drawLabelledToggleButton(
         button.findColour(OnOffButton_outlineColourId), juce::Colours::white,
         button.findColour(OnOffButton_textOffColourId),
         button.getCurrentLabel(), button.getCurrentLedPosition());
+}
+void CustomLookAndFeel::drawButtonBackground(
+    juce::Graphics& g, juce::Button& button,
+    const juce::Colour& /* backgroundColour */,
+    bool /* shouldDrawButtonAsHighlighted */, bool shouldDrawButtonAsDown)
+{
+    float othick = resizeSize(fullButtonOutline);
+    float radius = relativeButtonRadius * button.getHeight();
+    juce::Rectangle<float> rect(0.0f, 0.0f,
+                                static_cast<float>(button.getWidth()),
+                                static_cast<float>(button.getHeight()));
+    rect = rect.reduced(othick * 0.5f);
+
+    auto bgColour = button.findColour(OnOffButton_backgroundOnColourId);
+    if (shouldDrawButtonAsDown) bgColour = bgColour.darker();
+    g.setColour(bgColour);
+    g.fillRoundedRectangle(rect, radius);
+    g.setColour(button.findColour(OnOffButton_outlineColourId));
+    g.drawRoundedRectangle(rect, radius, othick);
+}
+void CustomLookAndFeel::drawButtonText(juce::Graphics& g,
+                                       juce::TextButton& button,
+                                       bool /* shouldDrawButtonAsHighlighted */,
+                                       bool /* shouldDrawButtonAsDown */)
+{
+    juce::Rectangle<float> text_rect(0.0f, 0.0f,
+                                     static_cast<float>(button.getWidth()),
+                                     static_cast<float>(button.getHeight()));
+    text_rect = text_rect.reduced(
+        resizeSize(fullButtonOutline + fullButtonPadding) * 0.5f);
+
+    g.setColour(button.findColour(OnOffButton_textOffColourId));
+    auto font = getLabelFont(boldTypeface);
+    font.setHeight(text_rect.getHeight() * osFontScale);
+    g.setFont(font);
+    g.drawText(button.getButtonText(), text_rect, juce::Justification::centred);
 }
 void CustomLookAndFeel::drawPlotComponent(
     juce::Graphics& g, float /* x */, float /* y */, float width, float height,
