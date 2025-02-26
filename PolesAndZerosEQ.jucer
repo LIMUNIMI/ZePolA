@@ -23,6 +23,9 @@
       <FILE id="NcDhiw" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>
       <FILE id="VocETI" name="Macros.h" compile="0" resource="0" file="Source/Macros.h"/>
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
+        <FILE id="nHbHAH" name="CustomButtons.cpp" compile="1" resource="0"
+              file="Source/GUI/CustomButtons.cpp"/>
+        <FILE id="T2TVnC" name="CustomButtons.h" compile="0" resource="0" file="Source/GUI/CustomButtons.h"/>
         <FILE id="erLUvi" name="ApplicationPropertiesListeners.cpp" compile="1"
               resource="0" file="Source/GUI/ApplicationPropertiesListeners.cpp"/>
         <FILE id="gzLKJz" name="ApplicationPropertiesListeners.h" compile="0"

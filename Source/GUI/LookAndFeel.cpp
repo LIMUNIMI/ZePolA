@@ -55,10 +55,12 @@ CustomLookAndFeel::CustomLookAndFeel()
     , sliderTextBoxProportionW(50.0f / 120.0f)
     , sliderTextBoxProportionH(0.5f)
     , fullSeparatorThickness(1.0f)
-    , buttonAspectRatio(2.5f)
+    , buttonAspectRatio(2.75f)
     , fullButtonPadding(5.0f)
     , fullButtonOutline(2.5f)
+    , fullLabelledButtonOutline(1.25f)
     , relativeButtonRadius(0.3f)
+    , relativeLabelledButtonRadius(0.5f)
     , fullPlotComponentCornerSize(6.0f)
     , fullPlotStrokeThickness(1.5f)
     , fullPlotGridThickness(1.0f)
@@ -94,6 +96,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , relativePointSize(0.05f)
     , fullPointThickness(3.0f)
     , conjugateAlpha(0.5f)
+    , linLogSwitchesHeightProportions({20, 60, 20})
+    , linLogSwitchesRowProportions({1, 11, 76, 11, 1})
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -143,7 +147,9 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(GaussianPlanePanel_circleColourId, juce::Colours::black);
     setColour(GaussianPlanePanel_gridColourId, juce::Colour(0x67383838));
     setColour(ZPoint_zerosColourId, juce::Colour(0xd79b59b6));
-    setColour(ZPoint_polesColourId, juce::Colour(0xffffbc2e));
+    setColour(ZPoint_polesColourId, juce::Colour(0xd7E67019));
+    setColour(PlotButtons_linColourId, juce::Colour(0xcd3498d8));
+    setColour(PlotButtons_logColourId, juce::Colour(0xff73cc81));
 }
 
 // =============================================================================
@@ -364,6 +370,14 @@ void CustomLookAndFeel::resizeToggleButton(juce::Component& c) const
     bounds.expand(e, e);
     c.setBounds(bounds);
 }
+std::vector<juce::Rectangle<int>> CustomLookAndFeel::splitProportionalLinLogRow(
+    const juce::Rectangle<int>& r) const
+{
+    auto padded_rows
+        = splitProportional(r, linLogSwitchesHeightProportions, true);
+    jassert(padded_rows.size() == 3);
+    return splitProportional(padded_rows[1], linLogSwitchesRowProportions);
+}
 
 // =============================================================================
 void CustomLookAndFeel::drawGroupComponentOutline(
@@ -502,65 +516,97 @@ void CustomLookAndFeel::drawParameterStripSeparators(juce::Graphics& g, float,
     g.setColour(pp.findColour(ParameterStripSeparator_fillColourId));
     for (auto i : y) g.fillRect(x, i - h * 0.5f, width, h);
 }
-void CustomLookAndFeel::drawToggleButton(
+void CustomLookAndFeel::_drawToggleButton(
     juce::Graphics& g, juce::ToggleButton& button,
-    bool /* shouldDrawButtonAsHighlighted */, bool /* shouldDrawButtonAsDown */)
+    bool /* shouldDrawButtonAsHighlighted */, bool /* shouldDrawButtonAsDown */,
+    float buttonOutline, float buttonPadding, float relativeRadius,
+    juce::Colour backgroundColour, juce::Colour ledColour,
+    juce::Colour outlineColour, juce::Colour ledOutlineColour,
+    juce::Colour textColour, const juce::String& label, bool ledSide)
 {
-    bool on      = button.getToggleState();
-    float othick = resizeSize(fullButtonOutline);
-    float bpad   = resizeSize(fullButtonPadding);
-    float radius = relativeButtonRadius * button.getHeight();
+    float othick = resizeSize(buttonOutline);
+    float bpad   = resizeSize(buttonPadding);
+    float radius = relativeRadius * button.getHeight();
+    if (!ParameterStrip::parentComponentIsActive(button))
+    {
+        backgroundColour = backgroundColour.brighter(inactiveBrightness);
+        ledColour        = ledColour.brighter(inactiveBrightness);
+        outlineColour    = outlineColour.brighter(inactiveBrightness);
+        ledOutlineColour = ledOutlineColour.brighter(inactiveBrightness);
+        textColour       = textColour.brighter(inactiveBrightness);
+    }
 
     juce::Rectangle<float> rect(0.0f, 0.0f,
                                 static_cast<float>(button.getWidth()),
                                 static_cast<float>(button.getHeight()));
     rect = rect.reduced(othick * 0.5f);
 
-    auto bgc = button.findColour((on) ? OnOffButton_backgroundOnColourId
-                                      : OnOffButton_backgroundOffColourId);
-    auto lc  = button.findColour((on) ? OnOffButton_ledOnColourId
-                                     : OnOffButton_ledOffColourId);
-    auto oc  = button.findColour(OnOffButton_outlineColourId);
-    auto tc  = button.findColour((on) ? OnOffButton_textOnColourId
-                                     : OnOffButton_textOffColourId);
-    if (!ParameterStrip::parentComponentIsActive(button))
-    {
-        bgc = bgc.brighter(inactiveBrightness);
-        lc  = lc.brighter(inactiveBrightness);
-        oc  = oc.brighter(inactiveBrightness);
-        tc  = tc.brighter(inactiveBrightness);
-    }
-
-    g.setColour(bgc);
+    g.setColour(backgroundColour);
     g.fillRoundedRectangle(rect, radius);
-    g.setColour(oc);
+    g.setColour(outlineColour);
     g.drawRoundedRectangle(rect, radius, othick);
 
-    float led_diam = rect.getHeight() - 2.0f * bpad - othick;
+    float led_diam
+        = rect.getHeight() - 4.0f * bpad / buttonAspectRatio - othick;
     juce::Rectangle<float> led_rect(
         rect.getRight() - othick * 0.5f - bpad - led_diam,
-        rect.getY() + bpad + othick * 0.5f, led_diam, led_diam);
-    juce::Rectangle<float> text_rect(rect.getX() + othick * 0.5f + bpad,
-                                     rect.getY() + othick * 0.5f + bpad * 0.25f,
-                                     rect.getWidth(),
-                                     rect.getHeight() - othick - 0.5f * bpad);
+        rect.getY() + bpad * 2.0f / buttonAspectRatio + othick * 0.5f, led_diam,
+        led_diam);
+    juce::Rectangle<float> text_rect(
+        rect.getX() + othick * 0.5f + bpad,
+        rect.getY() + bpad / (2.0f * buttonAspectRatio),
+        rect.getWidth() - othick - 2 * bpad,
+        rect.getHeight() - bpad / buttonAspectRatio);
     text_rect.setRight(led_rect.getX() - bpad);
+    if (!ledSide)
+    {
+        led_rect.setX(text_rect.getX());
+        text_rect.setX(led_rect.getRight() + bpad);
+    }
 
-    // g.setColour(juce::Colours::red);
-    // g.fillRect(text_rect);
-
-    juce::String txt((on) ? "ON" : "OFF");
-    g.setColour(tc);
+    g.setColour(textColour);
     auto font = getLabelFont(boldTypeface);
-    font.setHeight((text_rect.getHeight() + bpad) * osFontScale);
+    font.setHeight(text_rect.getHeight() * osFontScale);
     g.setFont(font);
-    g.drawText(txt, text_rect, juce::Justification::centred);
+    g.drawText(label, text_rect, juce::Justification::centred);
 
-    g.setColour(lc);
+    g.setColour(ledColour);
     g.fillEllipse(led_rect);
     if (led_rect.getWidth() >= 1.0f && led_rect.getHeight() >= 1.0f)
-        g.setColour(oc);
+        g.setColour(ledOutlineColour);
     g.drawEllipse(led_rect, othick * 0.5f);
+}
+void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
+                                         juce::ToggleButton& button,
+                                         bool shouldDrawButtonAsHighlighted,
+                                         bool shouldDrawButtonAsDown)
+{
+    bool on = button.getToggleState();
+    _drawToggleButton(
+        g, button, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown,
+        fullButtonOutline, fullButtonPadding, relativeButtonRadius,
+        button.findColour((on) ? OnOffButton_backgroundOnColourId
+                               : OnOffButton_backgroundOffColourId),
+        button.findColour((on) ? OnOffButton_ledOnColourId
+                               : OnOffButton_ledOffColourId),
+        button.findColour(OnOffButton_outlineColourId),
+        button.findColour(OnOffButton_outlineColourId),
+        button.findColour((on) ? OnOffButton_textOnColourId
+                               : OnOffButton_textOffColourId),
+        (on) ? "ON" : "OFF", true);
+}
+void CustomLookAndFeel::drawLabelledToggleButton(
+    juce::Graphics& g, LabelledToggleButton& button,
+    bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
+{
+    _drawToggleButton(
+        g, button, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown,
+        fullLabelledButtonOutline, fullButtonPadding,
+        relativeLabelledButtonRadius,
+        button.findColour(button.getCurrentColourID()), juce::Colours::white,
+        button.findColour(OnOffButton_outlineColourId), juce::Colours::white,
+        button.findColour(OnOffButton_textOffColourId),
+        button.getCurrentLabel(), button.getCurrentLedPosition());
 }
 void CustomLookAndFeel::drawPlotComponent(
     juce::Graphics& g, float /* x */, float /* y */, float width, float height,

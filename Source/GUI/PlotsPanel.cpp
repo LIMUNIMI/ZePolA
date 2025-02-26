@@ -1,5 +1,6 @@
 #include "PlotsPanel.h"
 #include "../Mappers.h"
+#include "CustomButtons.h"
 #include "LookAndFeel.h"
 
 // =============================================================================
@@ -88,14 +89,28 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
                        juce::ApplicationProperties& properties)
     : processor(p)
     , db(false)
-    , linLogFreqButton(new juce::ToggleButton())
-    , linLogAmpButton(new juce::ToggleButton())
+    , linLogFreqButton(new LabelledToggleButton(
+          {"LIN", "LOG"},
+          {CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
+           CustomLookAndFeel::ColourIDs::PlotButtons_logColourId},
+          {false, true}))
+    , linLogAmpButton(new LabelledToggleButton(
+          {"LIN", "DB"},
+          {CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
+           CustomLookAndFeel::ColourIDs::PlotButtons_logColourId},
+          {false, true}))
     , shouldRecomputePoints(true)
+    , mLabel("", "MAGNITUDE RESPONSE")
+    , pLabel("", "PHASE RESPONSE")
 {
     addAndMakeVisible(*linLogFreqButton.get());
     addAndMakeVisible(*linLogAmpButton.get());
     addAndMakeVisible(mPlot);
     addAndMakeVisible(pPlot);
+    addAndMakeVisible(mLabel);
+    addAndMakeVisible(pLabel);
+    mLabel.setJustificationType(juce::Justification::centred);
+    pLabel.setJustificationType(juce::Justification::centred);
     for (auto i : processor.parameterIDs())
         processor.addParameterListener(i, this);
     linLogFreqButton->addListener(&mPlot);
@@ -179,18 +194,20 @@ void PlotsPanel::resized()
         auto regions = claf->splitProportionalPanel(
             claf->getPanelInnerRect(getLocalBounds()));
         jassert(regions.size() == 5);
-        auto middle_regions
-            = claf->splitProportional(regions[2], {1, 4, 1}, true);
-        jassert(middle_regions.size() == 3);
-        middle_regions
-            = claf->splitProportional(middle_regions[1], {1, 8, 62, 8, 1});
-        jassert(middle_regions.size() == 5);
+        auto middle_row = claf->splitProportionalLinLogRow(regions[2]);
+        jassert(middle_row.size() == 5);
 
         mPlot.setBounds(regions[1]);
         pPlot.setBounds(regions[3]);
+        linLogAmpButton->setBounds(middle_row[1]);
+        linLogFreqButton->setBounds(middle_row[3]);
 
-        linLogAmpButton->setBounds(middle_regions[1]);
-        linLogFreqButton->setBounds(middle_regions[3]);
+        regions[4].setX(middle_row[2].getX());
+        regions[4].setWidth(middle_row[2].getWidth());
+        regions[4].setBottom(getHeight());
+
+        mLabel.setBounds(middle_row[2]);
+        pLabel.setBounds(regions[4]);
     }
 }
 void PlotsPanel::paint(juce::Graphics& g)

@@ -1,4 +1,5 @@
 #pragma once
+#include "CustomButtons.h"
 #include "InvisibleGroupComponent.h"
 #include "ParameterPanel.h"
 #include "PlotsPanel.h"
@@ -27,7 +28,8 @@ class CustomLookAndFeel : public juce::LookAndFeel_V4,
                           public PlotComponentLookAndFeelMethods,
                           public ParameterPanelLookAndFeelMethods,
                           public GaussianPlanePanel::LookAndFeelMethods,
-                          public ZPoint::LookAndFeelMethods
+                          public ZPoint::LookAndFeelMethods,
+                          public LabelledToggleButtonLookAndFeelMethods
 {
 public:
     // =========================================================================
@@ -51,7 +53,9 @@ public:
         GaussianPlanePanel_circleColourId,
         GaussianPlanePanel_gridColourId,
         ZPoint_zerosColourId,
-        ZPoint_polesColourId
+        ZPoint_polesColourId,
+        PlotButtons_linColourId,
+        PlotButtons_logColourId
     };
 
     // =========================================================================
@@ -82,6 +86,10 @@ public:
     void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
                           bool shouldDrawButtonAsHighlighted,
                           bool shouldDrawButtonAsDown) override;
+    void drawLabelledToggleButton(juce::Graphics& g,
+                                  LabelledToggleButton& button,
+                                  bool shouldDrawButtonAsHighlighted,
+                                  bool shouldDrawButtonAsDown) override;
     void drawPlotComponent(juce::Graphics&, float x, float y, float width,
                            float height, const std::vector<float>& x_values,
                            const std::vector<float>& y_values, float period,
@@ -183,6 +191,9 @@ public:
     void resizeSlider(juce::Slider&) const;
     /** Resize a toggle button */
     void resizeToggleButton(juce::Component&) const;
+    /** Split rectangle for the linear/logarithmic switches row */
+    std::vector<juce::Rectangle<int>>
+    splitProportionalLinLogRow(const juce::Rectangle<int>&) const;
 
 private:
     // =========================================================================
@@ -193,7 +204,8 @@ private:
     float resizeRatio, fullPanelMargin, groupComponentThickness,
         groupComponentCornerSize, fullSeparatorThickness;
     std::vector<int> stripColumnProportions, panelRowProportions,
-        panelProportions, lastPanelProportions;
+        panelProportions, lastPanelProportions, linLogSwitchesHeightProportions,
+        linLogSwitchesRowProportions;
 
     // =========================================================================
     float osFontScale, topRightTextScale, fullLabelFontSize, fullSliderHeight,
@@ -203,7 +215,8 @@ private:
 
     // =========================================================================
     float buttonAspectRatio, fullButtonPadding, fullButtonOutline,
-        relativeButtonRadius;
+        fullLabelledButtonOutline, relativeButtonRadius,
+        relativeLabelledButtonRadius;
 
     // =========================================================================
     int n_x_ticks;
@@ -217,6 +230,17 @@ private:
         relativePointSize, fullPointThickness, conjugateAlpha;
     int nGaussianCircleMajorTicks, nGaussianCircleMinorTicksRadial,
         nGaussianCircleMinorTicksCircular;
+
+    // =========================================================================
+    void _drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
+                           bool shouldDrawButtonAsHighlighted,
+                           bool shouldDrawButtonAsDown, float buttonOutline,
+                           float buttonPadding, float relativeRadius,
+                           juce::Colour backgroundColour,
+                           juce::Colour ledColour, juce::Colour outlineColour,
+                           juce::Colour ledOutlineColour,
+                           juce::Colour textColour, const juce::String& label,
+                           bool ledSide);
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)

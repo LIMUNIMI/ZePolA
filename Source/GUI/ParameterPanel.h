@@ -2,6 +2,7 @@
 #include "../DSP/Filter.h"
 #include "../Parameters.h"
 #include "../PluginProcessor.h"
+#include "CustomButtons.h"
 #include "DraggableLabel.h"
 #include "InvisibleGroupComponent.h"
 #include <JuceHeader.h>
@@ -77,7 +78,8 @@ public:
 private:
     // =========================================================================
     ParameterSlider mSlider, pSlider;
-    juce::ToggleButton aButton, tButton;
+    juce::ToggleButton aButton;
+    LabelledToggleButton tButton;
     DraggableLabel gLabel, fLabel;
     VTSAudioProcessor& processor;
 
@@ -421,6 +423,7 @@ private:
     // =========================================================================
     std::vector<std::unique_ptr<ParameterStrip>> strips;
     std::vector<std::unique_ptr<juce::Label>> headerLabels;
+    juce::Label zplane_label;
     GaussianPlanePanel zplane;
     juce::GroupComponent shortcutsPanel;
 

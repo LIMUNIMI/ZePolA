@@ -121,6 +121,7 @@ private:
     std::shared_ptr<juce::ToggleButton> linLogFreqButton, linLogAmpButton;
     PolesAndZerosEQAudioProcessor& processor;
     PlotComponent mPlot, pPlot;
+    juce::Label mLabel, pLabel;
     bool db;
     bool shouldRecomputePoints;
 
