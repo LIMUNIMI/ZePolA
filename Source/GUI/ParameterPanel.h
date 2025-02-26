@@ -413,7 +413,7 @@ class ParameterPanel : public juce::GroupComponent
 {
 public:
     // =========================================================================
-    ParameterPanel(PolesAndZerosEQAudioProcessor&, size_t);
+    ParameterPanel(PolesAndZerosEQAudioProcessor&);
 
     //==========================================================================
     void paint(Graphics&) override;

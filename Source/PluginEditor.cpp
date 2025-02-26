@@ -3,7 +3,10 @@
 // =============================================================================
 PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     PolesAndZerosEQAudioProcessor& p)
-    : juce::AudioProcessorEditor(&p), processor(p), aspectRatioConstrainer()
+    : juce::AudioProcessorEditor(&p)
+    , processor(p)
+    , aspectRatioConstrainer()
+    , parameterPanel(p)
 {
     // Look and feel
     setResizable(true, true);
@@ -27,10 +30,8 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     setSize(claf.getResizedWidth(), claf.getResizedHeight());
 
     // Subcomponents
-    parameterPanel
-        = std::make_unique<ParameterPanel>(processor, processor.getNElements());
     plotsPanel = std::make_unique<PlotsPanel>(processor, applicationProperties);
-    addAndMakeVisible(*parameterPanel.get());
+    addAndMakeVisible(parameterPanel);
     addAndMakeVisible(*plotsPanel.get());
     addAndMakeVisible(designGroup);
     addAndMakeVisible(masterGroup);
@@ -57,7 +58,7 @@ void PolesAndZerosEQAudioProcessorEditor::resized()
     auto panel_rects = claf.divideInPanels(getLocalBounds());
     jassert(panel_rects.size() == 5);
 
-    if (parameterPanel) parameterPanel->setBounds(panel_rects[1]);
+    parameterPanel.setBounds(panel_rects[1]);
     if (plotsPanel) plotsPanel->setBounds(panel_rects[2]);
     designGroup.setBounds(panel_rects[3]);
     masterGroup.setBounds(panel_rects[4]);

@@ -29,7 +29,7 @@ private:
 
     // ===========================================================================
     juce::GroupComponent designGroup, masterGroup;
-    std::unique_ptr<ParameterPanel> parameterPanel;
+    ParameterPanel parameterPanel;
     std::unique_ptr<PlotsPanel> plotsPanel;
 
     // ===========================================================================

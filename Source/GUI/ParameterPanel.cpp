@@ -468,12 +468,13 @@ void GaussianPlanePanel::setRadius(float r)
 float GaussianPlanePanel::getRadius() const { return radius; }
 
 // =============================================================================
-ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p, size_t n)
+ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p)
     : zplane(p), zplane_label("", "GAUSSIAN PLANE")
 {
     for (auto s : {"RADIUS", "ANGLE", "TYPE", "ACTIVE", "GAIN"})
         headerLabels.push_back(
             std::make_unique<juce::Label>(juce::String(), s));
+    auto n = p.getNElements();
     for (auto i = 0; i < n; ++i)
         strips.push_back(std::make_unique<ParameterStrip>(p, i));
 
