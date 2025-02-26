@@ -191,6 +191,9 @@ public:
     void resizeSlider(juce::Slider&) const;
     /** Resize a toggle button */
     void resizeToggleButton(juce::Component&) const;
+    /** Split rectangle for the linear/logarithmic switches row */
+    std::vector<juce::Rectangle<int>>
+    splitProportionalLinLogRow(const juce::Rectangle<int>&) const;
 
 private:
     // =========================================================================
@@ -201,7 +204,8 @@ private:
     float resizeRatio, fullPanelMargin, groupComponentThickness,
         groupComponentCornerSize, fullSeparatorThickness;
     std::vector<int> stripColumnProportions, panelRowProportions,
-        panelProportions, lastPanelProportions;
+        panelProportions, lastPanelProportions, linLogSwitchesHeightProportions,
+        linLogSwitchesRowProportions;
 
     // =========================================================================
     float osFontScale, topRightTextScale, fullLabelFontSize, fullSliderHeight,

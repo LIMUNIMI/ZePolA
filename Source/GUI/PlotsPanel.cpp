@@ -188,18 +188,13 @@ void PlotsPanel::resized()
         auto regions = claf->splitProportionalPanel(
             claf->getPanelInnerRect(getLocalBounds()));
         jassert(regions.size() == 5);
-        auto middle_regions
-            = claf->splitProportional(regions[2], {20, 60, 20}, true);
-        jassert(middle_regions.size() == 3);
-        middle_regions
-            = claf->splitProportional(middle_regions[1], {1, 11, 76, 11, 1});
-        jassert(middle_regions.size() == 5);
+        auto middle_row = claf->splitProportionalLinLogRow(regions[2]);
+        jassert(middle_row.size() == 5);
 
         mPlot.setBounds(regions[1]);
         pPlot.setBounds(regions[3]);
-
-        linLogAmpButton->setBounds(middle_regions[1]);
-        linLogFreqButton->setBounds(middle_regions[3]);
+        linLogAmpButton->setBounds(middle_row[1]);
+        linLogFreqButton->setBounds(middle_row[3]);
     }
 }
 void PlotsPanel::paint(juce::Graphics& g)

@@ -94,6 +94,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , relativePointSize(0.05f)
     , fullPointThickness(3.0f)
     , conjugateAlpha(0.5f)
+    , linLogSwitchesHeightProportions({20, 60, 20})
+    , linLogSwitchesRowProportions({1, 11, 76, 11, 1})
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -365,6 +367,14 @@ void CustomLookAndFeel::resizeToggleButton(juce::Component& c) const
     bounds = forceAspectRatioCentered(bounds, buttonAspectRatio);
     bounds.expand(e, e);
     c.setBounds(bounds);
+}
+std::vector<juce::Rectangle<int>> CustomLookAndFeel::splitProportionalLinLogRow(
+    const juce::Rectangle<int>& r) const
+{
+    auto padded_rows
+        = splitProportional(r, linLogSwitchesHeightProportions, true);
+    jassert(padded_rows.size() == 3);
+    return splitProportional(padded_rows[1], linLogSwitchesRowProportions);
 }
 
 // =============================================================================
