@@ -423,6 +423,7 @@ private:
     // =========================================================================
     std::vector<std::unique_ptr<ParameterStrip>> strips;
     std::vector<std::unique_ptr<juce::Label>> headerLabels;
+    juce::Label zplane_label;
     GaussianPlanePanel zplane;
     juce::GroupComponent shortcutsPanel;
 

@@ -469,7 +469,7 @@ float GaussianPlanePanel::getRadius() const { return radius; }
 
 // =============================================================================
 ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p, size_t n)
-    : zplane(p)
+    : zplane(p), zplane_label("", "GAUSSIAN PLANE")
 {
     for (auto s : {"RADIUS", "ANGLE", "TYPE", "ACTIVE", "GAIN"})
         headerLabels.push_back(
@@ -477,6 +477,8 @@ ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p, size_t n)
     for (auto i = 0; i < n; ++i)
         strips.push_back(std::make_unique<ParameterStrip>(p, i));
 
+    zplane_label.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(zplane_label);
     for (auto& l : headerLabels)
     {
         l->setJustificationType(juce::Justification::centred);
@@ -528,5 +530,10 @@ void ParameterPanel::resized()
         zplane.setBounds(regions[3].removeFromLeft(regions[3].getHeight()));
         regions[3].setLeft(claf->getPanelInnerRect(regions[3]).getX());
         shortcutsPanel.setBounds(regions[3]);
+
+        juce::Rectangle<int> zplane_label_rect(
+            zplane.getX(), zplane.getBottom(), zplane.getWidth(), 0);
+        zplane_label_rect.setBottom(getHeight());
+        zplane_label.setBounds(zplane_label_rect);
     }
 }
