@@ -69,8 +69,8 @@ void PlotComponent::setXGrid(const std::vector<float>& ticks)
                                     : juce::String(s / 1000) + "k");
     setXGrid(ticks, labels);
 }
-float PlotComponent::getYMin() { return y_grid[0]; }
-float PlotComponent::getYMax() { return y_grid[y_grid.size() - 1]; }
+float PlotComponent::getYMin() { return y_grid.front(); }
+float PlotComponent::getYMax() { return y_grid.back(); }
 
 // =============================================================================
 void PlotComponent::paint(juce::Graphics& g)

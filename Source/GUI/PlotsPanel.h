@@ -34,7 +34,7 @@ public:
      *
      * @param ticks Tick values
      * @param labels Labels, including the label for the minimum
-     *   value (labels[0]) and for the maximum value (labels[labels.size() - 1])
+     *   value (labels.front()) and for the maximum value (labels.back())
      */
     void setYGrid(const std::vector<float>& ticks,
                   const std::vector<juce::String>& labels);
@@ -45,7 +45,7 @@ public:
      *
      * @param ticks Tick values
      * @param labels Labels, including the label for the minimum
-     *   value (labels[0]) and for the maximum value (labels[labels.size() - 1])
+     *   value (labels.front()) and for the maximum value (labels.back())
      */
     void setXGrid(const std::vector<float>& ticks,
                   const std::vector<juce::String>& labels);
