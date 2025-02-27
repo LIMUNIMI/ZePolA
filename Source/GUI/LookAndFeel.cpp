@@ -310,7 +310,8 @@ CustomLookAndFeel::splitProportionalPanels(
     const juce::Rectangle<RectType>& r, const std::vector<RectType>& fractions,
     bool vertical) const
 {
-    return splitProportional(r, fractions, vertical, fullPanelMargin);
+    return splitProportional(r, fractions, vertical,
+                             fullPanelMargin - 0.5f * groupComponentThickness);
 }
 
 template <typename RectType>
@@ -396,12 +397,13 @@ void CustomLookAndFeel::drawGroupComponentOutline(
 {
     juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(width),
                              static_cast<float>(height));
-    b = b.reduced(resizeSize(groupComponentThickness));
+    auto t = resizeSize(groupComponentThickness);
+    auto c = resizeSize(groupComponentCornerSize);
+    b      = b.reduced(t * 0.5f);
     g.setColour(gp.findColour(GroupComponent_backgroundColourId));
-    g.fillRoundedRectangle(b, resizeSize(groupComponentCornerSize));
+    g.fillRoundedRectangle(b, c);
     g.setColour(gp.findColour(juce::GroupComponent::outlineColourId));
-    g.drawRoundedRectangle(b, resizeSize(groupComponentCornerSize),
-                           resizeSize(groupComponentThickness));
+    g.drawRoundedRectangle(b, c, t);
 }
 void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
                                                int height, const juce::String&,
