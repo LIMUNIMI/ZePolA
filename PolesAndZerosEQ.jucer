@@ -53,6 +53,9 @@
       <GROUP id="{D2A8AF86-7D3D-AB40-6162-437A1EDBDD1A}" name="DSP">
         <FILE id="qBik1j" name="Filter.cpp" compile="1" resource="0" file="Source/DSP/Filter.cpp"/>
         <FILE id="eZApCn" name="Filter.h" compile="0" resource="0" file="Source/DSP/Filter.h"/>
+        <FILE id="AvI2BK" name="FilterDesign.cpp" compile="1" resource="0"
+              file="Source/DSP/FilterDesign.cpp"/>
+        <FILE id="JU19E5" name="FilterDesign.h" compile="0" resource="0" file="Source/DSP/FilterDesign.h"/>
       </GROUP>
       <FILE id="T3jzAd" name="Parameters.h" compile="0" resource="0" file="Source/Parameters.h"/>
       <FILE id="ncRGqG" name="PluginProcessor.cpp" compile="1" resource="0"
