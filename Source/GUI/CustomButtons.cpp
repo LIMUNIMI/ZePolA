@@ -1,32 +1,28 @@
 #include "CustomButtons.h"
 
 // =============================================================================
-LabelledToggleButton::LabelledToggleButton(const std::vector<juce::String>& l,
-                                           const std::vector<int>& c,
-                                           const std::vector<bool>& p)
-    : labels(l), colourIDs(c), ledPositions(p), state(0)
+LabelledToggleButton::LabelledToggleButton(const juce::String& l0,
+                                           const juce::String& l1, int c0,
+                                           int c1, bool p0, bool p1)
+    : label0(l0)
+    , label1(l1)
+    , colourID0(c0)
+    , colourID1(c1)
+    , ledPosition0(p0)
+    , ledPosition1(p1)
 {
-    jassert(labels.size());
-    jassert(labels.size() == colourIDs.size());
-    jassert(labels.size() == ledPositions.size());
 }
-size_t LabelledToggleButton::getCurrentState() const { return state; }
 const juce::String& LabelledToggleButton::getCurrentLabel() const
 {
-    return labels[state];
+    return (getToggleState()) ? label1 : label0;
 }
 int LabelledToggleButton::getCurrentColourID() const
 {
-    return colourIDs[state];
+    return (getToggleState()) ? colourID1 : colourID0;
 }
 bool LabelledToggleButton::getCurrentLedPosition() const
 {
-    return ledPositions[state];
-}
-void LabelledToggleButton::clicked()
-{
-    state = (state + 1) % labels.size();
-    ToggleButton::clicked();
+    return (getToggleState()) ? ledPosition1 : ledPosition0;
 }
 void LabelledToggleButton::paintButton(juce::Graphics& g,
                                        bool shouldDrawButtonAsHighlighted,

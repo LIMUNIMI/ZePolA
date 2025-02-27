@@ -38,10 +38,9 @@ void ParameterStrip::FrequencyLabelSampleRateListener::
 // =============================================================================
 ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     : processor(p)
-    , tButton({FilterElement::typeToString(0), FilterElement::typeToString(1)},
-              {CustomLookAndFeel::ColourIDs::ZPoint_zerosColourId,
-               CustomLookAndFeel::ColourIDs::ZPoint_polesColourId},
-              {false, true})
+    , tButton(FilterElement::typeToString(0), FilterElement::typeToString(1),
+              CustomLookAndFeel::ColourIDs::ZPoint_zerosColourId,
+              CustomLookAndFeel::ColourIDs::ZPoint_polesColourId, false, true)
     , mSliderAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
                            juce::Slider>(MAGNITUDE_ID_PREFIX + juce::String(i),

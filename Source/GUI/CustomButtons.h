@@ -7,26 +7,23 @@ class LabelledToggleButton : public juce::ToggleButton
 {
 public:
     // =========================================================================
-    LabelledToggleButton(const std::vector<juce::String>& labels,
-                         const std::vector<int>& colourIDs,
-                         const std::vector<bool>& ledPositions);
+    LabelledToggleButton(const juce::String& label0, const juce::String& label1,
+                         int colourID0, int colourID1, bool ledPosition0,
+                         bool ledPosition1);
 
     // =========================================================================
-    size_t getCurrentState() const;
     const juce::String& getCurrentLabel() const;
     int getCurrentColourID() const;
     bool getCurrentLedPosition() const;
 
     // =========================================================================
-    void clicked() override;
     void paintButton(juce::Graphics&, bool, bool) override;
 
 private:
     // =========================================================================
-    std::vector<juce::String> labels;
-    std::vector<int> colourIDs;
-    std::vector<bool> ledPositions;
-    size_t state;
+    juce::String label0, label1;
+    int colourID0, colourID1;
+    bool ledPosition0, ledPosition1;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LabelledToggleButton)

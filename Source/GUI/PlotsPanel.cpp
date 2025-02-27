@@ -90,15 +90,11 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
     : processor(p)
     , db(false)
     , linLogFreqButton(new LabelledToggleButton(
-          {"LIN", "LOG"},
-          {CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
-           CustomLookAndFeel::ColourIDs::PlotButtons_logColourId},
-          {false, true}))
+          "LIN", "LOG", CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
+          CustomLookAndFeel::ColourIDs::PlotButtons_logColourId, false, true))
     , linLogAmpButton(new LabelledToggleButton(
-          {"LIN", "DB"},
-          {CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
-           CustomLookAndFeel::ColourIDs::PlotButtons_logColourId},
-          {false, true}))
+          "LIN", "DB", CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
+          CustomLookAndFeel::ColourIDs::PlotButtons_logColourId, false, true))
     , shouldRecomputePoints(true)
     , mLabel("", "MAGNITUDE RESPONSE")
     , pLabel("", "PHASE RESPONSE")

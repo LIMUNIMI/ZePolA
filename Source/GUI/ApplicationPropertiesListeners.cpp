@@ -45,7 +45,10 @@ ApplicationPropertiesButtonAttachment::ApplicationPropertiesButtonAttachment(
     button->addListener(&buttonListener);
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
+    {
         pf->addChangeListener(&propertyListener);
+        propertyListener.changeListenerCallback(pf);
+    }
 }
 ApplicationPropertiesButtonAttachment::~ApplicationPropertiesButtonAttachment()
 {
