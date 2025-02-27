@@ -97,7 +97,10 @@ CustomLookAndFeel::CustomLookAndFeel()
     , fullPointThickness(3.0f)
     , conjugateAlpha(0.5f)
     , linLogSwitchesHeightProportions({20, 60, 20})
-    , linLogSwitchesRowProportions({1, 11, 76, 11, 1})
+    , linLogSwitchesRowProportions({1, 12, 74, 12, 1})
+    , shortcutsWidthProportions({15, 100, 15})
+    , shortcutsColumnProportions(
+          {66, 33, 225, 100, 66, 100, 66, 100, 66, 100, 66, 100, 66})
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -307,7 +310,8 @@ CustomLookAndFeel::splitProportionalPanels(
     const juce::Rectangle<RectType>& r, const std::vector<RectType>& fractions,
     bool vertical) const
 {
-    return splitProportional(r, fractions, vertical, fullPanelMargin);
+    return splitProportional(r, fractions, vertical,
+                             fullPanelMargin - 0.5f * groupComponentThickness);
 }
 
 template <typename RectType>
@@ -378,6 +382,13 @@ std::vector<juce::Rectangle<int>> CustomLookAndFeel::splitProportionalLinLogRow(
     jassert(padded_rows.size() == 3);
     return splitProportional(padded_rows[1], linLogSwitchesRowProportions);
 }
+std::vector<juce::Rectangle<int>> CustomLookAndFeel::splitProportionalShortcuts(
+    const juce::Rectangle<int>& r) const
+{
+    auto vert_slices = splitProportional(r, shortcutsWidthProportions);
+    jassert(vert_slices.size() == 3);
+    return splitProportional(vert_slices[1], shortcutsColumnProportions, true);
+}
 
 // =============================================================================
 void CustomLookAndFeel::drawGroupComponentOutline(
@@ -386,12 +397,13 @@ void CustomLookAndFeel::drawGroupComponentOutline(
 {
     juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(width),
                              static_cast<float>(height));
-    b = b.reduced(resizeSize(groupComponentThickness));
+    auto t = resizeSize(groupComponentThickness);
+    auto c = resizeSize(groupComponentCornerSize);
+    b      = b.reduced(t * 0.5f);
     g.setColour(gp.findColour(GroupComponent_backgroundColourId));
-    g.fillRoundedRectangle(b, resizeSize(groupComponentCornerSize));
+    g.fillRoundedRectangle(b, c);
     g.setColour(gp.findColour(juce::GroupComponent::outlineColourId));
-    g.drawRoundedRectangle(b, resizeSize(groupComponentCornerSize),
-                           resizeSize(groupComponentThickness));
+    g.drawRoundedRectangle(b, c, t);
 }
 void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
                                                int height, const juce::String&,
@@ -516,6 +528,17 @@ void CustomLookAndFeel::drawParameterStripSeparators(juce::Graphics& g, float,
     g.setColour(pp.findColour(ParameterStripSeparator_fillColourId));
     for (auto i : y) g.fillRect(x, i - h * 0.5f, width, h);
 }
+template <typename ValueType>
+void CustomLookAndFeel::_autoFontScale(juce::Font& font,
+                                       const juce::Rectangle<ValueType>& bbox,
+                                       const juce::String& text)
+{
+    font.setHeight(
+        std::min(static_cast<float>(bbox.getHeight()),
+                 static_cast<float>(font.getHeight() * bbox.getWidth())
+                     / font.getStringWidth(text))
+        * osFontScale);
+}
 void CustomLookAndFeel::_drawToggleButton(
     juce::Graphics& g, juce::ToggleButton& button,
     bool /* shouldDrawButtonAsHighlighted */, bool /* shouldDrawButtonAsDown */,
@@ -555,7 +578,7 @@ void CustomLookAndFeel::_drawToggleButton(
     juce::Rectangle<float> text_rect(
         rect.getX() + othick * 0.5f + bpad,
         rect.getY() + bpad / (2.0f * buttonAspectRatio),
-        rect.getWidth() - othick - 2 * bpad,
+        rect.getWidth() - othick - 2.0f * bpad,
         rect.getHeight() - bpad / buttonAspectRatio);
     text_rect.setRight(led_rect.getX() - bpad);
     if (!ledSide)
@@ -566,7 +589,7 @@ void CustomLookAndFeel::_drawToggleButton(
 
     g.setColour(textColour);
     auto font = getLabelFont(boldTypeface);
-    font.setHeight(text_rect.getHeight() * osFontScale);
+    _autoFontScale(font, text_rect, label);
     g.setFont(font);
     g.drawText(label, text_rect, juce::Justification::centred);
 
@@ -607,6 +630,43 @@ void CustomLookAndFeel::drawLabelledToggleButton(
         button.findColour(OnOffButton_outlineColourId), juce::Colours::white,
         button.findColour(OnOffButton_textOffColourId),
         button.getCurrentLabel(), button.getCurrentLedPosition());
+}
+void CustomLookAndFeel::drawButtonBackground(
+    juce::Graphics& g, juce::Button& button,
+    const juce::Colour& /* backgroundColour */,
+    bool /* shouldDrawButtonAsHighlighted */, bool shouldDrawButtonAsDown)
+{
+    float othick = resizeSize(fullButtonOutline);
+    float radius = relativeButtonRadius * button.getHeight();
+    juce::Rectangle<float> rect(0.0f, 0.0f,
+                                static_cast<float>(button.getWidth()),
+                                static_cast<float>(button.getHeight()));
+    rect = rect.reduced(othick * 0.5f);
+
+    auto bgColour = button.findColour(OnOffButton_backgroundOnColourId);
+    if (shouldDrawButtonAsDown) bgColour = bgColour.darker();
+    g.setColour(bgColour);
+    g.fillRoundedRectangle(rect, radius);
+    g.setColour(button.findColour(OnOffButton_outlineColourId));
+    g.drawRoundedRectangle(rect, radius, othick);
+}
+void CustomLookAndFeel::drawButtonText(juce::Graphics& g,
+                                       juce::TextButton& button,
+                                       bool /* shouldDrawButtonAsHighlighted */,
+                                       bool /* shouldDrawButtonAsDown */)
+{
+    juce::Rectangle<float> text_rect(0.0f, 0.0f,
+                                     static_cast<float>(button.getWidth()),
+                                     static_cast<float>(button.getHeight()));
+    text_rect = text_rect.reduced(
+        resizeSize(fullButtonOutline + fullButtonPadding) * 0.5f);
+
+    g.setColour(button.findColour(OnOffButton_textOffColourId));
+    auto font = getLabelFont(boldTypeface);
+    auto text = button.getButtonText();
+    _autoFontScale(font, text_rect, text);
+    g.setFont(font);
+    g.drawText(text, text_rect, juce::Justification::centred);
 }
 void CustomLookAndFeel::drawPlotComponent(
     juce::Graphics& g, float /* x */, float /* y */, float width, float height,

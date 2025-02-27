@@ -468,12 +468,109 @@ void GaussianPlanePanel::setRadius(float r)
 float GaussianPlanePanel::getRadius() const { return radius; }
 
 // =============================================================================
-ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p, size_t n)
-    : zplane(p), zplane_label("", "GAUSSIAN PLANE")
+ShortcutsPanel::ShortcutsPanel(PolesAndZerosEQAudioProcessor& p)
+    : processor(p)
+    , allOnButton("ALL ON")
+    , allOffButton("ALL OFF")
+    , doublePhaseButton(juce::CharPointer_UTF8("PHASES ×2"))
+    , halfPhaseButton(juce::CharPointer_UTF8("PHASES ÷2"))
+    , swapTypeButton("SWAP Ps/Zs")
+    , panelLabel("", "SHORTCUTS")
+{
+    allOnButton.onClick       = [this] { triggerAllOn(); };
+    allOffButton.onClick      = [this] { triggerAllOff(); };
+    doublePhaseButton.onClick = [this] { triggerDoublePhases(); };
+    halfPhaseButton.onClick   = [this] { triggerHalfPhases(); };
+    swapTypeButton.onClick    = [this] { triggerSwapTypes(); };
+    panelLabel.setJustificationType(juce::Justification::centred);
+
+    addAndMakeVisible(panelLabel);
+    addAndMakeVisible(allOnButton);
+    addAndMakeVisible(allOffButton);
+    addAndMakeVisible(doublePhaseButton);
+    addAndMakeVisible(halfPhaseButton);
+    addAndMakeVisible(swapTypeButton);
+}
+void ShortcutsPanel::resized()
+{
+    if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
+    {
+        auto regions = claf->splitProportionalShortcuts(getLocalBounds());
+        jassert(regions.size() == 13);
+        panelLabel.setBounds(regions[1]);
+        allOnButton.setBounds(regions[3]);
+        allOffButton.setBounds(regions[5]);
+        doublePhaseButton.setBounds(regions[7]);
+        halfPhaseButton.setBounds(regions[9]);
+        swapTypeButton.setBounds(regions[11]);
+    }
+}
+
+// =============================================================================
+void ShortcutsPanel::triggerAllOn()
+{
+    auto n = processor.getNElements();
+    for (auto i = 0; i < n; ++i)
+        processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(i), true);
+}
+void ShortcutsPanel::triggerAllOff()
+{
+    auto n = processor.getNElements();
+    for (auto i = 0; i < n; ++i)
+        processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(i), false);
+}
+void ShortcutsPanel::triggerDoublePhases()
+{
+    auto n = processor.getNElements();
+    for (auto i = 0; i < n; ++i)
+    {
+        auto id_i = PHASE_ID_PREFIX + juce::String(i);
+        processor.setParameterValue(
+            id_i, 2.0f
+                      * std::clamp(processor.getParameterUnnormValue(id_i),
+                                   0.0f, 1.0f));
+    }
+}
+void ShortcutsPanel::triggerHalfPhases()
+{
+    auto n = processor.getNElements();
+    for (auto i = 0; i < n; ++i)
+    {
+        auto id_i = PHASE_ID_PREFIX + juce::String(i);
+        processor.setParameterValue(
+            id_i, 0.5f
+                      * std::clamp(processor.getParameterUnnormValue(id_i),
+                                   0.0f, 1.0f));
+    }
+}
+void ShortcutsPanel::triggerSwapTypes()
+{
+    auto n = processor.getNElements();
+    for (auto i = 0; i < n; ++i)
+    {
+        auto id_i             = TYPE_ID_PREFIX + juce::String(i);
+        FilterElement::Type t = FilterElement::ZERO;
+        switch (
+            FilterElement::floatToType(processor.getParameterUnnormValue(id_i)))
+        {
+        default:
+            UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
+                                  "Switching to type 'ZERO'");
+        case FilterElement::POLE: break;
+        case FilterElement::ZERO: t = FilterElement::POLE; break;
+        }
+        processor.setParameterValue(id_i, FilterElement::typeToFloat(t));
+    }
+}
+
+// =============================================================================
+ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p)
+    : zplane(p), zplane_label("", "GAUSSIAN PLANE"), shortcutsPanel(p)
 {
     for (auto s : {"RADIUS", "ANGLE", "TYPE", "ACTIVE", "GAIN"})
         headerLabels.push_back(
             std::make_unique<juce::Label>(juce::String(), s));
+    auto n = p.getNElements();
     for (auto i = 0; i < n; ++i)
         strips.push_back(std::make_unique<ParameterStrip>(p, i));
 

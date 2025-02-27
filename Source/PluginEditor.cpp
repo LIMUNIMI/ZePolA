@@ -27,8 +27,7 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     setSize(claf.getResizedWidth(), claf.getResizedHeight());
 
     // Subcomponents
-    parameterPanel
-        = std::make_unique<ParameterPanel>(processor, processor.getNElements());
+    parameterPanel = std::make_unique<ParameterPanel>(processor);
     plotsPanel = std::make_unique<PlotsPanel>(processor, applicationProperties);
     addAndMakeVisible(*parameterPanel.get());
     addAndMakeVisible(*plotsPanel.get());

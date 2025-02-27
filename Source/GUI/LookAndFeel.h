@@ -90,6 +90,13 @@ public:
                                   LabelledToggleButton& button,
                                   bool shouldDrawButtonAsHighlighted,
                                   bool shouldDrawButtonAsDown) override;
+    void drawButtonBackground(juce::Graphics&, juce::Button&,
+                              const juce::Colour& backgroundColour,
+                              bool shouldDrawButtonAsHighlighted,
+                              bool shouldDrawButtonAsDown) override;
+    void drawButtonText(juce::Graphics&, juce::TextButton&,
+                        bool shouldDrawButtonAsHighlighted,
+                        bool shouldDrawButtonAsDown) override;
     void drawPlotComponent(juce::Graphics&, float x, float y, float width,
                            float height, const std::vector<float>& x_values,
                            const std::vector<float>& y_values, float period,
@@ -194,6 +201,9 @@ public:
     /** Split rectangle for the linear/logarithmic switches row */
     std::vector<juce::Rectangle<int>>
     splitProportionalLinLogRow(const juce::Rectangle<int>&) const;
+    /** Split rectangle for the shortcut buttons column */
+    std::vector<juce::Rectangle<int>>
+    splitProportionalShortcuts(const juce::Rectangle<int>&) const;
 
 private:
     // =========================================================================
@@ -205,7 +215,8 @@ private:
         groupComponentCornerSize, fullSeparatorThickness;
     std::vector<int> stripColumnProportions, panelRowProportions,
         panelProportions, lastPanelProportions, linLogSwitchesHeightProportions,
-        linLogSwitchesRowProportions;
+        linLogSwitchesRowProportions, shortcutsWidthProportions,
+        shortcutsColumnProportions;
 
     // =========================================================================
     float osFontScale, topRightTextScale, fullLabelFontSize, fullSliderHeight,
@@ -241,6 +252,9 @@ private:
                            juce::Colour ledOutlineColour,
                            juce::Colour textColour, const juce::String& label,
                            bool ledSide);
+    template <typename ValueType>
+    void _autoFontScale(juce::Font&, const juce::Rectangle<ValueType>&,
+                        const juce::String&);
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)
