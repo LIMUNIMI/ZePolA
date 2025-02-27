@@ -526,6 +526,17 @@ void CustomLookAndFeel::drawParameterStripSeparators(juce::Graphics& g, float,
     g.setColour(pp.findColour(ParameterStripSeparator_fillColourId));
     for (auto i : y) g.fillRect(x, i - h * 0.5f, width, h);
 }
+template <typename ValueType>
+void CustomLookAndFeel::_autoFontScale(juce::Font& font,
+                                       const juce::Rectangle<ValueType>& bbox,
+                                       const juce::String& text)
+{
+    font.setHeight(
+        std::min(static_cast<float>(bbox.getHeight()),
+                 static_cast<float>(font.getHeight() * bbox.getWidth())
+                     / font.getStringWidth(text))
+        * osFontScale);
+}
 void CustomLookAndFeel::_drawToggleButton(
     juce::Graphics& g, juce::ToggleButton& button,
     bool /* shouldDrawButtonAsHighlighted */, bool /* shouldDrawButtonAsDown */,
@@ -576,7 +587,7 @@ void CustomLookAndFeel::_drawToggleButton(
 
     g.setColour(textColour);
     auto font = getLabelFont(boldTypeface);
-    font.setHeight(text_rect.getHeight() * osFontScale);
+    _autoFontScale(font, text_rect, label);
     g.setFont(font);
     g.drawText(label, text_rect, juce::Justification::centred);
 
@@ -650,9 +661,10 @@ void CustomLookAndFeel::drawButtonText(juce::Graphics& g,
 
     g.setColour(button.findColour(OnOffButton_textOffColourId));
     auto font = getLabelFont(boldTypeface);
-    font.setHeight(text_rect.getHeight() * osFontScale);
+    auto text = button.getButtonText();
+    _autoFontScale(font, text_rect, text);
     g.setFont(font);
-    g.drawText(button.getButtonText(), text_rect, juce::Justification::centred);
+    g.drawText(text, text_rect, juce::Justification::centred);
 }
 void CustomLookAndFeel::drawPlotComponent(
     juce::Graphics& g, float /* x */, float /* y */, float width, float height,

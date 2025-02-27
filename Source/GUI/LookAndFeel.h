@@ -252,6 +252,9 @@ private:
                            juce::Colour ledOutlineColour,
                            juce::Colour textColour, const juce::String& label,
                            bool ledSide);
+    template <typename ValueType>
+    void _autoFontScale(juce::Font&, const juce::Rectangle<ValueType>&,
+                        const juce::String&);
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)
