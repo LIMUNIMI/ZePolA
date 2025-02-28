@@ -72,21 +72,6 @@ CustomLookAndFeel::CustomLookAndFeel()
           BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
     , boldTypeface(juce::Typeface::createSystemTypefaceFor(
           BinaryData::MuktaBold_ttf, BinaryData::MuktaBold_ttfSize))
-    , osFontScale(
-#ifdef JUCE_WINDOWS
-          1.5f
-#else
-#ifdef JUCE_LINUX
-          1.0f
-#else
-#ifdef JUCE_MAC
-          1.0f
-#else
-          1.0f
-#endif
-#endif
-#endif
-          )
     , topRightTextScale(0.75f)
     , fullGaussianCircleThickness(1.5f)
     , fullGaussianMinorThickness(0.5f)
@@ -419,7 +404,7 @@ juce::Font CustomLookAndFeel::getLabelFont(juce::Typeface::Ptr t,
                                            float fullFontSize)
 {
     juce::Font f(t);
-    f.setSizeAndStyle(resizeSize(fullFontSize) * osFontScale, f.getStyleFlags(),
+    f.setSizeAndStyle(resizeSize(fullFontSize), f.getStyleFlags(),
                       f.getHorizontalScale(), f.getExtraKerningFactor());
     return f;
 }
@@ -536,8 +521,7 @@ void CustomLookAndFeel::_autoFontScale(juce::Font& font,
     font.setHeight(
         std::min(static_cast<float>(bbox.getHeight()),
                  static_cast<float>(font.getHeight() * bbox.getWidth())
-                     / font.getStringWidth(text))
-        * osFontScale);
+                     / font.getStringWidth(text)));
 }
 void CustomLookAndFeel::_drawToggleButton(
     juce::Graphics& g, juce::ToggleButton& button,

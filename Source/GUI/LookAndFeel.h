@@ -219,7 +219,7 @@ private:
         shortcutsColumnProportions;
 
     // =========================================================================
-    float osFontScale, topRightTextScale, fullLabelFontSize, fullSliderHeight,
+    float topRightTextScale, fullLabelFontSize, fullSliderHeight,
         fullSliderThumbRadius, sliderTextBoxProportionW,
         sliderTextBoxProportionH, inactiveBrightness;
     juce::String fontName;
