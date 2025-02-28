@@ -325,17 +325,18 @@ void ZPoint::setBoundsRelativeToPlane(juce::Component* parent, float radius)
     c *= scale;
     c += offset;
 
-    juce::Rectangle<float> r(0.0f, 0.0f, static_cast<float>(parent->getWidth()),
-                             static_cast<float>(parent->getHeight()));
+    juce::Rectangle<float> rect(0.0f, 0.0f,
+                                static_cast<float>(parent->getWidth()),
+                                static_cast<float>(parent->getHeight()));
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
-        r *= claf->getRelativePointSize();
+        rect *= claf->getRelativePointSize();
     }
     else
     {
-        r *= 0.05f;
+        rect *= 0.05f;
     }
-    r.setCentre(c);
+    rect.setCentre(c);
 
     if ((MessageManager::getInstanceWithoutCreating() != nullptr
          && MessageManager::getInstanceWithoutCreating()
@@ -343,7 +344,7 @@ void ZPoint::setBoundsRelativeToPlane(juce::Component* parent, float radius)
         || getPeer() == nullptr)
     {
         const MessageManagerLock mmLock;
-        setBounds(r.toNearestInt());
+        setBounds(rect.toNearestInt());
     }
     if (z_conj) z_conj->setBoundsRelativeToPlane(parent, radius);
 }
