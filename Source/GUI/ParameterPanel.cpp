@@ -11,7 +11,7 @@ ParameterSlider::ParameterSlider()
 }
 
 // =============================================================================
-ParameterStrip::ParentRepaintButtonListener::ParentRepaintButtonListener() {}
+ParameterStrip::ParentRepaintButtonListener::ParentRepaintButtonListener() { }
 
 // =============================================================================
 void ParameterStrip::ParentRepaintButtonListener::buttonClicked(juce::Button* b)
@@ -120,28 +120,28 @@ bool ParameterStrip::parentComponentIsActive(const juce::Component& c)
 }
 
 // =============================================================================
-ZPoint::MagnitudeListener::MagnitudeListener(ZPoint* p) : parent(p) {}
+ZPoint::MagnitudeListener::MagnitudeListener(ZPoint* p) : parent(p) { }
 void ZPoint::MagnitudeListener::parameterChanged(const juce::String&, float m)
 {
     parent->setPointMagnitude(m);
 }
 
 // =============================================================================
-ZPoint::ArgListener::ArgListener(ZPoint* p) : parent(p) {}
+ZPoint::ArgListener::ArgListener(ZPoint* p) : parent(p) { }
 void ZPoint::ArgListener::parameterChanged(const juce::String&, float a)
 {
     parent->setPointArg(juce::MathConstants<float>::pi * a);
 }
 
 // =============================================================================
-ZPoint::ActiveListener::ActiveListener(ZPoint* p) : parent(p) {}
+ZPoint::ActiveListener::ActiveListener(ZPoint* p) : parent(p) { }
 void ZPoint::ActiveListener::parameterChanged(const juce::String&, float a)
 {
     parent->setVisible(a);
 }
 
 // =============================================================================
-ZPoint::TypeListener::TypeListener(ZPoint* p) : parent(p) {}
+ZPoint::TypeListener::TypeListener(ZPoint* p) : parent(p) { }
 void ZPoint::TypeListener::parameterChanged(const juce::String&, float a)
 {
     parent->setType(FilterElement::floatToType(a));
@@ -371,8 +371,10 @@ void ZPoint::setVisible(bool shouldBeVisible)
 void ZPoint::paint(juce::Graphics& g)
 {
     if (auto laf = dynamic_cast<ZPoint::LookAndFeelMethods*>(&getLookAndFeel()))
-        laf->drawZPoint(g, getX(), getY(), getWidth(), getHeight(), getPointX(),
-                        getPointY(), type, conjugate, *this);
+        laf->drawZPoint(
+            g, static_cast<float>(getX()), static_cast<float>(getY()),
+            static_cast<float>(getWidth()), static_cast<float>(getHeight()),
+            getPointX(), getPointY(), type, conjugate, *this);
 }
 void ZPoint::mouseDrag(const juce::MouseEvent& event)
 {
@@ -423,8 +425,10 @@ void GaussianPlanePanel::paint(juce::Graphics& g)
 {
     if (auto laf = dynamic_cast<GaussianPlanePanel::LookAndFeelMethods*>(
             &getLookAndFeel()))
-        laf->drawGaussianPlane(g, getX(), getY(), getWidth(), getHeight(),
-                               radius, *this);
+        laf->drawGaussianPlane(g, static_cast<float>(getX()),
+                               static_cast<float>(getY()),
+                               static_cast<float>(getWidth()),
+                               static_cast<float>(getHeight()), radius, *this);
 }
 void GaussianPlanePanel::resized()
 {
