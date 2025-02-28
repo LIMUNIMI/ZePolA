@@ -79,9 +79,8 @@ DraggableLabelListener::DraggableLabelListener(juce::RangedAudioParameter* p)
 }
 void DraggableLabelListener::labelTextChanged(juce::Label* label)
 {
-    auto nr = param->getNormalisableRange();
-    float f = nr.convertFrom0to1(
-        nr.convertTo0to1(label->getText().getFloatValue() / scale));
+    float f = param->getNormalisableRange().snapToLegalValue(
+        label->getText().getFloatValue() / scale);
     Parameters::setParameterValue(param, f);
     setTextFromFloatDynamicCast(label, f * scale,
                                 juce::NotificationType::dontSendNotification);
