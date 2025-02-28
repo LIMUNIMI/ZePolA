@@ -22,7 +22,7 @@ void PlotComponent::buttonClicked(juce::Button* b)
 {
     setLogX(b->getToggleState());
 }
-void PlotComponent::buttonStateChanged(juce::Button*) {}
+void PlotComponent::buttonStateChanged(juce::Button*) { }
 
 // =============================================================================
 void PlotComponent::setTopRightText(const juce::String& s) { topRightText = s; }
@@ -131,7 +131,10 @@ PlotsPanel::~PlotsPanel()
 }
 
 // =============================================================================
-void PlotsPanel::sampleRateChangedCallback(double sr) { recomputePoints(); }
+void PlotsPanel::sampleRateChangedCallback(double /* sr */)
+{
+    recomputePoints();
+}
 
 // =============================================================================
 void PlotsPanel::updateValues()
@@ -178,7 +181,7 @@ void PlotsPanel::buttonClicked(juce::Button* b)
     if (b == linLogAmpButton.get()) db = b->getToggleState();
     recomputePoints();
 }
-void PlotsPanel::buttonStateChanged(juce::Button*) {}
+void PlotsPanel::buttonStateChanged(juce::Button*) { }
 void PlotsPanel::parameterChanged(const juce::String&, float)
 {
     recomputePoints();

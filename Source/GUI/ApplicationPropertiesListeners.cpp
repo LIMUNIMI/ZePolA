@@ -14,7 +14,10 @@ void ApplicationPropertyButtonListener::buttonClicked(juce::Button* b)
         = applicationProperties.getCommonSettings(true))
         pf->setValue(propertyID, b->getToggleState());
 }
-void ApplicationPropertyButtonListener::buttonStateChanged(juce::Button* b) {}
+void ApplicationPropertyButtonListener::buttonStateChanged(
+    juce::Button* /* b */)
+{
+}
 
 // =============================================================================
 ButtonApplicationPropertyListener::ButtonApplicationPropertyListener(

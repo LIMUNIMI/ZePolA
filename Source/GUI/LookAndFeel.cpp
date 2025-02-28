@@ -803,9 +803,10 @@ void CustomLookAndFeel::drawPlotComponent(
                      juce::PathStrokeType(resizeSize(fullPlotStrokeThickness)));
     }
 }
-void CustomLookAndFeel::drawGaussianPlane(juce::Graphics& g, float x, float y,
-                                          float width, float height,
-                                          float radius, GaussianPlanePanel& gpp)
+void CustomLookAndFeel::drawGaussianPlane(juce::Graphics& g, float /* x */,
+                                          float /* y */, float width,
+                                          float height, float radius,
+                                          GaussianPlanePanel& gpp)
 {
     // Background
     auto corner_s = resizeSize(fullPlotComponentCornerSize);
@@ -866,10 +867,11 @@ void CustomLookAndFeel::drawGaussianPlane(juce::Graphics& g, float x, float y,
     g.strokePath(majorTicks,
                  juce::PathStrokeType(resizeSize(fullGaussianCircleThickness)));
 }
-void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float x, float y,
-                                   float width, float height, float p_x,
-                                   float p_y, FilterElement::Type type,
-                                   bool conjugate, ZPoint& zp)
+void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float /* x */,
+                                   float /* y */, float width, float height,
+                                   float /* p_x */, float /* p_y */,
+                                   FilterElement::Type type, bool conjugate,
+                                   ZPoint& zp)
 {
     float t = resizeSize(fullPointThickness);
     juce::Rectangle r(0.5f * t, 0.5f * t, width - t, height - t);
