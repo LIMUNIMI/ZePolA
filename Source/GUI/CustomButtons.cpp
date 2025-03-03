@@ -1,6 +1,33 @@
 #include "CustomButtons.h"
 
 // =============================================================================
+/** Separator character for the two texts of a toggle button */
+static const char OFF_ON_CHARSEP = 0x17;
+
+juce::String Button_getOnOffLabel(const juce::Button& b, bool state)
+{
+    const juce::String& txt = b.getButtonText();
+    auto i                  = txt.indexOfChar(OFF_ON_CHARSEP);
+    if (i >= 0)
+    {
+        return (state) ? txt.substring(i + 1) : txt.substring(0, i);
+    }
+    else if (txt.isEmpty())
+        return (state) ? "ON" : "OFF";  // Default
+    else
+        return txt;  // Same label for both
+}
+juce::String Button_getOnOffLabel(const juce::Button& b)
+{
+    return Button_getOnOffLabel(b, b.getToggleState());
+}
+void Button_setOnOffLabel(juce::Button& b, const juce::String& labelOff,
+                          const juce::String& labelOn)
+{
+    b.setButtonText(labelOff + OFF_ON_CHARSEP + labelOn);
+}
+
+// =============================================================================
 LabelledToggleButton::LabelledToggleButton(const juce::String& l0,
                                            const juce::String& l1, int c0,
                                            int c1, bool p0, bool p1)

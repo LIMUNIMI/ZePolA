@@ -600,7 +600,7 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
         button.findColour(OnOffButton_outlineColourId),
         button.findColour((on) ? OnOffButton_textOnColourId
                                : OnOffButton_textOffColourId),
-        (on) ? "ON" : "OFF", true);
+        Button_getOnOffLabel(button, on), true);
 }
 void CustomLookAndFeel::drawLabelledToggleButton(
     juce::Graphics& g, LabelledToggleButton& button,

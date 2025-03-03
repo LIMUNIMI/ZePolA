@@ -2,6 +2,15 @@
 #include <JuceHeader.h>
 
 // =============================================================================
+/** Get the appropriate button label */
+juce::String Button_getOnOffLabel(const juce::Button&, bool state);
+/** Get the appropriate button label */
+juce::String Button_getOnOffLabel(const juce::Button&);
+/** Set the button label for both states */
+void Button_setOnOffLabel(juce::Button&, const juce::String& labelOff,
+                          const juce::String& labelOn);
+
+// =============================================================================
 /** Toggle button with labels */
 class LabelledToggleButton : public juce::ToggleButton
 {
