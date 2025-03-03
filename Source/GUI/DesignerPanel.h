@@ -21,10 +21,12 @@ private:
     std::unique_ptr<ApplicationPropertiesButtonAttachment> autoButtonAttachment;
     std::unique_ptr<ApplicationPropertiesComboBoxAttachment> typeCBoxAttachment,
         shapeCBoxAttachment;
+    std::unique_ptr<ApplicationPropertiesSliderAttachment>
+        orderSliderAttachment, cutoffSliderAttachment;
     PolesAndZerosEQAudioProcessor& processor;
     juce::Label panelLabel, typeLabel, shapeLabel, orderLabel, cutoffLabel;
     std::shared_ptr<juce::ComboBox> typeCBox, shapeCBox;
-    juce::Slider orderSlider, cutoffSlider;
+    std::shared_ptr<juce::Slider> orderSlider, cutoffSlider;
     std::shared_ptr<juce::ToggleButton> autoButton;
     juce::TextButton applyButton;
 

@@ -15,6 +15,8 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     , autoButton(std::make_shared<juce::ToggleButton>())
     , typeCBox(std::make_shared<juce::ComboBox>())
     , shapeCBox(std::make_shared<juce::ComboBox>())
+    , orderSlider(std::make_shared<juce::Slider>())
+    , cutoffSlider(std::make_shared<juce::Slider>())
 {
     addAndMakeVisible(panelLabel);
     addAndMakeVisible(typeLabel);
@@ -23,8 +25,8 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     addAndMakeVisible(cutoffLabel);
     addAndMakeVisible(*typeCBox.get());
     addAndMakeVisible(*shapeCBox.get());
-    addAndMakeVisible(orderSlider);
-    addAndMakeVisible(cutoffSlider);
+    addAndMakeVisible(*orderSlider.get());
+    addAndMakeVisible(*cutoffSlider.get());
     addAndMakeVisible(*autoButton.get());
     addAndMakeVisible(applyButton);
 
@@ -42,11 +44,11 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
         shapeCBox->addItem(FilterParameters::shapeToString(
                                static_cast<FilterParameters::FilterShape>(i)),
                            i + 1);
-    orderSlider.setSliderStyle(juce::Slider::LinearHorizontal);
-    orderSlider.setNormalisableRange(
+    orderSlider->setSliderStyle(juce::Slider::LinearHorizontal);
+    orderSlider->setNormalisableRange(
         {2.0, static_cast<double>(processor.getNElements()), 2.0});
-    cutoffSlider.setSliderStyle(juce::Slider::LinearHorizontal);
-    cutoffSlider.setNormalisableRange(
+    cutoffSlider->setSliderStyle(juce::Slider::LinearHorizontal);
+    cutoffSlider->setNormalisableRange(
         {0.0, processor.getSampleRate() * 0.5, 0.1, 0.2});
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
@@ -56,6 +58,10 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
         properties, "typeFilterDesign", typeCBox));
     shapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
         properties, "shapeFilterDesign", shapeCBox));
+    orderSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
+        properties, "orderFilterDesign", orderSlider));
+    cutoffSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
+        properties, "cutoffFilterDesign", cutoffSlider));
 
     if (!typeCBox->getSelectedId())
         typeCBox->setSelectedId(1 + FilterParameters::FilterType::Butterworth);
@@ -105,10 +111,10 @@ void DesignerPanel::resized()
         shapeCBox->setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
         orderLabel.setBounds(b.removeFromTop(h));
-        orderSlider.setBounds(b.removeFromTop(h));
+        orderSlider->setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
         cutoffLabel.setBounds(b.removeFromTop(h));
-        cutoffSlider.setBounds(b.removeFromTop(h));
+        cutoffSlider->setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
         auto last_row = b.removeFromTop(h);
         autoButton->setBounds(
@@ -116,11 +122,11 @@ void DesignerPanel::resized()
         applyButton.setBounds(
             last_row.withTrimmedLeft(last_row.getWidth() * 53 / 100));
 
-        orderSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                    orderSlider.getTextBoxWidth(),
-                                    orderSlider.getTextBoxHeight());
-        cutoffSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                     cutoffSlider.getTextBoxWidth(),
-                                     cutoffSlider.getTextBoxHeight());
+        orderSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                                     orderSlider->getTextBoxWidth(),
+                                     orderSlider->getTextBoxHeight());
+        cutoffSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                                      cutoffSlider->getTextBoxWidth(),
+                                      cutoffSlider->getTextBoxHeight());
     }
 }
