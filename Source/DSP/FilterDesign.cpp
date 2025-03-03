@@ -2,6 +2,30 @@
 #include "../Macros.h"
 
 // =============================================================================
+juce::String FilterParameters::typeToString(FilterParameters::FilterType t)
+{
+    switch (t)
+    {
+    case FilterParameters::FilterType::Butterworth: return "Butterworth";
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for filter type. Defaulting to 'UNKNOWN'");
+        return "UNKNOWN";
+    }
+}
+juce::String FilterParameters::shapeToString(FilterParameters::FilterShape s)
+{
+    switch (s)
+    {
+    case FilterParameters::FilterShape::LowPass: return "LowPass";
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for filter shape. Defaulting to 'UNKNOWN'");
+        return "UNKNOWN";
+    }
+}
+
+// =============================================================================
 FilterParameters::FilterParameters(double f)
     : sr(f)
     , type(FilterParameters::FilterType::Butterworth)
@@ -26,7 +50,7 @@ double FilterParameters::warpedFrequency() const
 }
 
 // =============================================================================
-FilterParameters::ZPK::ZPK() { }
+FilterParameters::ZPK::ZPK() {}
 void FilterParameters::ZPK::reset()
 {
     poles.clear();
@@ -46,7 +70,7 @@ size_t FilterParameters::ZPK::degree() const
 }
 
 // =============================================================================
-FilterFactory::FilterFactory() { }
+FilterFactory::FilterFactory() {}
 void FilterFactory::build(FilterParameters& params)
 {
     sanitizeParams(params);
@@ -75,7 +99,7 @@ void FilterFactory::sanitizeParams(FilterParameters& params)
 }
 
 // =============================================================================
-AnalogFilterFactory::AnalogFilterFactory() { }
+AnalogFilterFactory::AnalogFilterFactory() {}
 void AnalogFilterFactory::build(FilterParameters& params)
 {
     buildAnalogPrototype(params);
@@ -138,7 +162,7 @@ void AnalogFilterFactory::bilinearTransform(FilterParameters::ZPK& zpk)
 }
 
 // =============================================================================
-ButterworthFilterFactory::ButterworthFilterFactory() { }
+ButterworthFilterFactory::ButterworthFilterFactory() {}
 void ButterworthFilterFactory::buildAnalogPrototype(FilterParameters& params)
 {
     // This loop would be used to generate all poles

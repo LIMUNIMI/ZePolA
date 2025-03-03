@@ -7,10 +7,14 @@ DesignerPanel::DesignerPanel(VTSAudioProcessor& p,
                              juce::ApplicationProperties& properties)
     : processor(p)
     , panelLabel("", "FILTER DESIGN")
+    , typeLabel("", "FILTER TYPE")
+    , shapeLabel("", "FILTER SHAPE")
     , applyButton("APPLY")
     , autoButton(std::make_shared<juce::ToggleButton>())
 {
     addAndMakeVisible(panelLabel);
+    addAndMakeVisible(typeLabel);
+    addAndMakeVisible(shapeLabel);
     addAndMakeVisible(typeCBox);
     addAndMakeVisible(shapeCBox);
     addAndMakeVisible(orderSlider);
@@ -19,9 +23,22 @@ DesignerPanel::DesignerPanel(VTSAudioProcessor& p,
     addAndMakeVisible(applyButton);
 
     panelLabel.setJustificationType(juce::Justification::centred);
+    typeLabel.setJustificationType(juce::Justification::centred);
+    shapeLabel.setJustificationType(juce::Justification::centred);
+    for (auto i = 0; i < FilterParameters::FilterType::N_FILTER_TYPES; ++i)
+        typeCBox.addItem(FilterParameters::typeToString(
+                             static_cast<FilterParameters::FilterType>(i)),
+                         i + 1);
+    for (auto i = 0; i < FilterParameters::FilterShape::N_FILTER_SHAPES; ++i)
+        shapeCBox.addItem(FilterParameters::shapeToString(
+                              static_cast<FilterParameters::FilterShape>(i)),
+                          i + 1);
     orderSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     cutoffSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
+
+    typeCBox.setSelectedId(1 + FilterParameters::FilterType::Butterworth);
+    shapeCBox.setSelectedId(1 + FilterParameters::FilterShape::LowPass);
 
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, "autoFilterDesign", autoButton));
@@ -62,8 +79,10 @@ void DesignerPanel::resized()
 
         panelLabel.setBounds(b.removeFromTop(h));
         b.removeFromTop(h);
+        typeLabel.setBounds(b.removeFromTop(h));
         typeCBox.setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
+        shapeLabel.setBounds(b.removeFromTop(h));
         shapeCBox.setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
         orderSlider.setBounds(b.removeFromTop(h));

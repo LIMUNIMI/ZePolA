@@ -43,6 +43,8 @@ public:
         // there are
         N_FILTER_TYPES
     };
+    /** Encode filter type as a string */
+    static juce::String typeToString(FilterType);
 
     // =========================================================================
     enum FilterShape
@@ -53,6 +55,8 @@ public:
         // there are
         N_FILTER_SHAPES
     };
+    /** Encode filter shape as a string */
+    static juce::String shapeToString(FilterShape);
 
     // =========================================================================
     FilterParameters(double sr = 1.0);

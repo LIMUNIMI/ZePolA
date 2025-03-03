@@ -20,7 +20,7 @@ private:
     // =========================================================================
     std::unique_ptr<ApplicationPropertiesButtonAttachment> autoButtonAttachment;
     VTSAudioProcessor& processor;
-    juce::Label panelLabel;
+    juce::Label panelLabel, typeLabel, shapeLabel;
     juce::ComboBox typeCBox, shapeCBox;
     juce::Slider orderSlider, cutoffSlider;
     std::shared_ptr<juce::ToggleButton> autoButton;
