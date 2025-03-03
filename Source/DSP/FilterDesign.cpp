@@ -7,6 +7,9 @@ juce::String FilterParameters::typeToString(FilterParameters::FilterType t)
     switch (t)
     {
     case FilterParameters::FilterType::Butterworth: return "Butterworth";
+    case FilterParameters::FilterType::ChebyshevI: return "Chebyshev I";
+    case FilterParameters::FilterType::ChebyshevII: return "Chebyshev II";
+    case FilterParameters::FilterType::Elliptic: return "Elliptic";
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter type. Defaulting to 'UNKNOWN'");
@@ -18,6 +21,7 @@ juce::String FilterParameters::shapeToString(FilterParameters::FilterShape s)
     switch (s)
     {
     case FilterParameters::FilterShape::LowPass: return "LowPass";
+    case FilterParameters::FilterShape::HighPass: return "HighPass";
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter shape. Defaulting to 'UNKNOWN'");

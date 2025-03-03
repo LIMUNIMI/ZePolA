@@ -36,6 +36,38 @@ void ButtonApplicationPropertyListener::changeListenerCallback(
 }
 
 // =============================================================================
+ApplicationPropertyComboBoxListener::ApplicationPropertyComboBoxListener(
+    const juce::String& pID, juce::ApplicationProperties& properties)
+    : propertyID(pID), applicationProperties(properties)
+{
+}
+
+// =============================================================================
+void ApplicationPropertyComboBoxListener::comboBoxChanged(
+    juce::ComboBox* comboBoxThatHasChanged)
+{
+    if (juce::PropertiesFile* pf
+        = applicationProperties.getCommonSettings(true))
+        pf->setValue(propertyID, comboBoxThatHasChanged->getSelectedId());
+}
+
+// =============================================================================
+ComboBoxApplicationPropertyListener::ComboBoxApplicationPropertyListener(
+    const juce::String& pID, std::shared_ptr<juce::ComboBox> cb)
+    : propertyID(pID), comboBox(cb)
+{
+}
+
+// =============================================================================
+void ComboBoxApplicationPropertyListener::changeListenerCallback(
+    juce::ChangeBroadcaster* source)
+{
+    if (auto pf = dynamic_cast<juce::PropertiesFile*>(source))
+        comboBox->setSelectedId(pf->getIntValue(propertyID, false),
+                                juce::NotificationType::sendNotification);
+}
+
+// =============================================================================
 template <typename ComponentType, typename ComponentListenerType,
           typename ApplicationPropertyListenerType>
 ApplicationPropertiesComponentAttachment<ComponentType, ComponentListenerType,
@@ -73,3 +105,6 @@ ApplicationPropertiesComponentAttachment<ComponentType, ComponentListenerType,
 template class ApplicationPropertiesComponentAttachment<
     juce::Button, ApplicationPropertyButtonListener,
     ButtonApplicationPropertyListener>;
+template class ApplicationPropertiesComponentAttachment<
+    juce::ComboBox, ApplicationPropertyComboBoxListener,
+    ComboBoxApplicationPropertyListener>;

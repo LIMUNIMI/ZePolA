@@ -47,6 +47,52 @@ private:
 };
 
 // =============================================================================
+/** ComboBox listener for an application property */
+class ApplicationPropertyComboBoxListener : public juce::ComboBox::Listener
+{
+public:
+    // =========================================================================
+    ApplicationPropertyComboBoxListener(
+        const juce::String& propertyID,
+        juce::ApplicationProperties& properties);
+
+    //==========================================================================
+    virtual void
+    comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
+
+private:
+    // =========================================================================
+    juce::ApplicationProperties& applicationProperties;
+    juce::String propertyID;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+        ApplicationPropertyComboBoxListener)
+};
+
+// =============================================================================
+/** Application property listener for a ComboBox */
+class ComboBoxApplicationPropertyListener : public juce::ChangeListener
+{
+public:
+    // =========================================================================
+    ComboBoxApplicationPropertyListener(const juce::String& propertyID,
+                                        std::shared_ptr<juce::ComboBox>);
+
+    // =========================================================================
+    virtual void changeListenerCallback(juce::ChangeBroadcaster*) override;
+
+private:
+    // =========================================================================
+    std::shared_ptr<juce::ComboBox> comboBox;
+    juce::String propertyID;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+        ComboBoxApplicationPropertyListener)
+};
+
+// =============================================================================
 /** Template attachment for a component and an application property */
 template <typename ComponentType, typename ComponentListenerType,
           typename ApplicationPropertyListenerType>
@@ -76,3 +122,7 @@ using ApplicationPropertiesButtonAttachment
     = ApplicationPropertiesComponentAttachment<
         juce::Button, ApplicationPropertyButtonListener,
         ButtonApplicationPropertyListener>;
+using ApplicationPropertiesComboBoxAttachment
+    = ApplicationPropertiesComponentAttachment<
+        juce::ComboBox, ApplicationPropertyComboBoxListener,
+        ComboBoxApplicationPropertyListener>;

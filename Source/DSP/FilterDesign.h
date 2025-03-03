@@ -38,6 +38,9 @@ public:
     enum FilterType
     {
         Butterworth = 0,
+        ChebyshevI,
+        ChebyshevII,
+        Elliptic,
 
         // This should not be used as a type, but only to get how many types
         // there are
@@ -50,9 +53,10 @@ public:
     enum FilterShape
     {
         LowPass = 0,
+        HighPass,
 
-        // This should not be used as a shape, but only to get how many shapes
-        // there are
+        // This should not be used as a shape, but only to get how many
+        // shapes there are
         N_FILTER_SHAPES
     };
     /** Encode filter shape as a string */

@@ -13,14 +13,16 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     , cutoffLabel("", "CUTOFF FREQUENCY")
     , applyButton("APPLY")
     , autoButton(std::make_shared<juce::ToggleButton>())
+    , typeCBox(std::make_shared<juce::ComboBox>())
+    , shapeCBox(std::make_shared<juce::ComboBox>())
 {
     addAndMakeVisible(panelLabel);
     addAndMakeVisible(typeLabel);
     addAndMakeVisible(shapeLabel);
     addAndMakeVisible(orderLabel);
     addAndMakeVisible(cutoffLabel);
-    addAndMakeVisible(typeCBox);
-    addAndMakeVisible(shapeCBox);
+    addAndMakeVisible(*typeCBox.get());
+    addAndMakeVisible(*shapeCBox.get());
     addAndMakeVisible(orderSlider);
     addAndMakeVisible(cutoffSlider);
     addAndMakeVisible(*autoButton.get());
@@ -33,13 +35,13 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     cutoffLabel.setJustificationType(juce::Justification::centred);
 
     for (auto i = 0; i < FilterParameters::FilterType::N_FILTER_TYPES; ++i)
-        typeCBox.addItem(FilterParameters::typeToString(
-                             static_cast<FilterParameters::FilterType>(i)),
-                         i + 1);
-    for (auto i = 0; i < FilterParameters::FilterShape::N_FILTER_SHAPES; ++i)
-        shapeCBox.addItem(FilterParameters::shapeToString(
-                              static_cast<FilterParameters::FilterShape>(i)),
+        typeCBox->addItem(FilterParameters::typeToString(
+                              static_cast<FilterParameters::FilterType>(i)),
                           i + 1);
+    for (auto i = 0; i < FilterParameters::FilterShape::N_FILTER_SHAPES; ++i)
+        shapeCBox->addItem(FilterParameters::shapeToString(
+                               static_cast<FilterParameters::FilterShape>(i)),
+                           i + 1);
     orderSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     orderSlider.setNormalisableRange(
         {2.0, static_cast<double>(processor.getNElements()), 2.0});
@@ -48,11 +50,17 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
         {0.0, processor.getSampleRate() * 0.5, 0.1, 0.2});
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
-    typeCBox.setSelectedId(1 + FilterParameters::FilterType::Butterworth);
-    shapeCBox.setSelectedId(1 + FilterParameters::FilterShape::LowPass);
-
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, "autoFilterDesign", autoButton));
+    typeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
+        properties, "typeFilterDesign", typeCBox));
+    shapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
+        properties, "shapeFilterDesign", shapeCBox));
+
+    if (!typeCBox->getSelectedId())
+        typeCBox->setSelectedId(1 + FilterParameters::FilterType::Butterworth);
+    if (!shapeCBox->getSelectedId())
+        shapeCBox->setSelectedId(1 + FilterParameters::FilterShape::LowPass);
 
     // !REMOVE THIS! Test FilterDesign
     FilterParameters params(processor.getSampleRate());
@@ -91,10 +99,10 @@ void DesignerPanel::resized()
         panelLabel.setBounds(b.removeFromTop(h));
         b.removeFromTop(h);
         typeLabel.setBounds(b.removeFromTop(h));
-        typeCBox.setBounds(b.removeFromTop(h));
+        typeCBox->setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
         shapeLabel.setBounds(b.removeFromTop(h));
-        shapeCBox.setBounds(b.removeFromTop(h));
+        shapeCBox->setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
         orderLabel.setBounds(b.removeFromTop(h));
         orderSlider.setBounds(b.removeFromTop(h));
