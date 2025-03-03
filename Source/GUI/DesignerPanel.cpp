@@ -1,5 +1,5 @@
 #include "DesignerPanel.h"
-#include "../DSP/FilterDesign.h"
+#include "../Macros.h"
 #include "LookAndFeel.h"
 
 // =============================================================================
@@ -11,12 +11,13 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     , shapeLabel("", "FILTER SHAPE")
     , orderLabel("", "FILTER ORDER")
     , cutoffLabel("", "CUTOFF FREQUENCY")
-    , applyButton("APPLY")
+    , applyButton("UPDATE")
     , autoButton(std::make_shared<juce::ToggleButton>())
     , typeCBox(std::make_shared<juce::ComboBox>())
     , shapeCBox(std::make_shared<juce::ComboBox>())
     , orderSlider(std::make_shared<juce::Slider>())
     , cutoffSlider(std::make_shared<juce::Slider>())
+    , filterParams(p.getSampleRate())
 {
     addAndMakeVisible(panelLabel);
     addAndMakeVisible(typeLabel);
@@ -68,31 +69,61 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     if (!shapeCBox->getSelectedId())
         shapeCBox->setSelectedId(1 + FilterParameters::FilterShape::LowPass);
 
-    // !REMOVE THIS! Test FilterDesign
-    FilterParameters params(processor.getSampleRate());
-    params.cutoff = 500.0;
-    params.order  = 4;
-    params.computeZPK();
-
-    auto degree = params.zpk.degree();
-    auto k_db   = juce::Decibels::gainToDecibels(params.zpk.gain, -1000.0)
-                / (params.zpk.zeros.size() + params.zpk.poles.size());
-    for (auto i = 0; i < degree; ++i)
-    {
-        if (i < params.zpk.zeros.size())
-            DBG("  Z(" << abs(params.zpk.zeros[i]) << "; "
-                       << std::arg(params.zpk.zeros[i])
-                              / juce::MathConstants<double>::pi
-                       << ") " << k_db << "dB");
-        if (i < params.zpk.poles.size())
-            DBG("  P(" << abs(params.zpk.poles[i]) << "; "
-                       << std::arg(params.zpk.poles[i])
-                              / juce::MathConstants<double>::pi
-                       << ") " << k_db << "dB");
-    }
-    // !REMOVE THIS!
+    applyButton.onClick = [this] { designFilter(); };
 }
 DesignerPanel::~DesignerPanel() {}
+
+// =============================================================================
+void DesignerPanel::designFilter()
+{
+    filterParams.cutoff = cutoffSlider->getValue();
+    filterParams.order  = juce::roundToInt(orderSlider->getValue());
+    filterParams.type   = static_cast<FilterParameters::FilterType>(
+        typeCBox->getSelectedId() - 1);
+    filterParams.shape = static_cast<FilterParameters::FilterShape>(
+        shapeCBox->getSelectedId() - 1);
+    filterParams.computeZPK();
+
+    auto degree = filterParams.zpk.degree();
+    auto k_db   = juce::Decibels::gainToDecibels(filterParams.zpk.gain, -1000.0)
+                / filterParams.zpk.nElements();
+    int e = 0;
+    DBG("------------------------------------------------------------------");
+    DBG("Filter Design");
+    for (auto i = 0; i < degree; ++i)
+    {
+        if (i < filterParams.zpk.zeros.size())
+            applyFilterElement(e++, filterParams.zpk.zeros[i],
+                               FilterElement::Type::ZERO, k_db);
+        if (i < filterParams.zpk.poles.size())
+            applyFilterElement(e++, filterParams.zpk.poles[i],
+                               FilterElement::Type::POLE, k_db);
+    }
+    auto n = processor.getNElements();
+    for (; e < n; ++e)
+        processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(e), false);
+    DBG("------------------------------------------------------------------");
+}
+void DesignerPanel::applyFilterElement(int i, std::complex<double> z,
+                                       FilterElement::Type t, double gain)
+{
+    juce::String i_str(i);
+    double m = abs(z), a = std::arg(z) / juce::MathConstants<double>::pi;
+    processor.setParameterValue(TYPE_ID_PREFIX + i_str, t);
+    processor.setParameterValue(GAIN_ID_PREFIX + i_str, gain);
+    processor.setParameterValue(MAGNITUDE_ID_PREFIX + i_str, m);
+    processor.setParameterValue(PHASE_ID_PREFIX + i_str, a);
+    processor.setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
+    ONLY_ON_DEBUG({
+        juce::String prefix("?");
+        switch (t)
+        {
+        case FilterElement::ZERO: prefix = "Z"; break;
+        case FilterElement::POLE: prefix = "P"; break;
+        }
+        DBG("  " << prefix << "(" << m << "; " << a << ") " << gain << "dB");
+    })
+}
 
 // =============================================================================
 void DesignerPanel::resized()

@@ -61,6 +61,10 @@ void FilterParameters::ZPK::reset()
     zeros.clear();
     gain = 1.0;
 }
+size_t FilterParameters::ZPK::nElements() const
+{
+    return poles.size() + zeros.size();
+}
 int FilterParameters::ZPK::relativeDegree() const
 {
     // Double the degree to account for conjugates
