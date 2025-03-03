@@ -36,16 +36,20 @@ void ButtonApplicationPropertyListener::changeListenerCallback(
 }
 
 // =============================================================================
-ApplicationPropertiesButtonAttachment::ApplicationPropertiesButtonAttachment(
-    juce::ApplicationProperties& properties, const juce::String& pID,
-    std::shared_ptr<juce::Button> btn)
+template <typename ComponentType, typename ComponentListenerType,
+          typename ApplicationPropertyListenerType>
+ApplicationPropertiesComponentAttachment<ComponentType, ComponentListenerType,
+                                         ApplicationPropertyListenerType>::
+    ApplicationPropertiesComponentAttachment(
+        juce::ApplicationProperties& properties, const juce::String& pID,
+        std::shared_ptr<ComponentType> comp)
     : applicationProperties(properties)
     , propertyID(pID)
-    , button(btn)
-    , buttonListener(pID, properties)
-    , propertyListener(pID, btn)
+    , component(comp)
+    , componentListener(pID, properties)
+    , propertyListener(pID, comp)
 {
-    button->addListener(&buttonListener);
+    component->addListener(&componentListener);
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
     {
@@ -53,10 +57,19 @@ ApplicationPropertiesButtonAttachment::ApplicationPropertiesButtonAttachment(
         propertyListener.changeListenerCallback(pf);
     }
 }
-ApplicationPropertiesButtonAttachment::~ApplicationPropertiesButtonAttachment()
+template <typename ComponentType, typename ComponentListenerType,
+          typename ApplicationPropertyListenerType>
+ApplicationPropertiesComponentAttachment<ComponentType, ComponentListenerType,
+                                         ApplicationPropertyListenerType>::
+    ~ApplicationPropertiesComponentAttachment()
 {
-    button->removeListener(&buttonListener);
+    component->removeListener(&componentListener);
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
         pf->removeChangeListener(&propertyListener);
 }
+
+// =============================================================================
+template class ApplicationPropertiesComponentAttachment<
+    juce::Button, ApplicationPropertyButtonListener,
+    ButtonApplicationPropertyListener>;

@@ -47,25 +47,32 @@ private:
 };
 
 // =============================================================================
-/** Attachment for a button and an application property */
-class ApplicationPropertiesButtonAttachment
+/** Template attachment for a component and an application property */
+template <typename ComponentType, typename ComponentListenerType,
+          typename ApplicationPropertyListenerType>
+class ApplicationPropertiesComponentAttachment
 {
 public:
     // =========================================================================
-    ApplicationPropertiesButtonAttachment(
+    ApplicationPropertiesComponentAttachment(
         juce::ApplicationProperties& properties, const juce::String& propertyID,
-        std::shared_ptr<juce::Button> button);
-    ~ApplicationPropertiesButtonAttachment();
+        std::shared_ptr<ComponentType>);
+    ~ApplicationPropertiesComponentAttachment();
 
 private:
     //==========================================================================
     juce::ApplicationProperties& applicationProperties;
     juce::String propertyID;
-    std::shared_ptr<juce::Button> button;
-    ApplicationPropertyButtonListener buttonListener;
-    ButtonApplicationPropertyListener propertyListener;
+    std::shared_ptr<ComponentType> component;
+    ComponentListenerType componentListener;
+    ApplicationPropertyListenerType propertyListener;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
-        ApplicationPropertiesButtonAttachment)
+        ApplicationPropertiesComponentAttachment)
 };
+
+using ApplicationPropertiesButtonAttachment
+    = ApplicationPropertiesComponentAttachment<
+        juce::Button, ApplicationPropertyButtonListener,
+        ButtonApplicationPropertyListener>;
