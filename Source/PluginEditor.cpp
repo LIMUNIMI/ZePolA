@@ -29,7 +29,8 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     // Subcomponents
     parameterPanel = std::make_unique<ParameterPanel>(processor);
     plotsPanel = std::make_unique<PlotsPanel>(processor, applicationProperties);
-    designerPanel = std::make_unique<DesignerPanel>(processor);
+    designerPanel
+        = std::make_unique<DesignerPanel>(processor, applicationProperties);
     addAndMakeVisible(*parameterPanel.get());
     addAndMakeVisible(*plotsPanel.get());
     addAndMakeVisible(*designerPanel.get());
