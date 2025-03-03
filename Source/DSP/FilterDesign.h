@@ -124,6 +124,8 @@ public:
     void applyParamsToPrototype(FilterParameters&);
     /** Apply lowpass cutoff frequency and type to the filter prototype */
     void applyLowPassParamsToPrototype(FilterParameters&);
+    /** Apply hipass cutoff frequency and type to the filter prototype */
+    void applyHighPassParamsToPrototype(FilterParameters&);
     /** Apply a bilinear transform to convert an analog filter into a digital
      * one */
     void bilinearTransform(FilterParameters::ZPK&);

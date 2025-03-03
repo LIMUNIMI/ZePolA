@@ -121,6 +121,9 @@ void AnalogFilterFactory::applyParamsToPrototype(FilterParameters& params)
     case (FilterParameters::FilterShape::LowPass):
         applyLowPassParamsToPrototype(params);
         break;
+    case (FilterParameters::FilterShape::HighPass):
+        applyHighPassParamsToPrototype(params);
+        break;
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter shape. Resetting filter");
@@ -134,27 +137,53 @@ void AnalogFilterFactory::applyLowPassParamsToPrototype(
     auto w = params.warpedFrequency();
     for (auto& z : params.zpk.zeros) z *= w;
     for (auto& p : params.zpk.poles) p *= w;
+    // Gain compensation
     params.zpk.gain *= pow(w, static_cast<float>(params.zpk.relativeDegree()));
+}
+void AnalogFilterFactory::applyHighPassParamsToPrototype(
+    FilterParameters& params)
+{
+    auto w     = params.warpedFrequency();
+    double k_z = 1.0, k_p = 1.0, a;
+    for (auto& z : params.zpk.zeros)
+    {
+        a = abs(z);
+        z = std::polar(w / a, std::arg(z));
+        k_z *= a * a;  // Square to account for conjugates
+    }
+    for (auto& p : params.zpk.poles)
+    {
+        a = abs(p);
+        p = std::polar(w / a, std::arg(p));
+        k_p *= a * a;  // Square to account for conjugates
+    }
+    // Lowpass implies zeros at Nyquist => inverting makes them zeros at origin
+    auto rdeg = params.zpk.relativeDegree();
+    jassert(rdeg % 2 == 0);
+    // Half the amount because they will be doubled by their conjugates
+    rdeg /= 2;
+    for (auto i = 0; i < rdeg; i++)
+        params.zpk.zeros.push_back(std::complex<double>(0.0, 0.0));
+    // Gain compensation
+    params.zpk.gain *= k_z / k_p;
 }
 void AnalogFilterFactory::bilinearTransform(FilterParameters::ZPK& zpk)
 {
-    std::complex<double> k_z(1.0, 0.0), k_p(1.0, 0.0);
+    double k_z = 1.0, k_p = 1.0;
 
     // Bilinear transform
     std::complex<double> tmp;
     for (auto& z : zpk.zeros)
     {
-        tmp = 4.0 - z;
-        // Also account for conjugate
-        k_z *= tmp * (4.0 - std::conj(z));
-        z = (4.0 + z) / tmp;
+        // (4.0 - z) * (4.0 - z*) Also accounts for conjugate
+        k_z *= pow(abs(z), 2) - 16.0 * z.real() + 16.0;
+        z = (4.0 + z) / (4.0 - z);
     }
     for (auto& p : zpk.poles)
     {
-        tmp = 4.0 - p;
-        // Also account for conjugate
-        k_p *= tmp * (4.0 - std::conj(p));
-        p = (4.0 + p) / tmp;
+        // (4.0 - z) * (4.0 - z*) Also accounts for conjugate
+        k_p *= pow(abs(p), 2) - 16.0 * p.real() + 16.0;
+        p = (4.0 + p) / (4.0 - p);
     }
 
     // Add zeros at Nyquist
@@ -166,7 +195,7 @@ void AnalogFilterFactory::bilinearTransform(FilterParameters::ZPK& zpk)
         zpk.zeros.push_back(std::complex<double>(-1.0, 0.0));
 
     // Gain compensation
-    zpk.gain *= (k_z / k_p).real();
+    zpk.gain *= k_z / k_p;
 }
 
 // =============================================================================
