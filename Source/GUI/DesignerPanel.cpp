@@ -3,18 +3,20 @@
 #include "LookAndFeel.h"
 
 // =============================================================================
-DesignerPanel::DesignerPanel(VTSAudioProcessor& p,
+DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
                              juce::ApplicationProperties& properties)
     : processor(p)
     , panelLabel("", "FILTER DESIGN")
     , typeLabel("", "FILTER TYPE")
     , shapeLabel("", "FILTER SHAPE")
+    , orderLabel("", "FILTER ORDER")
     , applyButton("APPLY")
     , autoButton(std::make_shared<juce::ToggleButton>())
 {
     addAndMakeVisible(panelLabel);
     addAndMakeVisible(typeLabel);
     addAndMakeVisible(shapeLabel);
+    addAndMakeVisible(orderLabel);
     addAndMakeVisible(typeCBox);
     addAndMakeVisible(shapeCBox);
     addAndMakeVisible(orderSlider);
@@ -25,6 +27,8 @@ DesignerPanel::DesignerPanel(VTSAudioProcessor& p,
     panelLabel.setJustificationType(juce::Justification::centred);
     typeLabel.setJustificationType(juce::Justification::centred);
     shapeLabel.setJustificationType(juce::Justification::centred);
+    orderLabel.setJustificationType(juce::Justification::centred);
+
     for (auto i = 0; i < FilterParameters::FilterType::N_FILTER_TYPES; ++i)
         typeCBox.addItem(FilterParameters::typeToString(
                              static_cast<FilterParameters::FilterType>(i)),
@@ -34,6 +38,8 @@ DesignerPanel::DesignerPanel(VTSAudioProcessor& p,
                               static_cast<FilterParameters::FilterShape>(i)),
                           i + 1);
     orderSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    orderSlider.setNormalisableRange(
+        {2.0, static_cast<double>(processor.getNElements()), 2.0});
     cutoffSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
@@ -85,6 +91,7 @@ void DesignerPanel::resized()
         shapeLabel.setBounds(b.removeFromTop(h));
         shapeCBox.setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
+        orderLabel.setBounds(b.removeFromTop(h));
         orderSlider.setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
         cutoffSlider.setBounds(b.removeFromTop(h));
