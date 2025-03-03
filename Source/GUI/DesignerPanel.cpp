@@ -124,6 +124,13 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z,
         DBG("  " << prefix << "(" << m << "; " << a << ") " << gain << "dB");
     })
 }
+void DesignerPanel::sampleRateChangedCallback(double sr)
+{
+    auto nr = cutoffSlider->getNormalisableRange();
+    cutoffSlider->setNormalisableRange(
+        {nr.start, sr * 0.5, nr.interval, nr.skew});
+    filterParams.sr = sr;
+}
 
 // =============================================================================
 void DesignerPanel::resized()

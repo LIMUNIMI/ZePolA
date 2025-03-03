@@ -7,7 +7,7 @@
 
 // =============================================================================
 /** Filter design panel  */
-class DesignerPanel : public juce::GroupComponent
+class DesignerPanel : public juce::GroupComponent, public SampleRateListener
 {
 public:
     // =========================================================================
@@ -15,6 +15,7 @@ public:
     ~DesignerPanel();
 
     // =========================================================================
+    virtual void sampleRateChangedCallback(double);
     void resized() override;
 
 private:
