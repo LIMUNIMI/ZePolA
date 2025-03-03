@@ -10,6 +10,7 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     , typeLabel("", "FILTER TYPE")
     , shapeLabel("", "FILTER SHAPE")
     , orderLabel("", "FILTER ORDER")
+    , cutoffLabel("", "CUTOFF FREQUENCY")
     , applyButton("APPLY")
     , autoButton(std::make_shared<juce::ToggleButton>())
 {
@@ -17,6 +18,7 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     addAndMakeVisible(typeLabel);
     addAndMakeVisible(shapeLabel);
     addAndMakeVisible(orderLabel);
+    addAndMakeVisible(cutoffLabel);
     addAndMakeVisible(typeCBox);
     addAndMakeVisible(shapeCBox);
     addAndMakeVisible(orderSlider);
@@ -28,6 +30,7 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     typeLabel.setJustificationType(juce::Justification::centred);
     shapeLabel.setJustificationType(juce::Justification::centred);
     orderLabel.setJustificationType(juce::Justification::centred);
+    cutoffLabel.setJustificationType(juce::Justification::centred);
 
     for (auto i = 0; i < FilterParameters::FilterType::N_FILTER_TYPES; ++i)
         typeCBox.addItem(FilterParameters::typeToString(
@@ -41,6 +44,8 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     orderSlider.setNormalisableRange(
         {2.0, static_cast<double>(processor.getNElements()), 2.0});
     cutoffSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    cutoffSlider.setNormalisableRange(
+        {0.0, processor.getSampleRate() * 0.5, 0.1, 0.2});
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
     typeCBox.setSelectedId(1 + FilterParameters::FilterType::Butterworth);
@@ -94,6 +99,7 @@ void DesignerPanel::resized()
         orderLabel.setBounds(b.removeFromTop(h));
         orderSlider.setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
+        cutoffLabel.setBounds(b.removeFromTop(h));
         cutoffSlider.setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
         auto last_row = b.removeFromTop(h);
