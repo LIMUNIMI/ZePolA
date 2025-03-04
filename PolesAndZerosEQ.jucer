@@ -108,19 +108,19 @@
         <CONFIGURATION isDebug="0" name="Release" defines="PAND0_OSX"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="JUCE/modules"/>
-        <MODULEPATH id="juce_core" path="JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="JUCE/modules"/>
-        <MODULEPATH id="juce_dsp" path="JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="Libraries/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
@@ -129,19 +129,19 @@
         <CONFIGURATION isDebug="0" name="Release" defines="PAND0_LNX"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="JUCE/modules"/>
-        <MODULEPATH id="juce_core" path="JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="JUCE/modules"/>
-        <MODULEPATH id="juce_dsp" path="JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="Libraries/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <VS2019 targetFolder="Builds/VisualStudio2019" CEPHES="/wd4131">
@@ -150,19 +150,19 @@
         <CONFIGURATION isDebug="0" name="Release" defines="PAND0_WIN"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="JUCE/modules"/>
-        <MODULEPATH id="juce_core" path="JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="JUCE/modules"/>
-        <MODULEPATH id="juce_dsp" path="JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="Libraries/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="Libraries/JUCE/modules"/>
       </MODULEPATHS>
     </VS2019>
   </EXPORTFORMATS>
