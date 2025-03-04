@@ -187,3 +187,19 @@ private:
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ChebyshevIIFilterFactory)
 };
+
+// =============================================================================
+/** Factory class for Elliptic filters */
+class EllipticFilterFactory : public AnalogFilterFactory
+{
+public:
+    // =========================================================================
+    EllipticFilterFactory();
+
+    // =========================================================================
+    virtual void buildAnalogPrototype(FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EllipticFilterFactory)
+};
