@@ -36,6 +36,7 @@ FilterParameters::FilterParameters(double f)
     , shape(FilterParameters::FilterShape::LowPass)
     , order(2)
     , cutoff(0.5 * f)
+    , passbandRippleDb(1.0)
 {
 }
 void FilterParameters::computeZPK()
@@ -54,7 +55,7 @@ double FilterParameters::warpedFrequency() const
 }
 
 // =============================================================================
-FilterParameters::ZPK::ZPK() {}
+FilterParameters::ZPK::ZPK() { }
 void FilterParameters::ZPK::reset()
 {
     poles.clear();
@@ -78,16 +79,20 @@ size_t FilterParameters::ZPK::degree() const
 }
 
 // =============================================================================
-FilterFactory::FilterFactory() {}
+FilterFactory::FilterFactory() { }
 void FilterFactory::build(FilterParameters& params)
 {
     sanitizeParams(params);
     params.zpk.reset();
     ButterworthFilterFactory butterFF;
+    ChebyshevIFilterFactory chebIFF;
     switch (params.type)
     {
     case (FilterParameters::FilterType::Butterworth):
         butterFF.build(params);
+        break;
+    case (FilterParameters::FilterType::ChebyshevI):
+        chebIFF.build(params);
         break;
     default:
         UNHANDLED_SWITCH_CASE("Unhandled case for filter type. Doing nothing");
@@ -103,11 +108,12 @@ void FilterFactory::sanitizeParams(FilterParameters& params)
     if (!params.sr) params.sr = 1.0;
     if (params.order < 2) params.order = 2;
     if (params.order % 2) params.order++;
+    if (params.passbandRippleDb <= 0) params.passbandRippleDb = 1.0;
     params.cutoff = std::clamp(params.cutoff, 0.0, params.sr * 0.5);
 }
 
 // =============================================================================
-AnalogFilterFactory::AnalogFilterFactory() {}
+AnalogFilterFactory::AnalogFilterFactory() { }
 void AnalogFilterFactory::build(FilterParameters& params)
 {
     buildAnalogPrototype(params);
@@ -169,20 +175,22 @@ void AnalogFilterFactory::applyHighPassParamsToPrototype(
 }
 void AnalogFilterFactory::bilinearTransform(FilterParameters::ZPK& zpk)
 {
-    double k_z = 1.0, k_p = 1.0;
+    double k_z = 1.0, k_p = 1.0, a;
 
     // Bilinear transform
     std::complex<double> tmp;
     for (auto& z : zpk.zeros)
     {
         // (4.0 - z) * (4.0 - z*) Also accounts for conjugate
-        k_z *= pow(abs(z), 2) - 16.0 * z.real() + 16.0;
+        a = abs(z);
+        k_z *= a * a - 16.0 * z.real() + 16.0;
         z = (4.0 + z) / (4.0 - z);
     }
     for (auto& p : zpk.poles)
     {
-        // (4.0 - z) * (4.0 - z*) Also accounts for conjugate
-        k_p *= pow(abs(p), 2) - 16.0 * p.real() + 16.0;
+        // (4.0 - p) * (4.0 - p*) Also accounts for conjugate
+        a = abs(p);
+        k_p *= a * a - 16.0 * p.real() + 16.0;
         p = (4.0 + p) / (4.0 - p);
     }
 
@@ -199,7 +207,7 @@ void AnalogFilterFactory::bilinearTransform(FilterParameters::ZPK& zpk)
 }
 
 // =============================================================================
-ButterworthFilterFactory::ButterworthFilterFactory() {}
+ButterworthFilterFactory::ButterworthFilterFactory() { }
 void ButterworthFilterFactory::buildAnalogPrototype(FilterParameters& params)
 {
     // This loop would be used to generate all poles
@@ -210,4 +218,28 @@ void ButterworthFilterFactory::buildAnalogPrototype(FilterParameters& params)
     for (auto m = 1; m < params.order; m += 2)
         params.zpk.poles.push_back(-exp(std::complex(
             0.0, juce::MathConstants<double>::pi * m / (-2 * params.order))));
+}
+
+// =============================================================================
+ChebyshevIFilterFactory::ChebyshevIFilterFactory() { }
+void ChebyshevIFilterFactory::buildAnalogPrototype(FilterParameters& params)
+{
+    // Ripple factor
+    double eps = sqrt(pow(10.0, 0.1 * params.passbandRippleDb) - 1.0);
+    double mu  = std::asinh(1.0 / eps) / params.order;
+
+    // This only generates positive imaginary-part poles (conjugates will be
+    // added later)
+    for (auto m = 1 - params.order; m < 0; m += 2)
+        params.zpk.poles.push_back(-std::sinh(std::complex(
+            mu, juce::MathConstants<double>::pi * m / (2 * params.order))));
+    double a;
+    params.zpk.gain = 1.0;
+    for (const auto& p : params.zpk.poles)
+    {
+        a = abs(p);
+        params.zpk.gain *= a * a;
+    }
+    if (params.order % 2 == 0) params.zpk.gain /= sqrt(1 + eps * eps);
+    ONLY_ON_DEBUG(else jassertfalse;)
 }

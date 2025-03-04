@@ -82,6 +82,7 @@ public:
     FilterShape shape;
     int order;
     double cutoff;
+    double passbandRippleDb;
     ZPK zpk;
 
 private:
@@ -152,4 +153,20 @@ private:
     // JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ButterworthFilterFactory)
     JUCE_DECLARE_NON_COPYABLE(ButterworthFilterFactory)
     JUCE_HEAVYWEIGHT_LEAK_DETECTOR(ButterworthFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for Chebyshev type I filters */
+class ChebyshevIFilterFactory : public AnalogFilterFactory
+{
+public:
+    // =========================================================================
+    ChebyshevIFilterFactory();
+
+    // =========================================================================
+    virtual void buildAnalogPrototype(FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ChebyshevIFilterFactory)
 };
