@@ -3,6 +3,16 @@
 #include "LookAndFeel.h"
 
 // =============================================================================
+DesignerPanel::CBoxListener::CBoxListener(std::function<void(int)> foo)
+    : callback(foo)
+{
+}
+void DesignerPanel::CBoxListener::comboBoxChanged(juce::ComboBox* cbox)
+{
+    callback(cbox->getSelectedId());
+}
+
+// =============================================================================
 DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
                              juce::ApplicationProperties& properties)
     : processor(p)
@@ -53,6 +63,13 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
         {0.0, processor.getSampleRate() * 0.5, 0.1, 0.2});
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
+    typeCBoxListener.reset(new DesignerPanel::CBoxListener(std::bind(
+        &DesignerPanel::setTypeFromCBoxId, this, std::placeholders::_1)));
+    shapeCBoxListener.reset(new DesignerPanel::CBoxListener(std::bind(
+        &DesignerPanel::setShapeFromCBoxId, this, std::placeholders::_1)));
+    typeCBox->addListener(typeCBoxListener.get());
+    shapeCBox->addListener(shapeCBoxListener.get());
+
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, "autoFilterDesign", autoButton));
     typeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
@@ -71,17 +88,29 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
 
     applyButton.onClick = [this] { designFilter(); };
 }
-DesignerPanel::~DesignerPanel() {}
+DesignerPanel::~DesignerPanel()
+{
+    typeCBox->removeListener(typeCBoxListener.get());
+    shapeCBox->removeListener(shapeCBoxListener.get());
+}
+
+// =============================================================================
+void DesignerPanel::setTypeFromCBoxId(int i)
+{
+    filterParams.type = static_cast<FilterParameters::FilterType>(i - 1);
+    DBG(FilterParameters::typeToString(filterParams.type));
+}
+void DesignerPanel::setShapeFromCBoxId(int i)
+{
+    filterParams.shape = static_cast<FilterParameters::FilterShape>(i - 1);
+    DBG(FilterParameters::shapeToString(filterParams.shape));
+}
 
 // =============================================================================
 void DesignerPanel::designFilter()
 {
     filterParams.cutoff = cutoffSlider->getValue();
     filterParams.order  = juce::roundToInt(orderSlider->getValue());
-    filterParams.type   = static_cast<FilterParameters::FilterType>(
-        typeCBox->getSelectedId() - 1);
-    filterParams.shape = static_cast<FilterParameters::FilterShape>(
-        shapeCBox->getSelectedId() - 1);
     filterParams.computeZPK();
 
     auto degree = filterParams.zpk.degree();

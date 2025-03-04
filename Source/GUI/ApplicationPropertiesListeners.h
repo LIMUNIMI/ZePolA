@@ -57,8 +57,7 @@ public:
         juce::ApplicationProperties& properties);
 
     //==========================================================================
-    virtual void
-    comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
+    virtual void comboBoxChanged(juce::ComboBox*) override;
 
 private:
     // =========================================================================
