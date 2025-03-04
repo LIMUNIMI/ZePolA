@@ -101,8 +101,6 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     cutoffSlider->addListener(&cutoffSliderListener);
     autoButton->addListener(&autoButtonListener);
 
-    autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
-        properties, "autoFilterDesign", autoButton));
     typeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
         properties, "typeFilterDesign", typeCBox));
     shapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
@@ -118,6 +116,8 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
         shapeCBox->setSelectedId(1 + FilterParameters::FilterShape::LowPass);
 
     applyButton.onClick = std::bind(&DesignerPanel::designFilter, this);
+    autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
+        properties, "autoFilterDesign", autoButton));
 }
 DesignerPanel::~DesignerPanel()
 {
