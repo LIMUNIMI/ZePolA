@@ -13,6 +13,16 @@ void DesignerPanel::CBoxListener::comboBoxChanged(juce::ComboBox* cbox)
 }
 
 // =============================================================================
+DesignerPanel::SliderListener::SliderListener(std::function<void(double)> foo)
+    : callback(foo)
+{
+}
+void DesignerPanel::SliderListener::sliderValueChanged(juce::Slider* slider)
+{
+    callback(slider->getValue());
+}
+
+// =============================================================================
 DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
                              juce::ApplicationProperties& properties)
     : processor(p)
@@ -32,6 +42,10 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
                                  std::placeholders::_1))
     , shapeCBoxListener(std::bind(&DesignerPanel::setShapeFromCBoxId, this,
                                   std::placeholders::_1))
+    , orderSliderListener(
+          std::bind(&DesignerPanel::setOrder, this, std::placeholders::_1))
+    , cutoffSliderListener(
+          std::bind(&DesignerPanel::setCutoff, this, std::placeholders::_1))
 {
     addAndMakeVisible(panelLabel);
     addAndMakeVisible(typeLabel);
@@ -69,6 +83,8 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
 
     typeCBox->addListener(&typeCBoxListener);
     shapeCBox->addListener(&shapeCBoxListener);
+    orderSlider->addListener(&orderSliderListener);
+    cutoffSlider->addListener(&cutoffSliderListener);
 
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, "autoFilterDesign", autoButton));
@@ -92,6 +108,8 @@ DesignerPanel::~DesignerPanel()
 {
     typeCBox->removeListener(&typeCBoxListener);
     shapeCBox->removeListener(&shapeCBoxListener);
+    orderSlider->removeListener(&orderSliderListener);
+    cutoffSlider->removeListener(&cutoffSliderListener);
 }
 
 // =============================================================================
@@ -104,6 +122,16 @@ void DesignerPanel::setShapeFromCBoxId(int i)
 {
     filterParams.shape = static_cast<FilterParameters::FilterShape>(i - 1);
     DBG(FilterParameters::shapeToString(filterParams.shape));
+}
+void DesignerPanel::setOrder(double f)
+{
+    filterParams.order = juce::roundToInt(f);
+    DBG("ORDER: " << filterParams.order);
+}
+void DesignerPanel::setCutoff(double f)
+{
+    filterParams.cutoff = f;
+    DBG("CUTOFF: " << filterParams.cutoff);
 }
 
 // =============================================================================

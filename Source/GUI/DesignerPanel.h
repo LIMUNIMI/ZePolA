@@ -29,6 +29,24 @@ public:
     };
 
     // =========================================================================
+    class SliderListener : public juce::Slider::Listener
+    {
+    public:
+        //======================================================================
+        SliderListener(std::function<void(double)>);
+
+        //======================================================================
+        virtual void sliderValueChanged(juce::Slider*) override;
+
+    private:
+        //======================================================================
+        std::function<void(double)> callback;
+
+        //======================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SliderListener)
+    };
+
+    // =========================================================================
     DesignerPanel(PolesAndZerosEQAudioProcessor&, juce::ApplicationProperties&);
     ~DesignerPanel();
 
@@ -37,6 +55,10 @@ public:
     void setTypeFromCBoxId(int);
     /** Set filter shape from ComboBox Id (+1 offset) */
     void setShapeFromCBoxId(int);
+    /** Set filter order */
+    void setOrder(double);
+    /** Set filter cutoff frequency */
+    void setCutoff(double);
 
     // =========================================================================
     virtual void sampleRateChangedCallback(double);
@@ -55,6 +77,7 @@ private:
     std::unique_ptr<ApplicationPropertiesSliderAttachment>
         orderSliderAttachment, cutoffSliderAttachment;
     CBoxListener typeCBoxListener, shapeCBoxListener;
+    SliderListener orderSliderListener, cutoffSliderListener;
     PolesAndZerosEQAudioProcessor& processor;
     juce::Label panelLabel, typeLabel, shapeLabel, orderLabel, cutoffLabel;
     std::shared_ptr<juce::ComboBox> typeCBox, shapeCBox;
