@@ -2,8 +2,25 @@
 
 <JUCERPROJECT id="AyGleg" name="PolesAndZerosEQ" projectType="audioplug" jucerFormatVersion="1"
               companyName="Andrea Casati" pluginCode="pz3q" pluginFormats="buildAU,buildStandalone,buildVST3"
-              pluginAUMainType="'aufx'" displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED = 1">
+              pluginAUMainType="'aufx'" displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED = 1"
+              compilerFlagSchemes="CEPHES">
   <MAINGROUP id="ZGYPR9" name="PolesAndZerosEQ">
+    <GROUP id="{7794416C-2582-84D2-8698-6726C2584579}" name="Libraries">
+      <GROUP id="{EA664D3A-CD7E-6259-E9FE-6D2C9EAC7FAB}" name="cephes">
+        <GROUP id="{A2DCB70C-1D80-680B-944E-740EBF0A9AE6}" name="ellf">
+          <FILE id="u1RW3O" name="const.c" compile="1" resource="0" file="Libraries/cephes/ellf/const.c"
+                compilerFlagScheme="CEPHES"/>
+          <FILE id="B1IbOc" name="ellpj.c" compile="1" resource="0" file="Libraries/cephes/ellf/ellpj.c"
+                compilerFlagScheme="CEPHES"/>
+          <FILE id="jp9ErR" name="ellpk.c" compile="1" resource="0" file="Libraries/cephes/ellf/ellpk.c"
+                compilerFlagScheme="CEPHES"/>
+          <FILE id="XmaUXV" name="mtherr.c" compile="1" resource="0" file="Libraries/cephes/ellf/mtherr.c"
+                compilerFlagScheme="CEPHES"/>
+          <FILE id="YMxVWm" name="polevl.c" compile="1" resource="0" file="Libraries/cephes/ellf/polevl.c"
+                compilerFlagScheme="CEPHES"/>
+        </GROUP>
+      </GROUP>
+    </GROUP>
     <GROUP id="{211C8D6A-C6EB-B051-1B84-6C521685D404}" name="Fonts">
       <FILE id="GiSQeB" name="Mukta-Bold.ttf" compile="0" resource="1" file="Fonts/Mukta/Mukta-Bold.ttf"/>
       <FILE id="hGBFtQ" name="Mukta-SemiBold.ttf" compile="0" resource="1"
@@ -127,7 +144,7 @@
         <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <VS2019 targetFolder="Builds/VisualStudio2019">
+    <VS2019 targetFolder="Builds/VisualStudio2019" CEPHES="/wd4131">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" defines="PAND0_WIN"/>
         <CONFIGURATION isDebug="0" name="Release" defines="PAND0_WIN"/>
