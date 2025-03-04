@@ -28,6 +28,10 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     , orderSlider(std::make_shared<juce::Slider>())
     , cutoffSlider(std::make_shared<juce::Slider>())
     , filterParams(p.getSampleRate())
+    , typeCBoxListener(std::bind(&DesignerPanel::setTypeFromCBoxId, this,
+                                 std::placeholders::_1))
+    , shapeCBoxListener(std::bind(&DesignerPanel::setShapeFromCBoxId, this,
+                                  std::placeholders::_1))
 {
     addAndMakeVisible(panelLabel);
     addAndMakeVisible(typeLabel);
@@ -63,12 +67,8 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
         {0.0, processor.getSampleRate() * 0.5, 0.1, 0.2});
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
-    typeCBoxListener.reset(new DesignerPanel::CBoxListener(std::bind(
-        &DesignerPanel::setTypeFromCBoxId, this, std::placeholders::_1)));
-    shapeCBoxListener.reset(new DesignerPanel::CBoxListener(std::bind(
-        &DesignerPanel::setShapeFromCBoxId, this, std::placeholders::_1)));
-    typeCBox->addListener(typeCBoxListener.get());
-    shapeCBox->addListener(shapeCBoxListener.get());
+    typeCBox->addListener(&typeCBoxListener);
+    shapeCBox->addListener(&shapeCBoxListener);
 
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, "autoFilterDesign", autoButton));
@@ -90,8 +90,8 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
 }
 DesignerPanel::~DesignerPanel()
 {
-    typeCBox->removeListener(typeCBoxListener.get());
-    shapeCBox->removeListener(shapeCBoxListener.get());
+    typeCBox->removeListener(&typeCBoxListener);
+    shapeCBox->removeListener(&shapeCBoxListener);
 }
 
 // =============================================================================

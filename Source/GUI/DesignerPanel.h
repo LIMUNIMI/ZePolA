@@ -54,7 +54,7 @@ private:
         shapeCBoxAttachment;
     std::unique_ptr<ApplicationPropertiesSliderAttachment>
         orderSliderAttachment, cutoffSliderAttachment;
-    std::unique_ptr<CBoxListener> typeCBoxListener, shapeCBoxListener;
+    CBoxListener typeCBoxListener, shapeCBoxListener;
     PolesAndZerosEQAudioProcessor& processor;
     juce::Label panelLabel, typeLabel, shapeLabel, orderLabel, cutoffLabel;
     std::shared_ptr<juce::ComboBox> typeCBox, shapeCBox;
