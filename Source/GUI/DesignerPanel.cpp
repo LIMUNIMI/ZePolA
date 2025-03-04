@@ -102,7 +102,7 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     if (!shapeCBox->getSelectedId())
         shapeCBox->setSelectedId(1 + FilterParameters::FilterShape::LowPass);
 
-    applyButton.onClick = [this] { designFilter(); };
+    applyButton.onClick = std::bind(&DesignerPanel::designFilter, this);
 }
 DesignerPanel::~DesignerPanel()
 {
