@@ -37,6 +37,7 @@ FilterParameters::FilterParameters(double f)
     , order(2)
     , cutoff(0.5 * f)
     , passbandRippleDb(1.0)
+    , stopbandRippleDb(20.0)
 {
 }
 void FilterParameters::computeZPK()
@@ -86,6 +87,7 @@ void FilterFactory::build(FilterParameters& params)
     params.zpk.reset();
     ButterworthFilterFactory butterFF;
     ChebyshevIFilterFactory chebIFF;
+    ChebyshevIIFilterFactory chebIIFF;
     switch (params.type)
     {
     case (FilterParameters::FilterType::Butterworth):
@@ -93,6 +95,9 @@ void FilterFactory::build(FilterParameters& params)
         break;
     case (FilterParameters::FilterType::ChebyshevI):
         chebIFF.build(params);
+        break;
+    case (FilterParameters::FilterType::ChebyshevII):
+        chebIIFF.build(params);
         break;
     default:
         UNHANDLED_SWITCH_CASE("Unhandled case for filter type. Doing nothing");
@@ -109,6 +114,7 @@ void FilterFactory::sanitizeParams(FilterParameters& params)
     if (params.order < 2) params.order = 2;
     if (params.order % 2) params.order++;
     if (params.passbandRippleDb <= 0) params.passbandRippleDb = 1.0;
+    if (params.stopbandRippleDb <= 0) params.stopbandRippleDb = 5.0;
     params.cutoff = std::clamp(params.cutoff, 0.0, params.sr * 0.5);
 }
 
@@ -233,13 +239,53 @@ void ChebyshevIFilterFactory::buildAnalogPrototype(FilterParameters& params)
     for (auto m = 1 - params.order; m < 0; m += 2)
         params.zpk.poles.push_back(-std::sinh(std::complex(
             mu, juce::MathConstants<double>::pi * m / (2 * params.order))));
+
+    // Gain compensation
     double a;
-    params.zpk.gain = 1.0;
     for (const auto& p : params.zpk.poles)
     {
         a = abs(p);
-        params.zpk.gain *= a * a;
+        params.zpk.gain *= a * a;  // Square to account for conjugates
     }
     if (params.order % 2 == 0) params.zpk.gain /= sqrt(1 + eps * eps);
     ONLY_ON_DEBUG(else jassertfalse;)
+}
+
+// =============================================================================
+ChebyshevIIFilterFactory::ChebyshevIIFilterFactory() { }
+void ChebyshevIIFilterFactory::buildAnalogPrototype(FilterParameters& params)
+{
+    // Ripple factor
+    double eps = sqrt(pow(10.0, 0.1 * params.stopbandRippleDb) - 1.0);
+    double mu  = std::asinh(eps) / params.order;
+    // eps     = 1.0 / eps;
+
+    jassert(params.order % 2 == 0);
+    // This only generates positive imaginary-part poles and zeros (conjugates
+    // will be added later)
+    for (auto m = 1; m < params.order; m += 2)
+    {
+        params.zpk.zeros.push_back(-conj(
+            (std::complex(0.0, 1.0)
+             / sin(m * juce::MathConstants<double>::halfPi / params.order))));
+        auto p = -exp(std::complex(0.0, juce::MathConstants<double>::pi * m
+                                            / (2 * params.order)));
+        p = std::complex(std::sinh(mu) * p.real(), std::cosh(mu) * p.imag());
+        p = 1.0 / p;
+        params.zpk.poles.push_back(p);
+    }
+
+    // Gain compensation
+    double k_p = 1.0, k_z = 1.0, a;
+    for (const auto& p : params.zpk.poles)
+    {
+        a = abs(p);
+        k_p *= a * a;  // Square to account for conjugates
+    }
+    for (const auto& z : params.zpk.zeros)
+    {
+        a = abs(z);
+        k_z *= a * a;  // Square to account for conjugates
+    }
+    params.zpk.gain *= k_p / k_z;
 }

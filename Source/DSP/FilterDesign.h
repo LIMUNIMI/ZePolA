@@ -83,6 +83,7 @@ public:
     int order;
     double cutoff;
     double passbandRippleDb;
+    double stopbandRippleDb;
     ZPK zpk;
 
 private:
@@ -169,4 +170,20 @@ public:
 private:
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ChebyshevIFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for Chebyshev type II filters */
+class ChebyshevIIFilterFactory : public AnalogFilterFactory
+{
+public:
+    // =========================================================================
+    ChebyshevIIFilterFactory();
+
+    // =========================================================================
+    virtual void buildAnalogPrototype(FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ChebyshevIIFilterFactory)
 };
