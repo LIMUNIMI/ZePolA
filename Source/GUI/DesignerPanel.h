@@ -47,6 +47,25 @@ public:
     };
 
     // =========================================================================
+    class ButtonListener : public juce::Button::Listener
+    {
+    public:
+        //======================================================================
+        ButtonListener(std::function<void(bool)>);
+
+        //======================================================================
+        virtual void buttonClicked(juce::Button*) override;
+        virtual void buttonStateChanged(juce::Button*) override;
+
+    private:
+        //======================================================================
+        std::function<void(bool)> callback;
+
+        //======================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ButtonListener)
+    };
+
+    // =========================================================================
     DesignerPanel(PolesAndZerosEQAudioProcessor&, juce::ApplicationProperties&);
     ~DesignerPanel();
 
@@ -59,6 +78,8 @@ public:
     void setOrder(double);
     /** Set filter cutoff frequency */
     void setCutoff(double);
+    /** Set the designer in automatic (or manual) mode */
+    void setAuto(bool);
 
     // =========================================================================
     virtual void sampleRateChangedCallback(double);
@@ -66,6 +87,7 @@ public:
 
 private:
     // =========================================================================
+    void autoDesignFilter();
     void designFilter();
     void applyFilterElement(int i, std::complex<double>, FilterElement::Type,
                             double gain);
@@ -78,6 +100,7 @@ private:
         orderSliderAttachment, cutoffSliderAttachment;
     CBoxListener typeCBoxListener, shapeCBoxListener;
     SliderListener orderSliderListener, cutoffSliderListener;
+    ButtonListener autoButtonListener;
     PolesAndZerosEQAudioProcessor& processor;
     juce::Label panelLabel, typeLabel, shapeLabel, orderLabel, cutoffLabel;
     std::shared_ptr<juce::ComboBox> typeCBox, shapeCBox;
@@ -85,6 +108,7 @@ private:
     std::shared_ptr<juce::ToggleButton> autoButton;
     juce::TextButton applyButton;
     FilterParameters filterParams;
+    bool autoUpdate;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DesignerPanel)

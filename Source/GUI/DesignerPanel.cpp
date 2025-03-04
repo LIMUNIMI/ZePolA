@@ -23,6 +23,17 @@ void DesignerPanel::SliderListener::sliderValueChanged(juce::Slider* slider)
 }
 
 // =============================================================================
+DesignerPanel::ButtonListener::ButtonListener(std::function<void(bool)> foo)
+    : callback(foo)
+{
+}
+void DesignerPanel::ButtonListener::buttonClicked(juce::Button* b)
+{
+    callback(b->getToggleState());
+}
+void DesignerPanel::ButtonListener::buttonStateChanged(juce::Button*) { }
+
+// =============================================================================
 DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
                              juce::ApplicationProperties& properties)
     : processor(p)
@@ -46,6 +57,9 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
           std::bind(&DesignerPanel::setOrder, this, std::placeholders::_1))
     , cutoffSliderListener(
           std::bind(&DesignerPanel::setCutoff, this, std::placeholders::_1))
+    , autoButtonListener(
+          std::bind(&DesignerPanel::setAuto, this, std::placeholders::_1))
+    , autoUpdate(false)
 {
     addAndMakeVisible(panelLabel);
     addAndMakeVisible(typeLabel);
@@ -85,6 +99,7 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     shapeCBox->addListener(&shapeCBoxListener);
     orderSlider->addListener(&orderSliderListener);
     cutoffSlider->addListener(&cutoffSliderListener);
+    autoButton->addListener(&autoButtonListener);
 
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, "autoFilterDesign", autoButton));
@@ -110,6 +125,7 @@ DesignerPanel::~DesignerPanel()
     shapeCBox->removeListener(&shapeCBoxListener);
     orderSlider->removeListener(&orderSliderListener);
     cutoffSlider->removeListener(&cutoffSliderListener);
+    autoButton->removeListener(&autoButtonListener);
 }
 
 // =============================================================================
@@ -117,24 +133,38 @@ void DesignerPanel::setTypeFromCBoxId(int i)
 {
     filterParams.type = static_cast<FilterParameters::FilterType>(i - 1);
     DBG(FilterParameters::typeToString(filterParams.type));
+    autoDesignFilter();
 }
 void DesignerPanel::setShapeFromCBoxId(int i)
 {
     filterParams.shape = static_cast<FilterParameters::FilterShape>(i - 1);
     DBG(FilterParameters::shapeToString(filterParams.shape));
+    autoDesignFilter();
 }
 void DesignerPanel::setOrder(double f)
 {
     filterParams.order = juce::roundToInt(f);
     DBG("ORDER: " << filterParams.order);
+    autoDesignFilter();
 }
 void DesignerPanel::setCutoff(double f)
 {
     filterParams.cutoff = f;
     DBG("CUTOFF: " << filterParams.cutoff);
+    autoDesignFilter();
+}
+void DesignerPanel::setAuto(bool b)
+{
+    autoUpdate = b;
+    DBG(((autoUpdate) ? "AUTO" : "MANUAL"));
+    autoDesignFilter();
 }
 
 // =============================================================================
+void DesignerPanel::autoDesignFilter()
+{
+    if (autoUpdate) designFilter();
+}
 void DesignerPanel::designFilter()
 {
     filterParams.cutoff = cutoffSlider->getValue();
@@ -145,8 +175,11 @@ void DesignerPanel::designFilter()
     auto k_db   = juce::Decibels::gainToDecibels(filterParams.zpk.gain, -1000.0)
                 / filterParams.zpk.nElements();
     int e = 0;
-    DBG("------------------------------------------------------------------");
-    DBG("Filter Design");
+    ONLY_ON_DEBUG(if (!autoUpdate) {
+        DBG("-----------------------------------------------------------------"
+            "-");
+        DBG("Filter Design");
+    })
     for (auto i = 0; i < degree; ++i)
     {
         if (i < filterParams.zpk.zeros.size())
@@ -159,7 +192,8 @@ void DesignerPanel::designFilter()
     auto n = processor.getNElements();
     for (; e < n; ++e)
         processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(e), false);
-    DBG("------------------------------------------------------------------");
+    ONLY_ON_DEBUG(if (!autoUpdate) DBG("---------------------------------------"
+                                       "---------------------------");)
 }
 void DesignerPanel::applyFilterElement(int i, std::complex<double> z,
                                        FilterElement::Type t, double gain)
@@ -174,7 +208,7 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z,
                                 static_cast<float>(m));
     processor.setParameterValue(PHASE_ID_PREFIX + i_str, static_cast<float>(a));
     processor.setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
-    ONLY_ON_DEBUG({
+    ONLY_ON_DEBUG(if (!autoUpdate) {
         juce::String prefix("?");
         switch (t)
         {
