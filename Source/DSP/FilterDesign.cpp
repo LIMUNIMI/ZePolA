@@ -85,20 +85,26 @@ void FilterFactory::build(FilterParameters& params)
 {
     sanitizeParams(params);
     params.zpk.reset();
-    ButterworthFilterFactory butterFF;
-    ChebyshevIFilterFactory chebIFF;
-    ChebyshevIIFilterFactory chebIIFF;
     switch (params.type)
     {
     case (FilterParameters::FilterType::Butterworth):
-        butterFF.build(params);
-        break;
+    {
+        ButterworthFilterFactory ff;
+        ff.build(params);
+    }
+    break;
     case (FilterParameters::FilterType::ChebyshevI):
-        chebIFF.build(params);
-        break;
+    {
+        ChebyshevIFilterFactory ff;
+        ff.build(params);
+    }
+    break;
     case (FilterParameters::FilterType::ChebyshevII):
-        chebIIFF.build(params);
-        break;
+    {
+        ChebyshevIIFilterFactory ff;
+        ff.build(params);
+    }
+    break;
     default:
         UNHANDLED_SWITCH_CASE("Unhandled case for filter type. Doing nothing");
         break;
