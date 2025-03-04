@@ -138,10 +138,13 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z,
 {
     juce::String i_str(i);
     double m = abs(z), a = std::arg(z) / juce::MathConstants<double>::pi;
-    processor.setParameterValue(TYPE_ID_PREFIX + i_str, t);
-    processor.setParameterValue(GAIN_ID_PREFIX + i_str, gain);
-    processor.setParameterValue(MAGNITUDE_ID_PREFIX + i_str, m);
-    processor.setParameterValue(PHASE_ID_PREFIX + i_str, a);
+    processor.setParameterValue(TYPE_ID_PREFIX + i_str,
+                                FilterElement::typeToFloat(t));
+    processor.setParameterValue(GAIN_ID_PREFIX + i_str,
+                                static_cast<float>(gain));
+    processor.setParameterValue(MAGNITUDE_ID_PREFIX + i_str,
+                                static_cast<float>(m));
+    processor.setParameterValue(PHASE_ID_PREFIX + i_str, static_cast<float>(a));
     processor.setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
     ONLY_ON_DEBUG({
         juce::String prefix("?");
