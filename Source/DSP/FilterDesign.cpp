@@ -35,7 +35,7 @@ FilterParameters::FilterParameters(double f)
     , type(FilterParameters::FilterType::Butterworth)
     , shape(FilterParameters::FilterShape::LowPass)
     , order(2)
-    , cutoff(0.5 * f)
+    , cutoff(0.25 * f)
     , passbandRippleDb(3.0)
     , stopbandRippleDb(20.0)
 {
