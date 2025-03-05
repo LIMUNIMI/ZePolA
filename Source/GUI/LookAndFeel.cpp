@@ -436,6 +436,10 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
     g.setColour(gc.findColour(InvisibleGroupComponent_outlineColourId));
     g.drawRect(b, resizeSize(1.0f));
 }
+juce::Font CustomLookAndFeel::getComboBoxFont(juce::ComboBox&)
+{
+    return getCustomFont();
+}
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label&)
 {
     return getCustomFont();

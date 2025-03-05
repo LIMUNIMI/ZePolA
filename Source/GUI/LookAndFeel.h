@@ -70,6 +70,7 @@ public:
                                 const juce::String& text,
                                 const juce::Justification&,
                                 juce::GroupComponent&) override;
+    juce::Font getComboBoxFont(juce::ComboBox&) override;
     juce::Font getLabelFont(juce::Label&) override;
     juce::Font getCustomFont(juce::Typeface::Ptr, float fontSize);
     juce::Font getCustomFont(float fontSize);
