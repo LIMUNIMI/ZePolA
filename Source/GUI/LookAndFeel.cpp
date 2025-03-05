@@ -143,6 +143,16 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(ZPoint_polesColourId, juce::Colour(0xd7E67019));
     setColour(PlotButtons_linColourId, juce::Colour(0xcd3498d8));
     setColour(PlotButtons_logColourId, juce::Colour(0xff73cc81));
+    // ComboBox
+    juce::Colour comboBoxColour = juce::Colour(0xff909497).darker(0.2f);
+    setColour(juce::ComboBox::backgroundColourId, comboBoxColour);
+    setColour(juce::ComboBox::textColourId, juce::Colours::white);
+    setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff252525));
+    setColour(juce::ComboBox::arrowColourId, juce::Colours::white);
+    setColour(juce::PopupMenu::backgroundColourId, comboBoxColour.brighter(0.05f));
+    setColour(juce::PopupMenu::textColourId, juce::Colours::white);
+    setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colours::whitesmoke);
+    setColour(juce::PopupMenu::highlightedTextColourId, juce::Colours::black);
 }
 
 // =============================================================================
