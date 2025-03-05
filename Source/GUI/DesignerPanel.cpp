@@ -105,7 +105,7 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     rpSlider->setSliderStyle(juce::Slider::LinearHorizontal);
     rpSlider->setNormalisableRange({0.1, 5.0, 0.001});
     rsSlider->setSliderStyle(juce::Slider::LinearHorizontal);
-    rsSlider->setNormalisableRange({3.0, 60.0, 0.001});
+    rsSlider->setNormalisableRange({6.0, 60.0, 0.001});
 
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
