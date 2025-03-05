@@ -426,29 +426,38 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
     g.setColour(gc.findColour(InvisibleGroupComponent_outlineColourId));
     g.drawRect(b, resizeSize(1.0f));
 }
-juce::Font CustomLookAndFeel::getLabelFont(juce::Typeface::Ptr t,
-                                           float fullFontSize)
-{
-    juce::Font f(t);
-    f.setSizeAndStyle(resizeSize(fullFontSize), f.getStyleFlags(),
-                      f.getHorizontalScale(), f.getExtraKerningFactor());
-    return f;
-}
-juce::Font CustomLookAndFeel::getLabelFont(juce::Typeface::Ptr t)
-{
-    return getLabelFont(t, fullLabelFontSize);
-}
-juce::Font CustomLookAndFeel::getLabelFont(float fullFontSize)
-{
-    return getLabelFont(typeface, fullFontSize);
-}
-juce::Font CustomLookAndFeel::getLabelFont()
-{
-    return getLabelFont(fullLabelFontSize);
-}
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label&)
 {
-    return getLabelFont();
+    return getCustomFont();
+}
+juce::Font CustomLookAndFeel::getCustomFont(juce::Typeface::Ptr t,
+                                            float fontSize)
+{
+    juce::Font f(t);
+    f.setSizeAndStyle(fontSize, f.getStyleFlags(), f.getHorizontalScale(),
+                      f.getExtraKerningFactor());
+    return f;
+}
+juce::Font CustomLookAndFeel::getCustomFont(float fontSize)
+{
+    return getCustomFont(typeface, fontSize);
+}
+juce::Font CustomLookAndFeel::getCustomFont(juce::Typeface::Ptr t)
+{
+    return getCustomFontResized(t, fullLabelFontSize);
+}
+juce::Font CustomLookAndFeel::getCustomFontResized(juce::Typeface::Ptr t,
+                                                   float fullFontSize)
+{
+    return getCustomFont(t, resizeSize(fullFontSize));
+}
+juce::Font CustomLookAndFeel::getCustomFontResized(float fullFontSize)
+{
+    return getCustomFontResized(typeface, fullFontSize);
+}
+juce::Font CustomLookAndFeel::getCustomFont()
+{
+    return getCustomFontResized(fullLabelFontSize);
 }
 void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y,
                                          int width, int height, float sliderPos,
@@ -598,7 +607,7 @@ void CustomLookAndFeel::_drawToggleButton(
     }
 
     g.setColour(textColour);
-    auto font = getLabelFont(boldTypeface);
+    auto font = getCustomFont(boldTypeface);
     _autoFontScale(font, text_rect, label);
     g.setFont(font);
     g.drawText(label, text_rect, juce::Justification::centred);
@@ -672,7 +681,7 @@ void CustomLookAndFeel::drawButtonText(juce::Graphics& g,
         resizeSize(fullButtonOutline + fullButtonPadding * 0.33f) * 0.5f);
 
     g.setColour(button.findColour(OnOffButton_textOffColourId));
-    auto font = getLabelFont(boldTypeface);
+    auto font = getCustomFont(boldTypeface);
     auto text = button.getButtonText();
     _autoFontScale(font, text_rect, text);
     g.setFont(font);
@@ -691,7 +700,7 @@ void CustomLookAndFeel::drawPlotComponent(
     g.setColour(pc.findColour(PlotComponent_backgroundColourId));
     g.fillRoundedRectangle(0.0f, 0.0f, width, height, corner_s);
 
-    auto font = getLabelFont(fullLabelFontSize * topRightTextScale);
+    auto font = getCustomFontResized(fullLabelFontSize * topRightTextScale);
     g.setFont(font);
     // Top right text
     if (topRightText.length())

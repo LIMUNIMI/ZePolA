@@ -71,10 +71,12 @@ public:
                                 const juce::Justification&,
                                 juce::GroupComponent&) override;
     juce::Font getLabelFont(juce::Label&) override;
-    juce::Font getLabelFont(float fullFontSize);
-    juce::Font getLabelFont(juce::Typeface::Ptr);
-    juce::Font getLabelFont(juce::Typeface::Ptr, float fullFontSize);
-    juce::Font getLabelFont();
+    juce::Font getCustomFont(juce::Typeface::Ptr, float fontSize);
+    juce::Font getCustomFont(float fontSize);
+    juce::Font getCustomFont(juce::Typeface::Ptr);
+    juce::Font getCustomFontResized(juce::Typeface::Ptr, float fullFontSize);
+    juce::Font getCustomFontResized(float fullFontSize);
+    juce::Font getCustomFont();
     void drawLinearSlider(juce::Graphics& g, int x, int y, int width,
                           int height, float sliderPos, float minSliderPos,
                           float maxSliderPos, const juce::Slider::SliderStyle,
