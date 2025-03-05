@@ -93,6 +93,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , designerMaxSpacers(7)
     , fullComboBoxArrowWidth(8.0f)
     , fullComboBoxArrowHeight(5.0f)
+    , popupMenuSeparatorTextAlpha(0.3f)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -440,6 +441,7 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
     g.setColour(gc.findColour(InvisibleGroupComponent_outlineColourId));
     g.drawRect(b, resizeSize(1.0f));
 }
+juce::Font CustomLookAndFeel::getPopupMenuFont() { return getCustomFont(); }
 juce::Font CustomLookAndFeel::getComboBoxFont(juce::ComboBox&)
 {
     return getCustomFont();
@@ -973,4 +975,54 @@ void CustomLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height,
     arrow.addTriangle(a_x, a_y, a_x + a_w, a_y, a_x + a_w * 0.5f, a_y + a_h);
     g.setColour(cb.findColour(juce::ComboBox::arrowColourId));
     g.fillPath(arrow);
+}
+void CustomLookAndFeel::drawPopupMenuBackground(juce::Graphics& g, int width,
+                                                int height)
+{
+    auto thickness = resizeSize(fullLabelledButtonOutline);
+    juce::Rectangle<float> rect(0.0, 0.0, static_cast<float>(width),
+                                static_cast<float>(height));
+    rect.reduce(thickness * 0.5f, thickness * 0.5f);
+    g.setColour(findColour(juce::PopupMenu::backgroundColourId));
+    g.fillRect(rect);
+    g.setColour(findColour(juce::ComboBox::outlineColourId));
+    g.drawRect(rect, thickness);
+}
+void CustomLookAndFeel::drawPopupMenuItem(
+    juce::Graphics& g, const juce::Rectangle<int>& area, const bool isSeparator,
+    const bool /* isActive */, const bool isHighlighted,
+    const bool /* isTicked */, const bool /* hasSubMenu */,
+    const juce::String& text, const juce::String& /* shortcutKeyText */,
+    const juce::Drawable* /* icon */, const juce::Colour* textColour)
+{
+    if (isSeparator)
+    {
+        juce::Rectangle<float> r(
+            area.toFloat().reduced(resizeSize(fullButtonPadding), 0.0f));
+        g.setColour(findColour(juce::PopupMenu::textColourId)
+                        .withAlpha(popupMenuSeparatorTextAlpha));
+        g.fillRect(r.removeFromTop(resizeSize(1.0f)));
+    }
+    else
+    {
+        if (isHighlighted)
+        {
+            g.setColour(
+                findColour(juce::PopupMenu::highlightedBackgroundColourId));
+            g.fillRect(area);
+            g.setColour(findColour(juce::PopupMenu::highlightedTextColourId));
+        }
+        else
+        {
+            g.setColour((textColour)
+                            ? *textColour
+                            : findColour(juce::PopupMenu::textColourId));
+        }
+        g.setFont(getCustomFont());
+        g.drawFittedText(text,
+                         area.toFloat()
+                             .reduced(resizeSize(fullButtonPadding), 0.0f)
+                             .toNearestInt(),
+                         juce::Justification::centredLeft, 1);
+    }
 }

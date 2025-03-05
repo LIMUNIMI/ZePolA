@@ -70,6 +70,7 @@ public:
                                 const juce::String& text,
                                 const juce::Justification&,
                                 juce::GroupComponent&) override;
+    juce::Font getPopupMenuFont() override;
     juce::Font getComboBoxFont(juce::ComboBox&) override;
     juce::Font getLabelFont(juce::Label&) override;
     juce::Font getCustomFont(juce::Typeface::Ptr, float fontSize);
@@ -118,6 +119,15 @@ public:
     void drawComboBox(juce::Graphics&, int width, int height, bool isButtonDown,
                       int buttonX, int buttonY, int buttonW, int buttonH,
                       juce::ComboBox&) override;
+    void drawPopupMenuBackground(juce::Graphics&, int width,
+                                 int height) override;
+    void drawPopupMenuItem(juce::Graphics&, const juce::Rectangle<int>& area,
+                           const bool isSeparator, const bool isActive,
+                           const bool isHighlighted, const bool isTicked,
+                           const bool hasSubMenu, const juce::String& text,
+                           const juce::String& shortcutKeyText,
+                           const juce::Drawable* icon,
+                           const juce::Colour* textColour) override;
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -254,7 +264,8 @@ private:
 
     // =========================================================================
     float designerParamToSpacerRatio, designerLastRowFraction,
-        fullComboBoxArrowWidth, fullComboBoxArrowHeight;
+        fullComboBoxArrowWidth, fullComboBoxArrowHeight,
+        popupMenuSeparatorTextAlpha;
     int designerMaxParams, designerMaxSpacers;
     std::vector<int> designerLastRowProportions;
 
