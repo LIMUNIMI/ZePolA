@@ -91,6 +91,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , designerLastRowProportions({40, 5, 55})
     , designerMaxParams(11)
     , designerMaxSpacers(7)
+    , fullComboBoxArrowWidth(8.0f)
+    , fullComboBoxArrowHeight(5.0f)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -149,9 +151,11 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(juce::ComboBox::textColourId, juce::Colours::white);
     setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff252525));
     setColour(juce::ComboBox::arrowColourId, juce::Colours::white);
-    setColour(juce::PopupMenu::backgroundColourId, comboBoxColour.brighter(0.05f));
+    setColour(juce::PopupMenu::backgroundColourId,
+              comboBoxColour.brighter(0.05f));
     setColour(juce::PopupMenu::textColourId, juce::Colours::white);
-    setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colours::whitesmoke);
+    setColour(juce::PopupMenu::highlightedBackgroundColourId,
+              juce::Colours::whitesmoke);
     setColour(juce::PopupMenu::highlightedTextColourId, juce::Colours::black);
 }
 
@@ -942,4 +946,31 @@ void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float /* x */,
         g.drawLine(r.getX(), r.getBottom(), r.getRight(), r.getY(), t);
         break;
     }
+}
+void CustomLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height,
+                                     bool /* isButtonDown */, int buttonX,
+                                     int buttonY, int buttonW, int buttonH,
+                                     juce::ComboBox& cb)
+{
+    auto cornerSize = relativeButtonRadius * static_cast<float>(height);
+    auto thickness  = resizeSize(fullLabelledButtonOutline);
+    juce::Rectangle<float> rect(0.0, 0.0, static_cast<float>(width),
+                                static_cast<float>(height));
+    rect.reduce(thickness * 0.5f, thickness * 0.5f);
+
+    g.setColour(cb.findColour(juce::ComboBox::backgroundColourId));
+    g.fillRoundedRectangle(rect, cornerSize);
+
+    g.setColour(cb.findColour(juce::ComboBox::outlineColourId));
+    g.drawRoundedRectangle(rect, cornerSize, thickness);
+
+    juce::Path arrow;
+    auto a_w = resizeSize(fullComboBoxArrowWidth);
+    auto a_h = resizeSize(fullComboBoxArrowHeight);
+    auto a_x = buttonX + (buttonW - a_w) * 0.5f;
+    auto a_y = buttonY + (buttonH - a_h) * 0.5f;
+
+    arrow.addTriangle(a_x, a_y, a_x + a_w, a_y, a_x + a_w * 0.5f, a_y + a_h);
+    g.setColour(cb.findColour(juce::ComboBox::arrowColourId));
+    g.fillPath(arrow);
 }

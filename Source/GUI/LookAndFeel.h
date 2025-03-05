@@ -115,6 +115,9 @@ public:
     void drawZPoint(juce::Graphics&, float x, float y, float width,
                     float height, float p_x, float p_y, FilterElement::Type,
                     bool conjugate, ZPoint&);
+    void drawComboBox(juce::Graphics&, int width, int height, bool isButtonDown,
+                      int buttonX, int buttonY, int buttonW, int buttonH,
+                      juce::ComboBox&) override;
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -250,7 +253,8 @@ private:
         nGaussianCircleMinorTicksCircular;
 
     // =========================================================================
-    float designerParamToSpacerRatio, designerLastRowFraction;
+    float designerParamToSpacerRatio, designerLastRowFraction,
+        fullComboBoxArrowWidth, fullComboBoxArrowHeight;
     int designerMaxParams, designerMaxSpacers;
     std::vector<int> designerLastRowProportions;
 
