@@ -85,7 +85,7 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     addAndMakeVisible(*autoButton.get());
     addAndMakeVisible(applyButton);
 
-    panelLabel.setJustificationType(juce::Justification::centred);
+    panelLabel.setJustificationType(juce::Justification::centredTop);
     typeLabel.setJustificationType(juce::Justification::centred);
     shapeLabel.setJustificationType(juce::Justification::centred);
     orderLabel.setJustificationType(juce::Justification::centred);
@@ -146,6 +146,9 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     applyButton.onClick = std::bind(&DesignerPanel::designFilter, this);
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, "autoFilterDesign", autoButton));
+
+    updatePassbandRippleVisibility();
+    updateStopbandRippleVisibility();
 }
 DesignerPanel::~DesignerPanel()
 {
@@ -164,6 +167,8 @@ void DesignerPanel::setTypeFromCBoxId(int i)
     filterParams.type = static_cast<FilterParameters::FilterType>(i - 1);
     DBG("TYPE: " << FilterParameters::typeToString(filterParams.type));
     autoDesignFilter();
+    updatePassbandRippleVisibility();
+    updateStopbandRippleVisibility();
 }
 void DesignerPanel::setShapeFromCBoxId(int i)
 {
@@ -203,6 +208,46 @@ void DesignerPanel::setAuto(bool b)
 }
 
 // =============================================================================
+void DesignerPanel::updatePassbandRippleVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::ChebyshevI:
+    case FilterParameters::FilterType::Elliptic: shouldBeVisible = true;
+    }
+    DBG("PassbandRipple slider should" << ((shouldBeVisible) ? "" : "n't")
+                                       << " be visible");
+    if (shouldBeVisible != rpSlider->isVisible()
+        || shouldBeVisible != rpLabel.isVisible())
+    {
+        DBG(" Setting PassbandRipple slider visibility");
+        rpLabel.setVisible(shouldBeVisible);
+        rpSlider->setVisible(shouldBeVisible);
+        resized();
+    }
+}
+void DesignerPanel::updateStopbandRippleVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::ChebyshevII:
+    case FilterParameters::FilterType::Elliptic: shouldBeVisible = true;
+    }
+    DBG("StopbandRipple slider should" << ((shouldBeVisible) ? "" : "n't")
+                                       << " be visible");
+    if (shouldBeVisible != rsSlider->isVisible()
+        || shouldBeVisible != rsLabel.isVisible())
+    {
+        DBG(" Setting StopbandRipple slider visibility");
+        rsLabel.setVisible(shouldBeVisible);
+        rsSlider->setVisible(shouldBeVisible);
+        resized();
+    }
+}
+
+// =============================================================================
 void DesignerPanel::autoDesignFilter()
 {
     if (autoUpdate) designFilter();
@@ -216,8 +261,8 @@ void DesignerPanel::designFilter()
                 / filterParams.zpk.nElements();
     int e = 0;
     ONLY_ON_DEBUG(if (!autoUpdate) {
-        DBG("-----------------------------------------------------------------"
-            "-");
+        DBG("---------------------------------"
+            "---------------------------------");
         DBG("Filter Design");
     })
     for (auto i = 0; i < degree; ++i)
@@ -232,8 +277,8 @@ void DesignerPanel::designFilter()
     auto n = processor.getNElements();
     for (; e < n; ++e)
         processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(e), false);
-    ONLY_ON_DEBUG(if (!autoUpdate) DBG("---------------------------------------"
-                                       "---------------------------");)
+    ONLY_ON_DEBUG(if (!autoUpdate) DBG("---------------------------------"
+                                       "---------------------------------");)
 }
 void DesignerPanel::applyFilterElement(int i, std::complex<double> z,
                                        FilterElement::Type t, double gain)
@@ -273,45 +318,69 @@ void DesignerPanel::resized()
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
         auto b = claf->getPanelInnerRect(getLocalBounds());
-        auto h = b.getHeight() / 18;
+        // N Parts =
+        //   7 * 6 + (max params at the same time)
+        //   3     + (header)
+        //   4     = (last row + spacer)
+        // 49
+        auto h  = b.getHeight() / 49;
+        auto h3 = 3 * h;
 
-        panelLabel.setBounds(b.removeFromTop(h));
+        // Header label
+        panelLabel.setBounds(b.removeFromTop(h3));
+
+        // Type combo box
         b.removeFromTop(h);
-        typeLabel.setBounds(b.removeFromTop(h));
-        typeCBox->setBounds(b.removeFromTop(h));
-        b.removeFromTop(h / 3);
-        shapeLabel.setBounds(b.removeFromTop(h));
-        shapeCBox->setBounds(b.removeFromTop(h));
-        b.removeFromTop(h / 3);
-        orderLabel.setBounds(b.removeFromTop(h));
-        orderSlider->setBounds(b.removeFromTop(h));
-        b.removeFromTop(h / 3);
-        cutoffLabel.setBounds(b.removeFromTop(h));
-        cutoffSlider->setBounds(b.removeFromTop(h));
-        b.removeFromTop(h / 3);
-        rpLabel.setBounds(b.removeFromTop(h));
-        rpSlider->setBounds(b.removeFromTop(h));
-        b.removeFromTop(h / 3);
-        rsLabel.setBounds(b.removeFromTop(h));
-        rsSlider->setBounds(b.removeFromTop(h));
+        typeLabel.setBounds(b.removeFromTop(h3));
+        typeCBox->setBounds(b.removeFromTop(h3));
 
-        auto last_row = b.removeFromBottom(h);
-        autoButton->setBounds(
-            last_row.withTrimmedRight(last_row.getWidth() * 53 / 100));
-        applyButton.setBounds(
-            last_row.withTrimmedLeft(last_row.getWidth() * 53 / 100));
+        // Shape combobox
+        b.removeFromTop(h);
+        shapeLabel.setBounds(b.removeFromTop(h3));
+        shapeCBox->setBounds(b.removeFromTop(h3));
 
+        // Order slider
+        b.removeFromTop(h);
+        orderLabel.setBounds(b.removeFromTop(h3));
+        orderSlider->setBounds(b.removeFromTop(h3));
         orderSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
                                      orderSlider->getTextBoxWidth(),
                                      orderSlider->getTextBoxHeight());
+
+        // Cutoff frequency slider
+        b.removeFromTop(h);
+        cutoffLabel.setBounds(b.removeFromTop(h3));
+        cutoffSlider->setBounds(b.removeFromTop(h3));
         cutoffSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
                                       cutoffSlider->getTextBoxWidth(),
                                       cutoffSlider->getTextBoxHeight());
-        rpSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                  rpSlider->getTextBoxWidth(),
-                                  rpSlider->getTextBoxHeight());
-        rsSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                  rsSlider->getTextBoxWidth(),
-                                  rsSlider->getTextBoxHeight());
+
+        // Passband ripple slider
+        if (rpLabel.isVisible() || rpSlider->isVisible())
+        {
+            b.removeFromTop(h);
+            rpLabel.setBounds(b.removeFromTop(h3));
+            rpSlider->setBounds(b.removeFromTop(h3));
+            rpSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                                      rpSlider->getTextBoxWidth(),
+                                      rpSlider->getTextBoxHeight());
+        }
+        // Stopband ripple slider
+        if (rsLabel.isVisible() || rsSlider->isVisible())
+        {
+            b.removeFromTop(h);
+            rsLabel.setBounds(b.removeFromTop(h3));
+            rsSlider->setBounds(b.removeFromTop(h3));
+            rsSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                                      rsSlider->getTextBoxWidth(),
+                                      rsSlider->getTextBoxHeight());
+        }
+
+        // Last row (MANUAL/AUTO and UPDATE buttons)
+        auto last_row = b.removeFromBottom(h3);
+        autoButton->setBounds(
+            last_row.withTrimmedRight(last_row.getWidth() * 60 / 100));
+        applyButton.setBounds(
+            last_row.withTrimmedLeft(last_row.getWidth() * 45 / 100));
     }
 }

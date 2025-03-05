@@ -91,6 +91,12 @@ public:
 
 private:
     // =========================================================================
+    /** Update visibility of passband ripple slider */
+    void updatePassbandRippleVisibility();
+    /** Update visibility of stopband ripple slider */
+    void updateStopbandRippleVisibility();
+
+    // =========================================================================
     void autoDesignFilter();
     void designFilter();
     void applyFilterElement(int i, std::complex<double>, FilterElement::Type,
