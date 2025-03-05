@@ -31,10 +31,12 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     plotsPanel = std::make_unique<PlotsPanel>(processor, applicationProperties);
     designerPanel
         = std::make_unique<DesignerPanel>(processor, applicationProperties);
+    masterPanel = std::make_unique<MasterPanel>();
+
     addAndMakeVisible(*parameterPanel.get());
     addAndMakeVisible(*plotsPanel.get());
     addAndMakeVisible(*designerPanel.get());
-    addAndMakeVisible(masterGroup);
+    addAndMakeVisible(*masterPanel.get());
     resized();
 }
 PolesAndZerosEQAudioProcessorEditor::~PolesAndZerosEQAudioProcessorEditor()
@@ -61,5 +63,5 @@ void PolesAndZerosEQAudioProcessorEditor::resized()
     if (parameterPanel) parameterPanel->setBounds(panel_rects[1]);
     if (plotsPanel) plotsPanel->setBounds(panel_rects[2]);
     if (designerPanel) designerPanel->setBounds(panel_rects[3]);
-    masterGroup.setBounds(panel_rects[4]);
+    if (masterPanel) masterPanel->setBounds(panel_rects[4]);
 }
