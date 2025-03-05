@@ -86,6 +86,14 @@ CustomLookAndFeel::CustomLookAndFeel()
     , shortcutsWidthProportions({15, 100, 15})
     , shortcutsColumnProportions(
           {66, 33, 225, 100, 66, 100, 66, 100, 66, 100, 66, 100, 66})
+    , designerParamToSpacerRatio(3.0f)
+    , designerLastRowFraction(1.0 / 16.0)
+    , designerLastRowProportions({40, 5, 55})
+    , designerMaxParams(11)
+    , designerMaxSpacers(7)
+    , fullComboBoxArrowWidth(8.0f)
+    , fullComboBoxArrowHeight(5.0f)
+    , popupMenuSeparatorTextAlpha(0.3f)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -138,6 +146,18 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(ZPoint_polesColourId, juce::Colour(0xd7E67019));
     setColour(PlotButtons_linColourId, juce::Colour(0xcd3498d8));
     setColour(PlotButtons_logColourId, juce::Colour(0xff73cc81));
+    // ComboBox
+    juce::Colour comboBoxColour = juce::Colour(0xff909497).darker(0.2f);
+    setColour(juce::ComboBox::backgroundColourId, comboBoxColour);
+    setColour(juce::ComboBox::textColourId, juce::Colours::white);
+    setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff252525));
+    setColour(juce::ComboBox::arrowColourId, juce::Colours::white);
+    setColour(juce::PopupMenu::backgroundColourId,
+              comboBoxColour.brighter(0.05f));
+    setColour(juce::PopupMenu::textColourId, juce::Colours::white);
+    setColour(juce::PopupMenu::highlightedBackgroundColourId,
+              juce::Colours::whitesmoke);
+    setColour(juce::PopupMenu::highlightedTextColourId, juce::Colours::black);
 }
 
 // =============================================================================
@@ -374,6 +394,27 @@ std::vector<juce::Rectangle<int>> CustomLookAndFeel::splitProportionalShortcuts(
     jassert(vert_slices.size() == 3);
     return splitProportional(vert_slices[1], shortcutsColumnProportions, true);
 }
+std::vector<juce::Rectangle<int>> CustomLookAndFeel::configureDesignerPanel(
+    const juce::Rectangle<int>& r, int* row_height, int* spacer_height) const
+{
+    auto inner = getPanelInnerRect(r);
+
+    // Last row (MANUAL/AUTO and UPDATE buttons)
+    auto last_row = inner.removeFromBottom(
+        juce::roundToInt(inner.getHeight() * designerLastRowFraction));
+    auto regions = splitProportional(last_row, designerLastRowProportions);
+    regions.erase(regions.begin() + 1);
+    regions.insert(regions.begin(), inner);
+
+    double rh
+        = inner.getHeight()
+          / (designerParamToSpacerRatio * static_cast<float>(designerMaxParams)
+             + static_cast<float>(designerMaxSpacers));
+    *row_height = juce::roundToInt(std::floor(rh * designerParamToSpacerRatio));
+    *spacer_height = juce::roundToInt(std::floor(rh));
+
+    return regions;
+}
 
 // =============================================================================
 void CustomLookAndFeel::drawGroupComponentOutline(
@@ -400,29 +441,43 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
     g.setColour(gc.findColour(InvisibleGroupComponent_outlineColourId));
     g.drawRect(b, resizeSize(1.0f));
 }
-juce::Font CustomLookAndFeel::getLabelFont(juce::Typeface::Ptr t,
-                                           float fullFontSize)
+juce::Font CustomLookAndFeel::getPopupMenuFont() { return getCustomFont(); }
+juce::Font CustomLookAndFeel::getComboBoxFont(juce::ComboBox&)
 {
-    juce::Font f(t);
-    f.setSizeAndStyle(resizeSize(fullFontSize), f.getStyleFlags(),
-                      f.getHorizontalScale(), f.getExtraKerningFactor());
-    return f;
-}
-juce::Font CustomLookAndFeel::getLabelFont(juce::Typeface::Ptr t)
-{
-    return getLabelFont(t, fullLabelFontSize);
-}
-juce::Font CustomLookAndFeel::getLabelFont(float fullFontSize)
-{
-    return getLabelFont(typeface, fullFontSize);
-}
-juce::Font CustomLookAndFeel::getLabelFont()
-{
-    return getLabelFont(fullLabelFontSize);
+    return getCustomFont();
 }
 juce::Font CustomLookAndFeel::getLabelFont(juce::Label&)
 {
-    return getLabelFont();
+    return getCustomFont();
+}
+juce::Font CustomLookAndFeel::getCustomFont(juce::Typeface::Ptr t,
+                                            float fontSize)
+{
+    juce::Font f(t);
+    f.setSizeAndStyle(fontSize, f.getStyleFlags(), f.getHorizontalScale(),
+                      f.getExtraKerningFactor());
+    return f;
+}
+juce::Font CustomLookAndFeel::getCustomFont(float fontSize)
+{
+    return getCustomFont(typeface, fontSize);
+}
+juce::Font CustomLookAndFeel::getCustomFont(juce::Typeface::Ptr t)
+{
+    return getCustomFontResized(t, fullLabelFontSize);
+}
+juce::Font CustomLookAndFeel::getCustomFontResized(juce::Typeface::Ptr t,
+                                                   float fullFontSize)
+{
+    return getCustomFont(t, resizeSize(fullFontSize));
+}
+juce::Font CustomLookAndFeel::getCustomFontResized(float fullFontSize)
+{
+    return getCustomFontResized(typeface, fullFontSize);
+}
+juce::Font CustomLookAndFeel::getCustomFont()
+{
+    return getCustomFontResized(fullLabelFontSize);
 }
 void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y,
                                          int width, int height, float sliderPos,
@@ -572,7 +627,7 @@ void CustomLookAndFeel::_drawToggleButton(
     }
 
     g.setColour(textColour);
-    auto font = getLabelFont(boldTypeface);
+    auto font = getCustomFont(boldTypeface);
     _autoFontScale(font, text_rect, label);
     g.setFont(font);
     g.drawText(label, text_rect, juce::Justification::centred);
@@ -600,7 +655,7 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
         button.findColour(OnOffButton_outlineColourId),
         button.findColour((on) ? OnOffButton_textOnColourId
                                : OnOffButton_textOffColourId),
-        (on) ? "ON" : "OFF", true);
+        Button_getOnOffLabel(button, on), true);
 }
 void CustomLookAndFeel::drawLabelledToggleButton(
     juce::Graphics& g, LabelledToggleButton& button,
@@ -643,10 +698,10 @@ void CustomLookAndFeel::drawButtonText(juce::Graphics& g,
                                      static_cast<float>(button.getWidth()),
                                      static_cast<float>(button.getHeight()));
     text_rect = text_rect.reduced(
-        resizeSize(fullButtonOutline + fullButtonPadding) * 0.5f);
+        resizeSize(fullButtonOutline + fullButtonPadding * 0.33f) * 0.5f);
 
     g.setColour(button.findColour(OnOffButton_textOffColourId));
-    auto font = getLabelFont(boldTypeface);
+    auto font = getCustomFont(boldTypeface);
     auto text = button.getButtonText();
     _autoFontScale(font, text_rect, text);
     g.setFont(font);
@@ -665,7 +720,7 @@ void CustomLookAndFeel::drawPlotComponent(
     g.setColour(pc.findColour(PlotComponent_backgroundColourId));
     g.fillRoundedRectangle(0.0f, 0.0f, width, height, corner_s);
 
-    auto font = getLabelFont(fullLabelFontSize * topRightTextScale);
+    auto font = getCustomFontResized(fullLabelFontSize * topRightTextScale);
     g.setFont(font);
     // Top right text
     if (topRightText.length())
@@ -892,5 +947,95 @@ void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float /* x */,
         g.drawLine(r.getX(), r.getY(), r.getRight(), r.getBottom(), t);
         g.drawLine(r.getX(), r.getBottom(), r.getRight(), r.getY(), t);
         break;
+    }
+}
+void CustomLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height,
+                                     bool /* isButtonDown */, int buttonX,
+                                     int buttonY, int buttonW, int buttonH,
+                                     juce::ComboBox& cb)
+{
+    auto cornerSize = relativeButtonRadius * static_cast<float>(height);
+    auto thickness  = resizeSize(fullLabelledButtonOutline);
+    juce::Rectangle<float> rect(0.0, 0.0, static_cast<float>(width),
+                                static_cast<float>(height));
+    rect.reduce(thickness * 0.5f, thickness * 0.5f);
+
+    g.setColour(cb.findColour(juce::ComboBox::backgroundColourId));
+    g.fillRoundedRectangle(rect, cornerSize);
+
+    g.setColour(cb.findColour(juce::ComboBox::outlineColourId));
+    g.drawRoundedRectangle(rect, cornerSize, thickness);
+
+    juce::Path arrow;
+    auto a_w = resizeSize(fullComboBoxArrowWidth);
+    auto a_h = resizeSize(fullComboBoxArrowHeight);
+    auto a_x = buttonX + (buttonW - a_w) * 0.5f;
+    auto a_y = buttonY + (buttonH - a_h) * 0.5f;
+
+    arrow.addTriangle(a_x, a_y, a_x + a_w, a_y, a_x + a_w * 0.5f, a_y + a_h);
+    g.setColour(cb.findColour(juce::ComboBox::arrowColourId));
+    g.fillPath(arrow);
+}
+void CustomLookAndFeel::drawPopupMenuBackground(juce::Graphics& g, int width,
+                                                int height)
+{
+    auto thickness = resizeSize(fullLabelledButtonOutline);
+    juce::Rectangle<float> rect(0.0, 0.0, static_cast<float>(width),
+                                static_cast<float>(height));
+    rect.reduce(thickness * 0.5f, thickness * 0.5f);
+    g.setColour(findColour(juce::PopupMenu::backgroundColourId));
+    g.fillRect(rect);
+    g.setColour(findColour(juce::ComboBox::outlineColourId));
+    g.drawRect(rect, thickness);
+}
+void CustomLookAndFeel::drawPopupMenuItem(
+    juce::Graphics& g, const juce::Rectangle<int>& area, const bool isSeparator,
+    const bool /* isActive */, const bool isHighlighted, const bool isTicked,
+    const bool /* hasSubMenu */, const juce::String& text,
+    const juce::String& /* shortcutKeyText */, const juce::Drawable* /* icon */,
+    const juce::Colour* textColour)
+{
+    if (isSeparator)
+    {
+        juce::Rectangle<float> r(
+            area.toFloat().reduced(resizeSize(fullButtonPadding), 0.0f));
+        g.setColour(findColour(juce::PopupMenu::textColourId)
+                        .withAlpha(popupMenuSeparatorTextAlpha));
+        g.fillRect(r.removeFromTop(resizeSize(1.0f)));
+    }
+    else
+    {
+        if (isHighlighted)
+        {
+            g.setColour(
+                findColour(juce::PopupMenu::highlightedBackgroundColourId));
+            g.fillRect(area);
+            g.setColour(findColour(juce::PopupMenu::highlightedTextColourId));
+        }
+        else
+        {
+            g.setColour((textColour)
+                            ? *textColour
+                            : findColour(juce::PopupMenu::textColourId));
+        }
+        g.setFont(getCustomFont());
+        g.drawFittedText(text,
+                         area.toFloat()
+                             .reduced(resizeSize(fullButtonPadding), 0.0f)
+                             .toNearestInt(),
+                         juce::Justification::centredLeft, 1);
+        if (isTicked)
+        {
+            juce::Path arrow;
+            auto a_w = resizeSize(fullComboBoxArrowWidth);
+            auto a_h = resizeSize(fullComboBoxArrowHeight);
+            auto a_x = area.getX() + area.getWidth() - a_h
+                       - resizeSize(2.0f * fullButtonPadding);
+            auto a_y = area.getY() + (area.getHeight() - a_w) * 0.5f;
+
+            arrow.addTriangle(a_x + a_h, a_y, a_x + a_h, a_y + a_w, a_x,
+                              a_y + a_w * 0.5f);
+            g.fillPath(arrow);
+        }
     }
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "GUI/DesignerPanel.h"
 #include "GUI/LookAndFeel.h"
 #include "GUI/ParameterPanel.h"
 #include "GUI/PlotsPanel.h"
@@ -28,9 +29,10 @@ private:
     CustomLookAndFeel claf;
 
     // ===========================================================================
-    juce::GroupComponent designGroup, masterGroup;
+    juce::GroupComponent masterGroup;
     std::unique_ptr<ParameterPanel> parameterPanel;
     std::unique_ptr<PlotsPanel> plotsPanel;
+    std::unique_ptr<DesignerPanel> designerPanel;
 
     // ===========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(

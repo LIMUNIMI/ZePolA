@@ -36,16 +36,84 @@ void ButtonApplicationPropertyListener::changeListenerCallback(
 }
 
 // =============================================================================
-ApplicationPropertiesButtonAttachment::ApplicationPropertiesButtonAttachment(
-    juce::ApplicationProperties& properties, const juce::String& pID,
-    std::shared_ptr<juce::Button> btn)
+ApplicationPropertyComboBoxListener::ApplicationPropertyComboBoxListener(
+    const juce::String& pID, juce::ApplicationProperties& properties)
+    : propertyID(pID), applicationProperties(properties)
+{
+}
+
+// =============================================================================
+void ApplicationPropertyComboBoxListener::comboBoxChanged(
+    juce::ComboBox* comboBoxThatHasChanged)
+{
+    if (juce::PropertiesFile* pf
+        = applicationProperties.getCommonSettings(true))
+        pf->setValue(propertyID, comboBoxThatHasChanged->getSelectedId());
+}
+
+// =============================================================================
+ComboBoxApplicationPropertyListener::ComboBoxApplicationPropertyListener(
+    const juce::String& pID, std::shared_ptr<juce::ComboBox> cb)
+    : propertyID(pID), comboBox(cb)
+{
+}
+
+// =============================================================================
+void ComboBoxApplicationPropertyListener::changeListenerCallback(
+    juce::ChangeBroadcaster* source)
+{
+    if (auto pf = dynamic_cast<juce::PropertiesFile*>(source))
+        comboBox->setSelectedId(pf->getIntValue(propertyID, false),
+                                juce::NotificationType::sendNotification);
+}
+
+// =============================================================================
+ApplicationPropertySliderListener::ApplicationPropertySliderListener(
+    const juce::String& pID, juce::ApplicationProperties& properties)
+    : propertyID(pID), applicationProperties(properties)
+{
+}
+
+// =============================================================================
+void ApplicationPropertySliderListener::sliderValueChanged(juce::Slider* slider)
+{
+    if (juce::PropertiesFile* pf
+        = applicationProperties.getCommonSettings(true))
+        pf->setValue(propertyID, slider->getValue());
+}
+
+// =============================================================================
+SliderApplicationPropertyListener::SliderApplicationPropertyListener(
+    const juce::String& pID, std::shared_ptr<juce::Slider> s)
+    : propertyID(pID), slider(s)
+{
+}
+
+// =============================================================================
+void SliderApplicationPropertyListener::changeListenerCallback(
+    juce::ChangeBroadcaster* source)
+{
+    if (auto pf = dynamic_cast<juce::PropertiesFile*>(source))
+        slider->setValue(std::clamp(pf->getDoubleValue(propertyID, false),
+                                    slider->getMinimum(), slider->getMaximum()),
+                         juce::NotificationType::sendNotification);
+}
+
+// =============================================================================
+template <typename ComponentType, typename ComponentListenerType,
+          typename ApplicationPropertyListenerType>
+ApplicationPropertiesComponentAttachment<ComponentType, ComponentListenerType,
+                                         ApplicationPropertyListenerType>::
+    ApplicationPropertiesComponentAttachment(
+        juce::ApplicationProperties& properties, const juce::String& pID,
+        std::shared_ptr<ComponentType> comp)
     : applicationProperties(properties)
     , propertyID(pID)
-    , button(btn)
-    , buttonListener(pID, properties)
-    , propertyListener(pID, btn)
+    , component(comp)
+    , componentListener(pID, properties)
+    , propertyListener(pID, comp)
 {
-    button->addListener(&buttonListener);
+    component->addListener(&componentListener);
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
     {
@@ -53,10 +121,25 @@ ApplicationPropertiesButtonAttachment::ApplicationPropertiesButtonAttachment(
         propertyListener.changeListenerCallback(pf);
     }
 }
-ApplicationPropertiesButtonAttachment::~ApplicationPropertiesButtonAttachment()
+template <typename ComponentType, typename ComponentListenerType,
+          typename ApplicationPropertyListenerType>
+ApplicationPropertiesComponentAttachment<ComponentType, ComponentListenerType,
+                                         ApplicationPropertyListenerType>::
+    ~ApplicationPropertiesComponentAttachment()
 {
-    button->removeListener(&buttonListener);
+    component->removeListener(&componentListener);
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
         pf->removeChangeListener(&propertyListener);
 }
+
+// =============================================================================
+template class ApplicationPropertiesComponentAttachment<
+    juce::Button, ApplicationPropertyButtonListener,
+    ButtonApplicationPropertyListener>;
+template class ApplicationPropertiesComponentAttachment<
+    juce::ComboBox, ApplicationPropertyComboBoxListener,
+    ComboBoxApplicationPropertyListener>;
+template class ApplicationPropertiesComponentAttachment<
+    juce::Slider, ApplicationPropertySliderListener,
+    SliderApplicationPropertyListener>;

@@ -70,11 +70,15 @@ public:
                                 const juce::String& text,
                                 const juce::Justification&,
                                 juce::GroupComponent&) override;
+    juce::Font getPopupMenuFont() override;
+    juce::Font getComboBoxFont(juce::ComboBox&) override;
     juce::Font getLabelFont(juce::Label&) override;
-    juce::Font getLabelFont(float fullFontSize);
-    juce::Font getLabelFont(juce::Typeface::Ptr);
-    juce::Font getLabelFont(juce::Typeface::Ptr, float fullFontSize);
-    juce::Font getLabelFont();
+    juce::Font getCustomFont(juce::Typeface::Ptr, float fontSize);
+    juce::Font getCustomFont(float fontSize);
+    juce::Font getCustomFont(juce::Typeface::Ptr);
+    juce::Font getCustomFontResized(juce::Typeface::Ptr, float fullFontSize);
+    juce::Font getCustomFontResized(float fullFontSize);
+    juce::Font getCustomFont();
     void drawLinearSlider(juce::Graphics& g, int x, int y, int width,
                           int height, float sliderPos, float minSliderPos,
                           float maxSliderPos, const juce::Slider::SliderStyle,
@@ -112,6 +116,18 @@ public:
     void drawZPoint(juce::Graphics&, float x, float y, float width,
                     float height, float p_x, float p_y, FilterElement::Type,
                     bool conjugate, ZPoint&);
+    void drawComboBox(juce::Graphics&, int width, int height, bool isButtonDown,
+                      int buttonX, int buttonY, int buttonW, int buttonH,
+                      juce::ComboBox&) override;
+    void drawPopupMenuBackground(juce::Graphics&, int width,
+                                 int height) override;
+    void drawPopupMenuItem(juce::Graphics&, const juce::Rectangle<int>& area,
+                           const bool isSeparator, const bool isActive,
+                           const bool isHighlighted, const bool isTicked,
+                           const bool hasSubMenu, const juce::String& text,
+                           const juce::String& shortcutKeyText,
+                           const juce::Drawable* icon,
+                           const juce::Colour* textColour) override;
 
     // =========================================================================
     /** Set the new resize ratio */
@@ -204,6 +220,10 @@ public:
     /** Split rectangle for the shortcut buttons column */
     std::vector<juce::Rectangle<int>>
     splitProportionalShortcuts(const juce::Rectangle<int>&) const;
+    /** Configure rectangles and sizes for the designer panel */
+    std::vector<juce::Rectangle<int>>
+    configureDesignerPanel(const juce::Rectangle<int>&, int* row_height,
+                           int* spacer_height) const;
 
 private:
     // =========================================================================
@@ -241,6 +261,13 @@ private:
         relativePointSize, fullPointThickness, conjugateAlpha;
     int nGaussianCircleMajorTicks, nGaussianCircleMinorTicksRadial,
         nGaussianCircleMinorTicksCircular;
+
+    // =========================================================================
+    float designerParamToSpacerRatio, designerLastRowFraction,
+        fullComboBoxArrowWidth, fullComboBoxArrowHeight,
+        popupMenuSeparatorTextAlpha;
+    int designerMaxParams, designerMaxSpacers;
+    std::vector<int> designerLastRowProportions;
 
     // =========================================================================
     void _drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
