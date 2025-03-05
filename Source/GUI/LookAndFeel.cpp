@@ -990,10 +990,10 @@ void CustomLookAndFeel::drawPopupMenuBackground(juce::Graphics& g, int width,
 }
 void CustomLookAndFeel::drawPopupMenuItem(
     juce::Graphics& g, const juce::Rectangle<int>& area, const bool isSeparator,
-    const bool /* isActive */, const bool isHighlighted,
-    const bool /* isTicked */, const bool /* hasSubMenu */,
-    const juce::String& text, const juce::String& /* shortcutKeyText */,
-    const juce::Drawable* /* icon */, const juce::Colour* textColour)
+    const bool /* isActive */, const bool isHighlighted, const bool isTicked,
+    const bool /* hasSubMenu */, const juce::String& text,
+    const juce::String& /* shortcutKeyText */, const juce::Drawable* /* icon */,
+    const juce::Colour* textColour)
 {
     if (isSeparator)
     {
@@ -1024,5 +1024,18 @@ void CustomLookAndFeel::drawPopupMenuItem(
                              .reduced(resizeSize(fullButtonPadding), 0.0f)
                              .toNearestInt(),
                          juce::Justification::centredLeft, 1);
+        if (isTicked)
+        {
+            juce::Path arrow;
+            auto a_w = resizeSize(fullComboBoxArrowWidth);
+            auto a_h = resizeSize(fullComboBoxArrowHeight);
+            auto a_x = area.getX() + area.getWidth() - a_h
+                       - resizeSize(2.0f * fullButtonPadding);
+            auto a_y = area.getY() + (area.getHeight() - a_w) * 0.5f;
+
+            arrow.addTriangle(a_x + a_h, a_y, a_x + a_h, a_y + a_w, a_x,
+                              a_y + a_w * 0.5f);
+            g.fillPath(arrow);
+        }
     }
 }
