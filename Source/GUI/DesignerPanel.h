@@ -78,6 +78,10 @@ public:
     void setOrder(double);
     /** Set filter cutoff frequency */
     void setCutoff(double);
+    /** Set the ripple amount (dB) in the passband */
+    void setPassbandRipple(double);
+    /** Set the ripple amount (dB) in the stopband */
+    void setStopbandRipple(double);
     /** Set the designer in automatic (or manual) mode */
     void setAuto(bool);
 
@@ -97,14 +101,17 @@ private:
     std::unique_ptr<ApplicationPropertiesComboBoxAttachment> typeCBoxAttachment,
         shapeCBoxAttachment;
     std::unique_ptr<ApplicationPropertiesSliderAttachment>
-        orderSliderAttachment, cutoffSliderAttachment;
+        orderSliderAttachment, cutoffSliderAttachment, rpSliderAttachment,
+        rsSliderAttachment;
     CBoxListener typeCBoxListener, shapeCBoxListener;
-    SliderListener orderSliderListener, cutoffSliderListener;
+    SliderListener orderSliderListener, cutoffSliderListener, rpSliderListener,
+        rsSliderListener;
     ButtonListener autoButtonListener;
     PolesAndZerosEQAudioProcessor& processor;
-    juce::Label panelLabel, typeLabel, shapeLabel, orderLabel, cutoffLabel;
+    juce::Label panelLabel, typeLabel, shapeLabel, orderLabel, cutoffLabel,
+        rpLabel, rsLabel;
     std::shared_ptr<juce::ComboBox> typeCBox, shapeCBox;
-    std::shared_ptr<juce::Slider> orderSlider, cutoffSlider;
+    std::shared_ptr<juce::Slider> orderSlider, cutoffSlider, rpSlider, rsSlider;
     std::shared_ptr<juce::ToggleButton> autoButton;
     juce::TextButton applyButton;
     FilterParameters filterParams;

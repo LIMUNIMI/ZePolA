@@ -42,12 +42,16 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     , shapeLabel("", "FILTER SHAPE")
     , orderLabel("", "FILTER ORDER")
     , cutoffLabel("", "CUTOFF FREQUENCY")
+    , rpLabel("", "PASSBAND RIPPLE")
+    , rsLabel("", "STOPBAND RIPPLE")
     , applyButton("UPDATE")
     , autoButton(std::make_shared<juce::ToggleButton>())
     , typeCBox(std::make_shared<juce::ComboBox>())
     , shapeCBox(std::make_shared<juce::ComboBox>())
     , orderSlider(std::make_shared<juce::Slider>())
     , cutoffSlider(std::make_shared<juce::Slider>())
+    , rpSlider(std::make_shared<juce::Slider>())
+    , rsSlider(std::make_shared<juce::Slider>())
     , filterParams(p.getSampleRate())
     , typeCBoxListener(std::bind(&DesignerPanel::setTypeFromCBoxId, this,
                                  std::placeholders::_1))
@@ -57,6 +61,10 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
           std::bind(&DesignerPanel::setOrder, this, std::placeholders::_1))
     , cutoffSliderListener(
           std::bind(&DesignerPanel::setCutoff, this, std::placeholders::_1))
+    , rpSliderListener(std::bind(&DesignerPanel::setPassbandRipple, this,
+                                 std::placeholders::_1))
+    , rsSliderListener(std::bind(&DesignerPanel::setStopbandRipple, this,
+                                 std::placeholders::_1))
     , autoButtonListener(
           std::bind(&DesignerPanel::setAuto, this, std::placeholders::_1))
     , autoUpdate(false)
@@ -66,10 +74,14 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     addAndMakeVisible(shapeLabel);
     addAndMakeVisible(orderLabel);
     addAndMakeVisible(cutoffLabel);
+    addAndMakeVisible(rpLabel);
+    addAndMakeVisible(rsLabel);
     addAndMakeVisible(*typeCBox.get());
     addAndMakeVisible(*shapeCBox.get());
     addAndMakeVisible(*orderSlider.get());
     addAndMakeVisible(*cutoffSlider.get());
+    addAndMakeVisible(*rpSlider.get());
+    addAndMakeVisible(*rsSlider.get());
     addAndMakeVisible(*autoButton.get());
     addAndMakeVisible(applyButton);
 
@@ -78,6 +90,8 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     shapeLabel.setJustificationType(juce::Justification::centred);
     orderLabel.setJustificationType(juce::Justification::centred);
     cutoffLabel.setJustificationType(juce::Justification::centred);
+    rpLabel.setJustificationType(juce::Justification::centred);
+    rsLabel.setJustificationType(juce::Justification::centred);
 
     for (auto i = 0; i < FilterParameters::FilterType::N_FILTER_TYPES; ++i)
         typeCBox->addItem(FilterParameters::typeToString(
@@ -87,18 +101,33 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
         shapeCBox->addItem(FilterParameters::shapeToString(
                                static_cast<FilterParameters::FilterShape>(i)),
                            i + 1);
+
     orderSlider->setSliderStyle(juce::Slider::LinearHorizontal);
     orderSlider->setNormalisableRange(
         {2.0, static_cast<double>(processor.getNElements()), 2.0});
     cutoffSlider->setSliderStyle(juce::Slider::LinearHorizontal);
     cutoffSlider->setNormalisableRange(
-        {0.0, processor.getSampleRate() * 0.5, 0.1, 0.2});
+        {0.0, processor.getSampleRate() * 0.5, 0.1, 0.25});
+    rpSlider->setSliderStyle(juce::Slider::LinearHorizontal);
+    rpSlider->setNormalisableRange({0.1, 5.0, 0.001});
+    rsSlider->setSliderStyle(juce::Slider::LinearHorizontal);
+    rsSlider->setNormalisableRange({3.0, 60.0, 0.001});
+
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
+
+    typeCBox->setSelectedId(1 + filterParams.type);
+    shapeCBox->setSelectedId(1 + filterParams.shape);
+    orderSlider->setValue(static_cast<double>(filterParams.order));
+    cutoffSlider->setValue(filterParams.cutoff);
+    rpSlider->setValue(filterParams.passbandRippleDb);
+    rsSlider->setValue(filterParams.stopbandRippleDb);
 
     typeCBox->addListener(&typeCBoxListener);
     shapeCBox->addListener(&shapeCBoxListener);
     orderSlider->addListener(&orderSliderListener);
     cutoffSlider->addListener(&cutoffSliderListener);
+    rpSlider->addListener(&rpSliderListener);
+    rsSlider->addListener(&rsSliderListener);
     autoButton->addListener(&autoButtonListener);
 
     typeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
@@ -109,11 +138,10 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
         properties, "orderFilterDesign", orderSlider));
     cutoffSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "cutoffFilterDesign", cutoffSlider));
-
-    if (!typeCBox->getSelectedId())
-        typeCBox->setSelectedId(1 + FilterParameters::FilterType::Butterworth);
-    if (!shapeCBox->getSelectedId())
-        shapeCBox->setSelectedId(1 + FilterParameters::FilterShape::LowPass);
+    rpSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
+        properties, "rpFilterDesign", rpSlider));
+    rsSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
+        properties, "rsFilterDesign", rsSlider));
 
     applyButton.onClick = std::bind(&DesignerPanel::designFilter, this);
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
@@ -125,6 +153,8 @@ DesignerPanel::~DesignerPanel()
     shapeCBox->removeListener(&shapeCBoxListener);
     orderSlider->removeListener(&orderSliderListener);
     cutoffSlider->removeListener(&cutoffSliderListener);
+    rpSlider->removeListener(&rpSliderListener);
+    rsSlider->removeListener(&rsSliderListener);
     autoButton->removeListener(&autoButtonListener);
 }
 
@@ -132,13 +162,13 @@ DesignerPanel::~DesignerPanel()
 void DesignerPanel::setTypeFromCBoxId(int i)
 {
     filterParams.type = static_cast<FilterParameters::FilterType>(i - 1);
-    DBG(FilterParameters::typeToString(filterParams.type));
+    DBG("TYPE: " << FilterParameters::typeToString(filterParams.type));
     autoDesignFilter();
 }
 void DesignerPanel::setShapeFromCBoxId(int i)
 {
     filterParams.shape = static_cast<FilterParameters::FilterShape>(i - 1);
-    DBG(FilterParameters::shapeToString(filterParams.shape));
+    DBG("SHAPE: " << FilterParameters::shapeToString(filterParams.shape));
     autoDesignFilter();
 }
 void DesignerPanel::setOrder(double f)
@@ -151,6 +181,18 @@ void DesignerPanel::setCutoff(double f)
 {
     filterParams.cutoff = f;
     DBG("CUTOFF: " << filterParams.cutoff);
+    autoDesignFilter();
+}
+void DesignerPanel::setPassbandRipple(double rp)
+{
+    filterParams.passbandRippleDb = rp;
+    DBG("PASSBAND RIPPLE: " << filterParams.passbandRippleDb);
+    autoDesignFilter();
+}
+void DesignerPanel::setStopbandRipple(double rs)
+{
+    filterParams.stopbandRippleDb = rs;
+    DBG("STOPBAND RIPPLE: " << filterParams.stopbandRippleDb);
     autoDesignFilter();
 }
 void DesignerPanel::setAuto(bool b)
@@ -167,8 +209,6 @@ void DesignerPanel::autoDesignFilter()
 }
 void DesignerPanel::designFilter()
 {
-    filterParams.cutoff = cutoffSlider->getValue();
-    filterParams.order  = juce::roundToInt(orderSlider->getValue());
     filterParams.computeZPK();
 
     auto degree = filterParams.zpk.degree();
@@ -224,6 +264,7 @@ void DesignerPanel::sampleRateChangedCallback(double sr)
     cutoffSlider->setNormalisableRange(
         {nr.start, sr * 0.5, nr.interval, nr.skew});
     filterParams.sr = sr;
+    autoDesignFilter();
 }
 
 // =============================================================================
@@ -248,7 +289,13 @@ void DesignerPanel::resized()
         cutoffLabel.setBounds(b.removeFromTop(h));
         cutoffSlider->setBounds(b.removeFromTop(h));
         b.removeFromTop(h / 3);
-        auto last_row = b.removeFromTop(h);
+        rpLabel.setBounds(b.removeFromTop(h));
+        rpSlider->setBounds(b.removeFromTop(h));
+        b.removeFromTop(h / 3);
+        rsLabel.setBounds(b.removeFromTop(h));
+        rsSlider->setBounds(b.removeFromTop(h));
+
+        auto last_row = b.removeFromBottom(h);
         autoButton->setBounds(
             last_row.withTrimmedRight(last_row.getWidth() * 53 / 100));
         applyButton.setBounds(
@@ -260,5 +307,11 @@ void DesignerPanel::resized()
         cutoffSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
                                       cutoffSlider->getTextBoxWidth(),
                                       cutoffSlider->getTextBoxHeight());
+        rpSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                                  rpSlider->getTextBoxWidth(),
+                                  rpSlider->getTextBoxHeight());
+        rsSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                                  rsSlider->getTextBoxWidth(),
+                                  rsSlider->getTextBoxHeight());
     }
 }
