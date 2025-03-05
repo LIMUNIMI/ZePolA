@@ -36,7 +36,7 @@ FilterParameters::FilterParameters(double f)
     , shape(FilterParameters::FilterShape::LowPass)
     , order(2)
     , cutoff(0.5 * f)
-    , passbandRippleDb(1.0)
+    , passbandRippleDb(3.0)
     , stopbandRippleDb(20.0)
 {
 }
@@ -126,7 +126,7 @@ void FilterFactory::sanitizeParams(FilterParameters& params)
     if (params.order < 2) params.order = 2;
     if (params.order % 2) params.order++;
     if (params.passbandRippleDb <= std::numeric_limits<double>::epsilon())
-        params.passbandRippleDb = 1.0;
+        params.passbandRippleDb = 3.0;
     if (params.stopbandRippleDb <= std::numeric_limits<double>::epsilon())
         params.stopbandRippleDb = 20.0;
     params.cutoff = std::clamp(params.cutoff, 0.0, params.sr * 0.5);
@@ -310,9 +310,9 @@ void ChebyshevIIFilterFactory::buildAnalogPrototype(FilterParameters& params)
 #define _ARC_JAC_SN_CONV_LIMIT 11
 /** Approximation degree for function _ellipdeg() */
 #define _ELLIPTIC_MAX_DEG 7
+// Functions from cephes library
 extern "C"
 {
-    // Functions from cephes library
     /** Complete elliptic integral */
     extern double ellpk(double);
     /** Jacobian elliptic functions */
@@ -360,15 +360,9 @@ static std::complex<double> _arc_jac_sn(std::complex<double> w, double m)
         if (i >= _ARC_JAC_SN_CONV_LIMIT)
             return std::nan("_arc_jac_sn(): convergence error");
     }
-    ONLY_ON_DEBUG({
-        DBG("ks = [");
-        for (auto y : ks) DBG("  " << y);
-        DBG("]");
-    })
 
     double K = juce::MathConstants<double>::halfPi;
     for (auto it = ks.begin() + 1; it != ks.end(); ++it) K *= (1.0 + *it);
-    DBG("K = " << K);
 
     std::vector<std::complex<double>> wns({w});
     {
@@ -379,21 +373,14 @@ static std::complex<double> _arc_jac_sn(std::complex<double> w, double m)
                 / ((1.0 + ks[i + 1])
                    * (1.0 + _arc_jac_sn_complement(ks[i] * wns.back()))));
     }
-    ONLY_ON_DEBUG({
-        DBG("wns = [");
-        for (auto y : wns) DBG("  (" << y.real() << ", " << y.imag() << ")");
-        DBG("]");
-    })
     std::complex<double> u
         = std::asin(wns.back()) / juce::MathConstants<double>::halfPi;
-    DBG("u = (" << u.real() << ", " << u.imag() << ")");
     return K * u;
 }
 /** Real inverse Jacobian sc, with complementary modulus */
 double _arc_jac_sc1(double w, double m)
 {
     auto z = _arc_jac_sn(std::complex<double>(0.0, w), m);
-    DBG("zcomplex = (" << z.real() << ", " << z.imag() << ")");
     return (abs(z.real()) > std::numeric_limits<double>::epsilon())
                ? std::nan("_arc_jac_sc1(): z is not imaginary")
                : z.imag();
@@ -406,31 +393,20 @@ void EllipticFilterFactory::buildAnalogPrototype(FilterParameters& params)
     jassert(params.order >= 2);
     jassert(params.order % 2 == 0);
 
-    // Ripple factor
     double eps_2 = pow(10.0, 0.1 * params.passbandRippleDb) - 1.0;
     double eps   = sqrt(eps_2);
     double ck_2  = eps_2 / (pow(10.0, 0.1 * params.stopbandRippleDb) - 1.0);
 
-    double val = ellpk(1.0 - ck_2);
-    DBG("val = " << val);
-    double m = _ellipdeg(params.order, ck_2);
-    DBG("m = " << m);
+    double val  = ellpk(1.0 - ck_2);
+    double m    = _ellipdeg(params.order, ck_2);
     double capk = ellpk(1.0 - m);
-    DBG("capk = " << capk);
 
     int jj = params.order / 2;
     std::vector<double> s(jj), c(jj), d(jj), phi(jj);
     for (auto i = 0, j = 1; j < params.order; j += 2, i++)
-    {
         ellpj(j * capk / params.order, m, &s[i], &c[i], &d[i], &phi[i]);
-        DBG("s[" << i << "]   = " << s[i]);
-        DBG("c[" << i << "]   = " << c[i]);
-        DBG("d[" << i << "]   = " << d[i]);
-        DBG("phi[" << i << "] = " << phi[i]);
-    }
 
     double m_sqrt = sqrt(m), k_z = 1.0, a;
-    DBG("z = [");
     for (auto& s_i : s)
         if (abs(s_i) > std::numeric_limits<double>::epsilon())
         {
@@ -438,24 +414,13 @@ void EllipticFilterFactory::buildAnalogPrototype(FilterParameters& params)
             params.zpk.zeros.push_back(std::complex(0.0, a));
             a = abs(a);
             k_z *= a * a;
-            DBG("  (" << params.zpk.zeros.back().real() << ", "
-                      << params.zpk.zeros.back().imag() << ")");
         }
-    DBG("]");
 
-    double r = _arc_jac_sc1(1.0 / eps, ck_2);
-    DBG("r = " << r);
+    double r  = _arc_jac_sc1(1.0 / eps, ck_2);
     double v0 = capk * r / (params.order * val);
-    DBG("v0 = " << v0);
 
     double sv, cv, dv, phiv, k_p = 1.0;
     ellpj(v0, 1.0 - m, &sv, &cv, &dv, &phiv);
-    DBG("sv  = " << sv);
-    DBG("cv  = " << cv);
-    DBG("dv  = " << dv);
-    DBG("phi = " << phiv);
-
-    DBG("p = [");
     for (auto i = 0; i < jj; ++i)
     {
         params.zpk.poles.push_back(
@@ -463,9 +428,6 @@ void EllipticFilterFactory::buildAnalogPrototype(FilterParameters& params)
             / (pow(d[i] * sv, 2.0) - 1));
         a = abs(params.zpk.poles.back());
         k_p *= a * a;
-        DBG("  (" << params.zpk.poles.back().real() << ", "
-                  << params.zpk.poles.back().imag() << ")");
     }
-    DBG("]");
     params.zpk.gain = sqrt(1.0 + eps_2) * k_p / k_z;
 }
