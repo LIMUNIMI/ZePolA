@@ -204,6 +204,10 @@ public:
     /** Split rectangle for the shortcut buttons column */
     std::vector<juce::Rectangle<int>>
     splitProportionalShortcuts(const juce::Rectangle<int>&) const;
+    /** Configure rectangles and sizes for the designer panel */
+    std::vector<juce::Rectangle<int>>
+    configureDesignerPanel(const juce::Rectangle<int>&, int* row_height,
+                           int* spacer_height) const;
 
 private:
     // =========================================================================
@@ -241,6 +245,11 @@ private:
         relativePointSize, fullPointThickness, conjugateAlpha;
     int nGaussianCircleMajorTicks, nGaussianCircleMinorTicksRadial,
         nGaussianCircleMinorTicksCircular;
+
+    // =========================================================================
+    float designerParamToSpacerRatio, designerLastRowFraction;
+    int designerMaxParams, designerMaxSpacers;
+    std::vector<int> designerLastRowProportions;
 
     // =========================================================================
     void _drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,

@@ -311,47 +311,36 @@ void DesignerPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
-        auto b = claf->getPanelInnerRect(getLocalBounds());
+        int ph, sh;
+        auto regions = claf->configureDesignerPanel(getLocalBounds(), &ph, &sh);
+        jassert(regions.size() == 3);
 
-        // Last row (MANUAL/AUTO and UPDATE buttons)
-        auto last_row = b.removeFromBottom(b.getHeight() / 16);
-        autoButton->setBounds(
-            last_row.withTrimmedRight(last_row.getWidth() * 60 / 100));
-        applyButton.setBounds(
-            last_row.withTrimmedLeft(last_row.getWidth() * 45 / 100));
-
-        // N Parts =
-        //   3     + (header)
-        //   4 * 2 + (rows with no label)
-        //   7 * 4 + (max rows with label at the same time)
-        //   1     = (bottom spacer)
-        // 40
-        auto h  = b.getHeight() / 40;
-        auto h3 = 3 * h;
+        autoButton->setBounds(regions[1]);
+        applyButton.setBounds(regions[2]);
 
         // Header label
-        panelLabel.setBounds(b.removeFromTop(h3));
+        panelLabel.setBounds(regions[0].removeFromTop(ph));
 
         // Type combo box
-        b.removeFromTop(h);
-        typeCBox->setBounds(b.removeFromTop(h3));
+        regions[0].removeFromTop(sh);
+        typeCBox->setBounds(regions[0].removeFromTop(ph));
 
         // Shape combobox
-        b.removeFromTop(h);
-        shapeCBox->setBounds(b.removeFromTop(h3));
+        regions[0].removeFromTop(sh);
+        shapeCBox->setBounds(regions[0].removeFromTop(ph));
 
         // Order slider
-        b.removeFromTop(h);
-        orderLabel.setBounds(b.removeFromTop(h3));
-        orderSlider->setBounds(b.removeFromTop(h3));
+        regions[0].removeFromTop(sh);
+        orderLabel.setBounds(regions[0].removeFromTop(ph));
+        orderSlider->setBounds(regions[0].removeFromTop(ph));
         orderSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
                                      orderSlider->getTextBoxWidth(),
                                      orderSlider->getTextBoxHeight());
 
         // Cutoff frequency slider
-        b.removeFromTop(h);
-        cutoffLabel.setBounds(b.removeFromTop(h3));
-        cutoffSlider->setBounds(b.removeFromTop(h3));
+        regions[0].removeFromTop(sh);
+        cutoffLabel.setBounds(regions[0].removeFromTop(ph));
+        cutoffSlider->setBounds(regions[0].removeFromTop(ph));
         cutoffSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
                                       cutoffSlider->getTextBoxWidth(),
                                       cutoffSlider->getTextBoxHeight());
@@ -359,9 +348,9 @@ void DesignerPanel::resized()
         // Passband ripple slider
         if (rpLabel.isVisible() || rpSlider->isVisible())
         {
-            b.removeFromTop(h);
-            rpLabel.setBounds(b.removeFromTop(h3));
-            rpSlider->setBounds(b.removeFromTop(h3));
+            regions[0].removeFromTop(sh);
+            rpLabel.setBounds(regions[0].removeFromTop(ph));
+            rpSlider->setBounds(regions[0].removeFromTop(ph));
             rpSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
                                       rpSlider->getTextBoxWidth(),
                                       rpSlider->getTextBoxHeight());
@@ -369,9 +358,9 @@ void DesignerPanel::resized()
         // Stopband ripple slider
         if (rsLabel.isVisible() || rsSlider->isVisible())
         {
-            b.removeFromTop(h);
-            rsLabel.setBounds(b.removeFromTop(h3));
-            rsSlider->setBounds(b.removeFromTop(h3));
+            regions[0].removeFromTop(sh);
+            rsLabel.setBounds(regions[0].removeFromTop(ph));
+            rsSlider->setBounds(regions[0].removeFromTop(ph));
             rsSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
                                       rsSlider->getTextBoxWidth(),
                                       rsSlider->getTextBoxHeight());

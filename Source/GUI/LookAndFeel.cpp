@@ -86,6 +86,11 @@ CustomLookAndFeel::CustomLookAndFeel()
     , shortcutsWidthProportions({15, 100, 15})
     , shortcutsColumnProportions(
           {66, 33, 225, 100, 66, 100, 66, 100, 66, 100, 66, 100, 66})
+    , designerParamToSpacerRatio(3.0f)
+    , designerLastRowFraction(1.0 / 16.0)
+    , designerLastRowProportions({40, 5, 55})
+    , designerMaxParams(11)
+    , designerMaxSpacers(7)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -374,6 +379,27 @@ std::vector<juce::Rectangle<int>> CustomLookAndFeel::splitProportionalShortcuts(
     jassert(vert_slices.size() == 3);
     return splitProportional(vert_slices[1], shortcutsColumnProportions, true);
 }
+std::vector<juce::Rectangle<int>> CustomLookAndFeel::configureDesignerPanel(
+    const juce::Rectangle<int>& r, int* row_height, int* spacer_height) const
+{
+    auto inner = getPanelInnerRect(r);
+
+    // Last row (MANUAL/AUTO and UPDATE buttons)
+    auto last_row = inner.removeFromBottom(
+        juce::roundToInt(inner.getHeight() * designerLastRowFraction));
+    auto regions = splitProportional(last_row, designerLastRowProportions);
+    regions.erase(regions.begin() + 1);
+    regions.insert(regions.begin(), inner);
+
+    double rh
+        = inner.getHeight()
+          / (designerParamToSpacerRatio * static_cast<float>(designerMaxParams)
+             + static_cast<float>(designerMaxSpacers));
+    *row_height = juce::roundToInt(std::floor(rh * designerParamToSpacerRatio));
+    *spacer_height = juce::roundToInt(std::floor(rh));
+
+    return regions;
+}
 
 // =============================================================================
 void CustomLookAndFeel::drawGroupComponentOutline(
@@ -643,7 +669,7 @@ void CustomLookAndFeel::drawButtonText(juce::Graphics& g,
                                      static_cast<float>(button.getWidth()),
                                      static_cast<float>(button.getHeight()));
     text_rect = text_rect.reduced(
-        resizeSize(fullButtonOutline + fullButtonPadding) * 0.5f);
+        resizeSize(fullButtonOutline + fullButtonPadding * 0.33f) * 0.5f);
 
     g.setColour(button.findColour(OnOffButton_textOffColourId));
     auto font = getLabelFont(boldTypeface);
