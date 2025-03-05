@@ -38,8 +38,6 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
                              juce::ApplicationProperties& properties)
     : processor(p)
     , panelLabel("", "FILTER DESIGN")
-    , typeLabel("", "FILTER TYPE")
-    , shapeLabel("", "FILTER SHAPE")
     , orderLabel("", "FILTER ORDER")
     , cutoffLabel("", "CUTOFF FREQUENCY")
     , rpLabel("", "PASSBAND RIPPLE")
@@ -70,8 +68,6 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     , autoUpdate(false)
 {
     addAndMakeVisible(panelLabel);
-    addAndMakeVisible(typeLabel);
-    addAndMakeVisible(shapeLabel);
     addAndMakeVisible(orderLabel);
     addAndMakeVisible(cutoffLabel);
     addAndMakeVisible(rpLabel);
@@ -86,8 +82,6 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     addAndMakeVisible(applyButton);
 
     panelLabel.setJustificationType(juce::Justification::centredTop);
-    typeLabel.setJustificationType(juce::Justification::centred);
-    shapeLabel.setJustificationType(juce::Justification::centred);
     orderLabel.setJustificationType(juce::Justification::centred);
     cutoffLabel.setJustificationType(juce::Justification::centred);
     rpLabel.setJustificationType(juce::Justification::centred);
@@ -318,12 +312,21 @@ void DesignerPanel::resized()
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
         auto b = claf->getPanelInnerRect(getLocalBounds());
+
+        // Last row (MANUAL/AUTO and UPDATE buttons)
+        auto last_row = b.removeFromBottom(b.getHeight() / 16);
+        autoButton->setBounds(
+            last_row.withTrimmedRight(last_row.getWidth() * 60 / 100));
+        applyButton.setBounds(
+            last_row.withTrimmedLeft(last_row.getWidth() * 45 / 100));
+
         // N Parts =
-        //   7 * 6 + (max params at the same time)
         //   3     + (header)
-        //   4     = (last row + spacer)
-        // 49
-        auto h  = b.getHeight() / 49;
+        //   4 * 2 + (rows with no label)
+        //   7 * 4 + (max rows with label at the same time)
+        //   1     = (bottom spacer)
+        // 40
+        auto h  = b.getHeight() / 40;
         auto h3 = 3 * h;
 
         // Header label
@@ -331,12 +334,10 @@ void DesignerPanel::resized()
 
         // Type combo box
         b.removeFromTop(h);
-        typeLabel.setBounds(b.removeFromTop(h3));
         typeCBox->setBounds(b.removeFromTop(h3));
 
         // Shape combobox
         b.removeFromTop(h);
-        shapeLabel.setBounds(b.removeFromTop(h3));
         shapeCBox->setBounds(b.removeFromTop(h3));
 
         // Order slider
@@ -375,12 +376,5 @@ void DesignerPanel::resized()
                                       rsSlider->getTextBoxWidth(),
                                       rsSlider->getTextBoxHeight());
         }
-
-        // Last row (MANUAL/AUTO and UPDATE buttons)
-        auto last_row = b.removeFromBottom(h3);
-        autoButton->setBounds(
-            last_row.withTrimmedRight(last_row.getWidth() * 60 / 100));
-        applyButton.setBounds(
-            last_row.withTrimmedLeft(last_row.getWidth() * 45 / 100));
     }
 }

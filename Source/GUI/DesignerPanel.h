@@ -114,8 +114,7 @@ private:
         rsSliderListener;
     ButtonListener autoButtonListener;
     PolesAndZerosEQAudioProcessor& processor;
-    juce::Label panelLabel, typeLabel, shapeLabel, orderLabel, cutoffLabel,
-        rpLabel, rsLabel;
+    juce::Label panelLabel, orderLabel, cutoffLabel, rpLabel, rsLabel;
     std::shared_ptr<juce::ComboBox> typeCBox, shapeCBox;
     std::shared_ptr<juce::Slider> orderSlider, cutoffSlider, rpSlider, rsSlider;
     std::shared_ptr<juce::ToggleButton> autoButton;
