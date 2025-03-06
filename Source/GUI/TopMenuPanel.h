@@ -19,6 +19,8 @@ private:
     // =========================================================================
     TextAndImageButton undoButton, redoButton, resetButton, exportButton,
         saveButton, loadButton;
+    juce::Label autoGainLabel;
+    juce::ToggleButton autoGainButton;
     SeparatorComponent sep;
 
     // =========================================================================

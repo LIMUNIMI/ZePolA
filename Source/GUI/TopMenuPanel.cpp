@@ -1,5 +1,6 @@
 #include "TopMenuPanel.h"
 #include "LookAndFeel.h"
+#include "ParameterPanel.h"
 
 // =============================================================================
 TopMenuPanel::TopMenuPanel(VTSAudioProcessor&)
@@ -16,6 +17,7 @@ TopMenuPanel::TopMenuPanel(VTSAudioProcessor&)
                      .release(),
                  juce::Justification::centredRight)
     , resetButton("RESET", nullptr, juce::Justification::centredRight)
+    , autoGainLabel("", "GAIN")
     , exportButton("EXPORT", nullptr, juce::Justification::centredLeft)
     , saveButton("SAVE",
                  juce::Drawable::createFromImageData(
@@ -32,10 +34,14 @@ TopMenuPanel::TopMenuPanel(VTSAudioProcessor&)
     addAndMakeVisible(undoButton);
     addAndMakeVisible(redoButton);
     addAndMakeVisible(resetButton);
+    addAndMakeVisible(autoGainLabel);
+    addAndMakeVisible(autoGainButton);
     addAndMakeVisible(exportButton);
     addAndMakeVisible(saveButton);
     addAndMakeVisible(loadButton);
 
+    Button_setOnOffLabel(autoGainButton, "MAN", "AUTO");
+    autoGainLabel.setJustificationType(juce::Justification::centred);
     sep.drawBottom = true;
 }
 void TopMenuPanel::resized()
@@ -53,6 +59,27 @@ void TopMenuPanel::resized()
         inner.removeFromLeft(pad);
         resetButton.setBounds(inner.removeFromLeft(w));
         inner.removeFromLeft(pad);
+
+        {
+            // Match button to parameter strip
+            auto panel_rects
+                = claf->divideInPanels(getParentComponent()->getLocalBounds());
+            jassert(panel_rects.size() == 5);
+            auto parameterPanelRect    = panel_rects[1];
+            auto parameterPanelRegions = claf->splitProportionalPanel(
+                claf->getPanelInnerRect(parameterPanelRect));
+            jassert(parameterPanelRegions.size() == 5);
+            auto paramaterStripRegions
+                = claf->splitProportionalStrip(parameterPanelRegions[0]);
+            jassert(paramaterStripRegions.size() == 6);
+            autoGainButton.setBounds(
+                paramaterStripRegions[4].withY(0).withHeight(getHeight()));
+            autoGainLabel.setBounds(paramaterStripRegions[3]
+                                        .withY(inner.getY())
+                                        .withHeight(inner.getHeight()));
+        }
+        claf->resizeToggleButton(autoGainButton);
+
         loadButton.setBounds(inner.removeFromRight(w));
         inner.removeFromRight(pad);
         saveButton.setBounds(inner.removeFromRight(w));
