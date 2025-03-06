@@ -50,3 +50,28 @@ public:
                                           bool shouldDrawButtonAsDown)
         = 0;
 };
+
+// =============================================================================
+class TextAndImageButton : public juce::Button
+{
+public:
+    // =============================================================================
+    TextAndImageButton(const juce::String&, juce::Drawable*,
+                       const juce::Justification&);
+
+    // =============================================================================
+    void resized() override;
+
+protected:
+    // =========================================================================
+    void paintButton(Graphics&, bool shouldDrawButtonAsHighlighted,
+                     bool shouldDrawButtonAsDown) override;
+
+private:
+    // =========================================================================
+    std::unique_ptr<juce::Drawable> image;
+    juce::Label label;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TextAndImageButton)
+};

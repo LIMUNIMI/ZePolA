@@ -1,5 +1,6 @@
 #pragma once
 #include "../Parameters.h"
+#include "CustomButtons.h"
 #include "InvisibleGroupComponent.h"
 #include <JuceHeader.h>
 
@@ -16,6 +17,8 @@ public:
 
 private:
     // =========================================================================
+    TextAndImageButton undoButton, redoButton, resetButton, exportButton,
+        saveButton, loadButton;
     SeparatorComponent sep;
 
     // =========================================================================
