@@ -31,7 +31,7 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     plotsPanel = std::make_unique<PlotsPanel>(processor, applicationProperties);
     designerPanel
         = std::make_unique<DesignerPanel>(processor, applicationProperties);
-    masterPanel = std::make_unique<MasterPanel>();
+    masterPanel = std::make_unique<MasterPanel>(processor);
 
     addAndMakeVisible(*parameterPanel.get());
     addAndMakeVisible(*plotsPanel.get());
