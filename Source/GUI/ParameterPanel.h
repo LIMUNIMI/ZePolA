@@ -445,12 +445,12 @@ public:
     ParameterPanel(PolesAndZerosEQAudioProcessor&);
 
     //==========================================================================
-    void paint(Graphics&) override;
     void resized() override;
 
 private:
     // =========================================================================
     std::vector<std::unique_ptr<ParameterStrip>> strips;
+    std::vector<std::unique_ptr<SeparatorComponent>> separators;
     std::vector<std::unique_ptr<juce::Label>> headerLabels;
     juce::Label zplane_label;
     GaussianPlanePanel zplane;
@@ -458,16 +458,4 @@ private:
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterPanel)
-};
-
-// =============================================================================
-/** Look and Feel methods for parameter control panel  */
-class ParameterPanelLookAndFeelMethods
-{
-public:
-    // =========================================================================
-    virtual void drawParameterStripSeparators(juce::Graphics&, float x,
-                                              std::vector<float> y, float width,
-                                              ParameterPanel&)
-        = 0;
 };

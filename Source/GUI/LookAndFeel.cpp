@@ -104,6 +104,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(GroupComponent_backgroundColourId, juce::Colour(0x17b1b1b1));
     setColour(InvisibleGroupComponent_outlineColourId,
               juce::Colours::transparentBlack);
+    // setColour(InvisibleGroupComponent_outlineColourId,
+    //           juce::Colours::red.withAlpha(0.9f));
     setColour(ParameterStripSeparator_fillColourId, juce::Colour(0xffdee0e1));
     // Labels
     setColour(juce::Label::textColourId, juce::Colour(0xff383838));
@@ -192,6 +194,10 @@ double CustomLookAndFeel::getLogPlotLowFreq(double sr) const
 float CustomLookAndFeel::getRelativePointSize() const
 {
     return relativePointSize;
+}
+float CustomLookAndFeel::getGroupComponentThickness() const
+{
+    return resizeSize(groupComponentThickness);
 }
 
 // =============================================================================
@@ -456,6 +462,19 @@ void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
     g.setColour(gc.findColour(InvisibleGroupComponent_outlineColourId));
     g.drawRect(b, resizeSize(1.0f));
 }
+void CustomLookAndFeel::drawSeparator(juce::Graphics& g, int /* x */,
+                                      int /* y */, int width, int height,
+                                      bool drawTop, bool drawBottom,
+                                      bool drawLeft, bool drawRight,
+                                      SeparatorComponent& sc)
+{
+    g.setColour(sc.findColour(ParameterStripSeparator_fillColourId));
+    float t = resizeSize(fullSeparatorThickness);
+    if (drawTop) g.fillRect(0.0f, 0.0f, static_cast<float>(width), t);
+    if (drawBottom) g.fillRect(0.0f, height - t, static_cast<float>(width), t);
+    if (drawLeft) g.fillRect(0.0f, 0.0f, t, static_cast<float>(height));
+    if (drawRight) g.fillRect(width - t, 0.0f, t, static_cast<float>(height));
+}
 juce::Font CustomLookAndFeel::getPopupMenuFont() { return getCustomFont(); }
 juce::Font CustomLookAndFeel::getComboBoxFont(juce::ComboBox&)
 {
@@ -609,17 +628,6 @@ void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
     }
     g.drawRect(label.getLocalBounds());
     // --- End of code edited from juce::LookAndFeel_V2::drawLabel -------------
-}
-void CustomLookAndFeel::drawParameterStripSeparators(juce::Graphics& g, float,
-                                                     std::vector<float> y,
-                                                     float width,
-                                                     ParameterPanel& pp)
-{
-    float x = resizeSize(2.0f * groupComponentThickness);
-    float h = resizeSize(fullSeparatorThickness);
-    width -= 2.0f * x;
-    g.setColour(pp.findColour(ParameterStripSeparator_fillColourId));
-    for (auto i : y) g.fillRect(x, i - h * 0.5f, width, h);
 }
 template <typename ValueType>
 void CustomLookAndFeel::_autoFontScale(juce::Font& font,
