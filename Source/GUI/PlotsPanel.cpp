@@ -217,5 +217,5 @@ void PlotsPanel::paint(juce::Graphics& g)
 void PlotsPanel::recomputePoints()
 {
     shouldRecomputePoints = true;
-    repaint();
+    if (juce::MessageManager::existsAndIsLockedByCurrentThread()) repaint();
 }

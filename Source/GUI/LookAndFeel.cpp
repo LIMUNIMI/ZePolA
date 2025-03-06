@@ -94,6 +94,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , fullComboBoxArrowWidth(8.0f)
     , fullComboBoxArrowHeight(5.0f)
     , popupMenuSeparatorTextAlpha(0.3f)
+    , fullMasterLabelSize(12)
+    , fullMasterButtonSize(28)
 {
     // Panels
     setColour(juce::ResizableWindow::backgroundColourId,
@@ -415,6 +417,19 @@ std::vector<juce::Rectangle<int>> CustomLookAndFeel::configureDesignerPanel(
 
     return regions;
 }
+std::vector<juce::Rectangle<int>>
+CustomLookAndFeel::configureMasterPanel(const juce::Rectangle<int>& r) const
+{
+    auto inner = getPanelInnerRect(r);
+
+    auto sliderLabelRect = inner.removeFromTop(resizeSize(fullMasterLabelSize));
+    auto buttonRect = inner.removeFromBottom(resizeSize(fullMasterButtonSize));
+    auto buttonLabelRect
+        = inner.removeFromBottom(resizeSize(fullMasterLabelSize));
+    inner.removeFromBottom(resizeSize(fullMasterLabelSize));
+
+    return {sliderLabelRect, inner, buttonLabelRect, buttonRect};
+}
 
 // =============================================================================
 void CustomLookAndFeel::drawGroupComponentOutline(
@@ -479,39 +494,77 @@ juce::Font CustomLookAndFeel::getCustomFont()
 {
     return getCustomFontResized(fullLabelFontSize);
 }
-void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y,
-                                         int width, int height, float sliderPos,
-                                         float /* minSliderPos */,
-                                         float /* maxSliderPos */,
-                                         const juce::Slider::SliderStyle,
-                                         juce::Slider& slider)
+#define _FILL_FTYPE std::function<void(juce::Rectangle<float>)>
+#define _DRAW_FTYPE std::function<void(juce::Rectangle<float>, float)>
+void CustomLookAndFeel::drawLinearSlider(
+    juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
+    float minSliderPos, float maxSliderPos,
+    const juce::Slider::SliderStyle sliderStyle, juce::Slider& slider)
 {
     juce::Colour trackColour = slider.findColour(juce::Slider::trackColourId);
     juce::Colour thumbColour = slider.findColour(juce::Slider::thumbColourId);
     juce::Colour backgroundColour
         = slider.findColour(juce::Slider::backgroundColourId);
 
+    auto sh     = resizeSize(fullSliderHeight);
+    auto st_rad = resizeSize(fullSliderThumbRadius);
+    std::unique_ptr<juce::Rectangle<float>> track_rect, thumb_rect;
+    std::unique_ptr<_FILL_FTYPE> fillFoo;
+    std::unique_ptr<_DRAW_FTYPE> drawFoo;
+    switch (sliderStyle)
+    {
+    case juce::Slider::SliderStyle::LinearHorizontal:
+        track_rect = std::make_unique<juce::Rectangle<float>>(
+            static_cast<float>(x), y + (height - sh) * 0.5f,
+            static_cast<float>(width), sh);
+        thumb_rect = std::make_unique<juce::Rectangle<float>>(
+            sliderPos - st_rad, y + height * 0.5f - st_rad, 2.0f * st_rad,
+            2.0f * st_rad);
+        fillFoo = std::make_unique<_FILL_FTYPE>([&g](juce::Rectangle<float> r)
+                                                { g.fillEllipse(r); });
+        drawFoo = std::make_unique<_DRAW_FTYPE>(
+            [&g](juce::Rectangle<float> r, float t) { g.drawEllipse(r, t); });
+        break;
+    case juce::Slider::SliderStyle::LinearVertical:
+        track_rect = std::make_unique<juce::Rectangle<float>>(
+            static_cast<float>(x) + static_cast<float>(width - sh) * 0.5f,
+            static_cast<float>(y), sh, static_cast<float>(height));
+        thumb_rect = std::make_unique<juce::Rectangle<float>>(
+            static_cast<float>(x) + width * 0.5f - st_rad * buttonAspectRatio,
+            y + sliderPos - 3.0f * st_rad, 2.0f * buttonAspectRatio * st_rad,
+            2.0f * st_rad);
+        fillFoo = std::make_unique<_FILL_FTYPE>(
+            [&g, st_rad](juce::Rectangle<float> r)
+            { g.fillRoundedRectangle(r, st_rad); });
+        drawFoo = std::make_unique<_DRAW_FTYPE>(
+            [&g, st_rad](juce::Rectangle<float> r, float t)
+            { g.drawRoundedRectangle(r, st_rad, t); });
+        break;
+    default:
+        LookAndFeel_V4::drawLinearSlider(g, x, y, width, height, sliderPos,
+                                         minSliderPos, maxSliderPos,
+                                         sliderStyle, slider);
+        return;
+        break;
+    }
     if (!ParameterStrip::parentComponentIsActive(slider))
     {
         trackColour      = trackColour.brighter(inactiveBrightness);
         thumbColour      = thumbColour.brighter(inactiveBrightness);
         backgroundColour = backgroundColour.brighter(inactiveBrightness);
     }
-
-    auto sh = resizeSize(fullSliderHeight);
-    g.setColour(trackColour);
-    g.fillRoundedRectangle(static_cast<float>(x), y + (height - sh) * 0.5f,
-                           static_cast<float>(width), sh, sh * 0.5f);
-
-    auto st_rad = resizeSize(fullSliderThumbRadius);
-    juce::Rectangle<float> st_rect(sliderPos - st_rad,
-                                   y + height * 0.5f - st_rad, 2.0f * st_rad,
-                                   2.0f * st_rad);
-
-    g.setColour(thumbColour);
-    g.fillEllipse(st_rect);
-    g.setColour(backgroundColour);
-    g.drawEllipse(st_rect, resizeSize(1.0f));
+    if (track_rect)
+    {
+        g.setColour(trackColour);
+        g.fillRoundedRectangle(*track_rect.get(), sh * 0.5f);
+    }
+    if (thumb_rect && fillFoo && drawFoo)
+    {
+        g.setColour(thumbColour);
+        (*fillFoo.get())(*thumb_rect.get());
+        g.setColour(backgroundColour);
+        (*drawFoo.get())(*thumb_rect.get(), resizeSize(1.0f));
+    }
 }
 void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
 {
