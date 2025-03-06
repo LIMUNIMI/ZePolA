@@ -26,14 +26,13 @@ void MasterPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
-        auto rect = claf->getPanelInnerRect(getLocalBounds());
-        bypassButton.setBounds(rect.removeFromBottom(claf->resizeSize(28)));
-        bypassLabel.setBounds(rect.removeFromBottom(claf->resizeSize(12)));
-        claf->resizeToggleButton(bypassButton);
-        rect.removeFromBottom(claf->resizeSize(12));
+        auto regions = claf->configureMasterPanel(getLocalBounds());
+        gainLabel.setBounds(regions[0]);
+        gainSlider.setBounds(regions[1]);
+        bypassLabel.setBounds(regions[2]);
+        bypassButton.setBounds(regions[3]);
 
-        gainLabel.setBounds(rect.removeFromTop(claf->resizeSize(12)));
-        gainSlider.setBounds(rect);
+        claf->resizeToggleButton(bypassButton);
         gainSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false,
                                    gainSlider.getWidth(),
                                    bypassButton.getHeight());

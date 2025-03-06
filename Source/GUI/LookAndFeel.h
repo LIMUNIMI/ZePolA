@@ -224,6 +224,9 @@ public:
     std::vector<juce::Rectangle<int>>
     configureDesignerPanel(const juce::Rectangle<int>&, int* row_height,
                            int* spacer_height) const;
+    /** Configure rectangles and sizes for the master control panel */
+    std::vector<juce::Rectangle<int>>
+    configureMasterPanel(const juce::Rectangle<int>&) const;
 
 private:
     // =========================================================================
@@ -268,6 +271,9 @@ private:
         popupMenuSeparatorTextAlpha;
     int designerMaxParams, designerMaxSpacers;
     std::vector<int> designerLastRowProportions;
+
+    // =========================================================================
+    int fullMasterLabelSize, fullMasterButtonSize;
 
     // =========================================================================
     void _drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
