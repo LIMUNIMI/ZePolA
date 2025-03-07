@@ -1,5 +1,5 @@
 #pragma once
-#include "../Parameters.h"
+#include "../PluginProcessor.h"
 #include "ApplicationPropertiesListeners.h"
 #include "CustomButtons.h"
 #include "InvisibleGroupComponent.h"
@@ -11,7 +11,7 @@ class TopMenuPanel : public InvisibleGroupComponent
 {
 public:
     // =========================================================================
-    TopMenuPanel(VTSAudioProcessor&, juce::ApplicationProperties&);
+    TopMenuPanel(PolesAndZerosEQAudioProcessor&, juce::ApplicationProperties&);
 
     // =========================================================================
     /** Button callback for saving parameters */
@@ -36,7 +36,7 @@ private:
         presetLocationAttachment;
 
     // =========================================================================
-    VTSAudioProcessor& processor;
+    PolesAndZerosEQAudioProcessor& processor;
     TextAndImageButton undoButton, redoButton, resetButton, exportButton,
         saveButton, loadButton;
     juce::Label autoGainLabel;

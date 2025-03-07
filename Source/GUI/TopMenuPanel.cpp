@@ -3,7 +3,7 @@
 #include "ParameterPanel.h"
 
 // =============================================================================
-TopMenuPanel::TopMenuPanel(VTSAudioProcessor& p,
+TopMenuPanel::TopMenuPanel(PolesAndZerosEQAudioProcessor& p,
                            juce::ApplicationProperties& properties)
     : processor(p)
     , undoButton("UNDO",
@@ -133,7 +133,44 @@ void TopMenuPanel::loadParameters()
         }
     }
 }
-void TopMenuPanel::exportParameters() { DBG("EXPORT PARAMETERS"); }
+void TopMenuPanel::exportParameters()
+{
+    juce::FileChooser chooser("Select the save location...",
+                              *getPresetLocation().get(), "*.txt");
+    if (chooser.browseForFileToSave(true))
+    {
+        auto file = chooser.getResult();
+        if (file.existsAsFile())
+            file.deleteFile();
+        else if (file.exists())
+        {
+            DBG("A directory was selected: '" << file.getFullPathName() << "'");
+            jassertfalse;
+            return;
+        }
+        juce::FileOutputStream outputStream(file);
+        if (outputStream.openedOk())
+        {
+            // TODO: Decide what to actually output
+            outputStream.setPosition(0);
+            outputStream.truncate();
+            outputStream << "Sample rate: "
+                         << juce::String(processor.getSampleRate()) << "\n";
+            for (const auto& coeffs : processor.getCoefficients())
+            {
+                outputStream << "\n";
+                for (auto c : coeffs) outputStream << juce::String(c) << "\n";
+            }
+            setPresetLocation(file);
+        }
+        else
+        {
+            DBG("Something wrong happened while opening the file for writing: '"
+                << file.getFullPathName() << "'");
+            jassertfalse;
+        }
+    }
+}
 
 // =============================================================================
 void TopMenuPanel::resized()

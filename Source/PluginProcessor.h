@@ -105,6 +105,8 @@ public:
     int getNElements() const;
     /** Get the DTFT of the filter */
     std::complex<double> dtft(double omega) const;
+    /** Get the time-domain coefficients of the filter */
+    std::vector<std::array<double, 3>> getCoefficients() const;
     /** Clear filter memory */
     void resetMemory();
     /** Activate or deactivate all filter elements */

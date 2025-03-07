@@ -272,6 +272,11 @@ std::complex<double> PolesAndZerosEQAudioProcessor::dtft(double omega) const
     return multiChannelCascade[0].dtft(omega)
            * static_cast<double>(gain.getGainLinear());
 }
+std::vector<std::array<double, 3>>
+PolesAndZerosEQAudioProcessor::getCoefficients() const
+{
+    return multiChannelCascade[0].getCoefficients();
+}
 void PolesAndZerosEQAudioProcessor::resetMemory()
 {
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();
