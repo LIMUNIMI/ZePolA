@@ -72,7 +72,7 @@ TextAndImageButton::TextAndImageButton(const juce::String& name,
     , label(name, _tandiButtPadding + name + _tandiButtPadding)
 {
     if (image) addChildComponent(*image.get());
-    addAndMakeVisible(label);
+    addChildComponent(label);
 
     label.setJustificationType(j);
 }
@@ -83,6 +83,8 @@ void TextAndImageButton::paintButton(Graphics& g,
     if (image)
         image->drawWithin(g, image->getBounds().toFloat(),
                           juce::RectanglePlacement::centred, 1.0);
+    g.setOrigin(label.getBounds().getTopLeft());
+    getLookAndFeel().drawLabel(g, label);
 }
 void TextAndImageButton::resized()
 {
