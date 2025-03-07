@@ -118,7 +118,8 @@ ApplicationPropertiesComponentAttachment<ComponentType, ComponentListenerType,
         = applicationProperties.getCommonSettings(true))
     {
         pf->addChangeListener(&propertyListener);
-        propertyListener.changeListenerCallback(pf);
+        if (pf->containsKey(propertyID))
+            propertyListener.changeListenerCallback(pf);
     }
 }
 template <typename ComponentType, typename ComponentListenerType,
