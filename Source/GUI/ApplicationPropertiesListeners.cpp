@@ -1,4 +1,5 @@
 #include "ApplicationPropertiesListeners.h"
+#include "../Macros.h"
 
 // =============================================================================
 ApplicationPropertyButtonListener::ApplicationPropertyButtonListener(
@@ -6,8 +7,6 @@ ApplicationPropertyButtonListener::ApplicationPropertyButtonListener(
     : propertyID(pID), applicationProperties(properties)
 {
 }
-
-// =============================================================================
 void ApplicationPropertyButtonListener::buttonClicked(juce::Button* b)
 {
     if (juce::PropertiesFile* pf
@@ -25,8 +24,6 @@ ButtonApplicationPropertyListener::ButtonApplicationPropertyListener(
     : propertyID(pID), button(btn)
 {
 }
-
-// =============================================================================
 void ButtonApplicationPropertyListener::changeListenerCallback(
     juce::ChangeBroadcaster* source)
 {
@@ -41,8 +38,6 @@ ApplicationPropertyComboBoxListener::ApplicationPropertyComboBoxListener(
     : propertyID(pID), applicationProperties(properties)
 {
 }
-
-// =============================================================================
 void ApplicationPropertyComboBoxListener::comboBoxChanged(
     juce::ComboBox* comboBoxThatHasChanged)
 {
@@ -57,8 +52,6 @@ ComboBoxApplicationPropertyListener::ComboBoxApplicationPropertyListener(
     : propertyID(pID), comboBox(cb)
 {
 }
-
-// =============================================================================
 void ComboBoxApplicationPropertyListener::changeListenerCallback(
     juce::ChangeBroadcaster* source)
 {
@@ -73,8 +66,6 @@ ApplicationPropertySliderListener::ApplicationPropertySliderListener(
     : propertyID(pID), applicationProperties(properties)
 {
 }
-
-// =============================================================================
 void ApplicationPropertySliderListener::sliderValueChanged(juce::Slider* slider)
 {
     if (juce::PropertiesFile* pf
@@ -88,8 +79,6 @@ SliderApplicationPropertyListener::SliderApplicationPropertyListener(
     : propertyID(pID), slider(s)
 {
 }
-
-// =============================================================================
 void SliderApplicationPropertyListener::changeListenerCallback(
     juce::ChangeBroadcaster* source)
 {
@@ -97,6 +86,51 @@ void SliderApplicationPropertyListener::changeListenerCallback(
         slider->setValue(std::clamp(pf->getDoubleValue(propertyID, false),
                                     slider->getMinimum(), slider->getMaximum()),
                          juce::NotificationType::sendNotification);
+}
+
+// =============================================================================
+ApplicationPropertyValueListener::ApplicationPropertyValueListener(
+    const juce::String& pID, juce::ApplicationProperties& properties)
+    : propertyID(pID), applicationProperties(properties)
+{
+}
+void ApplicationPropertyValueListener::valueChanged(juce::Value& v)
+{
+    if (juce::PropertiesFile* pf
+        = applicationProperties.getCommonSettings(true))
+        pf->setValue(propertyID, v);
+}
+
+// =============================================================================
+ValueApplicationPropertyListener::ValueApplicationPropertyListener(
+    const juce::String& pID, std::shared_ptr<juce::Value> v,
+    ValueApplicationPropertyListener::ValueType t)
+    : propertyID(pID), value(v), type(t)
+{
+}
+
+void ValueApplicationPropertyListener::setValueType(ValueType t) { type = t; }
+void ValueApplicationPropertyListener::changeListenerCallback(
+    juce::ChangeBroadcaster* source)
+{
+    if (auto pf = dynamic_cast<juce::PropertiesFile*>(source)) switch (type)
+        {
+        default:
+            UNHANDLED_SWITCH_CASE("Unhandled case for property value type");
+        case ValueApplicationPropertyListener::ValueType::UNSET: break;
+        case ValueApplicationPropertyListener::ValueType::STRING:
+            value->setValue(pf->getValue(propertyID));
+            break;
+        case ValueApplicationPropertyListener::ValueType::INT:
+            value->setValue(pf->getIntValue(propertyID));
+            break;
+        case ValueApplicationPropertyListener::ValueType::DOUBLE:
+            value->setValue(pf->getDoubleValue(propertyID));
+            break;
+        case ValueApplicationPropertyListener::ValueType::BOOL:
+            value->setValue(pf->getBoolValue(propertyID));
+            break;
+        }
 }
 
 // =============================================================================
@@ -132,6 +166,21 @@ ApplicationPropertiesComponentAttachment<ComponentType, ComponentListenerType,
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
         pf->removeChangeListener(&propertyListener);
+}
+
+// =============================================================================
+ApplicationPropertiesValueAttachment::ApplicationPropertiesValueAttachment(
+    juce::ApplicationProperties& properties, const juce::String& pID,
+    std::shared_ptr<juce::Value> v,
+    ValueApplicationPropertyListener::ValueType t)
+    : ApplicationPropertiesComponentAttachment<
+        juce::Value, ApplicationPropertyValueListener,
+        ValueApplicationPropertyListener>(properties, pID, v)
+{
+    propertyListener.setValueType(t);
+    if (juce::PropertiesFile* pf
+        = applicationProperties.getCommonSettings(true))
+        propertyListener.changeListenerCallback(pf);
 }
 
 // =============================================================================

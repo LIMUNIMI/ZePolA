@@ -1,5 +1,6 @@
 #pragma once
 #include "../Parameters.h"
+#include "ApplicationPropertiesListeners.h"
 #include "CustomButtons.h"
 #include "InvisibleGroupComponent.h"
 #include <JuceHeader.h>
@@ -10,7 +11,7 @@ class TopMenuPanel : public InvisibleGroupComponent
 {
 public:
     // =========================================================================
-    TopMenuPanel(VTSAudioProcessor&);
+    TopMenuPanel(VTSAudioProcessor&, juce::ApplicationProperties&);
 
     // =========================================================================
     /** Button callback for saving parameters */
@@ -23,9 +24,16 @@ public:
     // =========================================================================
     void resized() override;
 
+    // =========================================================================
+    /** Set the location for presets */
+    void setPresetLocation(const juce::File&);
+    /** Get the location for presets */
+    std::shared_ptr<juce::File> getPresetLocation() const;
+
 private:
     // =========================================================================
-    void updatePresetLocation(const juce::File&);
+    std::unique_ptr<ApplicationPropertiesValueAttachment>
+        presetLocationAttachment;
 
     // =========================================================================
     VTSAudioProcessor& processor;
@@ -34,7 +42,7 @@ private:
     juce::Label autoGainLabel;
     juce::ToggleButton autoGainButton;
     SeparatorComponent sep;
-    juce::File presetLocation;
+    std::shared_ptr<juce::Value> presetLocation;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TopMenuPanel)

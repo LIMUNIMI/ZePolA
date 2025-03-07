@@ -3,7 +3,8 @@
 #include "ParameterPanel.h"
 
 // =============================================================================
-TopMenuPanel::TopMenuPanel(VTSAudioProcessor& p)
+TopMenuPanel::TopMenuPanel(VTSAudioProcessor& p,
+                           juce::ApplicationProperties& properties)
     : processor(p)
     , undoButton("UNDO",
                  juce::Drawable::createFromImageData(
@@ -30,8 +31,7 @@ TopMenuPanel::TopMenuPanel(VTSAudioProcessor& p)
                      BinaryData::load_icon_svg, BinaryData::load_icon_svgSize)
                      .release(),
                  juce::Justification::centredLeft)
-    , presetLocation(juce::File::getSpecialLocation(
-          juce::File::SpecialLocationType::userDocumentsDirectory))
+    , presetLocation(std::make_shared<juce::Value>())
 {
     addAndMakeVisible(sep);
     addAndMakeVisible(undoButton);
@@ -55,19 +55,30 @@ TopMenuPanel::TopMenuPanel(VTSAudioProcessor& p)
     exportButton.onClick = std::bind(&TopMenuPanel::exportParameters, this);
     saveButton.onClick   = std::bind(&TopMenuPanel::saveParameters, this);
     loadButton.onClick   = std::bind(&TopMenuPanel::loadParameters, this);
+
+    presetLocationAttachment
+        = std::make_unique<ApplicationPropertiesValueAttachment>(
+            properties, "presetLocation", presetLocation,
+            ValueApplicationPropertyListener::ValueType::STRING);
+    if (presetLocation->toString().isEmpty())
+        setPresetLocation(juce::File::getSpecialLocation(
+            juce::File::SpecialLocationType::userDocumentsDirectory));
 }
 
 // =============================================================================
-void TopMenuPanel::updatePresetLocation(const juce::File& f)
+void TopMenuPanel::setPresetLocation(const juce::File& f)
 {
-    DBG("New preset location: '" << f.getFullPathName() << "'");
-    presetLocation = (f.existsAsFile()) ? f.getParentDirectory() : f;
-    DBG("  -> '" << presetLocation.getFullPathName() << "'");
+    presetLocation->setValue(
+        ((f.existsAsFile()) ? f.getParentDirectory() : f).getFullPathName());
+}
+std::shared_ptr<juce::File> TopMenuPanel::getPresetLocation() const
+{
+    return std::make_shared<juce::File>(presetLocation->toString());
 }
 void TopMenuPanel::saveParameters()
 {
-    juce::FileChooser chooser("Select the save location...", presetLocation,
-                              "*.xml");
+    juce::FileChooser chooser("Select the save location...",
+                              *getPresetLocation().get(), "*.xml");
     if (chooser.browseForFileToSave(true))
     {
         auto file = chooser.getResult();
@@ -85,7 +96,7 @@ void TopMenuPanel::saveParameters()
             juce::MemoryBlock destData;
             processor.getStateInformation(destData);
             outputStream.write(destData.getData(), destData.getSize());
-            updatePresetLocation(file);
+            setPresetLocation(file);
         }
         else
         {
@@ -97,8 +108,8 @@ void TopMenuPanel::saveParameters()
 }
 void TopMenuPanel::loadParameters()
 {
-    juce::FileChooser chooser("Select the preset to load...", presetLocation,
-                              "*.xml");
+    juce::FileChooser chooser("Select the preset to load...",
+                              *getPresetLocation().get(), "*.xml");
     if (chooser.browseForFileToOpen())
     {
         auto file = chooser.getResult();
@@ -112,6 +123,7 @@ void TopMenuPanel::loadParameters()
         if (file.loadFileAsData(srcData))
         {
             processor.setStateInformation(srcData.getData(), srcData.getSize());
+            setPresetLocation(file);
         }
         else
         {
