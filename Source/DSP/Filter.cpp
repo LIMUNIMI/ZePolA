@@ -266,6 +266,10 @@ FilterElement& FilterElementCascade::operator[](size_t i)
 {
     return elements[i];
 }
+const FilterElement& FilterElementCascade::operator[](size_t i) const
+{
+    return elements[i];
+}
 
 // =========================================================================
 std::complex<double> FilterElementCascade::dtft(double omega) const

@@ -107,6 +107,8 @@ public:
     std::complex<double> dtft(double omega) const;
     /** Get the time-domain coefficients of the filter */
     std::vector<std::array<double, 3>> getCoefficients() const;
+    /** Get the auto gain value for the specified element */
+    double getElementAutoGain(int) const;
     /** Clear filter memory */
     void resetMemory();
     /** Activate or deactivate all filter elements */

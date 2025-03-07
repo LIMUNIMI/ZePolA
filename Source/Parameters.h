@@ -10,6 +10,7 @@
 #define GAIN_ID_PREFIX "GAIN_"
 #define ACTIVE_ID_PREFIX "ACTIVE_"
 #define TYPE_ID_PREFIX "TYPE_"
+#define AUTO_GAIN_PROPERTY_ID "autoGain"
 
 // =============================================================================
 // Generic constants & macros

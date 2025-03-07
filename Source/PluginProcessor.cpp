@@ -277,6 +277,11 @@ PolesAndZerosEQAudioProcessor::getCoefficients() const
 {
     return multiChannelCascade[0].getCoefficients();
 }
+double PolesAndZerosEQAudioProcessor::getElementAutoGain(int i) const
+{
+    return (i < 0 || i >= getNElements()) ? 0.0
+                                          : -multiChannelCascade[0][i].rmsgDb();
+}
 void PolesAndZerosEQAudioProcessor::resetMemory()
 {
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();

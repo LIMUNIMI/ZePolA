@@ -121,6 +121,7 @@ private:
     juce::TextButton applyButton;
     FilterParameters filterParams;
     bool autoUpdate;
+    juce::ApplicationProperties& applicationProperties;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DesignerPanel)

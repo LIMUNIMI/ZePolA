@@ -3,6 +3,80 @@
 #include "ParameterPanel.h"
 
 // =============================================================================
+AutoGainAttachment::ParameterListener::ParameterListener(AutoGainAttachment* a)
+    : aga(a)
+{
+}
+void AutoGainAttachment::ParameterListener::parameterChanged(
+    const juce::String&, float)
+{
+    if (aga)
+    {
+        aga->conditionalTrigger();
+    }
+}
+
+// =============================================================================
+AutoGainAttachment::ButtonListener::ButtonListener(AutoGainAttachment* a)
+    : aga(a)
+{
+}
+void AutoGainAttachment::ButtonListener::buttonClicked(juce::Button* b)
+{
+    if (aga)
+    {
+        aga->setState(b->getToggleState());
+        aga->conditionalTrigger();
+    }
+}
+void AutoGainAttachment::ButtonListener::buttonStateChanged(juce::Button*) {}
+
+// =============================================================================
+AutoGainAttachment::AutoGainAttachment(PolesAndZerosEQAudioProcessor& p,
+                                       juce::Button* b, int idx)
+    : processor(p)
+    , button(b)
+    , i(idx)
+    , autoGainListener(this)
+    , paramListener(this)
+    , doAutoGain(false)
+{
+    juce::String i_str(i);
+    gain_id = GAIN_ID_PREFIX + i_str;
+    processor.addParameterListener(MAGNITUDE_ID_PREFIX + i_str, &paramListener);
+    processor.addParameterListener(PHASE_ID_PREFIX + i_str, &paramListener);
+    processor.addParameterListener(TYPE_ID_PREFIX + i_str, &paramListener);
+    // processor.addParameterListener(gain_id, &paramListener);
+    if (button) button->addListener(&autoGainListener);
+}
+AutoGainAttachment::~AutoGainAttachment()
+{
+    juce::String i_str(i);
+    processor.removeParameterListener(MAGNITUDE_ID_PREFIX + i_str,
+                                      &paramListener);
+    processor.removeParameterListener(PHASE_ID_PREFIX + i_str, &paramListener);
+    processor.removeParameterListener(TYPE_ID_PREFIX + i_str, &paramListener);
+    // processor.removeParameterListener(gain_id, &paramListener);
+    if (button) button->removeListener(&autoGainListener);
+}
+bool AutoGainAttachment::conditionalTrigger()
+{
+    if (doAutoGain)
+    {
+        // DBG("AUTO GAIN TRIGGERED: " << i);
+        auto f = static_cast<float>(processor.getElementAutoGain(i));
+        if (processor.getParameterUnnormValue(gain_id) != f)
+        {
+            // DBG("  " << processor.getParameterUnnormValue(gain_id) << " -> "
+            //          << f);
+            processor.setParameterValue(gain_id, f);
+        }
+    }
+    return doAutoGain;
+}
+void AutoGainAttachment::setState(bool active) { doAutoGain = active; }
+
+// =============================================================================
 TopMenuPanel::TopMenuPanel(PolesAndZerosEQAudioProcessor& p,
                            juce::ApplicationProperties& properties)
     : processor(p)
@@ -57,13 +131,17 @@ TopMenuPanel::TopMenuPanel(PolesAndZerosEQAudioProcessor& p,
     saveButton.onClick   = std::bind(&TopMenuPanel::saveParameters, this);
     loadButton.onClick   = std::bind(&TopMenuPanel::loadParameters, this);
 
+    auto n = processor.getNElements();
+    for (auto i = 0; i < n; ++i)
+        paramAGAttachments.push_back(std::make_unique<AutoGainAttachment>(
+            processor, autoGainButton.get(), i));
     presetLocationAttachment
         = std::make_unique<ApplicationPropertiesValueAttachment>(
             properties, "presetLocation", presetLocation,
             ValueApplicationPropertyListener::ValueType::STRING);
     autoGainAttachment
         = std::make_unique<ApplicationPropertiesButtonAttachment>(
-            properties, "autoGain", autoGainButton);
+            properties, AUTO_GAIN_PROPERTY_ID, autoGainButton);
     if (presetLocation->toString().isEmpty())
         setPresetLocation(juce::File::getSpecialLocation(
             juce::File::SpecialLocationType::userDocumentsDirectory));

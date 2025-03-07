@@ -31,7 +31,7 @@ void DesignerPanel::ButtonListener::buttonClicked(juce::Button* b)
 {
     callback(b->getToggleState());
 }
-void DesignerPanel::ButtonListener::buttonStateChanged(juce::Button*) { }
+void DesignerPanel::ButtonListener::buttonStateChanged(juce::Button*) {}
 
 // =============================================================================
 DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
@@ -66,6 +66,7 @@ DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
     , autoButtonListener(
           std::bind(&DesignerPanel::setAuto, this, std::placeholders::_1))
     , autoUpdate(false)
+    , applicationProperties(properties)
 {
     addAndMakeVisible(panelLabel);
     addAndMakeVisible(orderLabel);
@@ -281,11 +282,19 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z,
     double m = abs(z), a = std::arg(z) / juce::MathConstants<double>::pi;
     processor.setParameterValue(TYPE_ID_PREFIX + i_str,
                                 FilterElement::typeToFloat(t));
-    processor.setParameterValue(GAIN_ID_PREFIX + i_str,
-                                static_cast<float>(gain));
     processor.setParameterValue(MAGNITUDE_ID_PREFIX + i_str,
                                 static_cast<float>(m));
     processor.setParameterValue(PHASE_ID_PREFIX + i_str, static_cast<float>(a));
+    {
+        juce::PropertiesFile* pf
+            = applicationProperties.getCommonSettings(true);
+        processor.setParameterValue(
+            GAIN_ID_PREFIX + i_str,
+            static_cast<float>(
+                (pf && pf->getBoolValue(AUTO_GAIN_PROPERTY_ID, false))
+                    ? processor.getElementAutoGain(i)
+                    : gain));
+    }
     processor.setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
     ONLY_ON_DEBUG(if (!autoUpdate) {
         juce::String prefix("?");

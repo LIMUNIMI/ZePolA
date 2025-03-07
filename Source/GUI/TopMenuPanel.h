@@ -6,6 +6,72 @@
 #include <JuceHeader.h>
 
 // =============================================================================
+/** Class for handling the listeners involved in the automatic gain adjustment
+ * routine */
+class AutoGainAttachment
+{
+public:
+    // =========================================================================
+    class ParameterListener
+        : public juce::AudioProcessorValueTreeState::Listener
+    {
+    public:
+        // =====================================================================
+        ParameterListener(AutoGainAttachment*);
+        void parameterChanged(const juce::String&, float) override;
+
+    private:
+        // =====================================================================
+        AutoGainAttachment* aga;
+
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterListener)
+    };
+
+    // =========================================================================
+    class ButtonListener : public juce::Button::Listener
+    {
+    public:
+        // =====================================================================
+        ButtonListener(AutoGainAttachment*);
+
+        // =====================================================================
+        void buttonClicked(juce::Button*) override;
+        void buttonStateChanged(juce::Button*) override;
+
+    private:
+        // =====================================================================
+        AutoGainAttachment* aga;
+
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ButtonListener)
+    };
+
+    // =========================================================================
+    AutoGainAttachment(PolesAndZerosEQAudioProcessor&, juce::Button*, int idx);
+    ~AutoGainAttachment();
+
+    // =========================================================================
+    /** Trigger gain adjustment conditionally to the activation state */
+    bool conditionalTrigger();
+    /** Set the activation state */
+    void setState(bool active);
+
+private:
+    // =========================================================================
+    int i;
+    juce::String gain_id;
+    PolesAndZerosEQAudioProcessor& processor;
+    ButtonListener autoGainListener;
+    ParameterListener paramListener;
+    juce::Button* button;
+    bool doAutoGain;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AutoGainAttachment)
+};
+
+// =============================================================================
 /** Top menu panel  */
 class TopMenuPanel : public InvisibleGroupComponent
 {
@@ -35,6 +101,7 @@ private:
     std::unique_ptr<ApplicationPropertiesValueAttachment>
         presetLocationAttachment;
     std::unique_ptr<ApplicationPropertiesButtonAttachment> autoGainAttachment;
+    std::vector<std::unique_ptr<AutoGainAttachment>> paramAGAttachments;
 
     // =========================================================================
     PolesAndZerosEQAudioProcessor& processor;
