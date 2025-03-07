@@ -32,18 +32,19 @@ TopMenuPanel::TopMenuPanel(PolesAndZerosEQAudioProcessor& p,
                      .release(),
                  juce::Justification::centredLeft)
     , presetLocation(std::make_shared<juce::Value>())
+    , autoGainButton(std::make_shared<juce::ToggleButton>())
 {
     addAndMakeVisible(sep);
     addAndMakeVisible(undoButton);
     addAndMakeVisible(redoButton);
     addAndMakeVisible(resetButton);
     addAndMakeVisible(autoGainLabel);
-    addAndMakeVisible(autoGainButton);
+    addAndMakeVisible(*autoGainButton.get());
     addAndMakeVisible(exportButton);
     addAndMakeVisible(saveButton);
     addAndMakeVisible(loadButton);
 
-    Button_setOnOffLabel(autoGainButton, "MAN", "AUTO");
+    Button_setOnOffLabel(*autoGainButton.get(), "MAN", "AUTO");
     autoGainLabel.setJustificationType(juce::Justification::centred);
     sep.drawBottom = true;
     undoButton.onClick
@@ -60,6 +61,9 @@ TopMenuPanel::TopMenuPanel(PolesAndZerosEQAudioProcessor& p,
         = std::make_unique<ApplicationPropertiesValueAttachment>(
             properties, "presetLocation", presetLocation,
             ValueApplicationPropertyListener::ValueType::STRING);
+    autoGainAttachment
+        = std::make_unique<ApplicationPropertiesButtonAttachment>(
+            properties, "autoGain", autoGainButton);
     if (presetLocation->toString().isEmpty())
         setPresetLocation(juce::File::getSpecialLocation(
             juce::File::SpecialLocationType::userDocumentsDirectory));
@@ -201,13 +205,13 @@ void TopMenuPanel::resized()
             auto paramaterStripRegions
                 = claf->splitProportionalStrip(parameterPanelRegions[0]);
             jassert(paramaterStripRegions.size() == 6);
-            autoGainButton.setBounds(
+            autoGainButton->setBounds(
                 paramaterStripRegions[4].withY(0).withHeight(getHeight()));
             autoGainLabel.setBounds(paramaterStripRegions[3]
                                         .withY(inner.getY())
                                         .withHeight(inner.getHeight()));
         }
-        claf->resizeToggleButton(autoGainButton);
+        claf->resizeToggleButton(*autoGainButton.get());
 
         loadButton.setBounds(inner.removeFromRight(w));
         inner.removeFromRight(pad);

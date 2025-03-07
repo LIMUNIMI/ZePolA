@@ -34,13 +34,14 @@ private:
     // =========================================================================
     std::unique_ptr<ApplicationPropertiesValueAttachment>
         presetLocationAttachment;
+    std::unique_ptr<ApplicationPropertiesButtonAttachment> autoGainAttachment;
 
     // =========================================================================
     PolesAndZerosEQAudioProcessor& processor;
     TextAndImageButton undoButton, redoButton, resetButton, exportButton,
         saveButton, loadButton;
     juce::Label autoGainLabel;
-    juce::ToggleButton autoGainButton;
+    std::shared_ptr<juce::ToggleButton> autoGainButton;
     SeparatorComponent sep;
     std::shared_ptr<juce::Value> presetLocation;
 
