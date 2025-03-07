@@ -21,8 +21,8 @@ void Parameters::resetParameterValue(juce::RangedAudioParameter* p)
 // ============================================================================
 VTSAudioProcessor::VTSAudioProcessor(
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params,
-    const juce::Identifier& valueTreeType, juce::UndoManager* undoManagerToUse)
-    : valueTreeState(*this, undoManagerToUse, valueTreeType,
+    const juce::Identifier& valueTreeType)
+    : valueTreeState(*this, &undo_manager, valueTreeType,
                      {params.begin(), params.end()})
 {
 }
@@ -172,6 +172,7 @@ void VTSAudioProcessor::resetParameterValue(juce::StringRef parameterID)
 }
 void VTSAudioProcessor::resetParameters()
 {
+    DBG("RESET PARAMETERS");
     for (auto id : parameterIDs()) resetParameterValue(id);
 }
 
@@ -206,6 +207,16 @@ void VTSAudioProcessor::sendValueChangedMessageToAllListeners()
             param->sendValueChangedMessageToListeners(val);
         }
     DBG("------------------------------------------------------------------");
+}
+void VTSAudioProcessor::undoManagerUndo()
+{
+    DBG("UNDO");
+    if (valueTreeState.undoManager) valueTreeState.undoManager->undo();
+}
+void VTSAudioProcessor::undoManagerRedo()
+{
+    DBG("REDO");
+    if (valueTreeState.undoManager) valueTreeState.undoManager->redo();
 }
 
 // ============================================================================

@@ -3,7 +3,7 @@
 #include "ParameterPanel.h"
 
 // =============================================================================
-TopMenuPanel::TopMenuPanel(VTSAudioProcessor&)
+TopMenuPanel::TopMenuPanel(VTSAudioProcessor& processor)
     : undoButton("UNDO",
                  juce::Drawable::createFromImageData(
                      BinaryData::anticlockwise_arrow_svg,
@@ -43,6 +43,12 @@ TopMenuPanel::TopMenuPanel(VTSAudioProcessor&)
     Button_setOnOffLabel(autoGainButton, "MAN", "AUTO");
     autoGainLabel.setJustificationType(juce::Justification::centred);
     sep.drawBottom = true;
+    undoButton.onClick
+        = std::bind(&VTSAudioProcessor::undoManagerUndo, &processor);
+    redoButton.onClick
+        = std::bind(&VTSAudioProcessor::undoManagerRedo, &processor);
+    resetButton.onClick
+        = std::bind(&VTSAudioProcessor::resetParameters, &processor);
 }
 void TopMenuPanel::resized()
 {

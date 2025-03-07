@@ -59,8 +59,7 @@ class VTSAudioProcessor : public juce::AudioProcessor
 public:
     //==============================================================================
     VTSAudioProcessor(std::vector<std::unique_ptr<juce::RangedAudioParameter>>,
-                      const juce::Identifier& valueTreeType,
-                      juce::UndoManager* undoManagerToUse = nullptr);
+                      const juce::Identifier& valueTreeType);
     ~VTSAudioProcessor();
 
     //==============================================================================
@@ -109,6 +108,10 @@ public:
     /** Remove parameter listener from value tree state */
     void removeParameterListener(juce::StringRef,
                                  juce::AudioProcessorValueTreeState::Listener*);
+    /** Undo last action with undo manager */
+    void undoManagerUndo();
+    /** Redo last action with undo manager */
+    void undoManagerRedo();
 
 protected:
     //==============================================================================
@@ -148,6 +151,7 @@ private:
     std::vector<juce::AudioProcessorValueTreeState::Listener*> listeners;
     std::vector<juce::String> listeners_ids;
     std::vector<SampleRateListener*> sr_listeners;
+    juce::UndoManager undo_manager;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VTSAudioProcessor)
