@@ -73,8 +73,10 @@ public:
     double getGainDb() const;
     /** Returns true if the filter is active (or false if it is not) */
     bool getActive() const;
-    /** Returns an array with the current gain and coefficients of the filter */
-    std::array<double, 3> getCoefficients() const;
+    /** Returns an array with the current gain and coefficients of the filter
+     * (active_flag, a0, a1, a2, b0, b1, b2, gain)
+     */
+    std::array<double, 8> getCoefficients() const;
 
     // =========================================================================
     /** Resets the memory of the digital filter to the initial state */
@@ -191,7 +193,7 @@ public:
     std::complex<double> dtft(double) const;
     /** Returns an array with the current gain and coefficients of each element
      */
-    std::vector<std::array<double, 3>> getCoefficients() const;
+    std::vector<std::array<double, 8>> getCoefficients() const;
 
     // =========================================================================
     /**

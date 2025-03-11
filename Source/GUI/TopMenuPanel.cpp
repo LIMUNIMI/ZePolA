@@ -218,7 +218,7 @@ void TopMenuPanel::loadParameters()
 void TopMenuPanel::exportParameters()
 {
     juce::FileChooser chooser("Select the save location...",
-                              *getPresetLocation().get(), "*.txt");
+                              *getPresetLocation().get(), "*.csv;*.txt");
     if (chooser.browseForFileToSave(true))
     {
         auto file = chooser.getResult();
@@ -233,15 +233,21 @@ void TopMenuPanel::exportParameters()
         juce::FileOutputStream outputStream(file);
         if (outputStream.openedOk())
         {
-            // TODO: Decide what to actually output
             outputStream.setPosition(0);
             outputStream.truncate();
-            outputStream << "Sample rate: "
-                         << juce::String(processor.getSampleRate()) << "\n";
+            outputStream << "index,a0,a1,a2,b0,b1,b2,k\n";
+            int i = 0;
             for (const auto& coeffs : processor.getCoefficients())
             {
-                outputStream << "\n";
-                for (auto c : coeffs) outputStream << juce::String(c) << "\n";
+                jassert(coeffs.size() == 8);
+                if (coeffs[0])
+                {
+                    outputStream << i;
+                    for (auto it = coeffs.begin() + 1; it != coeffs.end(); ++it)
+                        outputStream << "," << *it;
+                    outputStream << "\n";
+                    ++i;
+                }
             }
             setPresetLocation(file);
         }

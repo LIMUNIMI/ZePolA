@@ -85,9 +85,22 @@ double FilterElement::getImagPart() const
 {
     return getMagnitude() * std::sin(getAngle());
 }
-std::array<double, 3> FilterElement::getCoefficients() const
+std::array<double, 8> FilterElement::getCoefficients() const
 {
-    return {gain, coeffs[0], coeffs[1]};
+    switch (type)
+    {
+    default:
+        UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
+                              "Returning pass-through filter coefficients");
+        return {false, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0};
+        break;
+    case FilterElement::Type::ZERO:
+        return {active, 1.0, 0.0, 0.0, 1.0, coeffs[0], coeffs[1], gain};
+        break;
+    case FilterElement::Type::POLE:
+        return {active, 1.0, coeffs[0], coeffs[1], 1.0, 0.0, 0.0, gain};
+        break;
+    }
 }
 
 // =============================================================================
@@ -293,9 +306,9 @@ std::complex<double> FilterElementCascade::dtft(double omega) const
         if (e.getActive()) h *= e.dtft(omega);
     return h;
 }
-std::vector<std::array<double, 3>> FilterElementCascade::getCoefficients() const
+std::vector<std::array<double, 8>> FilterElementCascade::getCoefficients() const
 {
-    std::vector<std::array<double, 3>> coeffs;
+    std::vector<std::array<double, 8>> coeffs;
     for (auto& e : elements) coeffs.push_back(e.getCoefficients());
     return coeffs;
 }

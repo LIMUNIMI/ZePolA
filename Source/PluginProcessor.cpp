@@ -272,7 +272,7 @@ std::complex<double> PolesAndZerosEQAudioProcessor::dtft(double omega) const
     return multiChannelCascade[0].dtft(omega)
            * static_cast<double>(gain.getGainLinear());
 }
-std::vector<std::array<double, 3>>
+std::vector<std::array<double, 8>>
 PolesAndZerosEQAudioProcessor::getCoefficients() const
 {
     return multiChannelCascade[0].getCoefficients();
