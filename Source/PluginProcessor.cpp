@@ -32,7 +32,7 @@ createParameterLayout(int n_elements)
                 juce::CharPointer_UTF8("×π rad"))));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
             GAIN_ID_PREFIX + i_str, "Gain " + ip1_str,
-            juce::NormalisableRange<float>(-128.0f, 24.0f, 0.1f), 0.0f,
+            juce::NormalisableRange<float>(-128.0f, 24.0f, 0.001f), 0.0f,
             juce::AudioParameterFloatAttributes {}.withLabel("dB")));
         params.push_back(std::make_unique<juce::AudioParameterChoice>(
             TYPE_ID_PREFIX + i_str, "Type" + ip1_str,

@@ -50,6 +50,7 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
                            juce::Slider>(PHASE_ID_PREFIX + juce::String(i),
                                          pSlider))
     , fLabel(0.0f, 0)
+    , gLabel(0.0f, 3)
     , fLabelAttachment(
           p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
               PHASE_ID_PREFIX + juce::String(i), fLabel))
