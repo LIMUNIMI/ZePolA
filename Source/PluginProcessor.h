@@ -9,12 +9,6 @@ class PolesAndZerosEQAudioProcessor : public VTSAudioProcessor
 {
 public:
     // =========================================================================
-    friend class EditorComponent;
-    // TODO: remove this friend declaration: a DraggableElement should own a
-    // pointer its corresponding parameter
-    friend class DraggableElement;
-
-    // =========================================================================
     /**
      * @brief Build a Poles And Zeros EQ processor
      *
