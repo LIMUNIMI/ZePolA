@@ -193,3 +193,6 @@ template class ApplicationPropertiesComponentAttachment<
 template class ApplicationPropertiesComponentAttachment<
     juce::Slider, ApplicationPropertySliderListener,
     SliderApplicationPropertyListener>;
+template class ApplicationPropertiesComponentAttachment<
+    juce::Value, ApplicationPropertyValueListener,
+    ValueApplicationPropertyListener>;
