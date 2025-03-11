@@ -1100,3 +1100,10 @@ void CustomLookAndFeel::drawPopupMenuItem(
         }
     }
 }
+
+//==============================================================================
+template int CustomLookAndFeel::resizeSize(int) const;
+template std::vector<juce::Rectangle<int>>
+CustomLookAndFeel::splitProportional(const juce::Rectangle<int>& r,
+                                     const std::vector<int>& fractions,
+                                     bool vertical, float fullMargin) const;
