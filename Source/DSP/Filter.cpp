@@ -92,13 +92,27 @@ std::array<double, 8> FilterElement::getCoefficients() const
     default:
         UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
                               "Returning pass-through filter coefficients");
-        return {false, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0};
+        return {static_cast<double>(false), 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0};
         break;
     case FilterElement::Type::ZERO:
-        return {active, 1.0, 0.0, 0.0, 1.0, coeffs[0], coeffs[1], gain};
+        return {static_cast<double>(active),
+                1.0,
+                0.0,
+                0.0,
+                1.0,
+                coeffs[0],
+                coeffs[1],
+                gain};
         break;
     case FilterElement::Type::POLE:
-        return {active, 1.0, coeffs[0], coeffs[1], 1.0, 0.0, 0.0, gain};
+        return {static_cast<double>(active),
+                1.0,
+                coeffs[0],
+                coeffs[1],
+                1.0,
+                0.0,
+                0.0,
+                gain};
         break;
     }
 }
