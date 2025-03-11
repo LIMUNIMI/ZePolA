@@ -179,6 +179,7 @@ public:
     bool empty() const;
     /** Access element of the chain */
     FilterElement& operator[](size_t);
+    const FilterElement& operator[](size_t) const;
 
     // =========================================================================
     /**

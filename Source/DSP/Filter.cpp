@@ -198,6 +198,11 @@ std::complex<double> FilterElement::dtft(double omega) const
 
     return h;
 }
+static double _wgl(double x)
+{
+    static const double c = -2.0 * exp(-0.5);
+    return (x < 0.5) ? exp(-2.0 * x * x) : c * (x - 1.0);
+}
 double FilterElement::rmsg() const
 {
     double g;
@@ -214,10 +219,19 @@ double FilterElement::rmsg() const
         break;
     case FilterElement::Type::POLE:
     {
-        double r = getRealPart();
-        double i = getImagPart();
-        // (1 - |p|^2) * (Re^2{p} - 2|Re{z}| + Im^2{p} + 1)
-        g = (1.0 - coeffs[1]) * (r * r + coeffs[0] + i * i + 1.0);
+        // double r = getRealPart();
+        // double i = getImagPart();
+        double a     = getAngle();
+        auto one_mp2 = abs(1.0 - std::polar(coeffs[1], a + a));
+        // Approx v0
+        // |1 - |p|^2| * (Re^2{p} - 2|Re{z}| + Im^2{p} + 1)
+        // g = abs(1.0 - coeffs[1]) * (r * r + coeffs[0] + i * i + 1.0);
+        // Approx v1
+        // |1 - |p|^2| * |1 - p^2|^2
+        // g        = abs(1.0 - coeffs[1]) * one_mp2 * one_mp2;
+        // Approx v2
+        // W_GL(|p|) * |1 - p^2|^2
+        g = _wgl(sqrt(coeffs[1])) * one_mp2 * one_mp2;
         break;
     }
     }
@@ -263,6 +277,10 @@ std::vector<FilterElement>::iterator FilterElementCascade::end()
 size_t FilterElementCascade::size() const { return elements.size(); }
 bool FilterElementCascade::empty() const { return elements.empty(); }
 FilterElement& FilterElementCascade::operator[](size_t i)
+{
+    return elements[i];
+}
+const FilterElement& FilterElementCascade::operator[](size_t i) const
 {
     return elements[i];
 }

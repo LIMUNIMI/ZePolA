@@ -27,12 +27,15 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     setSize(claf.getResizedWidth(), claf.getResizedHeight());
 
     // Subcomponents
+    topMenuPanel
+        = std::make_unique<TopMenuPanel>(processor, applicationProperties);
     parameterPanel = std::make_unique<ParameterPanel>(processor);
     plotsPanel = std::make_unique<PlotsPanel>(processor, applicationProperties);
     designerPanel
         = std::make_unique<DesignerPanel>(processor, applicationProperties);
     masterPanel = std::make_unique<MasterPanel>(processor);
 
+    addAndMakeVisible(*topMenuPanel.get());
     addAndMakeVisible(*parameterPanel.get());
     addAndMakeVisible(*plotsPanel.get());
     addAndMakeVisible(*designerPanel.get());
@@ -60,6 +63,7 @@ void PolesAndZerosEQAudioProcessorEditor::resized()
     auto panel_rects = claf.divideInPanels(getLocalBounds());
     jassert(panel_rects.size() == 5);
 
+    if (topMenuPanel) topMenuPanel->setBounds(panel_rects[0]);
     if (parameterPanel) parameterPanel->setBounds(panel_rects[1]);
     if (plotsPanel) plotsPanel->setBounds(panel_rects[2]);
     if (designerPanel) designerPanel->setBounds(panel_rects[3]);

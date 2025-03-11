@@ -4,6 +4,7 @@
 #include "GUI/MasterPanel.h"
 #include "GUI/ParameterPanel.h"
 #include "GUI/PlotsPanel.h"
+#include "GUI/TopMenuPanel.h"
 #include "PluginProcessor.h"
 #include <JuceHeader.h>
 
@@ -30,6 +31,7 @@ private:
     CustomLookAndFeel claf;
 
     // ===========================================================================
+    std::unique_ptr<TopMenuPanel> topMenuPanel;
     std::unique_ptr<ParameterPanel> parameterPanel;
     std::unique_ptr<PlotsPanel> plotsPanel;
     std::unique_ptr<DesignerPanel> designerPanel;

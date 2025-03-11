@@ -40,6 +40,9 @@
       <FILE id="NcDhiw" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>
       <FILE id="VocETI" name="Macros.h" compile="0" resource="0" file="Source/Macros.h"/>
       <GROUP id="{51125336-EE0C-E45A-7833-FDD969505280}" name="GUI">
+        <FILE id="NVWPcV" name="TopMenuPanel.cpp" compile="1" resource="0"
+              file="Source/GUI/TopMenuPanel.cpp"/>
+        <FILE id="QMmmRY" name="TopMenuPanel.h" compile="0" resource="0" file="Source/GUI/TopMenuPanel.h"/>
         <FILE id="Hddsgn" name="MasterPanel.cpp" compile="1" resource="0" file="Source/GUI/MasterPanel.cpp"/>
         <FILE id="VTFDi3" name="MasterPanel.h" compile="0" resource="0" file="Source/GUI/MasterPanel.h"/>
         <FILE id="MtU1Zc" name="DesignerPanel.cpp" compile="1" resource="0"

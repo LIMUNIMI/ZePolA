@@ -136,6 +136,66 @@ private:
 };
 
 // =============================================================================
+/** Value listener for an application property */
+class ApplicationPropertyValueListener : public juce::Value::Listener
+{
+public:
+    // =========================================================================
+    ApplicationPropertyValueListener(const juce::String& propertyID,
+                                     juce::ApplicationProperties& properties);
+
+    // =========================================================================
+    void valueChanged(juce::Value&) override;
+
+private:
+    // =========================================================================
+    juce::ApplicationProperties& applicationProperties;
+    juce::String propertyID;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+        ApplicationPropertyValueListener)
+};
+
+// =============================================================================
+/** Application property listener for a Value */
+class ValueApplicationPropertyListener : public juce::ChangeListener
+{
+public:
+    // =========================================================================
+    enum ValueType
+    {
+        UNSET = 0,
+        STRING,
+        INT,
+        DOUBLE,
+        BOOL
+    };
+
+    // =========================================================================
+    ValueApplicationPropertyListener(const juce::String& propertyID,
+                                     std::shared_ptr<juce::Value>,
+                                     ValueType t = ValueType::UNSET);
+
+    // =========================================================================
+    /** Set the value type */
+    void setValueType(ValueType);
+
+    // =========================================================================
+    virtual void changeListenerCallback(juce::ChangeBroadcaster*) override;
+
+private:
+    // =========================================================================
+    std::shared_ptr<juce::Value> value;
+    juce::String propertyID;
+    ValueType type;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+        ValueApplicationPropertyListener)
+};
+
+// =============================================================================
 /** Template attachment for a component and an application property */
 template <typename ComponentType, typename ComponentListenerType,
           typename ApplicationPropertyListenerType>
@@ -148,7 +208,7 @@ public:
         std::shared_ptr<ComponentType>);
     ~ApplicationPropertiesComponentAttachment();
 
-private:
+protected:
     //==========================================================================
     juce::ApplicationProperties& applicationProperties;
     juce::String propertyID;
@@ -156,9 +216,31 @@ private:
     ComponentListenerType componentListener;
     ApplicationPropertyListenerType propertyListener;
 
+private:
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
         ApplicationPropertiesComponentAttachment)
+};
+
+// =============================================================================
+/** Attachment for a Value and an application property */
+class ApplicationPropertiesValueAttachment
+    : public ApplicationPropertiesComponentAttachment<
+          juce::Value, ApplicationPropertyValueListener,
+          ValueApplicationPropertyListener>
+{
+public:
+    // =========================================================================
+    ApplicationPropertiesValueAttachment(
+        juce::ApplicationProperties& properties, const juce::String& propertyID,
+        std::shared_ptr<juce::Value>,
+        ValueApplicationPropertyListener::ValueType t
+        = ValueApplicationPropertyListener::ValueType::STRING);
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+        ApplicationPropertiesValueAttachment)
 };
 
 using ApplicationPropertiesButtonAttachment

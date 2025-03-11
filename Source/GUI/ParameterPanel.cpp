@@ -577,33 +577,23 @@ ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p)
     auto n = p.getNElements();
     for (auto i = 0; i < n; ++i)
         strips.push_back(std::make_unique<ParameterStrip>(p, i));
+    for (auto i = 0; i <= n; ++i)
+        separators.push_back(std::make_unique<SeparatorComponent>());
 
+    for (auto& s : separators) s->drawBottom = true;
     zplane_label.setJustificationType(juce::Justification::centred);
-    addAndMakeVisible(zplane_label);
     for (auto& l : headerLabels)
-    {
         l->setJustificationType(juce::Justification::centred);
-        addAndMakeVisible(*l.get());
-    }
+
+    for (auto& s : separators) addAndMakeVisible(*s.get());
+    for (auto& l : headerLabels) addAndMakeVisible(*l.get());
     for (auto& s : strips) addAndMakeVisible(*s.get());
+    addAndMakeVisible(zplane_label);
     addAndMakeVisible(zplane);
     addAndMakeVisible(shortcutsPanel);
 }
 
 // =============================================================================
-void ParameterPanel::paint(Graphics& g)
-{
-    juce::GroupComponent::paint(g);
-    if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
-    {
-        float x     = static_cast<float>(getX());
-        float width = static_cast<float>(getWidth());
-        std::vector<float> y;
-        if (!strips.empty()) y.push_back(static_cast<float>(strips[0]->getY()));
-        for (auto& s : strips) y.push_back(static_cast<float>(s->getBottom()));
-        claf->drawParameterStripSeparators(g, x, y, width, *this);
-    }
-}
 void ParameterPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
@@ -626,7 +616,21 @@ void ParameterPanel::resized()
         n = strips.size();
         auto strip_rects
             = claf->splitProportional(regions[1], std::vector<int>(n, 1), true);
-        for (auto i = 0; i < n; ++i) strips[i]->setBounds(strip_rects[i]);
+        jassert(separators.size() == n + 1);
+        auto gct = claf->getGroupComponentThickness();
+        separators.back()->setBounds(
+            regions[0]
+                .withX(juce::roundToInt(std::ceil(gct)))
+                .withWidth(
+                    juce::roundToInt(std::floor(getWidth() - 2.0f * gct))));
+        for (auto i = 0; i < n; ++i)
+        {
+            strips[i]->setBounds(strip_rects[i]);
+            separators[i]->setBounds(
+                strip_rects[i]
+                    .withX(separators.back()->getX())
+                    .withWidth(separators.back()->getWidth()));
+        }
 
         zplane.setBounds(regions[3].removeFromLeft(regions[3].getHeight()));
         regions[3].setLeft(claf->getPanelInnerRect(regions[3]).getX());

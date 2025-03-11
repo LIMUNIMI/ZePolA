@@ -1,4 +1,5 @@
 #include "CustomButtons.h"
+#include "../Macros.h"
 
 // =============================================================================
 /** Separator character for the two texts of a toggle button */
@@ -59,4 +60,53 @@ void LabelledToggleButton::paintButton(juce::Graphics& g,
             &getLookAndFeel()))
         laf->drawLabelledToggleButton(g, *this, shouldDrawButtonAsHighlighted,
                                       shouldDrawButtonAsDown);
+}
+
+// =============================================================================
+static const juce::String _tandiButtPadding("  ");
+TextAndImageButton::TextAndImageButton(const juce::String& name,
+                                       juce::Drawable* d,
+                                       const juce::Justification& j)
+    : juce::Button(name)
+    , image(d)
+    , label(name, _tandiButtPadding + name + _tandiButtPadding)
+{
+    if (image) addChildComponent(*image.get());
+    addChildComponent(label);
+
+    label.setJustificationType(j);
+}
+void TextAndImageButton::paintButton(Graphics& g,
+                                     bool /* shouldDrawButtonAsHighlighted */,
+                                     bool /* shouldDrawButtonAsDown */)
+{
+    if (image)
+        image->drawWithin(g, image->getBounds().toFloat(),
+                          juce::RectanglePlacement::centred, 1.0);
+    g.setOrigin(label.getBounds().getTopLeft());
+    getLookAndFeel().drawLabel(g, label);
+}
+void TextAndImageButton::resized()
+{
+    if (image)
+    {
+        image->setBoundsToFit(getLocalBounds(), label.getJustificationType(),
+                              false);
+        switch (label.getJustificationType().getOnlyHorizontalFlags())
+        {
+        case juce::Justification::left:
+            label.setBounds(image->getRight(), 0,
+                            getWidth() - image->getRight(), getHeight());
+            break;
+        case juce::Justification::right:
+            label.setBounds(0, 0, image->getX(), getHeight());
+            break;
+        default:
+            UNHANDLED_SWITCH_CASE("Unhandled case for justification type");
+            label.setBounds(0, 0, getWidth(), getHeight());
+            break;
+        }
+    }
+    else
+        label.setBounds(getLocalBounds());
 }

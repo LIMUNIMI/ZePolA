@@ -25,8 +25,8 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a);
 /** Custom look and feel for the GUI  */
 class CustomLookAndFeel : public juce::LookAndFeel_V4,
                           public InvisibleGroupComponentLookAndFeelMethods,
+                          public SeparatorComponent::LookAndFeelMethods,
                           public PlotComponentLookAndFeelMethods,
-                          public ParameterPanelLookAndFeelMethods,
                           public GaussianPlanePanel::LookAndFeelMethods,
                           public ZPoint::LookAndFeelMethods,
                           public LabelledToggleButtonLookAndFeelMethods
@@ -70,6 +70,9 @@ public:
                                 const juce::String& text,
                                 const juce::Justification&,
                                 juce::GroupComponent&) override;
+    void drawSeparator(juce::Graphics&, int x, int y, int width, int height,
+                       bool drawTop, bool drawBottom, bool drawLeft,
+                       bool drawRight, SeparatorComponent&) override;
     juce::Font getPopupMenuFont() override;
     juce::Font getComboBoxFont(juce::ComboBox&) override;
     juce::Font getLabelFont(juce::Label&) override;
@@ -84,9 +87,6 @@ public:
                           float maxSliderPos, const juce::Slider::SliderStyle,
                           juce::Slider& slider) override;
     void drawLabel(juce::Graphics&, juce::Label&) override;
-    void drawParameterStripSeparators(juce::Graphics&, float x,
-                                      std::vector<float> y, float width,
-                                      ParameterPanel&) override;
     void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
                           bool shouldDrawButtonAsHighlighted,
                           bool shouldDrawButtonAsDown) override;
@@ -149,6 +149,8 @@ public:
     double getLogPlotLowFreq(double sr) const;
     /** Get proportional size of the points in the Gaussian plane */
     float getRelativePointSize() const;
+    /** Get the current group component outline thickness */
+    float getGroupComponentThickness() const;
 
     // =========================================================================
     /** Set the properties of the magnitude plot */
