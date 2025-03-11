@@ -116,10 +116,6 @@ public:
 
 protected:
     //==============================================================================
-    // TODO: Should be private in the end
-    juce::AudioProcessorValueTreeState valueTreeState;
-
-    //==============================================================================
     /**
      * Push a listener and its id into the list. Call this method from
      * appendListeners()
@@ -149,6 +145,7 @@ private:
     void sendValueChangedMessageToAllListeners();
 
     //==============================================================================
+    juce::AudioProcessorValueTreeState valueTreeState;
     std::vector<juce::AudioProcessorValueTreeState::Listener*> listeners;
     std::vector<juce::String> listeners_ids;
     std::vector<SampleRateListener*> sr_listeners;
