@@ -1,7 +1,7 @@
 #include "InvisibleGroupComponent.h"
 
 // =============================================================================
-InvisibleGroupComponent::InvisibleGroupComponent() { }
+InvisibleGroupComponent::InvisibleGroupComponent() {}
 
 // =============================================================================
 void InvisibleGroupComponent::paint(juce::Graphics& g)

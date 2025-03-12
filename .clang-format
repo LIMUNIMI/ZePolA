@@ -23,4 +23,5 @@ PointerAlignment: Left
 ReflowComments: "true"
 SortIncludes: "true"
 SpaceBeforeAssignmentOperators: "true"
+SpaceInEmptyBlock: "false"
 SpacesBeforeTrailingComments: "2"

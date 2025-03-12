@@ -11,7 +11,7 @@ ParameterSlider::ParameterSlider()
 }
 
 // =============================================================================
-ParameterStrip::ParentRepaintButtonListener::ParentRepaintButtonListener() { }
+ParameterStrip::ParentRepaintButtonListener::ParentRepaintButtonListener() {}
 
 // =============================================================================
 void ParameterStrip::ParentRepaintButtonListener::buttonClicked(juce::Button* b)
@@ -121,28 +121,28 @@ bool ParameterStrip::parentComponentIsActive(const juce::Component& c)
 }
 
 // =============================================================================
-ZPoint::MagnitudeListener::MagnitudeListener(ZPoint* p) : parent(p) { }
+ZPoint::MagnitudeListener::MagnitudeListener(ZPoint* p) : parent(p) {}
 void ZPoint::MagnitudeListener::parameterChanged(const juce::String&, float m)
 {
     parent->setPointMagnitude(m);
 }
 
 // =============================================================================
-ZPoint::ArgListener::ArgListener(ZPoint* p) : parent(p) { }
+ZPoint::ArgListener::ArgListener(ZPoint* p) : parent(p) {}
 void ZPoint::ArgListener::parameterChanged(const juce::String&, float a)
 {
     parent->setPointArg(juce::MathConstants<float>::pi * a);
 }
 
 // =============================================================================
-ZPoint::ActiveListener::ActiveListener(ZPoint* p) : parent(p) { }
+ZPoint::ActiveListener::ActiveListener(ZPoint* p) : parent(p) {}
 void ZPoint::ActiveListener::parameterChanged(const juce::String&, float a)
 {
     parent->setVisible(a);
 }
 
 // =============================================================================
-ZPoint::TypeListener::TypeListener(ZPoint* p) : parent(p) { }
+ZPoint::TypeListener::TypeListener(ZPoint* p) : parent(p) {}
 void ZPoint::TypeListener::parameterChanged(const juce::String&, float a)
 {
     parent->setType(FilterElement::floatToType(a));

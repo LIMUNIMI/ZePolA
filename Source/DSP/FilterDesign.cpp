@@ -56,7 +56,7 @@ double FilterParameters::warpedFrequency() const
 }
 
 // =============================================================================
-FilterParameters::ZPK::ZPK() { }
+FilterParameters::ZPK::ZPK() {}
 void FilterParameters::ZPK::reset()
 {
     poles.clear();
@@ -80,7 +80,7 @@ size_t FilterParameters::ZPK::degree() const
 }
 
 // =============================================================================
-FilterFactory::FilterFactory() { }
+FilterFactory::FilterFactory() {}
 void FilterFactory::build(FilterParameters& params)
 {
     sanitizeParams(params);
@@ -133,7 +133,7 @@ void FilterFactory::sanitizeParams(FilterParameters& params)
 }
 
 // =============================================================================
-AnalogFilterFactory::AnalogFilterFactory() { }
+AnalogFilterFactory::AnalogFilterFactory() {}
 void AnalogFilterFactory::build(FilterParameters& params)
 {
     buildAnalogPrototype(params);
@@ -227,7 +227,7 @@ void AnalogFilterFactory::bilinearTransform(FilterParameters::ZPK& zpk)
 }
 
 // =============================================================================
-ButterworthFilterFactory::ButterworthFilterFactory() { }
+ButterworthFilterFactory::ButterworthFilterFactory() {}
 void ButterworthFilterFactory::buildAnalogPrototype(FilterParameters& params)
 {
     // This loop would be used to generate all poles
@@ -241,7 +241,7 @@ void ButterworthFilterFactory::buildAnalogPrototype(FilterParameters& params)
 }
 
 // =============================================================================
-ChebyshevIFilterFactory::ChebyshevIFilterFactory() { }
+ChebyshevIFilterFactory::ChebyshevIFilterFactory() {}
 void ChebyshevIFilterFactory::buildAnalogPrototype(FilterParameters& params)
 {
     // Ripple factor
@@ -266,7 +266,7 @@ void ChebyshevIFilterFactory::buildAnalogPrototype(FilterParameters& params)
 }
 
 // =============================================================================
-ChebyshevIIFilterFactory::ChebyshevIIFilterFactory() { }
+ChebyshevIIFilterFactory::ChebyshevIIFilterFactory() {}
 void ChebyshevIIFilterFactory::buildAnalogPrototype(FilterParameters& params)
 {
     // Ripple factor
@@ -387,7 +387,7 @@ double _arc_jac_sc1(double w, double m)
 }
 
 // =============================================================================
-EllipticFilterFactory::EllipticFilterFactory() { }
+EllipticFilterFactory::EllipticFilterFactory() {}
 void EllipticFilterFactory::buildAnalogPrototype(FilterParameters& params)
 {
     jassert(params.order >= 2);
