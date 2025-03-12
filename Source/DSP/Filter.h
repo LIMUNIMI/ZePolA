@@ -123,6 +123,16 @@ public:
      * accounting for the input gain
      */
     double rmsgDb() const;
+    /**
+     * Computes the peak gain of the filter, without accounting for the input
+     * gain
+     */
+    double peak() const;
+    /**
+     * Computes the peak gain of the filter in decibel, without accounting for
+     * the input gain
+     */
+    double peakDb() const;
 
 private:
     // =========================================================================
@@ -130,6 +140,7 @@ private:
     void computeCoefficients();
     /** Pushes a sample in the memory queue */
     void pushSample(double);
+    std::complex<double> _dtft_withGain(double omega, double g) const;
 
     // =========================================================================
     /** Zero sample processing function */

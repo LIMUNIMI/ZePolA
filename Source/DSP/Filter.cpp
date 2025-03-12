@@ -208,7 +208,7 @@ void FilterElement::processBlock(double* outputs, const double* inputs, int n)
 }
 
 // =============================================================================
-std::complex<double> FilterElement::dtft(double omega) const
+std::complex<double> FilterElement::_dtft_withGain(double omega, double g) const
 {
     std::complex<double> z_inv = std::exp(std::complex<double>(0.0, -omega));
 
@@ -219,17 +219,21 @@ std::complex<double> FilterElement::dtft(double omega) const
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter element type. Defaulting to 'ZERO'");
-    case FilterElement::Type::ZERO: h *= gain; break;
-    case FilterElement::Type::POLE: h = gain / h; break;
+    case FilterElement::Type::ZERO: h = g * h; break;
+    case FilterElement::Type::POLE: h = g / h; break;
     }
 
     return h;
 }
-static double _wgl(double x)
+std::complex<double> FilterElement::dtft(double omega) const
 {
-    static const double c = -2.0 * exp(-0.5);
-    return (x < 0.5) ? exp(-2.0 * x * x) : c * (x - 1.0);
+    return _dtft_withGain(omega, gain);
 }
+// static double _wgl(double x)
+// {
+//     static const double c = -2.0 * exp(-0.5);
+//     return (x < 0.5) ? exp(-2.0 * x * x) : c * (x - 1.0);
+// }
 double FilterElement::rmsg() const
 {
     double g;
@@ -255,10 +259,10 @@ double FilterElement::rmsg() const
         // g = abs(1.0 - coeffs[1]) * (r * r + coeffs[0] + i * i + 1.0);
         // Approx v1
         // |1 - |p|^2| * |1 - p^2|^2
-        // g        = abs(1.0 - coeffs[1]) * one_mp2 * one_mp2;
+        g = abs(1.0 - coeffs[1]) * one_mp2 * one_mp2;
         // Approx v2
         // W_GL(|p|) * |1 - p^2|^2
-        g = _wgl(sqrt(coeffs[1])) * one_mp2 * one_mp2;
+        // g = _wgl(sqrt(coeffs[1])) * one_mp2 * one_mp2;
         break;
     }
     }
@@ -267,6 +271,27 @@ double FilterElement::rmsg() const
 double FilterElement::rmsgDb() const
 {
     return juce::Decibels::gainToDecibels(rmsg(), gain_floor_db);
+}
+double FilterElement::peak() const
+{
+    if (magnitude < std::numeric_limits<double>::epsilon()) return 1.0;
+    // cos(phi) = (|z|^2 + 1) * Re{z} / (2 * |z|^2|)
+    double phi = std::acos((pow(magnitude, 2.0) + 1.0) * getRealPart()
+                           / (2.0 * pow(magnitude, 2.0)));
+    // DTFT evaluated at derivative zeros
+    std::array<double, 4> d_zeros = {0.0, juce::MathConstants<double>::pi, phi,
+                                     phi + juce::MathConstants<double>::pi};
+    for (auto it = d_zeros.begin(); it != d_zeros.end(); ++it)
+        *it = abs(_dtft_withGain(*it, 1.0));
+    DBG("Peak dB: max({");
+    for (auto g : d_zeros)
+        DBG("  " << juce::Decibels::gainToDecibels(g, gain_floor_db));
+    DBG("})");
+    return *std::max_element(d_zeros.begin(), d_zeros.end());
+}
+double FilterElement::peakDb() const
+{
+    return juce::Decibels::gainToDecibels(peak(), gain_floor_db);
 }
 
 // =============================================================================
