@@ -98,9 +98,9 @@ public:
     /** Get parameter unnormalized value by parameter ID */
     float getParameterUnnormValue(juce::StringRef parameterID);
     /** Set parameter value to default, enclosing the operation in a gesture */
-    void resetParameterValue(juce::StringRef);
+    virtual void resetParameterValue(juce::StringRef);
     /** Reset value of all parameters */
-    void resetParameters();
+    virtual void resetParameters();
     /** Gets the vector of all parameter identifiers */
     std::vector<juce::StringRef> parameterIDs();
     /** Add parameter listener to value tree state */

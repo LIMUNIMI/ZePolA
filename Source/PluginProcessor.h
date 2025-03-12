@@ -117,6 +117,7 @@ public:
     void halfPhases();
     /** Turn zeros into poles and vice versa */
     void swapPolesAndZeros();
+    void resetParameters() override;
     /** Set the parameters of a filter element */
     [[deprecated("Avoid using such an invasive method")]] void
     setFilter(const double magnitude, const double phase,

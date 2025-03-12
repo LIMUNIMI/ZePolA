@@ -332,6 +332,17 @@ void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
                           FilterElement::typeToFloat(newType));
     }
 }
+void PolesAndZerosEQAudioProcessor::resetParameters()
+{
+    VTSAudioProcessor::resetParameters();
+    // Set gain parameters to actual 0.0
+    for (int i = 0; i < n_elements; ++i)
+    {
+        juce::String i_str(i);
+        setParameterValue(GAIN_ID_PREFIX + i_str, 0.0f);
+    }
+    setParameterValue(GAIN_ID, 0.0f);
+}
 void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
                                               const double phase,
                                               FilterElement::Type type,
