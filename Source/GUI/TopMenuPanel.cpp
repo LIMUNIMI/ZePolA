@@ -125,8 +125,7 @@ TopMenuPanel::TopMenuPanel(PolesAndZerosEQAudioProcessor& p,
         = std::bind(&VTSAudioProcessor::undoManagerUndo, &processor);
     redoButton.onClick
         = std::bind(&VTSAudioProcessor::undoManagerRedo, &processor);
-    resetButton.onClick
-        = std::bind(&VTSAudioProcessor::resetParameters, &processor);
+    resetButton.onClick  = std::bind(&TopMenuPanel::resetParameters, this);
     exportButton.onClick = std::bind(&TopMenuPanel::exportParameters, this);
     saveButton.onClick   = std::bind(&TopMenuPanel::saveParameters, this);
     loadButton.onClick   = std::bind(&TopMenuPanel::loadParameters, this);
@@ -204,7 +203,8 @@ void TopMenuPanel::loadParameters()
         juce::MemoryBlock srcData;
         if (file.loadFileAsData(srcData))
         {
-            processor.setStateInformation(srcData.getData(), srcData.getSize());
+            processor.setStateInformation(srcData.getData(),
+                                          static_cast<int>(srcData.getSize()));
             setPresetLocation(file);
         }
         else
@@ -258,6 +258,13 @@ void TopMenuPanel::exportParameters()
             jassertfalse;
         }
     }
+}
+void TopMenuPanel::resetParameters()
+{
+    processor.resetParameters();
+    if (autoGainButton)
+        autoGainButton->setToggleState(
+            false, juce::NotificationType::sendNotification);
 }
 
 // =============================================================================

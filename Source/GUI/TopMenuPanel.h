@@ -86,6 +86,8 @@ public:
     void loadParameters();
     /** Button callback for saving parameters */
     void exportParameters();
+    /** Button callback for resetting parameters */
+    void resetParameters();
 
     // =========================================================================
     void resized() override;
