@@ -81,6 +81,8 @@
         <FILE id="AvI2BK" name="FilterDesign.cpp" compile="1" resource="0"
               file="Source/DSP/FilterDesign.cpp"/>
         <FILE id="JU19E5" name="FilterDesign.h" compile="0" resource="0" file="Source/DSP/FilterDesign.h"/>
+        <FILE id="sLQ7TM" name="Gradient.cpp" compile="1" resource="0" file="Source/DSP/Gradient.cpp"/>
+        <FILE id="ClW6q7" name="Gradient.h" compile="0" resource="0" file="Source/DSP/Gradient.h"/>
       </GROUP>
       <FILE id="T3jzAd" name="Parameters.h" compile="0" resource="0" file="Source/Parameters.h"/>
       <FILE id="ncRGqG" name="PluginProcessor.cpp" compile="1" resource="0"
