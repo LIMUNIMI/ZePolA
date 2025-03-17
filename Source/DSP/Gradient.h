@@ -89,7 +89,7 @@ public:
     /** Run the gradient descent and return the minimal argument */
     double operator()(double,
                       std::function<DualValue<double>(DualValue<double>)>,
-                      int max_iters = 1 << 8);
+                      int max_iters = 1 << 7);
 
 private:
     // =========================================================================
