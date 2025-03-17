@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "DSP/Filter.h"
+#include "DSP/Gradient.h"
 #include "Macros.h"
 #include "Parameters.h"
 #include "PluginEditor.h"
@@ -277,10 +278,15 @@ PolesAndZerosEQAudioProcessor::getCoefficients() const
 {
     return multiChannelCascade[0].getCoefficients();
 }
+double PolesAndZerosEQAudioProcessor::getCascadePeakGain() const
+{
+    DifferentiableDTFT dDTFT(multiChannelCascade[0]);
+    return juce::Decibels::gainToDecibels(dDTFT.peakFrequency()[1], -300.0)
+           / 2.0;
+}
 double PolesAndZerosEQAudioProcessor::getElementAutoGain(int i) const
 {
-    return (i < 0 || i >= getNElements()) ? 0.0
-                                          : -multiChannelCascade[0][i].rmsgDb();
+    return multiChannelCascade[0][i].getGainDb() - getCascadePeakGain();
 }
 void PolesAndZerosEQAudioProcessor::resetMemory()
 {
