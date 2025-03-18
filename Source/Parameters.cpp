@@ -15,7 +15,7 @@ void Parameters::setParameterValue(juce::RangedAudioParameter* parameter,
 }
 void Parameters::resetParameterValue(juce::RangedAudioParameter* p)
 {
-    Parameters::setParameterValue(p, p->getDefaultValue());
+    if (p) Parameters::setParameterValue(p, p->getDefaultValue());
 }
 
 // ============================================================================
