@@ -96,6 +96,7 @@ PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
     , bypassed(false)
 {
     allocateChannelsIfNeeded(1);
+    gain.setGainDecibels(0.0f);
     initializeListeners();
 }
 
