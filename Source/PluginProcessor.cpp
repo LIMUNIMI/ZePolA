@@ -374,5 +374,5 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
 // =============================================================================
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new PolesAndZerosEQAudioProcessor(8);
+    return new PolesAndZerosEQAudioProcessor(10);
 }
