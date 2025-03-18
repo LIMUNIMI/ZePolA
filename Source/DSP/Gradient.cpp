@@ -207,7 +207,7 @@ double GradientDescent::operator()(
 DifferentiableDTFT::DifferentiableDTFT(const FilterElementCascade& fec)
 {
     auto n = fec.size();
-    std::vector<double> angs;
+    // std::vector<double> angs;
     for (auto i = 0; i < n; ++i)
         if (fec[i].getActive())
         {
@@ -215,25 +215,18 @@ DifferentiableDTFT::DifferentiableDTFT(const FilterElementCascade& fec)
                 std::polar<double>(fec[i].getMagnitude(), fec[i].getAngle()));
             isPole.push_back(fec[i].getType() == FilterElement::Type::POLE);
             gains.push_back(fec[i].getGain());
-            angs.push_back(fec[i].getAngle());
+            angles.push_back(fec[i].getAngle());
         }
     jassert(elements.size() <= n);
     n = elements.size();
     jassert(isPole.size() == n);
-    jassert(angs.size() == n);
+    jassert(angles.size() == n);
     jassert(gains.size() == n);
 
-    std::sort(angs.begin(), angs.begin() + angs.size());
-    angs.push_back(juce::MathConstants<double>::pi);
-    angs.insert(angs.begin(), 0.0);
-    angles.push_back(0.0);
-    for (auto it = angs.begin(); it != angs.end() - 1; ++it)
-    {
-        jassert(*it <= *(it + 1));
-        angles.push_back(0.5 * (*it + *(it + 1)));
-    }
+    std::sort(angles.begin(), angles.begin() + angles.size());
     angles.push_back(juce::MathConstants<double>::pi);
-    jassert(angles.size() == n + 3);
+    angles.insert(angles.begin(), 0.0);
+    jassert(angles.size() == n + 2);
 }
 
 // =============================================================================
