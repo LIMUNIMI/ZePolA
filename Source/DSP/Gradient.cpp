@@ -150,7 +150,7 @@ DualValue<FloatType> real(const DualValue<std::complex<FloatType>>& z)
 template <typename ValueType>
 DualValue<ValueType> imag(const DualValue<ValueType>& x)
 {
-    return DualValue<ValueType>.constant(static_cast<ValueType>(0));
+    return DualValue<ValueType>::constant(static_cast<ValueType>(0));
 }
 template <typename FloatType>
 DualValue<FloatType> imag(const DualValue<std::complex<FloatType>>& z)
