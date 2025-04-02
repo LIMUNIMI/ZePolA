@@ -339,14 +339,7 @@ void ZPoint::setBoundsRelativeToPlane(juce::Component* parent, float radius)
     }
     rect.setCentre(c);
 
-    if ((MessageManager::getInstanceWithoutCreating() != nullptr
-         && MessageManager::getInstanceWithoutCreating()
-                ->currentThreadHasLockedMessageManager())
-        || getPeer() == nullptr)
-    {
-        const MessageManagerLock mmLock;
-        setBounds(rect.toNearestInt());
-    }
+    SAFE_MessageManager_LOCK(this, setBounds(rect.toNearestInt()););
     if (z_conj) z_conj->setBoundsRelativeToPlane(parent, radius);
 }
 void ZPoint::setBoundsRelativeToPlane(juce::Component* parent)
