@@ -180,11 +180,11 @@ DualValue<FloatType> std::norm(const DualValue<std::complex<FloatType>>& z)
 }
 
 // =============================================================================
-GradientDescent::GradientDescent(double eta, double th, double theta)
+GradientAscent::GradientAscent(double eta, double th, double theta)
     : eta(eta), th(th), theta(theta), theta_c(1.0 - theta)
 {
 }
-double GradientDescent::operator()(
+double GradientAscent::operator()(
     double x, std::function<DualValue<double>(DualValue<double>)> f,
     int max_iters)
 {
@@ -196,7 +196,7 @@ double GradientDescent::operator()(
         mu = theta * mu + theta_c * g;
         ms = theta * ms + theta_c * (g * g);
         if (ms < th) break;
-        step = eta * mu / sqrt(ms);
+        step = eta * g * abs(mu) / sqrt(ms);
         x_i  = x_i + step;
         if (abs(step) < th) break;
     }
@@ -300,7 +300,7 @@ ValueType DifferentiableDTFT::forward(const ValueType& w)
 std::array<double, 2> DifferentiableDTFT::peakFrequency()
 {
     double w = 0.0, h2 = 0.0;
-    GradientDescent gd;
+    GradientAscent gd;
     for (auto a : angles)
     {
         auto w_a

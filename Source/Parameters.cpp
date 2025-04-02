@@ -6,16 +6,21 @@
 void Parameters::setParameterValue(juce::RangedAudioParameter* parameter,
                                    float value)
 {
+    static std::recursive_mutex param_mutex;
     if (parameter)
     {
-        parameter->beginChangeGesture();
-        parameter->setValueNotifyingHost(parameter->convertTo0to1(value));
-        parameter->endChangeGesture();
+        if (param_mutex.try_lock())
+        {
+            parameter->beginChangeGesture();
+            parameter->setValueNotifyingHost(parameter->convertTo0to1(value));
+            parameter->endChangeGesture();
+            param_mutex.unlock();
+        }
     }
 }
 void Parameters::resetParameterValue(juce::RangedAudioParameter* p)
 {
-    Parameters::setParameterValue(p, p->getDefaultValue());
+    if (p) Parameters::setParameterValue(p, p->getDefaultValue());
 }
 
 // ============================================================================

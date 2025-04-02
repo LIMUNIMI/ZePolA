@@ -339,14 +339,7 @@ void ZPoint::setBoundsRelativeToPlane(juce::Component* parent, float radius)
     }
     rect.setCentre(c);
 
-    if ((MessageManager::getInstanceWithoutCreating() != nullptr
-         && MessageManager::getInstanceWithoutCreating()
-                ->currentThreadHasLockedMessageManager())
-        || getPeer() == nullptr)
-    {
-        const MessageManagerLock mmLock;
-        setBounds(rect.toNearestInt());
-    }
+    SAFE_MessageManager_LOCK(this, setBounds(rect.toNearestInt()););
     if (z_conj) z_conj->setBoundsRelativeToPlane(parent, radius);
 }
 void ZPoint::setBoundsRelativeToPlane(juce::Component* parent)
@@ -572,9 +565,8 @@ void ShortcutsPanel::triggerSwapTypes()
 ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p)
     : zplane(p), zplane_label("", "GAUSSIAN PLANE"), shortcutsPanel(p)
 {
-    for (auto s : {"RADIUS", "ANGLE", "TYPE", "ACTIVE", "GAIN"})
-        headerLabels.push_back(
-            std::make_unique<juce::Label>(juce::String(), s));
+    for (auto s : {"RADIUS", "ANGLE", "Hz", "TYPE", "ACTIVE", "GAIN"})
+        headerLabels.push_back(std::make_unique<juce::Label>("", s));
     auto n = p.getNElements();
     for (auto i = 0; i < n; ++i)
         strips.push_back(std::make_unique<ParameterStrip>(p, i));
@@ -607,8 +599,6 @@ void ParameterPanel::resized()
         regions[1].setBottom(regions[2].getCentreY());
         auto header_rects = claf->splitProportionalStrip(regions[0]);
         jassert(header_rects.size() == 6);
-        header_rects[1].setRight(header_rects[2].getRight());
-        header_rects.erase(header_rects.begin() + 2);
         jassert(headerLabels.size() <= header_rects.size());
         auto n = headerLabels.size();
         for (auto i = 0; i < n; ++i)

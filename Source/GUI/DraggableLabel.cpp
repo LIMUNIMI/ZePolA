@@ -1,4 +1,5 @@
 #include "DraggableLabel.h"
+#include "../Macros.h"
 #include "../Parameters.h"
 
 // =============================================================================
@@ -17,7 +18,8 @@ DraggableLabel::DraggableLabel(float v, int ndp)
 // =============================================================================
 void DraggableLabel::setTextFromFloat(float f, juce::NotificationType nt)
 {
-    setText(juce::String(f, numberOfDecimalPlaces), nt);
+    SAFE_MessageManager_LOCK(
+        this, setText(juce::String(f, numberOfDecimalPlaces), nt););
 }
 static void setTextFromFloatDynamicCast(juce::Label* label, float f,
                                         juce::NotificationType nt)
