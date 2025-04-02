@@ -196,7 +196,7 @@ double GradientAscent::operator()(
         mu = theta * mu + theta_c * g;
         ms = theta * ms + theta_c * (g * g);
         if (ms < th) break;
-        step = eta * mu / sqrt(ms);
+        step = eta * g * abs(mu) / sqrt(ms);
         x_i  = x_i + step;
         if (abs(step) < th) break;
     }
