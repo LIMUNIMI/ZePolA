@@ -79,14 +79,14 @@ DualValue<FloatType> norm(const DualValue<std::complex<FloatType>>&);
 };  // namespace std
 
 // =============================================================================
-class GradientDescent
+class GradientAscent
 {
 public:
     // =========================================================================
-    GradientDescent(double eta = 5e-3, double th = 1e-4, double theta = 0.5);
+    GradientAscent(double eta = 5e-3, double th = 1e-4, double theta = 0.5);
 
     // =========================================================================
-    /** Run the gradient descent and return the minimal argument */
+    /** Run the gradient ascent and return the minimal argument */
     double operator()(double,
                       std::function<DualValue<double>(DualValue<double>)>,
                       int max_iters = 1 << 7);
