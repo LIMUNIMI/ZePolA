@@ -6,15 +6,25 @@
 void Parameters::setParameterValue(juce::RangedAudioParameter* parameter,
                                    float value)
 {
-    static std::recursive_mutex param_mutex;
+    static std::unordered_map<intptr_t, std::shared_ptr<std::recursive_mutex>>
+        param_mutex_hmap;
+    static std::recursive_mutex hmap_mutex;
     if (parameter)
     {
-        if (param_mutex.try_lock())
+        intptr_t i = reinterpret_cast<intptr_t>(parameter);
         {
+            // Lock for access to hashmap of locks
+            std::lock_guard<std::recursive_mutex> lk(hmap_mutex);
+            if (param_mutex_hmap.end() == param_mutex_hmap.find(i))
+                param_mutex_hmap[i] = std::make_shared<std::recursive_mutex>();
+        }
+        {
+            // Lock for access to specific parameter lock
+            std::lock_guard<std::recursive_mutex> lk(
+                *param_mutex_hmap[i].get());
             parameter->beginChangeGesture();
             parameter->setValueNotifyingHost(parameter->convertTo0to1(value));
             parameter->endChangeGesture();
-            param_mutex.unlock();
         }
     }
 }
