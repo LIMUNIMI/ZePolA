@@ -244,3 +244,13 @@ void SimpleListener::parameterChanged(const juce::String& /* id */,
 {
     setterFunction(newValue);
 }
+
+// ============================================================================
+TriggerListener::TriggerListener(std::function<void()> f) : triggerFunction(f)
+{
+}
+void TriggerListener::parameterChanged(const juce::String& /* id */,
+                                       float /* newValue */)
+{
+    triggerFunction();
+}

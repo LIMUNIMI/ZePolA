@@ -173,3 +173,22 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleListener)
 };
+
+// =============================================================================
+/**
+ * A simple value tree state parameter change listener for triggering a function
+ */
+class TriggerListener : public juce::AudioProcessorValueTreeState::Listener
+{
+public:
+    //==============================================================================
+    TriggerListener(std::function<void()>);
+    void parameterChanged(const juce::String&, float) override;
+
+private:
+    //==============================================================================
+    std::function<void()> triggerFunction;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TriggerListener)
+};

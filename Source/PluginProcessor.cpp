@@ -49,9 +49,8 @@ createParameterLayout(int n_elements)
 void PolesAndZerosEQAudioProcessor::appendListeners()
 {
     // The unsafe flag resetter listens to all parameters
-    pushListenerForAllParameters(
-        new SimpleListener(std::bind(&PolesAndZerosEQAudioProcessor::markAsSafe,
-                                     this, std::placeholders::_1)));
+    pushListenerForAllParameters(new TriggerListener(
+        std::bind(&PolesAndZerosEQAudioProcessor::markAsSafe, this, true)));
 
     pushListener(BYPASS_ID, new SimpleListener(std::bind(
                                 &PolesAndZerosEQAudioProcessor::setBypassTh,
@@ -98,6 +97,10 @@ PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
     allocateChannelsIfNeeded(1);
     gain.setGainDecibels(0.0f);
     initializeListeners();
+}
+PolesAndZerosEQAudioProcessor::~PolesAndZerosEQAudioProcessor()
+{
+    jassert(uo_listeners.size() == 0);
 }
 
 // =============================================================================
@@ -196,7 +199,11 @@ void PolesAndZerosEQAudioProcessor::processBlock(
 
     // Output safety check (not resetting)
     unsafe |= buffer.getMagnitude(0, n_samples) > 4;
-    if (unsafe) buffer.clear();
+    if (unsafe)
+    {
+        markAsSafe(!unsafe);
+        buffer.clear();
+    }
 }
 void PolesAndZerosEQAudioProcessor::processBlockBypassed(
     juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
@@ -303,10 +310,10 @@ void PolesAndZerosEQAudioProcessor::setBypassTh(float b)
 {
     setBypass(b > 0.5f);
 }
-void PolesAndZerosEQAudioProcessor::markAsSafe(float)
+void PolesAndZerosEQAudioProcessor::markAsSafe(bool b)
 {
-    unsafe = false;
-    if (editorCallback) editorCallback();
+    unsafe = !b;
+    for (auto uol : uo_listeners) uol->unsafeOutputCallback(unsafe);
 }
 void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
 {
@@ -369,6 +376,25 @@ void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
     setParameterValue(GAIN_ID_PREFIX + i_str,
                       static_cast<float>(Decibels::gainToDecibels(
                           linearGain, FilterElement::gain_floor_db)));
+}
+
+// =============================================================================
+void PolesAndZerosEQAudioProcessor::addUnsafeOutputListener(
+    UnsafeOutputListener* uol)
+{
+    // Check that listener is not already in the list
+    ONLY_ON_DEBUG(std::vector<UnsafeOutputListener*>::iterator pos
+                  = std::find(uo_listeners.begin(), uo_listeners.end(), uol);
+                  jassert(pos == uo_listeners.end());)
+    uo_listeners.push_back(uol);
+}
+void PolesAndZerosEQAudioProcessor::removeUnsafeOutputListener(
+    UnsafeOutputListener* uol)
+{
+    std::vector<UnsafeOutputListener*>::iterator pos
+        = std::find(uo_listeners.begin(), uo_listeners.end(), uol);
+    if (pos != uo_listeners.end()) uo_listeners.erase(pos);
+    ONLY_ON_DEBUG(else jassertfalse;)
 }
 
 // =============================================================================
