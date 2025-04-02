@@ -283,10 +283,12 @@ double FilterElement::peak() const
                                      phi + juce::MathConstants<double>::pi};
     for (auto it = d_zeros.begin(); it != d_zeros.end(); ++it)
         *it = abs(_dtft_withGain(*it, 1.0));
-    DBG("Peak dB: max({");
-    for (auto g : d_zeros)
-        DBG("  " << juce::Decibels::gainToDecibels(g, gain_floor_db));
-    DBG("})");
+    ONLY_ON_DEBUG({
+        DBG("Peak dB: max({");
+        for (auto g : d_zeros)
+            DBG("  " << juce::Decibels::gainToDecibels(g, gain_floor_db));
+        DBG("})");
+    });
     return *std::max_element(d_zeros.begin(), d_zeros.end());
 }
 double FilterElement::peakDb() const
