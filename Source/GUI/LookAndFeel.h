@@ -114,7 +114,7 @@ public:
                            float height, float radius,
                            GaussianPlanePanel&) override;
     void drawZPoint(juce::Graphics&, float x, float y, float width,
-                    float height, float p_x, float p_y, FilterElement::Type,
+                    float height, float p_x, float p_y, bool type,
                     bool conjugate, ZPoint&);
     void drawComboBox(juce::Graphics&, int width, int height, bool isButtonDown,
                       int buttonX, int buttonY, int buttonW, int buttonH,

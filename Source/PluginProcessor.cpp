@@ -35,11 +35,8 @@ createParameterLayout(int n_elements)
             GAIN_ID_PREFIX + i_str, "Gain " + ip1_str,
             juce::NormalisableRange<float>(-128.0f, 24.0f, 0.001f), 0.0f,
             juce::AudioParameterFloatAttributes {}.withLabel("dB")));
-        params.push_back(std::make_unique<juce::AudioParameterChoice>(
-            TYPE_ID_PREFIX + i_str, "Type" + ip1_str,
-            juce::StringArray {FilterElement::typeToString(0),
-                               FilterElement::typeToString(1)},
-            0));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            TYPE_ID_PREFIX + i_str, "Type " + ip1_str, false));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
             INVERTED_ID_PREFIX + i_str, "Inverted " + ip1_str, false));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
@@ -93,7 +90,7 @@ void PolesAndZerosEQAudioProcessor::appendListeners()
                          this, i, std::placeholders::_1)));
         pushListener(TYPE_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
-                         &PolesAndZerosEQAudioProcessor::setElementTypeF, this,
+                         &PolesAndZerosEQAudioProcessor::setElementTypeTh, this,
                          i, std::placeholders::_1)));
     }
 }
@@ -293,13 +290,13 @@ void PolesAndZerosEQAudioProcessor::setElementSingleTh(int i, float v)
 {
     setElementSingle(i, v > 0.5);
 }
-void PolesAndZerosEQAudioProcessor::setElementType(int i, FilterElement::Type v)
+void PolesAndZerosEQAudioProcessor::setElementType(int i, bool v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setType(v);
 }
-void PolesAndZerosEQAudioProcessor::setElementTypeF(int i, float v)
+void PolesAndZerosEQAudioProcessor::setElementTypeTh(int i, float v)
 {
-    setElementType(i, FilterElement::floatToType(v));
+    setElementType(i, v > 0.5f);
 }
 
 // =============================================================================
@@ -355,24 +352,9 @@ void PolesAndZerosEQAudioProcessor::halfPhases() { multiplyPhases(0.5); }
 void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
 {
     for (int i = 0; i < n_elements; ++i)
-    {
-        auto currentType = multiChannelCascade[0][i].getType();
-        FilterElement::Type newType;
-        switch (currentType)
-        {
-        default:
-            UNHANDLED_SWITCH_CASE(
-                "Unhandled case for filter element type. Defaulting to 'ZERO'");
-        case (FilterElement::Type::ZERO):
-            newType = FilterElement::Type::POLE;
-            break;
-        case (FilterElement::Type::POLE):
-            newType = FilterElement::Type::ZERO;
-            break;
-        }
-        setParameterValue(TYPE_ID_PREFIX + juce::String(i),
-                          FilterElement::typeToFloat(newType));
-    }
+        setParameterValue(
+            TYPE_ID_PREFIX + juce::String(i),
+            static_cast<float>(!multiChannelCascade[0][i].getType()));
 }
 void PolesAndZerosEQAudioProcessor::resetParameters()
 {
@@ -384,26 +366,6 @@ void PolesAndZerosEQAudioProcessor::resetParameters()
         setParameterValue(GAIN_ID_PREFIX + i_str, 0.0f);
     }
     setParameterValue(GAIN_ID, 0.0f);
-}
-void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
-                                              const double phase,
-                                              FilterElement::Type type,
-                                              const int elementNr,
-                                              double linearGain)
-{
-    if (elementNr > n_elements) return;
-    auto i_str = juce::String(elementNr - 1);
-    setParameterValue(ACTIVE_ID_PREFIX + i_str, false);
-
-    setParameterValue(ACTIVE_ID_PREFIX + i_str, false);
-    setParameterValue(MAGNITUDE_ID_PREFIX + i_str,
-                      static_cast<float>(magnitude));
-    setParameterValue(PHASE_ID_PREFIX + i_str, static_cast<float>(phase));
-    setParameterValue(TYPE_ID_PREFIX + i_str, FilterElement::typeToFloat(type));
-    setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
-    setParameterValue(GAIN_ID_PREFIX + i_str,
-                      static_cast<float>(Decibels::gainToDecibels(
-                          linearGain, FilterElement::gain_floor_db)));
 }
 
 // =============================================================================

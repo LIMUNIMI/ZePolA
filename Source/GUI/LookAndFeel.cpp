@@ -985,29 +985,24 @@ void CustomLookAndFeel::drawGaussianPlane(juce::Graphics& g, float /* x */,
 }
 void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float /* x */,
                                    float /* y */, float width, float height,
-                                   float /* p_x */, float /* p_y */,
-                                   FilterElement::Type type, bool conjugate,
-                                   ZPoint& zp)
+                                   float /* p_x */, float /* p_y */, bool type,
+                                   bool conjugate, ZPoint& zp)
 {
     float t = resizeSize(fullPointThickness);
     juce::Rectangle r(0.5f * t, 0.5f * t, width - t, height - t);
 
-    switch (type)
+    if (type)
     {
-    default:
-        UNHANDLED_SWITCH_CASE(
-            "Unhandled case for filter element type. Defaulting to 'ZERO'");
-    case (FilterElement::Type::ZERO):
-        g.setColour(zp.findColour(ZPoint_zerosColourId)
-                        .withAlpha((conjugate) ? conjugateAlpha : 1.0f));
-        g.drawEllipse(r, t);
-        break;
-    case (FilterElement::Type::POLE):
         g.setColour(zp.findColour(ZPoint_polesColourId)
                         .withAlpha((conjugate) ? conjugateAlpha : 1.0f));
         g.drawLine(r.getX(), r.getY(), r.getRight(), r.getBottom(), t);
         g.drawLine(r.getX(), r.getBottom(), r.getRight(), r.getY(), t);
-        break;
+    }
+    else
+    {
+        g.setColour(zp.findColour(ZPoint_zerosColourId)
+                        .withAlpha((conjugate) ? conjugateAlpha : 1.0f));
+        g.drawEllipse(r, t);
     }
 }
 void CustomLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height,

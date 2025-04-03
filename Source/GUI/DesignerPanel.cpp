@@ -263,11 +263,9 @@ void DesignerPanel::designFilter()
     for (auto i = 0; i < degree; ++i)
     {
         if (i < filterParams.zpk.zeros.size())
-            applyFilterElement(e++, filterParams.zpk.zeros[i],
-                               FilterElement::Type::ZERO, k_db);
+            applyFilterElement(e++, filterParams.zpk.zeros[i], false, k_db);
         if (i < filterParams.zpk.poles.size())
-            applyFilterElement(e++, filterParams.zpk.poles[i],
-                               FilterElement::Type::POLE, k_db);
+            applyFilterElement(e++, filterParams.zpk.poles[i], true, k_db);
     }
     auto n = processor.getNElements();
     for (auto i = e; i < n; ++i)
@@ -288,13 +286,12 @@ void DesignerPanel::designFilter()
     ONLY_ON_DEBUG(if (!autoUpdate) DBG("---------------------------------"
                                        "---------------------------------");)
 }
-void DesignerPanel::applyFilterElement(int i, std::complex<double> z,
-                                       FilterElement::Type t, double gain)
+void DesignerPanel::applyFilterElement(int i, std::complex<double> z, bool t,
+                                       double gain)
 {
     juce::String i_str(i);
     double m = abs(z), a = std::arg(z) / juce::MathConstants<double>::pi;
-    processor.setParameterValue(TYPE_ID_PREFIX + i_str,
-                                FilterElement::typeToFloat(t));
+    processor.setParameterValue(TYPE_ID_PREFIX + i_str, static_cast<float>(t));
     processor.setParameterValue(MAGNITUDE_ID_PREFIX + i_str,
                                 static_cast<float>(m));
     processor.setParameterValue(PHASE_ID_PREFIX + i_str, static_cast<float>(a));
@@ -304,13 +301,8 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z,
     processor.setParameterValue(SINGLE_ID_PREFIX + i_str, false);
     processor.setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
     ONLY_ON_DEBUG(if (!autoUpdate) {
-        juce::String prefix("?");
-        switch (t)
-        {
-        case FilterElement::ZERO: prefix = "Z"; break;
-        case FilterElement::POLE: prefix = "P"; break;
-        }
-        DBG("  " << prefix << "(" << m << "; " << a << ") " << gain << "dB");
+        DBG("  " << ((t) ? "P" : "Z") << "(" << m << "; " << a << ") " << gain
+                 << "dB");
     })
 }
 void DesignerPanel::sampleRateChangedCallback(double sr)

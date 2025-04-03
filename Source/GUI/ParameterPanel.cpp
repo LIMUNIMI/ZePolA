@@ -38,7 +38,7 @@ void ParameterStrip::FrequencyLabelSampleRateListener::
 // =============================================================================
 ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     : processor(p)
-    , tButton(FilterElement::typeToString(0), FilterElement::typeToString(1),
+    , tButton(FilterElement::typeToString(false), FilterElement::typeToString(true),
               CustomLookAndFeel::ColourIDs::ZPoint_zerosColourId,
               CustomLookAndFeel::ColourIDs::ZPoint_polesColourId, false, true)
     , mSliderAttachment(
@@ -145,7 +145,7 @@ void ZPoint::ActiveListener::parameterChanged(const juce::String&, float a)
 ZPoint::TypeListener::TypeListener(ZPoint* p) : parent(p) {}
 void ZPoint::TypeListener::parameterChanged(const juce::String&, float a)
 {
-    parent->setType(FilterElement::floatToType(a));
+    parent->setType(a > 0.5f);
 }
 
 // =============================================================================
@@ -189,17 +189,7 @@ ZPoint::TogglableTypePointListener::TogglableTypePointListener(
 void ZPoint::TogglableTypePointListener::mouseDoubleClick(
     const juce::MouseEvent&)
 {
-    FilterElement::Type t = FilterElement::ZERO;
-    switch (
-        FilterElement::floatToType(param->convertFrom0to1(param->getValue())))
-    {
-    default:
-        UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
-                              "Switching to type 'ZERO'");
-    case FilterElement::POLE: break;
-    case FilterElement::ZERO: t = FilterElement::POLE; break;
-    }
-    Parameters::setParameterValue(param, FilterElement::typeToFloat(t));
+    Parameters::setParameterValue(param, 1.0f - param->getValue());
 }
 
 // =============================================================================
@@ -262,11 +252,7 @@ ZPoint::MultiAttachment::~MultiAttachment()
 
 // =============================================================================
 ZPoint::ZPoint()
-    : r(0.0f)
-    , a(0.0f)
-    , type(FilterElement::Type::ZERO)
-    , conjugate(false)
-    , z_conj(nullptr)
+    : r(0.0f), a(0.0f), type(false), conjugate(false), z_conj(nullptr)
 {
 }
 
@@ -300,13 +286,13 @@ float ZPoint::getPointX() const { return r * cos(a); }
 float ZPoint::getPointY() const { return r * sin(a); }
 float ZPoint::getPointMagnitude() const { return r; }
 float ZPoint::getPointArg() const { return a; }
-void ZPoint::setType(FilterElement::Type t)
+void ZPoint::setType(bool t)
 {
     type = t;
     if (z_conj) z_conj->setType(t);
     repaint();
 }
-FilterElement::Type ZPoint::getType() const { return type; }
+bool ZPoint::getType() const { return type; }
 void ZPoint::setConjugate(bool c)
 {
     conjugate = c;
@@ -546,18 +532,9 @@ void ShortcutsPanel::triggerSwapTypes()
     auto n = processor.getNElements();
     for (auto i = 0; i < n; ++i)
     {
-        auto id_i             = TYPE_ID_PREFIX + juce::String(i);
-        FilterElement::Type t = FilterElement::ZERO;
-        switch (
-            FilterElement::floatToType(processor.getParameterUnnormValue(id_i)))
-        {
-        default:
-            UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
-                                  "Switching to type 'ZERO'");
-        case FilterElement::POLE: break;
-        case FilterElement::ZERO: t = FilterElement::POLE; break;
-        }
-        processor.setParameterValue(id_i, FilterElement::typeToFloat(t));
+        auto id_i = TYPE_ID_PREFIX + juce::String(i);
+        processor.setParameterValue(
+            id_i, 1.0f - processor.getParameterUnnormValue(id_i));
     }
 }
 

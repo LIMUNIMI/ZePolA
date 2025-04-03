@@ -122,14 +122,14 @@ public:
      * @param i Element index (zero-based)
      * @param v New element type
      */
-    void setElementType(int i, FilterElement::Type v);
+    void setElementType(int i, bool v);
     /**
      * Set an element's type, with a float value
      *
      * @param i Element index (zero-based)
      * @param v New element type, as a float value
      */
-    void setElementTypeF(int i, float v);
+    void setElementTypeTh(int i, float v);
 
     // =========================================================================
     /** Get the number of filter elements */
@@ -157,11 +157,6 @@ public:
     /** Turn zeros into poles and vice versa */
     void swapPolesAndZeros();
     void resetParameters() override;
-    /** Set the parameters of a filter element */
-    [[deprecated("Avoid using such an invasive method")]] void
-    setFilter(const double magnitude, const double phase,
-              FilterElement::Type type, const int elementNr,
-              const double linearGain = 1.0);
 
     // =========================================================================
     /** Add an unsafe output listener to this processor */

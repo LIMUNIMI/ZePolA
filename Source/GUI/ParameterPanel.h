@@ -109,8 +109,8 @@ public:
     public:
         // =====================================================================
         virtual void drawZPoint(juce::Graphics&, float x, float y, float width,
-                                float height, float p_x, float p_y,
-                                FilterElement::Type, bool conjugate, ZPoint&)
+                                float height, float p_x, float p_y, bool type,
+                                bool conjugate, ZPoint&)
             = 0;
     };
 
@@ -328,9 +328,9 @@ public:
     float getPointArg() const;
 
     /** Set the point type */
-    void setType(FilterElement::Type);
+    void setType(bool);
     /** Get the point type */
-    FilterElement::Type getType() const;
+    bool getType() const;
     /** Set the point as conjugate or not */
     void setConjugate(bool);
     /** Get the conjugate state of the point */
@@ -354,7 +354,7 @@ public:
 
 private:
     // =========================================================================
-    FilterElement::Type type;
+    bool type;
     float r, a;
     bool conjugate;
     ZPoint* z_conj;

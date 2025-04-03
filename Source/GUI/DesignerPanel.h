@@ -99,7 +99,7 @@ private:
     // =========================================================================
     void autoDesignFilter();
     void designFilter();
-    void applyFilterElement(int i, std::complex<double>, FilterElement::Type,
+    void applyFilterElement(int i, std::complex<double>, bool type,
                             double gain);
 
     // =========================================================================

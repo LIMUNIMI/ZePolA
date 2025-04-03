@@ -213,7 +213,7 @@ DifferentiableDTFT::DifferentiableDTFT(const FilterElementCascade& fec)
         {
             elements.push_back(
                 std::polar<double>(fec[i].getMagnitude(), fec[i].getAngle()));
-            isPole.push_back(fec[i].getType() == FilterElement::Type::POLE);
+            isPole.push_back(fec[i].getType());
             gains.push_back(fec[i].getGain());
             angles.push_back(fec[i].getAngle());
         }
