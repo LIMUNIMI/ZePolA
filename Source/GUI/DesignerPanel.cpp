@@ -300,6 +300,8 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z,
     processor.setParameterValue(PHASE_ID_PREFIX + i_str, static_cast<float>(a));
     processor.setParameterValue(GAIN_ID_PREFIX + i_str,
                                 static_cast<float>(gain));
+    processor.setParameterValue(INVERTED_ID_PREFIX + i_str, false);
+    processor.setParameterValue(SINGLE_ID_PREFIX + i_str, false);
     processor.setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
     ONLY_ON_DEBUG(if (!autoUpdate) {
         juce::String prefix("?");

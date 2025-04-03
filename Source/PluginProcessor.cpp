@@ -41,6 +41,10 @@ createParameterLayout(int n_elements)
                                FilterElement::typeToString(1)},
             0));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
+            INVERTED_ID_PREFIX + i_str, "Inverted " + ip1_str, false));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            SINGLE_ID_PREFIX + i_str, "Single " + ip1_str, false));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
             ACTIVE_ID_PREFIX + i_str, "Active " + ip1_str, false));
     }
 
@@ -78,6 +82,14 @@ void PolesAndZerosEQAudioProcessor::appendListeners()
         pushListener(ACTIVE_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
                          &PolesAndZerosEQAudioProcessor::setElementActiveTh,
+                         this, i, std::placeholders::_1)));
+        pushListener(INVERTED_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &PolesAndZerosEQAudioProcessor::setElementInvertedTh,
+                         this, i, std::placeholders::_1)));
+        pushListener(SINGLE_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &PolesAndZerosEQAudioProcessor::setElementSingleTh,
                          this, i, std::placeholders::_1)));
         pushListener(TYPE_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
@@ -264,6 +276,22 @@ void PolesAndZerosEQAudioProcessor::setElementActive(int i, bool v)
 void PolesAndZerosEQAudioProcessor::setElementActiveTh(int i, float v)
 {
     setElementActive(i, v > 0.5);
+}
+void PolesAndZerosEQAudioProcessor::setElementInverted(int i, bool v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setInverted(v);
+}
+void PolesAndZerosEQAudioProcessor::setElementInvertedTh(int i, float v)
+{
+    setElementInverted(i, v > 0.5);
+}
+void PolesAndZerosEQAudioProcessor::setElementSingle(int i, bool v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setSingle(v);
+}
+void PolesAndZerosEQAudioProcessor::setElementSingleTh(int i, float v)
+{
+    setElementSingle(i, v > 0.5);
 }
 void PolesAndZerosEQAudioProcessor::setElementType(int i, FilterElement::Type v)
 {

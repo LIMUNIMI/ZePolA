@@ -89,6 +89,34 @@ public:
      */
     void setElementActiveTh(int i, float v);
     /**
+     * Set an element's magnitude as inverted
+     *
+     * @param i Element index (zero-based)
+     * @param v New inverted state
+     */
+    void setElementInverted(int i, bool v);
+    /**
+     * Set an element's magnitude as inverted, with a value threshold on 0.5
+     *
+     * @param i Element index (zero-based)
+     * @param v New inverted state, as a float
+     */
+    void setElementInvertedTh(int i, float v);
+    /**
+     * Set a filter as a 1-element filter
+     *
+     * @param i Element index (zero-based)
+     * @param v New single state
+     */
+    void setElementSingle(int i, bool v);
+    /**
+     * Set a filter as a 1-element filter, with a value threshold on 0.5
+     *
+     * @param i Element index (zero-based)
+     * @param v New single state, as a float
+     */
+    void setElementSingleTh(int i, float v);
+    /**
      * Set an element's type
      *
      * @param i Element index (zero-based)
