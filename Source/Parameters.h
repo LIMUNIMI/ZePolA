@@ -13,27 +13,6 @@
 #define AUTO_GAIN_PROPERTY_ID "autoGain"
 
 // =============================================================================
-// Generic constants & macros
-#define SLIDERS_FLOOR 0.0f
-#define SLIDERS_CEILING 1.0f
-
-// =============================================================================
-// GUI constants and macros
-#define NUMBER_OF_REFERENCE_FREQUENCIES 8
-#define FREQUENCY_FLOOR 20.0
-
-#define DESIGN_FREQUENCY_FLOOR 1.0
-
-#define SELECTABLE_FILTER_TYPES                                                \
-    {                                                                          \
-        "BUTTERWORTH", "CHEBYSHEV I", "CHEBYSHEV II", "ELLIPTIC"               \
-    }
-#define SELECTABLE_ORDERS_BUTTERWORTH                                          \
-    {                                                                          \
-        "2", "4", "6", "8"                                                     \
-    }
-
-// =============================================================================
 namespace Parameters
 {
 /** Set parameter value, enclosing the operation in a gesture */
