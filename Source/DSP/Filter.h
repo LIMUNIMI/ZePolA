@@ -42,6 +42,8 @@ public:
     static const double gain_floor_db;
     /** Maximum magnitude allowed for poles */
     static const double pole_magnitude_ceil;
+    /** Minimum magnitude allowed for inverted elements */
+    static const double inv_magnitude_floor;
 
     // =========================================================================
     /**
@@ -73,6 +75,10 @@ public:
     double getGainDb() const;
     /** Returns true if the filter is active (or false if it is not) */
     bool getActive() const;
+    /** Returns true if the magnitude is inverted */
+    bool getInverted() const;
+    /** Returns true if the filter has one element (1-zero or 1-pole) */
+    bool getSingle() const;
     /** Returns an array with the current gain and coefficients of the filter
      * (active_flag, a0, a1, a2, b0, b1, b2, gain)
      */
@@ -95,6 +101,10 @@ public:
     void setActive(bool b = true);
     /** Sets the digital filter to be inactive */
     void setInactive();
+    /** Sets the magnitude as inverted (or not) */
+    void setInverted(bool b = true);
+    /** Sets the filter to be 1-element (or 2-element, if false) */
+    void setSingle(bool b = true);
 
     // =========================================================================
     /**
@@ -150,7 +160,7 @@ private:
 
     // =========================================================================
     double magnitude, phase, gain, coeffs[2], memory[2];
-    bool active;
+    bool active, inverted, single;
     Type type;
 
     double (FilterElement::*processSampleFunc)(double);

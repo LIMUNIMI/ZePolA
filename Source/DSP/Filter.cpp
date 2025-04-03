@@ -5,6 +5,7 @@
 // =============================================================================
 const double FilterElement::gain_floor_db       = -128.0;
 const double FilterElement::pole_magnitude_ceil = 0.99999;
+const double FilterElement::inv_magnitude_floor = 1e-6;
 
 // =============================================================================
 const std::string FilterElement::typeToString(FilterElement::Type t)
@@ -46,6 +47,8 @@ FilterElement::FilterElement()
     , phase(0.0)
     , gain(1.0)
     , active(false)
+    , inverted(false)
+    , single(false)
     , processSampleFunc(&FilterElement::processSampleZero)
 {
     resetMemory();
@@ -120,6 +123,7 @@ std::array<double, 8> FilterElement::getCoefficients() const
 // =============================================================================
 void FilterElement::setMagnitude(double m)
 {
+    if (inverted && m < inv_magnitude_floor) m = inv_magnitude_floor;
     switch (type)
     {
     default:
@@ -139,6 +143,8 @@ void FilterElement::setPhase(double p)
     phase = std::fmod(p, 2.0);
     // Conjugate symmetry
     if (phase > 1.0) phase = 2.0 - phase;
+    // Force real for 1-element filters
+    if (single) phase = (phase > 0.5) ? 1.0 : 0.0;
     computeCoefficients();
 }
 void FilterElement::setType(FilterElement::Type t)
@@ -146,7 +152,7 @@ void FilterElement::setType(FilterElement::Type t)
     if (type != t)
     {
         type = t;
-        computeCoefficients();
+        setMagnitude(getMagnitude());
         resetMemory();
     }
     switch (type)
@@ -161,7 +167,6 @@ void FilterElement::setType(FilterElement::Type t)
         processSampleFunc = &FilterElement::processSampleZero;
         break;
     }
-    setMagnitude(getMagnitude());
 }
 void FilterElement::setGain(double g) { gain = g; }
 void FilterElement::setGainDb(double g)
@@ -174,6 +179,24 @@ void FilterElement::setActive(bool a)
     active = a;
 }
 void FilterElement::setInactive() { setActive(false); }
+void FilterElement::setInverted(bool i)
+{
+    if (i != inverted)
+    {
+        inverted = i;
+        resetMemory();
+        setMagnitude(getMagnitude());
+    }
+}
+void FilterElement::setSingle(bool s)
+{
+    if (s != single)
+    {
+        single = s;
+        if (single) resetMemory();
+        setPhase(getPhase());
+    }
+}
 
 // =============================================================================
 void FilterElement::resetMemory() { memory[0] = memory[1] = 0.0; }
@@ -184,8 +207,17 @@ void FilterElement::pushSample(double x)
 }
 void FilterElement::computeCoefficients()
 {
-    coeffs[0] = -2 * getRealPart();
-    coeffs[1] = magnitude * magnitude;
+    double m = (inverted) ? 1.0 / magnitude : magnitude;
+    if (single)
+    {
+        coeffs[0] = -m;
+        coeffs[1] = 0.0;
+    }
+    else
+    {
+        coeffs[0] = -2.0 * m * std::cos(getAngle());
+        coeffs[1] = m * m;
+    }
 }
 
 // =============================================================================
