@@ -26,6 +26,7 @@ private:
     PolesAndZerosEQAudioProcessor& processor;
 
     // ===========================================================================
+    juce::TooltipWindow tooltipWindow;
     juce::ComponentBoundsConstrainer aspectRatioConstrainer;
     juce::ApplicationProperties applicationProperties;
     CustomLookAndFeel claf;

@@ -5,47 +5,27 @@
 // =============================================================================
 const double FilterElement::gain_floor_db       = -128.0;
 const double FilterElement::pole_magnitude_ceil = 0.99999;
+const double FilterElement::inv_magnitude_floor = 1e-6;
 
 // =============================================================================
-const std::string FilterElement::typeToString(FilterElement::Type t)
+const std::string FilterElement::typeToString(bool t)
 {
-    switch (t)
-    {
-    default:
-        UNHANDLED_SWITCH_CASE(
-            "Unhandled case for filter element type. Defaulting to 'UNKNOWN'");
-        return "UNKNOWN";
-    case FilterElement::Type::ZERO: return "ZERO";
-    case FilterElement::Type::POLE: return "POLE";
-    }
+    return (t) ? "POLE" : "ZERO";
 }
 const std::string FilterElement::typeToString(float t)
 {
-    return FilterElement::typeToString(FilterElement::floatToType(t));
-}
-float FilterElement::typeToFloat(FilterElement::Type t)
-{
-    return static_cast<float>(static_cast<int>(t));
-}
-FilterElement::Type FilterElement::floatToType(float f)
-{
-    switch (juce::roundToInt(f))
-    {
-    default:
-        UNHANDLED_SWITCH_CASE(
-            "Unhandled case for filter element type. Defaulting to 'ZERO'");
-    case FilterElement::Type::ZERO: return FilterElement::Type::ZERO;
-    case FilterElement::Type::POLE: return FilterElement::Type::POLE;
-    }
+    return FilterElement::typeToString(t > 0.5f);
 }
 
 // =============================================================================
 FilterElement::FilterElement()
-    : type(FilterElement::Type::ZERO)
+    : type(false)
     , magnitude(0.0)
     , phase(0.0)
     , gain(1.0)
     , active(false)
+    , inverted(false)
+    , single(false)
     , processSampleFunc(&FilterElement::processSampleZero)
 {
     resetMemory();
@@ -70,7 +50,9 @@ double FilterElement::getAngle() const
 {
     return getPhase() * MathConstants<double>::pi;
 }
-FilterElement::Type FilterElement::getType() const { return type; }
+bool FilterElement::getType() const { return type; }
+bool FilterElement::getSingle() const { return single; }
+bool FilterElement::getInverted() const { return inverted; }
 double FilterElement::getGain() const { return gain; }
 double FilterElement::getGainDb() const
 {
@@ -87,24 +69,9 @@ double FilterElement::getImagPart() const
 }
 std::array<double, 8> FilterElement::getCoefficients() const
 {
-    switch (type)
+    if (type)
     {
-    default:
-        UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
-                              "Returning pass-through filter coefficients");
-        return {static_cast<double>(false), 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0};
-        break;
-    case FilterElement::Type::ZERO:
-        return {static_cast<double>(active),
-                1.0,
-                0.0,
-                0.0,
-                1.0,
-                coeffs[0],
-                coeffs[1],
-                gain};
-        break;
-    case FilterElement::Type::POLE:
+        // POLE
         return {static_cast<double>(active),
                 1.0,
                 coeffs[0],
@@ -113,23 +80,30 @@ std::array<double, 8> FilterElement::getCoefficients() const
                 0.0,
                 0.0,
                 gain};
-        break;
     }
+    else
+    {
+        // ZERO
+        return {static_cast<double>(active),
+                1.0,
+                0.0,
+                0.0,
+                1.0,
+                coeffs[0],
+                coeffs[1],
+                gain};
+    }
+}
+std::array<double, 2> FilterElement::getCoefficientsRaw() const
+{
+    return {coeffs[0], coeffs[1]};
 }
 
 // =============================================================================
 void FilterElement::setMagnitude(double m)
 {
-    switch (type)
-    {
-    default:
-        UNHANDLED_SWITCH_CASE(
-            "Unhandled case for filter element type. Defaulting to 'ZERO'");
-    case FilterElement::Type::ZERO: break;  // nothing to do, ok
-    case FilterElement::Type::POLE:
-        if (m > pole_magnitude_ceil) m = pole_magnitude_ceil;
-        break;
-    }
+    if (inverted && m < inv_magnitude_floor) m = inv_magnitude_floor;
+    if (type && m > pole_magnitude_ceil) m = pole_magnitude_ceil;
     magnitude = m;
     computeCoefficients();
 }
@@ -141,27 +115,16 @@ void FilterElement::setPhase(double p)
     if (phase > 1.0) phase = 2.0 - phase;
     computeCoefficients();
 }
-void FilterElement::setType(FilterElement::Type t)
+void FilterElement::setType(bool t)
 {
     if (type != t)
     {
         type = t;
-        computeCoefficients();
+        setMagnitude(getMagnitude());
         resetMemory();
+        processSampleFunc = (type) ? &FilterElement::processSamplePole
+                                   : &FilterElement::processSampleZero;
     }
-    switch (type)
-    {
-    case FilterElement::Type::POLE:
-        processSampleFunc = &FilterElement::processSamplePole;
-        break;
-    default:
-        UNHANDLED_SWITCH_CASE(
-            "Unhandled case for filter element type. Defaulting to 'ZERO'");
-    case FilterElement::Type::ZERO:
-        processSampleFunc = &FilterElement::processSampleZero;
-        break;
-    }
-    setMagnitude(getMagnitude());
 }
 void FilterElement::setGain(double g) { gain = g; }
 void FilterElement::setGainDb(double g)
@@ -174,6 +137,24 @@ void FilterElement::setActive(bool a)
     active = a;
 }
 void FilterElement::setInactive() { setActive(false); }
+void FilterElement::setInverted(bool i)
+{
+    if (i != inverted)
+    {
+        inverted = i;
+        resetMemory();
+        setMagnitude(getMagnitude());
+    }
+}
+void FilterElement::setSingle(bool s)
+{
+    if (s != single)
+    {
+        single = s;
+        if (single) resetMemory();
+        setPhase(getPhase());
+    }
+}
 
 // =============================================================================
 void FilterElement::resetMemory() { memory[0] = memory[1] = 0.0; }
@@ -184,8 +165,17 @@ void FilterElement::pushSample(double x)
 }
 void FilterElement::computeCoefficients()
 {
-    coeffs[0] = -2 * getRealPart();
-    coeffs[1] = magnitude * magnitude;
+    double m = (inverted) ? 1.0 / magnitude : magnitude;
+    if (single)
+    {
+        coeffs[0] = (getPhase() > 0.5) ? m : -m;
+        coeffs[1] = 0.0;
+    }
+    else
+    {
+        coeffs[0] = -2.0 * m * std::cos(getAngle());
+        coeffs[1] = m * m;
+    }
 }
 
 // =============================================================================
@@ -211,19 +201,8 @@ void FilterElement::processBlock(double* outputs, const double* inputs, int n)
 std::complex<double> FilterElement::_dtft_withGain(double omega, double g) const
 {
     std::complex<double> z_inv = std::exp(std::complex<double>(0.0, -omega));
-
-    std::complex<double> h
-        = 1.0 + coeffs[0] * z_inv + coeffs[1] * z_inv * z_inv;
-    switch (type)
-    {
-    default:
-        UNHANDLED_SWITCH_CASE(
-            "Unhandled case for filter element type. Defaulting to 'ZERO'");
-    case FilterElement::Type::ZERO: h = g * h; break;
-    case FilterElement::Type::POLE: h = g / h; break;
-    }
-
-    return h;
+    std::complex<double> h     = 1.0 + (coeffs[0] + coeffs[1] * z_inv) * z_inv;
+    return (type) ? g / h : g * h;
 }
 std::complex<double> FilterElement::dtft(double omega) const
 {
@@ -237,18 +216,7 @@ std::complex<double> FilterElement::dtft(double omega) const
 double FilterElement::rmsg() const
 {
     double g;
-    switch (type)
-    {
-    default:
-        UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
-                              "Returning the default value: 1.0");
-        g = 1.0;
-        break;
-    case FilterElement::Type::ZERO:
-        // 1 + 4Re^2{z} + |z|^4
-        g = 1.0 + coeffs[0] * coeffs[0] + coeffs[1] * coeffs[1];
-        break;
-    case FilterElement::Type::POLE:
+    if (type)
     {
         // double r = getRealPart();
         // double i = getImagPart();
@@ -263,8 +231,11 @@ double FilterElement::rmsg() const
         // Approx v2
         // W_GL(|p|) * |1 - p^2|^2
         // g = _wgl(sqrt(coeffs[1])) * one_mp2 * one_mp2;
-        break;
     }
+    else
+    {
+        // 1 + 4Re^2{z} + |z|^4
+        g = 1.0 + coeffs[0] * coeffs[0] + coeffs[1] * coeffs[1];
     }
     return std::sqrt(g);
 }

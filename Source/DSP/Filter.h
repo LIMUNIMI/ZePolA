@@ -14,34 +14,16 @@
 class FilterElement
 {
 public:
-    // =========================================================================
-    /**
-     * @brief Filter element type
-     *
-     *  - ZERO: 2-zero filter
-     *  - POLE: 2-pole filter
-     */
-    enum Type
-    {
-        ZERO = 0,
-        POLE,
-
-        // This type should not be used as a type, but only to get how many
-        // types are there
-        N_TYPES
-    };
     /** Encode filter type as a string */
-    static const std::string typeToString(Type);
+    static const std::string typeToString(bool);
     /** Encode filter type as a string */
     static const std::string typeToString(float);
-    /** Encode filter type as a float */
-    static float typeToFloat(Type);
-    /** Decode float as a filter type */
-    static Type floatToType(float);
     /** Minimum input gain allowed in decibel */
     static const double gain_floor_db;
     /** Maximum magnitude allowed for poles */
     static const double pole_magnitude_ceil;
+    /** Minimum magnitude allowed for inverted elements */
+    static const double inv_magnitude_floor;
 
     // =========================================================================
     /**
@@ -65,18 +47,24 @@ public:
     double getRealPart() const;
     /** Returns the imaginary part of the zero/pole of the digital filter */
     double getImagPart() const;
-    /** Returns the type of the digital filter (pole/zero) */
-    Type getType() const;
+    /** Returns the type of the digital filter (zero/pole) */
+    bool getType() const;
     /** Returns the input gain (linear) of the digital filter */
     double getGain() const;
     /** Returns the input gain (in decibel) of the digital filter */
     double getGainDb() const;
     /** Returns true if the filter is active (or false if it is not) */
     bool getActive() const;
+    /** Returns true if the magnitude is inverted */
+    bool getInverted() const;
+    /** Returns true if the filter has one element (1-zero or 1-pole) */
+    bool getSingle() const;
     /** Returns an array with the current gain and coefficients of the filter
      * (active_flag, a0, a1, a2, b0, b1, b2, gain)
      */
     std::array<double, 8> getCoefficients() const;
+    /** Returns an array with just the two internal filter coefficients */
+    std::array<double, 2> getCoefficientsRaw() const;
 
     // =========================================================================
     /** Resets the memory of the digital filter to the initial state */
@@ -85,8 +73,8 @@ public:
     void setMagnitude(double);
     /** Sets the normalized phase of the zero/pole of the digital filter */
     void setPhase(double);
-    /** Sets the type of the digital filter (pole/zero) */
-    void setType(Type);
+    /** Sets the type of the digital filter (zero/pole) */
+    void setType(bool);
     /** Sets the input gain (linear) of the digital filter */
     void setGain(double);
     /** Sets the input gain (in decibel) of the digital filter */
@@ -95,6 +83,10 @@ public:
     void setActive(bool b = true);
     /** Sets the digital filter to be inactive */
     void setInactive();
+    /** Sets the magnitude as inverted (or not) */
+    void setInverted(bool b = true);
+    /** Sets the filter to be 1-element (or 2-element, if false) */
+    void setSingle(bool b = true);
 
     // =========================================================================
     /**
@@ -150,8 +142,7 @@ private:
 
     // =========================================================================
     double magnitude, phase, gain, coeffs[2], memory[2];
-    bool active;
-    Type type;
+    bool active, inverted, single, type;
 
     double (FilterElement::*processSampleFunc)(double);
 };

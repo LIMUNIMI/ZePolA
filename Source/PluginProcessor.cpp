@@ -35,11 +35,12 @@ createParameterLayout(int n_elements)
             GAIN_ID_PREFIX + i_str, "Gain " + ip1_str,
             juce::NormalisableRange<float>(-128.0f, 24.0f, 0.001f), 0.0f,
             juce::AudioParameterFloatAttributes {}.withLabel("dB")));
-        params.push_back(std::make_unique<juce::AudioParameterChoice>(
-            TYPE_ID_PREFIX + i_str, "Type" + ip1_str,
-            juce::StringArray {FilterElement::typeToString(0),
-                               FilterElement::typeToString(1)},
-            0));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            TYPE_ID_PREFIX + i_str, "Type " + ip1_str, false));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            INVERTED_ID_PREFIX + i_str, "Inverted " + ip1_str, false));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            SINGLE_ID_PREFIX + i_str, "Single " + ip1_str, false));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
             ACTIVE_ID_PREFIX + i_str, "Active " + ip1_str, false));
     }
@@ -49,9 +50,8 @@ createParameterLayout(int n_elements)
 void PolesAndZerosEQAudioProcessor::appendListeners()
 {
     // The unsafe flag resetter listens to all parameters
-    pushListenerForAllParameters(
-        new SimpleListener(std::bind(&PolesAndZerosEQAudioProcessor::markAsSafe,
-                                     this, std::placeholders::_1)));
+    pushListenerForAllParameters(new TriggerListener(
+        std::bind(&PolesAndZerosEQAudioProcessor::markAsSafe, this, true)));
 
     pushListener(BYPASS_ID, new SimpleListener(std::bind(
                                 &PolesAndZerosEQAudioProcessor::setBypassTh,
@@ -80,9 +80,17 @@ void PolesAndZerosEQAudioProcessor::appendListeners()
                      new SimpleListener(std::bind(
                          &PolesAndZerosEQAudioProcessor::setElementActiveTh,
                          this, i, std::placeholders::_1)));
+        pushListener(INVERTED_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &PolesAndZerosEQAudioProcessor::setElementInvertedTh,
+                         this, i, std::placeholders::_1)));
+        pushListener(SINGLE_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &PolesAndZerosEQAudioProcessor::setElementSingleTh,
+                         this, i, std::placeholders::_1)));
         pushListener(TYPE_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
-                         &PolesAndZerosEQAudioProcessor::setElementTypeF, this,
+                         &PolesAndZerosEQAudioProcessor::setElementTypeTh, this,
                          i, std::placeholders::_1)));
     }
 }
@@ -92,7 +100,7 @@ PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
     : VTSAudioProcessor(createParameterLayout(n), getName())
     , n_elements(n)
     , pivotBuffer()
-    , unsafe(false)
+    , unsafe(juce::var(false))
     , bypassed(false)
 {
     allocateChannelsIfNeeded(1);
@@ -195,8 +203,8 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     }
 
     // Output safety check (not resetting)
-    unsafe |= buffer.getMagnitude(0, n_samples) > 4;
-    if (unsafe) buffer.clear();
+    if (!unsafe.getValue()) markAsSafe(buffer.getMagnitude(0, n_samples) < 4);
+    if (unsafe.getValue()) buffer.clear();
 }
 void PolesAndZerosEQAudioProcessor::processBlockBypassed(
     juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
@@ -258,13 +266,33 @@ void PolesAndZerosEQAudioProcessor::setElementActiveTh(int i, float v)
 {
     setElementActive(i, v > 0.5);
 }
-void PolesAndZerosEQAudioProcessor::setElementType(int i, FilterElement::Type v)
+void PolesAndZerosEQAudioProcessor::setElementInverted(int i, bool v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setInverted(v);
+    // Magnitude inversion is allowed only for zeros
+    if (v) setParameterValue(TYPE_ID_PREFIX + juce::String(i), 0.0f);
+}
+void PolesAndZerosEQAudioProcessor::setElementInvertedTh(int i, float v)
+{
+    setElementInverted(i, v > 0.5);
+}
+void PolesAndZerosEQAudioProcessor::setElementSingle(int i, bool v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setSingle(v);
+}
+void PolesAndZerosEQAudioProcessor::setElementSingleTh(int i, float v)
+{
+    setElementSingle(i, v > 0.5);
+}
+void PolesAndZerosEQAudioProcessor::setElementType(int i, bool v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setType(v);
+    // Poles cannot have inverted magnitude
+    if (v) setParameterValue(INVERTED_ID_PREFIX + juce::String(i), 0.0f);
 }
-void PolesAndZerosEQAudioProcessor::setElementTypeF(int i, float v)
+void PolesAndZerosEQAudioProcessor::setElementTypeTh(int i, float v)
 {
-    setElementType(i, FilterElement::floatToType(v));
+    setElementType(i, v > 0.5f);
 }
 
 // =============================================================================
@@ -303,11 +331,18 @@ void PolesAndZerosEQAudioProcessor::setBypassTh(float b)
 {
     setBypass(b > 0.5f);
 }
-void PolesAndZerosEQAudioProcessor::markAsSafe(float)
+void PolesAndZerosEQAudioProcessor::addUnsafeOutputListener(
+    juce::Value::Listener* uol)
 {
-    unsafe = false;
-    if (editorCallback) editorCallback();
+    unsafe.addListener(uol);
+    uol->valueChanged(unsafe);
 }
+void PolesAndZerosEQAudioProcessor::removeUnsafeOutputListener(
+    juce::Value::Listener* uol)
+{
+    unsafe.removeListener(uol);
+}
+void PolesAndZerosEQAudioProcessor::markAsSafe(bool b) { unsafe = !b; }
 void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
 {
     for (int i = 0; i < n_elements; ++i)
@@ -320,24 +355,9 @@ void PolesAndZerosEQAudioProcessor::halfPhases() { multiplyPhases(0.5); }
 void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
 {
     for (int i = 0; i < n_elements; ++i)
-    {
-        auto currentType = multiChannelCascade[0][i].getType();
-        FilterElement::Type newType;
-        switch (currentType)
-        {
-        default:
-            UNHANDLED_SWITCH_CASE(
-                "Unhandled case for filter element type. Defaulting to 'ZERO'");
-        case (FilterElement::Type::ZERO):
-            newType = FilterElement::Type::POLE;
-            break;
-        case (FilterElement::Type::POLE):
-            newType = FilterElement::Type::ZERO;
-            break;
-        }
-        setParameterValue(TYPE_ID_PREFIX + juce::String(i),
-                          FilterElement::typeToFloat(newType));
-    }
+        setParameterValue(
+            TYPE_ID_PREFIX + juce::String(i),
+            static_cast<float>(!multiChannelCascade[0][i].getType()));
 }
 void PolesAndZerosEQAudioProcessor::resetParameters()
 {
@@ -349,26 +369,6 @@ void PolesAndZerosEQAudioProcessor::resetParameters()
         setParameterValue(GAIN_ID_PREFIX + i_str, 0.0f);
     }
     setParameterValue(GAIN_ID, 0.0f);
-}
-void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude,
-                                              const double phase,
-                                              FilterElement::Type type,
-                                              const int elementNr,
-                                              double linearGain)
-{
-    if (elementNr > n_elements) return;
-    auto i_str = juce::String(elementNr - 1);
-    setParameterValue(ACTIVE_ID_PREFIX + i_str, false);
-
-    setParameterValue(ACTIVE_ID_PREFIX + i_str, false);
-    setParameterValue(MAGNITUDE_ID_PREFIX + i_str,
-                      static_cast<float>(magnitude));
-    setParameterValue(PHASE_ID_PREFIX + i_str, static_cast<float>(phase));
-    setParameterValue(TYPE_ID_PREFIX + i_str, FilterElement::typeToFloat(type));
-    setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
-    setParameterValue(GAIN_ID_PREFIX + i_str,
-                      static_cast<float>(Decibels::gainToDecibels(
-                          linearGain, FilterElement::gain_floor_db)));
 }
 
 // =============================================================================

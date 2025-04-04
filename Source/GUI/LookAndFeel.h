@@ -36,6 +36,7 @@ public:
     enum ColourIDs
     {
         GroupComponent_backgroundColourId = 0,
+        GroupComponent_warningBackgroundColourId,
         InvisibleGroupComponent_outlineColourId,
         ParameterStripSeparator_fillColourId,
         OnOffButton_backgroundOnColourId,
@@ -114,8 +115,8 @@ public:
                            float height, float radius,
                            GaussianPlanePanel&) override;
     void drawZPoint(juce::Graphics&, float x, float y, float width,
-                    float height, float p_x, float p_y, FilterElement::Type,
-                    bool conjugate, ZPoint&);
+                    float height, float p_x, float p_y, bool type,
+                    bool conjugate, bool single, bool inverted, ZPoint&);
     void drawComboBox(juce::Graphics&, int width, int height, bool isButtonDown,
                       int buttonX, int buttonY, int buttonW, int buttonH,
                       juce::ComboBox&) override;
@@ -263,7 +264,8 @@ private:
 
     // =========================================================================
     float fullGaussianCircleThickness, fullGaussianMinorThickness,
-        relativePointSize, fullPointThickness, conjugateAlpha;
+        relativePointSize, fullPointThickness, singlePointRelativeThickness,
+        conjugateAlpha;
     int nGaussianCircleMajorTicks, nGaussianCircleMinorTicksRadial,
         nGaussianCircleMinorTicksCircular;
 
@@ -287,6 +289,9 @@ private:
                            juce::Colour ledOutlineColour,
                            juce::Colour textColour, const juce::String& label,
                            bool ledSide);
+    void _drawCheckbox(Graphics&, juce::ToggleButton&,
+                       bool shouldDrawButtonAsHighlighted,
+                       bool shouldDrawButtonAsDown);
     template <typename ValueType>
     void _autoFontScale(juce::Font&, const juce::Rectangle<ValueType>&,
                         const juce::String&);

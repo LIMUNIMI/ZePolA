@@ -42,8 +42,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , fullPanelMargin(0.0f)
     , groupComponentThickness(1.5f)
     , groupComponentCornerSize(14.5f)
-    // radius, angle, frequency, type, active, gain
-    , stripColumnProportions({100, 100, 50, 50, 50, 50})
+    // radius, angle, frequency, type, active, gain, invert, single
+    , stripColumnProportions({90, 90, 50, 50, 50, 50, 25, 25})
     , panelRowProportions({25, 450, 50, 450, 25})
     , panelProportions({510, 480, 180})
     , lastPanelProportions({396, 324})
@@ -80,6 +80,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , nGaussianCircleMinorTicksCircular(5)
     , relativePointSize(0.05f)
     , fullPointThickness(3.0f)
+    , singlePointRelativeThickness(0.75f)
     , conjugateAlpha(0.5f)
     , linLogSwitchesHeightProportions({20, 60, 20})
     , linLogSwitchesRowProportions({1, 12, 74, 12, 1})
@@ -102,6 +103,8 @@ CustomLookAndFeel::CustomLookAndFeel()
               juce::Colour(0xffecf0f1));
     setColour(juce::GroupComponent::outlineColourId, juce::Colour(0xff383838));
     setColour(GroupComponent_backgroundColourId, juce::Colour(0x17b1b1b1));
+    setColour(GroupComponent_warningBackgroundColourId,
+              juce::Colour(0x99ff5f58));
     setColour(InvisibleGroupComponent_outlineColourId,
               juce::Colours::transparentBlack);
     // setColour(InvisibleGroupComponent_outlineColourId,
@@ -139,6 +142,9 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(OnOffButton_textOnColourId, juce::Colours::white);
     setColour(OnOffButton_textOffColourId, juce::Colours::black);
     setColour(OnOffButton_outlineColourId, juce::Colours::black);
+    setColour(juce::ToggleButton::textColourId, juce::Colours::black);
+    setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
+    setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::black);
     // Plots
     setColour(PlotComponent_backgroundColourId, juce::Colour(0x45979a9a));
     setColour(PlotComponent_lineColourId, juce::Colours::black);
@@ -282,24 +288,29 @@ CustomLookAndFeel::splitProportional(const juce::Rectangle<RectType>& r,
     std::vector<juce::Rectangle<RectType>> rects;
     if (!fractions.empty())
     {
-        float fullSize
-            = static_cast<float>((vertical) ? r.getHeight() : r.getWidth());
-        float resizedMargin = resizeSize(fullMargin);
+        RectType fullSize  = (vertical) ? r.getHeight() : r.getWidth();
+        auto resizedMargin = static_cast<RectType>(resizeSize(fullMargin));
 
-        fullSize -= resizedMargin * (fractions.size() - 1);
-        float fractionsK = 0.0f;
+        fullSize -= resizedMargin
+                    * (static_cast<RectType>(fractions.size())
+                       - static_cast<RectType>(1));
+        auto fractionsSum = static_cast<RectType>(0);
         for (auto f : fractions)
         {
-            jassert(f > 0.0f);
-            fractionsK += f;
+            jassert(f > static_cast<RectType>(0));
+            fractionsSum += f;
         }
-        if (fractionsK) fractionsK = fullSize / fractionsK;
+        if (!fractionsSum)
+        {
+            fractionsSum = static_cast<RectType>(1);
+            fullSize     = static_cast<RectType>(0);
+        }
 
-        juce::Rectangle<float> t(r.toFloat());
+        juce::Rectangle<RectType> t(r);
         for (auto f : fractions)
         {
-            float amnt = f * fractionsK;
-            juce::Rectangle<float> r_f;
+            RectType amnt = f * fullSize / fractionsSum;
+            juce::Rectangle<RectType> r_f;
             if (vertical)
             {
                 r_f = t.removeFromTop(amnt);
@@ -310,7 +321,7 @@ CustomLookAndFeel::splitProportional(const juce::Rectangle<RectType>& r,
                 r_f = t.removeFromLeft(amnt);
                 t.removeFromLeft(resizedMargin);
             }
-            rects.push_back(r_f.toType<RectType>());
+            rects.push_back(r_f);
         }
     }
 
@@ -442,15 +453,21 @@ void CustomLookAndFeel::drawGroupComponentOutline(
     juce::Graphics& g, int width, int height, const juce::String& /* text */,
     const juce::Justification&, juce::GroupComponent& gp)
 {
+    bool is_warning(dynamic_cast<PlotsPanel::UnsafeOutputWarningPanel*>(&gp));
     juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(width),
                              static_cast<float>(height));
     auto t = resizeSize(groupComponentThickness);
     auto c = resizeSize(groupComponentCornerSize);
     b      = b.reduced(t * 0.5f);
-    g.setColour(gp.findColour(GroupComponent_backgroundColourId));
+    g.setColour(gp.findColour((is_warning)
+                                  ? GroupComponent_warningBackgroundColourId
+                                  : GroupComponent_backgroundColourId));
     g.fillRoundedRectangle(b, c);
-    g.setColour(gp.findColour(juce::GroupComponent::outlineColourId));
-    g.drawRoundedRectangle(b, c, t);
+    if (!is_warning)
+    {
+        g.setColour(gp.findColour(juce::GroupComponent::outlineColourId));
+        g.drawRoundedRectangle(b, c, t);
+    }
 }
 void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
                                                int height, const juce::String&,
@@ -699,24 +716,59 @@ void CustomLookAndFeel::_drawToggleButton(
         g.setColour(ledOutlineColour);
     g.drawEllipse(led_rect, othick * 0.5f);
 }
+
+void CustomLookAndFeel::_drawCheckbox(Graphics& g, juce::ToggleButton& button,
+                                      bool /* shouldDrawButtonAsHighlighted */,
+                                      bool /* shouldDrawButtonAsDown */)
+{
+    auto t          = resizeSize(fullLabelledButtonOutline);
+    auto tickBounds = button.getLocalBounds().toFloat().reduced(t, t);
+    auto r          = relativeButtonRadius * tickBounds.getHeight();
+
+    auto outlineColour = button.findColour(ToggleButton::tickDisabledColourId);
+    auto tickColour    = button.findColour(ToggleButton::tickColourId);
+    if (!ParameterStrip::parentComponentIsActive(button))
+    {
+        outlineColour = outlineColour.brighter(inactiveBrightness);
+        tickColour    = tickColour.brighter(inactiveBrightness);
+    }
+
+    g.setColour(outlineColour);
+    g.drawRoundedRectangle(tickBounds, r, t);
+    if (button.getToggleState())
+    {
+        g.setColour(tickColour);
+        auto tick = getTickShape(0.75f);
+        g.fillPath(tick, tick.getTransformToScaleToFit(tickBounds.reduced(r, r),
+                                                       false));
+    }
+}
 void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
                                          juce::ToggleButton& button,
                                          bool shouldDrawButtonAsHighlighted,
                                          bool shouldDrawButtonAsDown)
 {
     bool on = button.getToggleState();
-    _drawToggleButton(
-        g, button, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown,
-        fullButtonOutline, fullButtonPadding, relativeButtonRadius,
-        button.findColour((on) ? OnOffButton_backgroundOnColourId
-                               : OnOffButton_backgroundOffColourId),
-        button.findColour((on) ? OnOffButton_ledOnColourId
-                               : OnOffButton_ledOffColourId),
-        button.findColour(OnOffButton_outlineColourId),
-        button.findColour(OnOffButton_outlineColourId),
-        button.findColour((on) ? OnOffButton_textOnColourId
-                               : OnOffButton_textOffColourId),
-        Button_getOnOffLabel(button, on), true);
+    if (dynamic_cast<ToggleButtonCheckbox*>(&button))
+    {
+        _drawCheckbox(g, button, shouldDrawButtonAsHighlighted,
+                      shouldDrawButtonAsDown);
+    }
+    else
+    {
+        _drawToggleButton(
+            g, button, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown,
+            fullButtonOutline, fullButtonPadding, relativeButtonRadius,
+            button.findColour((on) ? OnOffButton_backgroundOnColourId
+                                   : OnOffButton_backgroundOffColourId),
+            button.findColour((on) ? OnOffButton_ledOnColourId
+                                   : OnOffButton_ledOffColourId),
+            button.findColour(OnOffButton_outlineColourId),
+            button.findColour(OnOffButton_outlineColourId),
+            button.findColour((on) ? OnOffButton_textOnColourId
+                                   : OnOffButton_textOffColourId),
+            Button_getOnOffLabel(button, on), true);
+    }
 }
 void CustomLookAndFeel::drawLabelledToggleButton(
     juce::Graphics& g, LabelledToggleButton& button,
@@ -985,29 +1037,31 @@ void CustomLookAndFeel::drawGaussianPlane(juce::Graphics& g, float /* x */,
 }
 void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float /* x */,
                                    float /* y */, float width, float height,
-                                   float /* p_x */, float /* p_y */,
-                                   FilterElement::Type type, bool conjugate,
+                                   float /* p_x */, float /* p_y */, bool type,
+                                   bool conjugate, bool single, bool inverted,
                                    ZPoint& zp)
 {
+    if (single && conjugate) return;
     float t = resizeSize(fullPointThickness);
+    if (single) t *= singlePointRelativeThickness;
     juce::Rectangle r(0.5f * t, 0.5f * t, width - t, height - t);
 
-    switch (type)
+    if (type)
     {
-    default:
-        UNHANDLED_SWITCH_CASE(
-            "Unhandled case for filter element type. Defaulting to 'ZERO'");
-    case (FilterElement::Type::ZERO):
-        g.setColour(zp.findColour(ZPoint_zerosColourId)
-                        .withAlpha((conjugate) ? conjugateAlpha : 1.0f));
-        g.drawEllipse(r, t);
-        break;
-    case (FilterElement::Type::POLE):
         g.setColour(zp.findColour(ZPoint_polesColourId)
                         .withAlpha((conjugate) ? conjugateAlpha : 1.0f));
         g.drawLine(r.getX(), r.getY(), r.getRight(), r.getBottom(), t);
         g.drawLine(r.getX(), r.getBottom(), r.getRight(), r.getY(), t);
-        break;
+    }
+    else
+    {
+        g.setColour(zp.findColour(ZPoint_zerosColourId)
+                        .withAlpha((conjugate) ? conjugateAlpha : 1.0f));
+        g.drawEllipse(r, t);
+    }
+    if (inverted)
+    {
+        g.drawEllipse((width - t) * 0.5f, (height - t) * 0.5f, t, t, t);
     }
 }
 void CustomLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height,

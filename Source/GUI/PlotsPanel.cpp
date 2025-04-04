@@ -1,4 +1,5 @@
 #include "PlotsPanel.h"
+#include "../Macros.h"
 #include "../Mappers.h"
 #include "CustomButtons.h"
 #include "LookAndFeel.h"
@@ -85,6 +86,28 @@ void PlotComponent::paint(juce::Graphics& g)
 }
 
 // =============================================================================
+PlotsPanel::UnsafeOutputWarningPanel::UnsafeOutputWarningPanel()
+    : message(
+        "",
+        "Caution! The current plugin configuration has caused an excessively "
+        "high output, and the audio stream has been stopped. Please reset the "
+        "plugin parameters to values that allow for a lower output volume.")
+{
+    message.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(message);
+}
+void PlotsPanel::UnsafeOutputWarningPanel::valueChanged(juce::Value& value)
+{
+    setVisible(value.getValue());
+}
+void PlotsPanel::UnsafeOutputWarningPanel::resized()
+{
+    auto r = getLocalBounds();
+    r.setHeight(getHeight() / 2);
+    message.setBounds(r);
+}
+
+// =============================================================================
 PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
                        juce::ApplicationProperties& properties)
     : processor(p)
@@ -105,6 +128,7 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
     addAndMakeVisible(pPlot);
     addAndMakeVisible(mLabel);
     addAndMakeVisible(pLabel);
+    addAndMakeVisible(uowPanel);
     mLabel.setJustificationType(juce::Justification::centred);
     pLabel.setJustificationType(juce::Justification::centred);
     for (auto i : processor.parameterIDs())
@@ -118,9 +142,11 @@ PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
     linLogAmpAPAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, "linLogAmp", linLogAmpButton));
     processor.addSampleRateListener(this);
+    processor.addUnsafeOutputListener(&uowPanel);
 }
 PlotsPanel::~PlotsPanel()
 {
+    processor.removeUnsafeOutputListener(&uowPanel);
     processor.removeSampleRateListener(this);
     for (auto i : processor.parameterIDs())
         processor.removeParameterListener(i, this);
@@ -208,6 +234,7 @@ void PlotsPanel::resized()
         mLabel.setBounds(middle_row[2]);
         pLabel.setBounds(regions[4]);
     }
+    uowPanel.setBounds(getLocalBounds());
 }
 void PlotsPanel::paint(juce::Graphics& g)
 {
@@ -217,5 +244,5 @@ void PlotsPanel::paint(juce::Graphics& g)
 void PlotsPanel::recomputePoints()
 {
     shouldRecomputePoints = true;
-    if (juce::MessageManager::existsAndIsLockedByCurrentThread()) repaint();
+    SAFE_MessageManager_LOCK(this, repaint(););
 }

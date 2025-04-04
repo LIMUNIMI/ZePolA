@@ -3,7 +3,10 @@
 // =============================================================================
 PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     PolesAndZerosEQAudioProcessor& p)
-    : juce::AudioProcessorEditor(&p), processor(p), aspectRatioConstrainer()
+    : juce::AudioProcessorEditor(&p)
+    , processor(p)
+    , aspectRatioConstrainer()
+    , tooltipWindow(this)
 {
     // Look and feel
     setResizable(true, true);

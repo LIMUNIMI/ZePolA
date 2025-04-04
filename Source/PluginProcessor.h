@@ -80,19 +80,47 @@ public:
      */
     void setElementActiveTh(int i, float v);
     /**
+     * Set an element's magnitude as inverted
+     *
+     * @param i Element index (zero-based)
+     * @param v New inverted state
+     */
+    void setElementInverted(int i, bool v);
+    /**
+     * Set an element's magnitude as inverted, with a value threshold on 0.5
+     *
+     * @param i Element index (zero-based)
+     * @param v New inverted state, as a float
+     */
+    void setElementInvertedTh(int i, float v);
+    /**
+     * Set a filter as a 1-element filter
+     *
+     * @param i Element index (zero-based)
+     * @param v New single state
+     */
+    void setElementSingle(int i, bool v);
+    /**
+     * Set a filter as a 1-element filter, with a value threshold on 0.5
+     *
+     * @param i Element index (zero-based)
+     * @param v New single state, as a float
+     */
+    void setElementSingleTh(int i, float v);
+    /**
      * Set an element's type
      *
      * @param i Element index (zero-based)
      * @param v New element type
      */
-    void setElementType(int i, FilterElement::Type v);
+    void setElementType(int i, bool v);
     /**
      * Set an element's type, with a float value
      *
      * @param i Element index (zero-based)
      * @param v New element type, as a float value
      */
-    void setElementTypeF(int i, float v);
+    void setElementTypeTh(int i, float v);
 
     // =========================================================================
     /** Get the number of filter elements */
@@ -120,17 +148,18 @@ public:
     /** Turn zeros into poles and vice versa */
     void swapPolesAndZeros();
     void resetParameters() override;
-    /** Set the parameters of a filter element */
-    [[deprecated("Avoid using such an invasive method")]] void
-    setFilter(const double magnitude, const double phase,
-              FilterElement::Type type, const int elementNr,
-              const double linearGain = 1.0);
+
+    // =========================================================================
+    /** Add an unsafe output listener to this processor */
+    void addUnsafeOutputListener(juce::Value::Listener*);
+    /** Remove an unsafe output listener from this processor */
+    void removeUnsafeOutputListener(juce::Value::Listener*);
+    /** Mark the processor as in a safe state (or not) */
+    void markAsSafe(bool safe = true);
 
 private:
     // =========================================================================
     void appendListeners() override;
-    /** Mark the processor as in a safe state */
-    void markAsSafe(float);
     /** Process extra channels in audio block */
     void processBlockExtraChannels(juce::AudioBuffer<float>&);
     /**
@@ -148,7 +177,8 @@ private:
     juce::dsp::Gain<float> gain;
 
     // =========================================================================
-    bool bypassed, unsafe;
+    bool bypassed;
+    juce::Value unsafe;
     const int n_elements;
     juce::AudioBuffer<double> pivotBuffer;
 

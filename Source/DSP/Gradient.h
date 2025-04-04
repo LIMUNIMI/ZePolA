@@ -117,7 +117,7 @@ public:
 
 private:
     // =========================================================================
-    std::vector<std::complex<double>> elements;
+    std::vector<std::array<double, 2>> coeffs;
     std::vector<double> gains, angles;
     std::vector<bool> isPole;
 };

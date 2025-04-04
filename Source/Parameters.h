@@ -9,29 +9,10 @@
 #define PHASE_ID_PREFIX "PHASE_"
 #define GAIN_ID_PREFIX "GAIN_"
 #define ACTIVE_ID_PREFIX "ACTIVE_"
+#define INVERTED_ID_PREFIX "INVERTED_"
+#define SINGLE_ID_PREFIX "SINGLE_"
 #define TYPE_ID_PREFIX "TYPE_"
 #define AUTO_GAIN_PROPERTY_ID "autoGain"
-
-// =============================================================================
-// Generic constants & macros
-#define SLIDERS_FLOOR 0.0f
-#define SLIDERS_CEILING 1.0f
-
-// =============================================================================
-// GUI constants and macros
-#define NUMBER_OF_REFERENCE_FREQUENCIES 8
-#define FREQUENCY_FLOOR 20.0
-
-#define DESIGN_FREQUENCY_FLOOR 1.0
-
-#define SELECTABLE_FILTER_TYPES                                                \
-    {                                                                          \
-        "BUTTERWORTH", "CHEBYSHEV I", "CHEBYSHEV II", "ELLIPTIC"               \
-    }
-#define SELECTABLE_ORDERS_BUTTERWORTH                                          \
-    {                                                                          \
-        "2", "4", "6", "8"                                                     \
-    }
 
 // =============================================================================
 namespace Parameters
@@ -172,4 +153,23 @@ private:
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleListener)
+};
+
+// =============================================================================
+/**
+ * A simple value tree state parameter change listener for triggering a function
+ */
+class TriggerListener : public juce::AudioProcessorValueTreeState::Listener
+{
+public:
+    //==============================================================================
+    TriggerListener(std::function<void()>);
+    void parameterChanged(const juce::String&, float) override;
+
+private:
+    //==============================================================================
+    std::function<void()> triggerFunction;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TriggerListener)
 };

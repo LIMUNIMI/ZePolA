@@ -38,7 +38,8 @@ void ParameterStrip::FrequencyLabelSampleRateListener::
 // =============================================================================
 ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     : processor(p)
-    , tButton(FilterElement::typeToString(0), FilterElement::typeToString(1),
+    , tButton(FilterElement::typeToString(false),
+              FilterElement::typeToString(true),
               CustomLookAndFeel::ColourIDs::ZPoint_zerosColourId,
               CustomLookAndFeel::ColourIDs::ZPoint_polesColourId, false, true)
     , mSliderAttachment(
@@ -62,6 +63,14 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(TYPE_ID_PREFIX + juce::String(i),
                                          tButton))
+    , iButtonAttachment(
+          p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
+                           juce::Button>(INVERTED_ID_PREFIX + juce::String(i),
+                                         iButton))
+    , sButtonAttachment(
+          p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
+                           juce::Button>(SINGLE_ID_PREFIX + juce::String(i),
+                                         sButton))
     , gLabelAttachment(
           p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
               GAIN_ID_PREFIX + juce::String(i), gLabel))
@@ -77,6 +86,8 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     addAndMakeVisible(aButton);
     addAndMakeVisible(tButton);
     addAndMakeVisible(gLabel);
+    addAndMakeVisible(iButton);
+    addAndMakeVisible(sButton);
 }
 ParameterStrip::~ParameterStrip()
 {
@@ -91,7 +102,7 @@ void ParameterStrip::resized()
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
         auto rects = claf->splitProportionalStrip(getLocalBounds());
-        jassert(rects.size() == 6);
+        jassert(rects.size() == 8);
         mSlider.setBounds(rects[0]);
         pSlider.setBounds(rects[1]);
         fLabel.setBounds(
@@ -104,6 +115,11 @@ void ParameterStrip::resized()
             rects[5]
                 .withHeight(juce::roundToInt(gLabel.getFont().getHeight()))
                 .withCentre(rects[5].getCentre()));
+
+        rects[6].reduce(rects[6].getWidth() / 5, rects[6].getHeight() / 5);
+        rects[7].reduce(rects[7].getWidth() / 5, rects[7].getHeight() / 5);
+        iButton.setBounds(forceAspectRatioCentered(rects[6], 1.0));
+        sButton.setBounds(forceAspectRatioCentered(rects[7], 1.0));
 
         claf->resizeToggleButton(tButton);
         claf->resizeToggleButton(aButton);
@@ -145,7 +161,21 @@ void ZPoint::ActiveListener::parameterChanged(const juce::String&, float a)
 ZPoint::TypeListener::TypeListener(ZPoint* p) : parent(p) {}
 void ZPoint::TypeListener::parameterChanged(const juce::String&, float a)
 {
-    parent->setType(FilterElement::floatToType(a));
+    parent->setType(a > 0.5f);
+}
+
+// =============================================================================
+ZPoint::SingleListener::SingleListener(ZPoint* p) : parent(p) {}
+void ZPoint::SingleListener::parameterChanged(const juce::String&, float s)
+{
+    parent->setSingle(s > 0.5f);
+}
+
+// =============================================================================
+ZPoint::InvertedListener::InvertedListener(ZPoint* p) : parent(p) {}
+void ZPoint::InvertedListener::parameterChanged(const juce::String&, float i)
+{
+    parent->setInverted(i > 0.5f);
 }
 
 // =============================================================================
@@ -189,17 +219,7 @@ ZPoint::TogglableTypePointListener::TogglableTypePointListener(
 void ZPoint::TogglableTypePointListener::mouseDoubleClick(
     const juce::MouseEvent&)
 {
-    FilterElement::Type t = FilterElement::ZERO;
-    switch (
-        FilterElement::floatToType(param->convertFrom0to1(param->getValue())))
-    {
-    default:
-        UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
-                              "Switching to type 'ZERO'");
-    case FilterElement::POLE: break;
-    case FilterElement::ZERO: t = FilterElement::POLE; break;
-    }
-    Parameters::setParameterValue(param, FilterElement::typeToFloat(t));
+    Parameters::setParameterValue(param, 1.0f - param->getValue());
 }
 
 // =============================================================================
@@ -224,11 +244,15 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     , a_id(PHASE_ID_PREFIX + juce::String(i))
     , v_id(ACTIVE_ID_PREFIX + juce::String(i))
     , t_id(TYPE_ID_PREFIX + juce::String(i))
+    , s_id(SINGLE_ID_PREFIX + juce::String(i))
+    , i_id(INVERTED_ID_PREFIX + juce::String(i))
     , g_id(GAIN_ID_PREFIX + juce::String(i))
     , m_listen(z)
     , a_listen(z)
     , v_listen(z)
     , t_listen(z)
+    , s_listen(z)
+    , i_listen(z)
     , z_p_listen(p.getParameterById(m_id), p.getParameterById(a_id))
     , g_p_listen(p.getParameterById(g_id))
     , t_p_listen(p.getParameterById(t_id))
@@ -238,6 +262,8 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     processor.addParameterListener(a_id, &a_listen);
     processor.addParameterListener(v_id, &v_listen);
     processor.addParameterListener(t_id, &t_listen);
+    processor.addParameterListener(s_id, &s_listen);
+    processor.addParameterListener(i_id, &i_listen);
     point->addMouseListener(&z_p_listen, false);
     point->addMouseListener(&g_p_listen, false);
     point->addMouseListener(&t_p_listen, false);
@@ -247,6 +273,8 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     a_listen.parameterChanged(a_id, p.getParameterUnnormValue(a_id));
     v_listen.parameterChanged(v_id, p.getParameterUnnormValue(v_id));
     t_listen.parameterChanged(t_id, p.getParameterUnnormValue(t_id));
+    s_listen.parameterChanged(s_id, p.getParameterUnnormValue(s_id));
+    i_listen.parameterChanged(i_id, p.getParameterUnnormValue(i_id));
 }
 ZPoint::MultiAttachment::~MultiAttachment()
 {
@@ -258,15 +286,18 @@ ZPoint::MultiAttachment::~MultiAttachment()
     processor.removeParameterListener(a_id, &a_listen);
     processor.removeParameterListener(v_id, &v_listen);
     processor.removeParameterListener(t_id, &t_listen);
+    processor.removeParameterListener(s_id, &s_listen);
+    processor.removeParameterListener(i_id, &i_listen);
 }
 
 // =============================================================================
 ZPoint::ZPoint()
     : r(0.0f)
     , a(0.0f)
-    , type(FilterElement::Type::ZERO)
+    , type(false)
     , conjugate(false)
     , z_conj(nullptr)
+    , single(false)
 {
 }
 
@@ -292,6 +323,10 @@ void ZPoint::setPointArg(float f)
         a = 0.0f;
     else if (a > juce::MathConstants<float>::pi)
         a = juce::MathConstants<float>::pi;
+    if (single)
+        a = (a > juce::MathConstants<float>::halfPi)
+                ? juce::MathConstants<float>::pi
+                : 0.0f;
     if (conjugate) a = -a;
     if (z_conj) z_conj->setPointArg(-a);
     setBoundsRelativeToParent();
@@ -300,13 +335,28 @@ float ZPoint::getPointX() const { return r * cos(a); }
 float ZPoint::getPointY() const { return r * sin(a); }
 float ZPoint::getPointMagnitude() const { return r; }
 float ZPoint::getPointArg() const { return a; }
-void ZPoint::setType(FilterElement::Type t)
+void ZPoint::setType(bool t)
 {
     type = t;
     if (z_conj) z_conj->setType(t);
     repaint();
 }
-FilterElement::Type ZPoint::getType() const { return type; }
+bool ZPoint::getType() const { return type; }
+void ZPoint::setSingle(bool s)
+{
+    single = s;
+    if (z_conj) z_conj->setSingle(s);
+    if (single) setPointArg(getPointArg());
+    repaint();
+}
+bool ZPoint::getSingle() const { return single; }
+void ZPoint::setInverted(bool i)
+{
+    inverted = i;
+    if (z_conj) z_conj->setInverted(i);
+    repaint();
+}
+bool ZPoint::getInverted() const { return inverted; }
 void ZPoint::setConjugate(bool c)
 {
     conjugate = c;
@@ -369,7 +419,7 @@ void ZPoint::paint(juce::Graphics& g)
         laf->drawZPoint(
             g, static_cast<float>(getX()), static_cast<float>(getY()),
             static_cast<float>(getWidth()), static_cast<float>(getHeight()),
-            getPointX(), getPointY(), type, conjugate, *this);
+            getPointX(), getPointY(), type, conjugate, single, inverted, *this);
 }
 void ZPoint::mouseDrag(const juce::MouseEvent& event)
 {
@@ -546,18 +596,9 @@ void ShortcutsPanel::triggerSwapTypes()
     auto n = processor.getNElements();
     for (auto i = 0; i < n; ++i)
     {
-        auto id_i             = TYPE_ID_PREFIX + juce::String(i);
-        FilterElement::Type t = FilterElement::ZERO;
-        switch (
-            FilterElement::floatToType(processor.getParameterUnnormValue(id_i)))
-        {
-        default:
-            UNHANDLED_SWITCH_CASE("Unhandled case for filter element type. "
-                                  "Switching to type 'ZERO'");
-        case FilterElement::POLE: break;
-        case FilterElement::ZERO: t = FilterElement::POLE; break;
-        }
-        processor.setParameterValue(id_i, FilterElement::typeToFloat(t));
+        auto id_i = TYPE_ID_PREFIX + juce::String(i);
+        processor.setParameterValue(
+            id_i, 1.0f - processor.getParameterUnnormValue(id_i));
     }
 }
 
@@ -565,8 +606,25 @@ void ShortcutsPanel::triggerSwapTypes()
 ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p)
     : zplane(p), zplane_label("", "GAUSSIAN PLANE"), shortcutsPanel(p)
 {
-    for (auto s : {"RADIUS", "ANGLE", "Hz", "TYPE", "ACTIVE", "GAIN"})
+    for (auto s :
+         {"RADIUS", "ANGLE", "Hz", "TYPE", "ACTIVE", "GAIN", "OUT", "1x"})
+    {
         headerLabels.push_back(std::make_unique<juce::Label>("", s));
+    }
+    {
+        int i = 0;
+        for (auto s : {"Element magnitude", "Element phase (normalized)",
+                       "Element phase as a frequency", "Zero or Pole",
+                       "Turn On or Off the element", "Input gain stage",
+                       "Invert the element magnitude, so that the element is "
+                       "outside the unit circle (only for zeros)",
+                       "Make the stage a 1-zero or a 1-pole filter (forces the "
+                       "element to be on the real axis)"})
+        {
+            headerLabels[i]->setTooltip(s);
+            i++;
+        }
+    }
     auto n = p.getNElements();
     for (auto i = 0; i < n; ++i)
         strips.push_back(std::make_unique<ParameterStrip>(p, i));
@@ -598,7 +656,7 @@ void ParameterPanel::resized()
         regions[0].setTop(0);
         regions[1].setBottom(regions[2].getCentreY());
         auto header_rects = claf->splitProportionalStrip(regions[0]);
-        jassert(header_rects.size() == 6);
+        jassert(header_rects.size() == 8);
         jassert(headerLabels.size() <= header_rects.size());
         auto n = headerLabels.size();
         for (auto i = 0; i < n; ++i)
