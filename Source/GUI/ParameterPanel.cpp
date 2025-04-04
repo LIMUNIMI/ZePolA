@@ -38,7 +38,8 @@ void ParameterStrip::FrequencyLabelSampleRateListener::
 // =============================================================================
 ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     : processor(p)
-    , tButton(FilterElement::typeToString(false), FilterElement::typeToString(true),
+    , tButton(FilterElement::typeToString(false),
+              FilterElement::typeToString(true),
               CustomLookAndFeel::ColourIDs::ZPoint_zerosColourId,
               CustomLookAndFeel::ColourIDs::ZPoint_polesColourId, false, true)
     , mSliderAttachment(
@@ -62,6 +63,14 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(TYPE_ID_PREFIX + juce::String(i),
                                          tButton))
+    , iButtonAttachment(
+          p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
+                           juce::Button>(INVERTED_ID_PREFIX + juce::String(i),
+                                         iButton))
+    , sButtonAttachment(
+          p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
+                           juce::Button>(SINGLE_ID_PREFIX + juce::String(i),
+                                         sButton))
     , gLabelAttachment(
           p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
               GAIN_ID_PREFIX + juce::String(i), gLabel))
@@ -77,6 +86,8 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     addAndMakeVisible(aButton);
     addAndMakeVisible(tButton);
     addAndMakeVisible(gLabel);
+    addAndMakeVisible(iButton);
+    addAndMakeVisible(sButton);
 }
 ParameterStrip::~ParameterStrip()
 {
@@ -91,7 +102,7 @@ void ParameterStrip::resized()
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
         auto rects = claf->splitProportionalStrip(getLocalBounds());
-        jassert(rects.size() == 6);
+        jassert(rects.size() == 8);
         mSlider.setBounds(rects[0]);
         pSlider.setBounds(rects[1]);
         fLabel.setBounds(
@@ -104,6 +115,11 @@ void ParameterStrip::resized()
             rects[5]
                 .withHeight(juce::roundToInt(gLabel.getFont().getHeight()))
                 .withCentre(rects[5].getCentre()));
+
+        rects[6].reduce(rects[6].getWidth() / 5, rects[6].getHeight() / 5);
+        rects[7].reduce(rects[7].getWidth() / 5, rects[7].getHeight() / 5);
+        iButton.setBounds(forceAspectRatioCentered(rects[6], 1.0));
+        sButton.setBounds(forceAspectRatioCentered(rects[7], 1.0));
 
         claf->resizeToggleButton(tButton);
         claf->resizeToggleButton(aButton);
@@ -542,8 +558,25 @@ void ShortcutsPanel::triggerSwapTypes()
 ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p)
     : zplane(p), zplane_label("", "GAUSSIAN PLANE"), shortcutsPanel(p)
 {
-    for (auto s : {"RADIUS", "ANGLE", "Hz", "TYPE", "ACTIVE", "GAIN"})
+    for (auto s :
+         {"RADIUS", "ANGLE", "Hz", "TYPE", "ACTIVE", "GAIN", "OUT", "1x"})
+    {
         headerLabels.push_back(std::make_unique<juce::Label>("", s));
+    }
+    {
+        int i = 0;
+        for (auto s : {"Element magnitude", "Element phase (normalized)",
+                       "Element phase as a frequency", "Zero or Pole",
+                       "Turn On or Off the element", "Input gain stage",
+                       "Invert the element magnitude, so that the element is "
+                       "outside the unit circle (only for zeros)",
+                       "Make the stage a 1-zero or a 1-pole filter (forces the "
+                       "element to be on the real axis)"})
+        {
+            headerLabels[i]->setTooltip(s);
+            i++;
+        }
+    }
     auto n = p.getNElements();
     for (auto i = 0; i < n; ++i)
         strips.push_back(std::make_unique<ParameterStrip>(p, i));
@@ -575,7 +608,7 @@ void ParameterPanel::resized()
         regions[0].setTop(0);
         regions[1].setBottom(regions[2].getCentreY());
         auto header_rects = claf->splitProportionalStrip(regions[0]);
-        jassert(header_rects.size() == 6);
+        jassert(header_rects.size() == 8);
         jassert(headerLabels.size() <= header_rects.size());
         auto n = headerLabels.size();
         for (auto i = 0; i < n; ++i)
