@@ -107,8 +107,6 @@ void FilterElement::setPhase(double p)
     phase = std::fmod(p, 2.0);
     // Conjugate symmetry
     if (phase > 1.0) phase = 2.0 - phase;
-    // Force real for 1-element filters
-    if (single) phase = (phase > 0.5) ? 1.0 : 0.0;
     computeCoefficients();
 }
 void FilterElement::setType(bool t)
@@ -164,7 +162,7 @@ void FilterElement::computeCoefficients()
     double m = (inverted) ? 1.0 / magnitude : magnitude;
     if (single)
     {
-        coeffs[0] = -m;
+        coeffs[0] = (getPhase() > 0.5) ? m : -m;
         coeffs[1] = 0.0;
     }
     else
@@ -197,8 +195,7 @@ void FilterElement::processBlock(double* outputs, const double* inputs, int n)
 std::complex<double> FilterElement::_dtft_withGain(double omega, double g) const
 {
     std::complex<double> z_inv = std::exp(std::complex<double>(0.0, -omega));
-    std::complex<double> h
-        = 1.0 + coeffs[0] * z_inv + coeffs[1] * z_inv * z_inv;
+    std::complex<double> h     = 1.0 + (coeffs[0] + coeffs[1] * z_inv) * z_inv;
     return (type) ? g / h : g * h;
 }
 std::complex<double> FilterElement::dtft(double omega) const
