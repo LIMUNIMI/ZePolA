@@ -211,21 +211,19 @@ DifferentiableDTFT::DifferentiableDTFT(const FilterElementCascade& fec)
     for (auto i = 0; i < n; ++i)
         if (fec[i].getActive())
         {
-            elements.push_back(
-                std::polar<double>(fec[i].getMagnitude(), fec[i].getAngle()));
+            coeffs.push_back(fec[i].getCoefficientsRaw());
             isPole.push_back(fec[i].getType());
             gains.push_back(fec[i].getGain());
             angles.push_back(fec[i].getAngle());
         }
-    jassert(elements.size() <= n);
-    n = elements.size();
+    jassert(coeffs.size() <= n);
+    n = coeffs.size();
     jassert(isPole.size() == n);
     jassert(angles.size() == n);
     jassert(gains.size() == n);
 
-    std::sort(angles.begin(), angles.begin() + angles.size());
+    angles.push_back(0.0);
     angles.push_back(juce::MathConstants<double>::pi);
-    angles.insert(angles.begin(), 0.0);
     jassert(angles.size() == n + 2);
 }
 
@@ -276,24 +274,22 @@ static std::complex<FloatType> asComplexImag(const FloatType& f)
 };  // namespace DualValueCasts
 
 // =============================================================================
-template <typename ZeroType, typename ValueType>
-static ValueType zeroConjZT(const ZeroType& zero, const ValueType& z_pm1)
-{
-    auto one = DualValueCasts::asValueType(1, z_pm1);
-    return (z_pm1 * zero - one) * (z_pm1 * std::conj(zero) - one);
-}
-
 template <typename ValueType>
 ValueType DifferentiableDTFT::forward(const ValueType& w)
 {
     auto z_pm1 = exp(DualValueCasts::asComplexImag(-w));
-    auto h     = DualValueCasts::asDualValue(1, z_pm1);
-    auto n     = elements.size();
+    auto one   = DualValueCasts::asDualValue(1, z_pm1);
+    auto h     = one;
+    auto n     = coeffs.size();
     for (auto i = 0; i < n; ++i)
     {
-        auto h_i = zeroConjZT(elements[i], z_pm1);
-        h        = (isPole[i]) ? h / h_i : h * h_i;
-        h        = h * gains[i];
+        h = h * gains[i];
+        auto h_i
+            = one
+              + (DualValueCasts::asDualValue(coeffs[i][0], z_pm1)
+                 + DualValueCasts::asDualValue(coeffs[i][1], z_pm1) * z_pm1)
+                    * z_pm1;
+        h = (isPole[i]) ? h / h_i : h * h_i;
     }
     return std::norm(h);
 }

@@ -92,6 +92,10 @@ std::array<double, 8> FilterElement::getCoefficients() const
                 gain};
     }
 }
+std::array<double, 2> FilterElement::getCoefficientsRaw() const
+{
+    return {coeffs[0], coeffs[1]};
+}
 
 // =============================================================================
 void FilterElement::setMagnitude(double m)

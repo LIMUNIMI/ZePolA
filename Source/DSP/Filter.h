@@ -63,6 +63,8 @@ public:
      * (active_flag, a0, a1, a2, b0, b1, b2, gain)
      */
     std::array<double, 8> getCoefficients() const;
+    /** Returns an array with just the two internal filter coefficients */
+    std::array<double, 2> getCoefficientsRaw() const;
 
     // =========================================================================
     /** Resets the memory of the digital filter to the initial state */
