@@ -277,6 +277,8 @@ void PolesAndZerosEQAudioProcessor::setElementActiveTh(int i, float v)
 void PolesAndZerosEQAudioProcessor::setElementInverted(int i, bool v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setInverted(v);
+    // Magnitude inversion is allowed only for zeros
+    if (v) setParameterValue(TYPE_ID_PREFIX + juce::String(i), 0.0f);
 }
 void PolesAndZerosEQAudioProcessor::setElementInvertedTh(int i, float v)
 {
@@ -293,6 +295,8 @@ void PolesAndZerosEQAudioProcessor::setElementSingleTh(int i, float v)
 void PolesAndZerosEQAudioProcessor::setElementType(int i, bool v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setType(v);
+    // Poles cannot have inverted magnitude
+    if (v) setParameterValue(INVERTED_ID_PREFIX + juce::String(i), 0.0f);
 }
 void PolesAndZerosEQAudioProcessor::setElementTypeTh(int i, float v)
 {
