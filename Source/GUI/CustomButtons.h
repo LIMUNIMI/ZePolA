@@ -11,6 +11,19 @@ void Button_setOnOffLabel(juce::Button&, const juce::String& labelOff,
                           const juce::String& labelOn);
 
 // =============================================================================
+/** Checkbox class */
+class ToggleButtonCheckbox : public juce::ToggleButton
+{
+public:
+    // =========================================================================
+    ToggleButtonCheckbox();
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ToggleButtonCheckbox)
+};
+
+// =============================================================================
 /** Toggle button with labels */
 class LabelledToggleButton : public juce::ToggleButton
 {
