@@ -112,7 +112,8 @@ public:
         // =====================================================================
         virtual void drawZPoint(juce::Graphics&, float x, float y, float width,
                                 float height, float p_x, float p_y, bool type,
-                                bool conjugate, ZPoint&)
+                                bool conjugate, bool single, bool inverted,
+                                ZPoint&)
             = 0;
     };
 
@@ -191,6 +192,44 @@ public:
 
         // =====================================================================
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TypeListener)
+    };
+
+    // =========================================================================
+    /** Listener for updating the point single status */
+    class SingleListener : public juce::AudioProcessorValueTreeState::Listener
+    {
+    public:
+        // =====================================================================
+        SingleListener(ZPoint* parent);
+
+        // =====================================================================
+        void parameterChanged(const juce::String&, float) override;
+
+    private:
+        // =====================================================================
+        ZPoint* parent;
+
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SingleListener)
+    };
+
+    // =========================================================================
+    /** Listener for updating the point inverted status */
+    class InvertedListener : public juce::AudioProcessorValueTreeState::Listener
+    {
+    public:
+        // =====================================================================
+        InvertedListener(ZPoint* parent);
+
+        // =====================================================================
+        void parameterChanged(const juce::String&, float) override;
+
+    private:
+        // =====================================================================
+        ZPoint* parent;
+
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(InvertedListener)
     };
 
     // =============================================================================
@@ -286,11 +325,13 @@ public:
         // =====================================================================
         VTSAudioProcessor& processor;
         ZPoint* point;
-        juce::String m_id, a_id, v_id, t_id, g_id;
+        juce::String m_id, a_id, v_id, t_id, g_id, s_id, i_id;
         MagnitudeListener m_listen;
         ArgListener a_listen;
         ActiveListener v_listen;
         TypeListener t_listen;
+        SingleListener s_listen;
+        InvertedListener i_listen;
         DraggablePointListener z_p_listen;
         ScrollablePointListener g_p_listen;
         TogglableTypePointListener t_p_listen;
@@ -333,6 +374,14 @@ public:
     void setType(bool);
     /** Get the point type */
     bool getType() const;
+    /** Set the point single status */
+    void setSingle(bool);
+    /** Get the point single status */
+    bool getSingle() const;
+    /** Set the point inverted status */
+    void setInverted(bool);
+    /** Get the point inverted status */
+    bool getInverted() const;
     /** Set the point as conjugate or not */
     void setConjugate(bool);
     /** Get the conjugate state of the point */
@@ -358,7 +407,7 @@ private:
     // =========================================================================
     bool type;
     float r, a;
-    bool conjugate;
+    bool conjugate, single, inverted;
     ZPoint* z_conj;
 
     // =========================================================================

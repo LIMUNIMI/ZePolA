@@ -80,6 +80,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , nGaussianCircleMinorTicksCircular(5)
     , relativePointSize(0.05f)
     , fullPointThickness(3.0f)
+    , singlePointRelativeThickness(0.75f)
     , conjugateAlpha(0.5f)
     , linLogSwitchesHeightProportions({20, 60, 20})
     , linLogSwitchesRowProportions({1, 12, 74, 12, 1})
@@ -709,8 +710,8 @@ void CustomLookAndFeel::_drawToggleButton(
 }
 
 void CustomLookAndFeel::_drawCheckbox(Graphics& g, juce::ToggleButton& button,
-                                      bool shouldDrawButtonAsHighlighted,
-                                      bool shouldDrawButtonAsDown)
+                                      bool /* shouldDrawButtonAsHighlighted */,
+                                      bool /* shouldDrawButtonAsDown */)
 {
     auto t          = resizeSize(fullLabelledButtonOutline);
     auto tickBounds = button.getLocalBounds().toFloat().reduced(t, t);
@@ -1029,9 +1030,12 @@ void CustomLookAndFeel::drawGaussianPlane(juce::Graphics& g, float /* x */,
 void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float /* x */,
                                    float /* y */, float width, float height,
                                    float /* p_x */, float /* p_y */, bool type,
-                                   bool conjugate, ZPoint& zp)
+                                   bool conjugate, bool single, bool inverted,
+                                   ZPoint& zp)
 {
+    if (single && conjugate) return;
     float t = resizeSize(fullPointThickness);
+    if (single) t *= singlePointRelativeThickness;
     juce::Rectangle r(0.5f * t, 0.5f * t, width - t, height - t);
 
     if (type)
@@ -1046,6 +1050,10 @@ void CustomLookAndFeel::drawZPoint(juce::Graphics& g, float /* x */,
         g.setColour(zp.findColour(ZPoint_zerosColourId)
                         .withAlpha((conjugate) ? conjugateAlpha : 1.0f));
         g.drawEllipse(r, t);
+    }
+    if (inverted)
+    {
+        g.drawEllipse((width - t) * 0.5f, (height - t) * 0.5f, t, t, t);
     }
 }
 void CustomLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height,

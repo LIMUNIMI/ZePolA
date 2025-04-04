@@ -165,6 +165,20 @@ void ZPoint::TypeListener::parameterChanged(const juce::String&, float a)
 }
 
 // =============================================================================
+ZPoint::SingleListener::SingleListener(ZPoint* p) : parent(p) {}
+void ZPoint::SingleListener::parameterChanged(const juce::String&, float s)
+{
+    parent->setSingle(s > 0.5f);
+}
+
+// =============================================================================
+ZPoint::InvertedListener::InvertedListener(ZPoint* p) : parent(p) {}
+void ZPoint::InvertedListener::parameterChanged(const juce::String&, float i)
+{
+    parent->setInverted(i > 0.5f);
+}
+
+// =============================================================================
 ZPoint::DraggablePointListener::DraggablePointListener(
     juce::RangedAudioParameter* r, juce::RangedAudioParameter* a)
     : r_param(r), a_param(a)
@@ -230,11 +244,15 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     , a_id(PHASE_ID_PREFIX + juce::String(i))
     , v_id(ACTIVE_ID_PREFIX + juce::String(i))
     , t_id(TYPE_ID_PREFIX + juce::String(i))
+    , s_id(SINGLE_ID_PREFIX + juce::String(i))
+    , i_id(INVERTED_ID_PREFIX + juce::String(i))
     , g_id(GAIN_ID_PREFIX + juce::String(i))
     , m_listen(z)
     , a_listen(z)
     , v_listen(z)
     , t_listen(z)
+    , s_listen(z)
+    , i_listen(z)
     , z_p_listen(p.getParameterById(m_id), p.getParameterById(a_id))
     , g_p_listen(p.getParameterById(g_id))
     , t_p_listen(p.getParameterById(t_id))
@@ -244,6 +262,8 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     processor.addParameterListener(a_id, &a_listen);
     processor.addParameterListener(v_id, &v_listen);
     processor.addParameterListener(t_id, &t_listen);
+    processor.addParameterListener(s_id, &s_listen);
+    processor.addParameterListener(i_id, &i_listen);
     point->addMouseListener(&z_p_listen, false);
     point->addMouseListener(&g_p_listen, false);
     point->addMouseListener(&t_p_listen, false);
@@ -253,6 +273,8 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     a_listen.parameterChanged(a_id, p.getParameterUnnormValue(a_id));
     v_listen.parameterChanged(v_id, p.getParameterUnnormValue(v_id));
     t_listen.parameterChanged(t_id, p.getParameterUnnormValue(t_id));
+    s_listen.parameterChanged(s_id, p.getParameterUnnormValue(s_id));
+    i_listen.parameterChanged(i_id, p.getParameterUnnormValue(i_id));
 }
 ZPoint::MultiAttachment::~MultiAttachment()
 {
@@ -264,11 +286,18 @@ ZPoint::MultiAttachment::~MultiAttachment()
     processor.removeParameterListener(a_id, &a_listen);
     processor.removeParameterListener(v_id, &v_listen);
     processor.removeParameterListener(t_id, &t_listen);
+    processor.removeParameterListener(s_id, &s_listen);
+    processor.removeParameterListener(i_id, &i_listen);
 }
 
 // =============================================================================
 ZPoint::ZPoint()
-    : r(0.0f), a(0.0f), type(false), conjugate(false), z_conj(nullptr)
+    : r(0.0f)
+    , a(0.0f)
+    , type(false)
+    , conjugate(false)
+    , z_conj(nullptr)
+    , single(false)
 {
 }
 
@@ -294,6 +323,10 @@ void ZPoint::setPointArg(float f)
         a = 0.0f;
     else if (a > juce::MathConstants<float>::pi)
         a = juce::MathConstants<float>::pi;
+    if (single)
+        a = (a > juce::MathConstants<float>::halfPi)
+                ? juce::MathConstants<float>::pi
+                : 0.0f;
     if (conjugate) a = -a;
     if (z_conj) z_conj->setPointArg(-a);
     setBoundsRelativeToParent();
@@ -309,6 +342,21 @@ void ZPoint::setType(bool t)
     repaint();
 }
 bool ZPoint::getType() const { return type; }
+void ZPoint::setSingle(bool s)
+{
+    single = s;
+    if (z_conj) z_conj->setSingle(s);
+    if (single) setPointArg(getPointArg());
+    repaint();
+}
+bool ZPoint::getSingle() const { return single; }
+void ZPoint::setInverted(bool i)
+{
+    inverted = i;
+    if (z_conj) z_conj->setInverted(i);
+    repaint();
+}
+bool ZPoint::getInverted() const { return inverted; }
 void ZPoint::setConjugate(bool c)
 {
     conjugate = c;
@@ -371,7 +419,7 @@ void ZPoint::paint(juce::Graphics& g)
         laf->drawZPoint(
             g, static_cast<float>(getX()), static_cast<float>(getY()),
             static_cast<float>(getWidth()), static_cast<float>(getHeight()),
-            getPointX(), getPointY(), type, conjugate, *this);
+            getPointX(), getPointY(), type, conjugate, single, inverted, *this);
 }
 void ZPoint::mouseDrag(const juce::MouseEvent& event)
 {
