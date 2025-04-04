@@ -31,6 +31,10 @@ forceAspectRatioCentered(const juce::Rectangle<RectType>& r, float a)
     out_r.setCentre(r.getCentre());
     return out_r;
 }
+template juce::Rectangle<int>
+forceAspectRatioCentered(const juce::Rectangle<int>&, float);
+template juce::Rectangle<float>
+forceAspectRatioCentered(const juce::Rectangle<float>&, float);
 
 // =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
