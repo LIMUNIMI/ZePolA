@@ -51,6 +51,8 @@ double FilterElement::getAngle() const
     return getPhase() * MathConstants<double>::pi;
 }
 bool FilterElement::getType() const { return type; }
+bool FilterElement::getSingle() const { return single; }
+bool FilterElement::getInverted() const { return inverted; }
 double FilterElement::getGain() const { return gain; }
 double FilterElement::getGainDb() const
 {
