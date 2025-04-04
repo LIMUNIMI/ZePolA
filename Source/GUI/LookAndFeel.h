@@ -287,6 +287,9 @@ private:
                            juce::Colour ledOutlineColour,
                            juce::Colour textColour, const juce::String& label,
                            bool ledSide);
+    void _drawCheckbox(Graphics&, juce::ToggleButton&,
+                       bool shouldDrawButtonAsHighlighted,
+                       bool shouldDrawButtonAsDown);
     template <typename ValueType>
     void _autoFontScale(juce::Font&, const juce::Rectangle<ValueType>&,
                         const juce::String&);

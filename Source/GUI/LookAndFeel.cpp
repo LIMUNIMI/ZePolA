@@ -139,6 +139,9 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(OnOffButton_textOnColourId, juce::Colours::white);
     setColour(OnOffButton_textOffColourId, juce::Colours::black);
     setColour(OnOffButton_outlineColourId, juce::Colours::black);
+    setColour(juce::ToggleButton::textColourId, juce::Colours::black);
+    setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
+    setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::black);
     // Plots
     setColour(PlotComponent_backgroundColourId, juce::Colour(0x45979a9a));
     setColour(PlotComponent_lineColourId, juce::Colours::black);
@@ -704,24 +707,59 @@ void CustomLookAndFeel::_drawToggleButton(
         g.setColour(ledOutlineColour);
     g.drawEllipse(led_rect, othick * 0.5f);
 }
+
+void CustomLookAndFeel::_drawCheckbox(Graphics& g, juce::ToggleButton& button,
+                                      bool shouldDrawButtonAsHighlighted,
+                                      bool shouldDrawButtonAsDown)
+{
+    auto t          = resizeSize(fullLabelledButtonOutline);
+    auto tickBounds = button.getLocalBounds().toFloat().reduced(t, t);
+    auto r          = relativeButtonRadius * tickBounds.getHeight();
+
+    auto outlineColour = button.findColour(ToggleButton::tickDisabledColourId);
+    auto tickColour    = button.findColour(ToggleButton::tickColourId);
+    if (!ParameterStrip::parentComponentIsActive(button))
+    {
+        outlineColour = outlineColour.brighter(inactiveBrightness);
+        tickColour    = tickColour.brighter(inactiveBrightness);
+    }
+
+    g.setColour(outlineColour);
+    g.drawRoundedRectangle(tickBounds, r, t);
+    if (button.getToggleState())
+    {
+        g.setColour(tickColour);
+        auto tick = getTickShape(0.75f);
+        g.fillPath(tick, tick.getTransformToScaleToFit(tickBounds.reduced(r, r),
+                                                       false));
+    }
+}
 void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
                                          juce::ToggleButton& button,
                                          bool shouldDrawButtonAsHighlighted,
                                          bool shouldDrawButtonAsDown)
 {
     bool on = button.getToggleState();
-    _drawToggleButton(
-        g, button, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown,
-        fullButtonOutline, fullButtonPadding, relativeButtonRadius,
-        button.findColour((on) ? OnOffButton_backgroundOnColourId
-                               : OnOffButton_backgroundOffColourId),
-        button.findColour((on) ? OnOffButton_ledOnColourId
-                               : OnOffButton_ledOffColourId),
-        button.findColour(OnOffButton_outlineColourId),
-        button.findColour(OnOffButton_outlineColourId),
-        button.findColour((on) ? OnOffButton_textOnColourId
-                               : OnOffButton_textOffColourId),
-        Button_getOnOffLabel(button, on), true);
+    if (dynamic_cast<ToggleButtonCheckbox*>(&button))
+    {
+        _drawCheckbox(g, button, shouldDrawButtonAsHighlighted,
+                      shouldDrawButtonAsDown);
+    }
+    else
+    {
+        _drawToggleButton(
+            g, button, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown,
+            fullButtonOutline, fullButtonPadding, relativeButtonRadius,
+            button.findColour((on) ? OnOffButton_backgroundOnColourId
+                                   : OnOffButton_backgroundOffColourId),
+            button.findColour((on) ? OnOffButton_ledOnColourId
+                                   : OnOffButton_ledOffColourId),
+            button.findColour(OnOffButton_outlineColourId),
+            button.findColour(OnOffButton_outlineColourId),
+            button.findColour((on) ? OnOffButton_textOnColourId
+                                   : OnOffButton_textOffColourId),
+            Button_getOnOffLabel(button, on), true);
+    }
 }
 void CustomLookAndFeel::drawLabelledToggleButton(
     juce::Graphics& g, LabelledToggleButton& button,
