@@ -46,6 +46,8 @@ AutoGainAttachment::AutoGainAttachment(PolesAndZerosEQAudioProcessor& p,
     processor.addParameterListener(MAGNITUDE_ID_PREFIX + i_str, &paramListener);
     processor.addParameterListener(PHASE_ID_PREFIX + i_str, &paramListener);
     processor.addParameterListener(TYPE_ID_PREFIX + i_str, &paramListener);
+    processor.addParameterListener(INVERTED_ID_PREFIX + i_str, &paramListener);
+    processor.addParameterListener(SINGLE_ID_PREFIX + i_str, &paramListener);
     // processor.addParameterListener(gain_id, &paramListener);
     if (button) button->addListener(&autoGainListener);
 }
@@ -56,6 +58,9 @@ AutoGainAttachment::~AutoGainAttachment()
                                       &paramListener);
     processor.removeParameterListener(PHASE_ID_PREFIX + i_str, &paramListener);
     processor.removeParameterListener(TYPE_ID_PREFIX + i_str, &paramListener);
+    processor.removeParameterListener(INVERTED_ID_PREFIX + i_str,
+                                      &paramListener);
+    processor.removeParameterListener(SINGLE_ID_PREFIX + i_str, &paramListener);
     // processor.removeParameterListener(gain_id, &paramListener);
     if (button) button->removeListener(&autoGainListener);
 }
