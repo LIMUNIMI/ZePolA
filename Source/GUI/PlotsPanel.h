@@ -98,6 +98,26 @@ class PlotsPanel : public juce::GroupComponent,
 {
 public:
     // =========================================================================
+    class UnsafeOutputWarningPanel : public juce::GroupComponent,
+                                     public juce::Value::Listener
+    {
+    public:
+        // =====================================================================
+        UnsafeOutputWarningPanel();
+
+        // =====================================================================
+        void valueChanged(juce::Value& value) override;
+        void resized() override;
+
+    private:
+        // =====================================================================
+        juce::Label message;
+
+        // =====================================================================
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(UnsafeOutputWarningPanel);
+    };
+
+    // =========================================================================
     PlotsPanel(PolesAndZerosEQAudioProcessor&, juce::ApplicationProperties&);
     ~PlotsPanel();
 
@@ -116,6 +136,7 @@ public:
 
 private:
     // =========================================================================
+    UnsafeOutputWarningPanel uowPanel;
     std::unique_ptr<ApplicationPropertiesButtonAttachment>
         linLogFreqAPAttachment, linLogAmpAPAttachment;
     std::shared_ptr<juce::ToggleButton> linLogFreqButton, linLogAmpButton;

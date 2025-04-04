@@ -36,6 +36,7 @@ public:
     enum ColourIDs
     {
         GroupComponent_backgroundColourId = 0,
+        GroupComponent_warningBackgroundColourId,
         InvisibleGroupComponent_outlineColourId,
         ParameterStripSeparator_fillColourId,
         OnOffButton_backgroundOnColourId,

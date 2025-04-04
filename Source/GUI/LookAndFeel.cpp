@@ -103,6 +103,8 @@ CustomLookAndFeel::CustomLookAndFeel()
               juce::Colour(0xffecf0f1));
     setColour(juce::GroupComponent::outlineColourId, juce::Colour(0xff383838));
     setColour(GroupComponent_backgroundColourId, juce::Colour(0x17b1b1b1));
+    setColour(GroupComponent_warningBackgroundColourId,
+              juce::Colour(0x99ff5f58));
     setColour(InvisibleGroupComponent_outlineColourId,
               juce::Colours::transparentBlack);
     // setColour(InvisibleGroupComponent_outlineColourId,
@@ -451,15 +453,21 @@ void CustomLookAndFeel::drawGroupComponentOutline(
     juce::Graphics& g, int width, int height, const juce::String& /* text */,
     const juce::Justification&, juce::GroupComponent& gp)
 {
+    bool is_warning(dynamic_cast<PlotsPanel::UnsafeOutputWarningPanel*>(&gp));
     juce::Rectangle<float> b(0.0f, 0.0f, static_cast<float>(width),
                              static_cast<float>(height));
     auto t = resizeSize(groupComponentThickness);
     auto c = resizeSize(groupComponentCornerSize);
     b      = b.reduced(t * 0.5f);
-    g.setColour(gp.findColour(GroupComponent_backgroundColourId));
+    g.setColour(gp.findColour((is_warning)
+                                  ? GroupComponent_warningBackgroundColourId
+                                  : GroupComponent_backgroundColourId));
     g.fillRoundedRectangle(b, c);
-    g.setColour(gp.findColour(juce::GroupComponent::outlineColourId));
-    g.drawRoundedRectangle(b, c, t);
+    if (!is_warning)
+    {
+        g.setColour(gp.findColour(juce::GroupComponent::outlineColourId));
+        g.drawRoundedRectangle(b, c, t);
+    }
 }
 void CustomLookAndFeel::dontDrawGroupComponent(juce::Graphics& g, int width,
                                                int height, const juce::String&,

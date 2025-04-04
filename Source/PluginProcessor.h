@@ -9,21 +9,12 @@ class PolesAndZerosEQAudioProcessor : public VTSAudioProcessor
 {
 public:
     // =========================================================================
-    class UnsafeOutputListener
-    {
-    public:
-        // =====================================================================
-        virtual void unsafeOutputCallback(bool unsafe) = 0;
-    };
-
-    // =========================================================================
     /**
      * @brief Build a Poles And Zeros EQ processor
      *
      * @param n_elements Number of filter elements
      */
     PolesAndZerosEQAudioProcessor(int n_elements);
-    ~PolesAndZerosEQAudioProcessor();
 
     // =========================================================================
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -160,10 +151,10 @@ public:
 
     // =========================================================================
     /** Add an unsafe output listener to this processor */
-    void addUnsafeOutputListener(UnsafeOutputListener*);
+    void addUnsafeOutputListener(juce::Value::Listener*);
     /** Remove an unsafe output listener from this processor */
-    void removeUnsafeOutputListener(UnsafeOutputListener*);
-    /** Mark the processor as in a safe state */
+    void removeUnsafeOutputListener(juce::Value::Listener*);
+    /** Mark the processor as in a safe state (or not) */
     void markAsSafe(bool safe = true);
 
 private:
@@ -186,15 +177,13 @@ private:
     juce::dsp::Gain<float> gain;
 
     // =========================================================================
-    bool bypassed, unsafe;
+    bool bypassed;
+    juce::Value unsafe;
     const int n_elements;
     juce::AudioBuffer<double> pivotBuffer;
 
     std::function<void()> editorCallback;
     juce::UndoManager undoManager;
-
-    // =========================================================================
-    std::vector<UnsafeOutputListener*> uo_listeners;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PolesAndZerosEQAudioProcessor);
