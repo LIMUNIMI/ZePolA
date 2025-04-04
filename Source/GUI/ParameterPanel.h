@@ -431,7 +431,7 @@ public:
     };
 
     // =========================================================================
-    GaussianPlanePanel(PolesAndZerosEQAudioProcessor&);
+    GaussianPlanePanel(ZePolAudioProcessor&);
     ~GaussianPlanePanel();
 
     // =========================================================================
@@ -464,7 +464,7 @@ class ShortcutsPanel : public juce::GroupComponent
 {
 public:
     // =========================================================================
-    ShortcutsPanel(PolesAndZerosEQAudioProcessor&);
+    ShortcutsPanel(ZePolAudioProcessor&);
 
     // =========================================================================
     void resized() override;
@@ -478,7 +478,7 @@ public:
 
 private:
     // =========================================================================
-    PolesAndZerosEQAudioProcessor& processor;
+    ZePolAudioProcessor& processor;
     juce::Label panelLabel;
     juce::TextButton allOnButton, allOffButton, doublePhaseButton,
         halfPhaseButton, swapTypeButton;
@@ -493,7 +493,7 @@ class ParameterPanel : public juce::GroupComponent
 {
 public:
     // =========================================================================
-    ParameterPanel(PolesAndZerosEQAudioProcessor&);
+    ParameterPanel(ZePolAudioProcessor&);
 
     //==========================================================================
     void resized() override;

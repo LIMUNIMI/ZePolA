@@ -66,7 +66,7 @@ public:
     };
 
     // =========================================================================
-    DesignerPanel(PolesAndZerosEQAudioProcessor&, juce::ApplicationProperties&);
+    DesignerPanel(ZePolAudioProcessor&, juce::ApplicationProperties&);
     ~DesignerPanel();
 
     // =========================================================================
@@ -113,7 +113,7 @@ private:
     SliderListener orderSliderListener, cutoffSliderListener, rpSliderListener,
         rsSliderListener;
     ButtonListener autoButtonListener;
-    PolesAndZerosEQAudioProcessor& processor;
+    ZePolAudioProcessor& processor;
     juce::Label panelLabel, orderLabel, cutoffLabel, rpLabel, rsLabel;
     std::shared_ptr<juce::ComboBox> typeCBox, shapeCBox;
     std::shared_ptr<juce::Slider> orderSlider, cutoffSlider, rpSlider, rsSlider;

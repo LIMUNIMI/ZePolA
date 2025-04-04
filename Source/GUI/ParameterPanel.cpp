@@ -436,7 +436,7 @@ void ZPoint::mouseDrag(const juce::MouseEvent& event)
 }
 
 // =============================================================================
-GaussianPlanePanel::GaussianPlanePanel(PolesAndZerosEQAudioProcessor& p)
+GaussianPlanePanel::GaussianPlanePanel(ZePolAudioProcessor& p)
     : radius(1.05f)
 {
     auto n = p.getNElements();
@@ -516,7 +516,7 @@ void GaussianPlanePanel::setRadius(float r)
 float GaussianPlanePanel::getRadius() const { return radius; }
 
 // =============================================================================
-ShortcutsPanel::ShortcutsPanel(PolesAndZerosEQAudioProcessor& p)
+ShortcutsPanel::ShortcutsPanel(ZePolAudioProcessor& p)
     : processor(p)
     , allOnButton("ALL ON")
     , allOffButton("ALL OFF")
@@ -603,7 +603,7 @@ void ShortcutsPanel::triggerSwapTypes()
 }
 
 // =============================================================================
-ParameterPanel::ParameterPanel(PolesAndZerosEQAudioProcessor& p)
+ParameterPanel::ParameterPanel(ZePolAudioProcessor& p)
     : zplane(p), zplane_label("", "GAUSSIAN PLANE"), shortcutsPanel(p)
 {
     for (auto s :

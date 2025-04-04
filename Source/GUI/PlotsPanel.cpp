@@ -108,7 +108,7 @@ void PlotsPanel::UnsafeOutputWarningPanel::resized()
 }
 
 // =============================================================================
-PlotsPanel::PlotsPanel(PolesAndZerosEQAudioProcessor& p,
+PlotsPanel::PlotsPanel(ZePolAudioProcessor& p,
                        juce::ApplicationProperties& properties)
     : processor(p)
     , db(false)

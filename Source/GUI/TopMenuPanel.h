@@ -48,7 +48,7 @@ public:
     };
 
     // =========================================================================
-    AutoGainAttachment(PolesAndZerosEQAudioProcessor&, juce::Button*, int idx);
+    AutoGainAttachment(ZePolAudioProcessor&, juce::Button*, int idx);
     ~AutoGainAttachment();
 
     // =========================================================================
@@ -61,7 +61,7 @@ private:
     // =========================================================================
     int i;
     juce::String gain_id;
-    PolesAndZerosEQAudioProcessor& processor;
+    ZePolAudioProcessor& processor;
     ButtonListener autoGainListener;
     ParameterListener paramListener;
     juce::Button* button;
@@ -77,7 +77,7 @@ class TopMenuPanel : public InvisibleGroupComponent
 {
 public:
     // =========================================================================
-    TopMenuPanel(PolesAndZerosEQAudioProcessor&, juce::ApplicationProperties&);
+    TopMenuPanel(ZePolAudioProcessor&, juce::ApplicationProperties&);
 
     // =========================================================================
     /** Button callback for saving parameters */
@@ -106,7 +106,7 @@ private:
     std::vector<std::unique_ptr<AutoGainAttachment>> paramAGAttachments;
 
     // =========================================================================
-    PolesAndZerosEQAudioProcessor& processor;
+    ZePolAudioProcessor& processor;
     TextAndImageButton undoButton, redoButton, resetButton, exportButton,
         saveButton, loadButton;
     juce::Label autoGainLabel;

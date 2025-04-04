@@ -118,7 +118,7 @@ public:
     };
 
     // =========================================================================
-    PlotsPanel(PolesAndZerosEQAudioProcessor&, juce::ApplicationProperties&);
+    PlotsPanel(ZePolAudioProcessor&, juce::ApplicationProperties&);
     ~PlotsPanel();
 
     //==========================================================================
@@ -140,7 +140,7 @@ private:
     std::unique_ptr<ApplicationPropertiesButtonAttachment>
         linLogFreqAPAttachment, linLogAmpAPAttachment;
     std::shared_ptr<juce::ToggleButton> linLogFreqButton, linLogAmpButton;
-    PolesAndZerosEQAudioProcessor& processor;
+    ZePolAudioProcessor& processor;
     PlotComponent mPlot, pPlot;
     juce::Label mLabel, pLabel;
     bool db;

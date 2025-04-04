@@ -34,7 +34,7 @@ void DesignerPanel::ButtonListener::buttonClicked(juce::Button* b)
 void DesignerPanel::ButtonListener::buttonStateChanged(juce::Button*) {}
 
 // =============================================================================
-DesignerPanel::DesignerPanel(PolesAndZerosEQAudioProcessor& p,
+DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
                              juce::ApplicationProperties& properties)
     : processor(p)
     , panelLabel("", "FILTER DESIGN")

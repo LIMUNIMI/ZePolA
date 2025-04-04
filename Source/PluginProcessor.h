@@ -5,7 +5,7 @@
 
 // =============================================================================
 /** Plugin processor for poles and zero eq  */
-class PolesAndZerosEQAudioProcessor : public VTSAudioProcessor
+class ZePolAudioProcessor : public VTSAudioProcessor
 {
 public:
     // =========================================================================
@@ -14,7 +14,7 @@ public:
      *
      * @param n_elements Number of filter elements
      */
-    PolesAndZerosEQAudioProcessor(int n_elements);
+    ZePolAudioProcessor(int n_elements);
 
     // =========================================================================
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -186,5 +186,5 @@ private:
     juce::UndoManager undoManager;
 
     // =========================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PolesAndZerosEQAudioProcessor);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ZePolAudioProcessor);
 };

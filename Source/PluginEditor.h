@@ -10,12 +10,12 @@
 
 // =============================================================================
 /** Plugin editor for poles and zero eq  */
-class PolesAndZerosEQAudioProcessorEditor : public juce::AudioProcessorEditor
+class ZePolAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
     // ===========================================================================
-    PolesAndZerosEQAudioProcessorEditor(PolesAndZerosEQAudioProcessor&);
-    ~PolesAndZerosEQAudioProcessorEditor();
+    ZePolAudioProcessorEditor(ZePolAudioProcessor&);
+    ~ZePolAudioProcessorEditor();
 
     //===================================================================
     void paint(juce::Graphics&) override;
@@ -23,7 +23,7 @@ public:
 
 private:
     // ===========================================================================
-    PolesAndZerosEQAudioProcessor& processor;
+    ZePolAudioProcessor& processor;
 
     // ===========================================================================
     juce::TooltipWindow tooltipWindow;
@@ -40,5 +40,5 @@ private:
 
     // ===========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
-        PolesAndZerosEQAudioProcessorEditor);
+        ZePolAudioProcessorEditor);
 };

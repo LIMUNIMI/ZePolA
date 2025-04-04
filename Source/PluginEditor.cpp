@@ -1,8 +1,8 @@
 #include "PluginEditor.h"
 
 // =============================================================================
-PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
-    PolesAndZerosEQAudioProcessor& p)
+ZePolAudioProcessorEditor::ZePolAudioProcessorEditor(
+    ZePolAudioProcessor& p)
     : juce::AudioProcessorEditor(&p)
     , processor(p)
     , aspectRatioConstrainer()
@@ -45,18 +45,18 @@ PolesAndZerosEQAudioProcessorEditor::PolesAndZerosEQAudioProcessorEditor(
     addAndMakeVisible(*masterPanel.get());
     resized();
 }
-PolesAndZerosEQAudioProcessorEditor::~PolesAndZerosEQAudioProcessorEditor()
+ZePolAudioProcessorEditor::~ZePolAudioProcessorEditor()
 {
     setLookAndFeel(nullptr);
 }
 
 // =============================================================================
-void PolesAndZerosEQAudioProcessorEditor::paint(juce::Graphics& g)
+void ZePolAudioProcessorEditor::paint(juce::Graphics& g)
 {
     g.fillAll(
         getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 }
-void PolesAndZerosEQAudioProcessorEditor::resized()
+void ZePolAudioProcessorEditor::resized()
 {
     claf.setResizeRatio(getWidth(), getHeight());
     if (juce::PropertiesFile* pf

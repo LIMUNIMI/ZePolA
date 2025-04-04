@@ -47,14 +47,14 @@ createParameterLayout(int n_elements)
 
     return params;
 }
-void PolesAndZerosEQAudioProcessor::appendListeners()
+void ZePolAudioProcessor::appendListeners()
 {
     // The unsafe flag resetter listens to all parameters
     pushListenerForAllParameters(new TriggerListener(
-        std::bind(&PolesAndZerosEQAudioProcessor::markAsSafe, this, true)));
+        std::bind(&ZePolAudioProcessor::markAsSafe, this, true)));
 
     pushListener(BYPASS_ID, new SimpleListener(std::bind(
-                                &PolesAndZerosEQAudioProcessor::setBypassTh,
+                                &ZePolAudioProcessor::setBypassTh,
                                 this, std::placeholders::_1)));
     pushListener(GAIN_ID, new SimpleListener(std::bind(
                               &juce::dsp::Gain<float>::setGainDecibels, &gain,
@@ -66,37 +66,37 @@ void PolesAndZerosEQAudioProcessor::appendListeners()
 
         pushListener(MAGNITUDE_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
-                         &PolesAndZerosEQAudioProcessor::setElementMagnitude,
+                         &ZePolAudioProcessor::setElementMagnitude,
                          this, i, std::placeholders::_1)));
         pushListener(PHASE_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
-                         &PolesAndZerosEQAudioProcessor::setElementPhase, this,
+                         &ZePolAudioProcessor::setElementPhase, this,
                          i, std::placeholders::_1)));
         pushListener(GAIN_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
-                         &PolesAndZerosEQAudioProcessor::setElementGainDb, this,
+                         &ZePolAudioProcessor::setElementGainDb, this,
                          i, std::placeholders::_1)));
         pushListener(ACTIVE_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
-                         &PolesAndZerosEQAudioProcessor::setElementActiveTh,
+                         &ZePolAudioProcessor::setElementActiveTh,
                          this, i, std::placeholders::_1)));
         pushListener(INVERTED_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
-                         &PolesAndZerosEQAudioProcessor::setElementInvertedTh,
+                         &ZePolAudioProcessor::setElementInvertedTh,
                          this, i, std::placeholders::_1)));
         pushListener(SINGLE_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
-                         &PolesAndZerosEQAudioProcessor::setElementSingleTh,
+                         &ZePolAudioProcessor::setElementSingleTh,
                          this, i, std::placeholders::_1)));
         pushListener(TYPE_ID_PREFIX + i_str,
                      new SimpleListener(std::bind(
-                         &PolesAndZerosEQAudioProcessor::setElementTypeTh, this,
+                         &ZePolAudioProcessor::setElementTypeTh, this,
                          i, std::placeholders::_1)));
     }
 }
 
 // =============================================================================
-PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
+ZePolAudioProcessor::ZePolAudioProcessor(int n)
     : VTSAudioProcessor(createParameterLayout(n), getName())
     , n_elements(n)
     , pivotBuffer()
@@ -109,21 +109,21 @@ PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor(int n)
 }
 
 // =============================================================================
-void PolesAndZerosEQAudioProcessor::allocateChannelsIfNeeded(int n)
+void ZePolAudioProcessor::allocateChannelsIfNeeded(int n)
 {
     while (multiChannelCascade.size() < n)
         multiChannelCascade.push_back(FilterElementCascade(
             (multiChannelCascade.empty()) ? n_elements
                                           : multiChannelCascade[0]));
 }
-void PolesAndZerosEQAudioProcessor::resetChannels()
+void ZePolAudioProcessor::resetChannels()
 {
     multiChannelCascade.erase(multiChannelCascade.begin() + 1,
                               multiChannelCascade.end());
 }
 
 // =============================================================================
-void PolesAndZerosEQAudioProcessor::prepareToPlay(double sampleRate,
+void ZePolAudioProcessor::prepareToPlay(double sampleRate,
                                                   int samplesPerBlock)
 {
     VTSAudioProcessor::prepareToPlay(sampleRate, samplesPerBlock);
@@ -136,17 +136,17 @@ void PolesAndZerosEQAudioProcessor::prepareToPlay(double sampleRate,
 
     resetMemory();
 }
-bool PolesAndZerosEQAudioProcessor::isBusesLayoutSupported(
+bool ZePolAudioProcessor::isBusesLayoutSupported(
     const BusesLayout&) const
 {
     return true;
 }
-void PolesAndZerosEQAudioProcessor::releaseResources()
+void ZePolAudioProcessor::releaseResources()
 {
     pivotBuffer.setSize(0, 0);
     resetChannels();
 }
-void PolesAndZerosEQAudioProcessor::processBlockExtraChannels(
+void ZePolAudioProcessor::processBlockExtraChannels(
     juce::AudioBuffer<float>& buffer)
 {
     int n_in_channels  = getTotalNumInputChannels();
@@ -168,7 +168,7 @@ void PolesAndZerosEQAudioProcessor::processBlockExtraChannels(
         }
     }
 }
-void PolesAndZerosEQAudioProcessor::processBlock(
+void ZePolAudioProcessor::processBlock(
     juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
@@ -206,7 +206,7 @@ void PolesAndZerosEQAudioProcessor::processBlock(
     if (!unsafe.getValue()) markAsSafe(buffer.getMagnitude(0, n_samples) < 4);
     if (unsafe.getValue()) buffer.clear();
 }
-void PolesAndZerosEQAudioProcessor::processBlockBypassed(
+void ZePolAudioProcessor::processBlockBypassed(
     juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
     processBlockExtraChannels(buffer);
@@ -214,152 +214,152 @@ void PolesAndZerosEQAudioProcessor::processBlockBypassed(
 }
 
 // =============================================================================
-juce::AudioProcessorEditor* PolesAndZerosEQAudioProcessor::createEditor()
+juce::AudioProcessorEditor* ZePolAudioProcessor::createEditor()
 {
-    return new PolesAndZerosEQAudioProcessorEditor(*this);
+    return new ZePolAudioProcessorEditor(*this);
 }
-bool PolesAndZerosEQAudioProcessor::hasEditor() const { return true; }
+bool ZePolAudioProcessor::hasEditor() const { return true; }
 
 // =============================================================================
-const juce::String PolesAndZerosEQAudioProcessor::getName() const
+const juce::String ZePolAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
-bool PolesAndZerosEQAudioProcessor::acceptsMidi() const { return false; }
-bool PolesAndZerosEQAudioProcessor::producesMidi() const { return false; }
-bool PolesAndZerosEQAudioProcessor::isMidiEffect() const { return false; }
-double PolesAndZerosEQAudioProcessor::getTailLengthSeconds() const
+bool ZePolAudioProcessor::acceptsMidi() const { return false; }
+bool ZePolAudioProcessor::producesMidi() const { return false; }
+bool ZePolAudioProcessor::isMidiEffect() const { return false; }
+double ZePolAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
 // =============================================================================
-int PolesAndZerosEQAudioProcessor::getNumPrograms() { return 1; }
-int PolesAndZerosEQAudioProcessor::getCurrentProgram() { return 0; }
-void PolesAndZerosEQAudioProcessor::setCurrentProgram(int) {}
-const juce::String PolesAndZerosEQAudioProcessor::getProgramName(int)
+int ZePolAudioProcessor::getNumPrograms() { return 1; }
+int ZePolAudioProcessor::getCurrentProgram() { return 0; }
+void ZePolAudioProcessor::setCurrentProgram(int) {}
+const juce::String ZePolAudioProcessor::getProgramName(int)
 {
     return {};
 }
-void PolesAndZerosEQAudioProcessor::changeProgramName(int, const juce::String&)
+void ZePolAudioProcessor::changeProgramName(int, const juce::String&)
 {
 }
 
 // =============================================================================
-void PolesAndZerosEQAudioProcessor::setElementMagnitude(int i, float v)
+void ZePolAudioProcessor::setElementMagnitude(int i, float v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setMagnitude(v);
 }
-void PolesAndZerosEQAudioProcessor::setElementPhase(int i, float v)
+void ZePolAudioProcessor::setElementPhase(int i, float v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setPhase(v);
 }
-void PolesAndZerosEQAudioProcessor::setElementGainDb(int i, float v)
+void ZePolAudioProcessor::setElementGainDb(int i, float v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setGainDb(v);
 }
-void PolesAndZerosEQAudioProcessor::setElementActive(int i, bool v)
+void ZePolAudioProcessor::setElementActive(int i, bool v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setActive(v);
 }
-void PolesAndZerosEQAudioProcessor::setElementActiveTh(int i, float v)
+void ZePolAudioProcessor::setElementActiveTh(int i, float v)
 {
     setElementActive(i, v > 0.5);
 }
-void PolesAndZerosEQAudioProcessor::setElementInverted(int i, bool v)
+void ZePolAudioProcessor::setElementInverted(int i, bool v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setInverted(v);
     // Magnitude inversion is allowed only for zeros
     if (v) setParameterValue(TYPE_ID_PREFIX + juce::String(i), 0.0f);
 }
-void PolesAndZerosEQAudioProcessor::setElementInvertedTh(int i, float v)
+void ZePolAudioProcessor::setElementInvertedTh(int i, float v)
 {
     setElementInverted(i, v > 0.5);
 }
-void PolesAndZerosEQAudioProcessor::setElementSingle(int i, bool v)
+void ZePolAudioProcessor::setElementSingle(int i, bool v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setSingle(v);
 }
-void PolesAndZerosEQAudioProcessor::setElementSingleTh(int i, float v)
+void ZePolAudioProcessor::setElementSingleTh(int i, float v)
 {
     setElementSingle(i, v > 0.5);
 }
-void PolesAndZerosEQAudioProcessor::setElementType(int i, bool v)
+void ZePolAudioProcessor::setElementType(int i, bool v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setType(v);
     // Poles cannot have inverted magnitude
     if (v) setParameterValue(INVERTED_ID_PREFIX + juce::String(i), 0.0f);
 }
-void PolesAndZerosEQAudioProcessor::setElementTypeTh(int i, float v)
+void ZePolAudioProcessor::setElementTypeTh(int i, float v)
 {
     setElementType(i, v > 0.5f);
 }
 
 // =============================================================================
-int PolesAndZerosEQAudioProcessor::getNElements() const { return n_elements; }
-std::complex<double> PolesAndZerosEQAudioProcessor::dtft(double omega) const
+int ZePolAudioProcessor::getNElements() const { return n_elements; }
+std::complex<double> ZePolAudioProcessor::dtft(double omega) const
 {
     return multiChannelCascade[0].dtft(omega)
            * static_cast<double>(gain.getGainLinear());
 }
 std::vector<std::array<double, 8>>
-PolesAndZerosEQAudioProcessor::getCoefficients() const
+ZePolAudioProcessor::getCoefficients() const
 {
     return multiChannelCascade[0].getCoefficients();
 }
-double PolesAndZerosEQAudioProcessor::getCascadePeakGain() const
+double ZePolAudioProcessor::getCascadePeakGain() const
 {
     DifferentiableDTFT dDTFT(multiChannelCascade[0]);
     return juce::Decibels::gainToDecibels(dDTFT.peakFrequency()[1], -300.0)
            / 2.0;
 }
-double PolesAndZerosEQAudioProcessor::getElementAutoGain(int i) const
+double ZePolAudioProcessor::getElementAutoGain(int i) const
 {
     return multiChannelCascade[0][i].getGainDb() - getCascadePeakGain();
 }
-void PolesAndZerosEQAudioProcessor::resetMemory()
+void ZePolAudioProcessor::resetMemory()
 {
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();
 }
-void PolesAndZerosEQAudioProcessor::setAllActive(bool active)
+void ZePolAudioProcessor::setAllActive(bool active)
 {
     for (int i = 0; i < n_elements; ++i)
         setParameterValue(ACTIVE_ID_PREFIX + juce::String(i), active);
 }
-void PolesAndZerosEQAudioProcessor::setBypass(bool b) { bypassed = b; }
-void PolesAndZerosEQAudioProcessor::setBypassTh(float b)
+void ZePolAudioProcessor::setBypass(bool b) { bypassed = b; }
+void ZePolAudioProcessor::setBypassTh(float b)
 {
     setBypass(b > 0.5f);
 }
-void PolesAndZerosEQAudioProcessor::addUnsafeOutputListener(
+void ZePolAudioProcessor::addUnsafeOutputListener(
     juce::Value::Listener* uol)
 {
     unsafe.addListener(uol);
     uol->valueChanged(unsafe);
 }
-void PolesAndZerosEQAudioProcessor::removeUnsafeOutputListener(
+void ZePolAudioProcessor::removeUnsafeOutputListener(
     juce::Value::Listener* uol)
 {
     unsafe.removeListener(uol);
 }
-void PolesAndZerosEQAudioProcessor::markAsSafe(bool b) { unsafe = !b; }
-void PolesAndZerosEQAudioProcessor::multiplyPhases(double k)
+void ZePolAudioProcessor::markAsSafe(bool b) { unsafe = !b; }
+void ZePolAudioProcessor::multiplyPhases(double k)
 {
     for (int i = 0; i < n_elements; ++i)
         setParameterValue(
             PHASE_ID_PREFIX + juce::String(i),
             static_cast<float>(multiChannelCascade[0][i].getPhase() * k));
 }
-void PolesAndZerosEQAudioProcessor::doublePhases() { multiplyPhases(2.0); }
-void PolesAndZerosEQAudioProcessor::halfPhases() { multiplyPhases(0.5); }
-void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
+void ZePolAudioProcessor::doublePhases() { multiplyPhases(2.0); }
+void ZePolAudioProcessor::halfPhases() { multiplyPhases(0.5); }
+void ZePolAudioProcessor::swapPolesAndZeros()
 {
     for (int i = 0; i < n_elements; ++i)
         setParameterValue(
             TYPE_ID_PREFIX + juce::String(i),
             static_cast<float>(!multiChannelCascade[0][i].getType()));
 }
-void PolesAndZerosEQAudioProcessor::resetParameters()
+void ZePolAudioProcessor::resetParameters()
 {
     VTSAudioProcessor::resetParameters();
     // Set gain parameters to actual 0.0
@@ -374,5 +374,5 @@ void PolesAndZerosEQAudioProcessor::resetParameters()
 // =============================================================================
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new PolesAndZerosEQAudioProcessor(10);
+    return new ZePolAudioProcessor(10);
 }

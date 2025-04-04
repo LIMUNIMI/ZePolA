@@ -32,7 +32,7 @@ void AutoGainAttachment::ButtonListener::buttonClicked(juce::Button* b)
 void AutoGainAttachment::ButtonListener::buttonStateChanged(juce::Button*) {}
 
 // =============================================================================
-AutoGainAttachment::AutoGainAttachment(PolesAndZerosEQAudioProcessor& p,
+AutoGainAttachment::AutoGainAttachment(ZePolAudioProcessor& p,
                                        juce::Button* b, int idx)
     : processor(p)
     , button(b)
@@ -82,7 +82,7 @@ bool AutoGainAttachment::conditionalTrigger()
 void AutoGainAttachment::setState(bool active) { doAutoGain = active; }
 
 // =============================================================================
-TopMenuPanel::TopMenuPanel(PolesAndZerosEQAudioProcessor& p,
+TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
                            juce::ApplicationProperties& properties)
     : processor(p)
     , undoButton("UNDO",
