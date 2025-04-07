@@ -1,3 +1,30 @@
+/*
+  ==============================================================================
+
+    TopMenuPanel.cpp
+
+    Copyright (c) 2025 Laboratorio di Informatica Musicale
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to
+    deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+    sell copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+  ==============================================================================
+*/
+
 #include "TopMenuPanel.h"
 #include "LookAndFeel.h"
 #include "ParameterPanel.h"
@@ -240,7 +267,7 @@ void TopMenuPanel::exportParameters()
         {
             outputStream.setPosition(0);
             outputStream.truncate();
-            outputStream << "index,a0,a1,a2,b0,b1,b2,k\n";
+            outputStream << "index,a0,a1,a2,b0,b1,b2,k";
             int i = 0;
             for (const auto& coeffs : processor.getCoefficients())
             {
@@ -250,7 +277,7 @@ void TopMenuPanel::exportParameters()
                     outputStream << i;
                     for (auto it = coeffs.begin() + 1; it != coeffs.end(); ++it)
                         outputStream << "," << *it;
-                    outputStream << "\n";
+                    outputStream << "";
                     ++i;
                 }
             }
