@@ -1,0 +1,6 @@
+[submodule "JUCE"]
+	path = Libraries/JUCE
+	url = https://github.com/juce-framework/JUCE.git
+[submodule "cephes"]
+	path = Libraries/cephes
+	url = https://github.com/jeremybarnes/cephes.git

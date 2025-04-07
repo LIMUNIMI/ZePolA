@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+script_args=()
+FINAL_MV="mv"
+KEEP_TMP=1
+while [ $OPTIND -le "$#" ]
+do
+  if getopts :cd flag
+  then
+    case $flag
+    in
+      c) FINAL_MV="cp -vRL" ;;
+      d) unset KEEP_TMP ;;
+    esac
+  else
+    script_args+=("${!OPTIND}")
+    ((OPTIND++))
+  fi
+done
+
+if [ -z "${script_args[0]}" ]; then
+  echo "Please, specify a file or a directory"
+  exit 1
+fi
+
+FILEPATH="${script_args[0]}"
+TMPPATH="${FILEPATH}.tmp"
+FILENAME="$( basename -- "${FILEPATH}" )"
+
+mv "${FILEPATH}" "${TMPPATH}"
+mkdir "${FILEPATH}"
+$FINAL_MV "${TMPPATH}" "${FILEPATH}"/"${FILENAME}"
+
+if [ -z "${KEEP_TMP}" ]; then
+  rm -rf "${TMPPATH}"
+fi
