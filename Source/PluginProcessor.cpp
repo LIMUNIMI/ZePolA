@@ -38,12 +38,14 @@ static std::vector<std::unique_ptr<juce::RangedAudioParameter>>
 createParameterLayout(int n_elements)
 {
     std::vector<std::unique_ptr<RangedAudioParameter>> params;
+    int param_idx = 1;
 
-    params.push_back(
-        std::make_unique<AudioParameterBool>(BYPASS_ID, "Bypass", false));
+    params.push_back(std::make_unique<AudioParameterBool>(
+        juce::ParameterID(BYPASS_ID, param_idx++), "Bypass", false));
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
-        GAIN_ID, "Gain", juce::NormalisableRange<float>(-48.0f, 48.0f, 0.01f),
-        0.0f, juce::AudioParameterFloatAttributes {}.withLabel("dB")));
+        juce::ParameterID(GAIN_ID, param_idx++), "Gain",
+        juce::NormalisableRange<float>(-48.0f, 48.0f, 0.01f), 0.0f,
+        juce::AudioParameterFloatAttributes {}.withLabel("dB")));
 
     for (int i = 0; i < n_elements; ++i)
     {
@@ -51,25 +53,32 @@ createParameterLayout(int n_elements)
         juce::String ip1_str(i + 1);
 
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            MAGNITUDE_ID_PREFIX + i_str, "Magnitude " + ip1_str,
+            juce::ParameterID(MAGNITUDE_ID_PREFIX + i_str, param_idx++),
+            "Magnitude " + ip1_str,
             juce::NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            PHASE_ID_PREFIX + i_str, "Phase " + ip1_str,
+            juce::ParameterID(PHASE_ID_PREFIX + i_str, param_idx++),
+            "Phase " + ip1_str,
             juce::NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f,
             juce::AudioParameterFloatAttributes {}.withLabel(
                 juce::CharPointer_UTF8("×π rad"))));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            GAIN_ID_PREFIX + i_str, "Gain " + ip1_str,
+            juce::ParameterID(GAIN_ID_PREFIX + i_str, param_idx++),
+            "Gain " + ip1_str,
             juce::NormalisableRange<float>(-128.0f, 24.0f, 0.001f), 0.0f,
             juce::AudioParameterFloatAttributes {}.withLabel("dB")));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
-            TYPE_ID_PREFIX + i_str, "Type " + ip1_str, false));
+            juce::ParameterID(TYPE_ID_PREFIX + i_str, param_idx++),
+            "Type " + ip1_str, false));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
-            INVERTED_ID_PREFIX + i_str, "Inverted " + ip1_str, false));
+            juce::ParameterID(INVERTED_ID_PREFIX + i_str, param_idx++),
+            "Inverted " + ip1_str, false));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
-            SINGLE_ID_PREFIX + i_str, "Single " + ip1_str, false));
+            juce::ParameterID(SINGLE_ID_PREFIX + i_str, param_idx++),
+            "Single " + ip1_str, false));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
-            ACTIVE_ID_PREFIX + i_str, "Active " + ip1_str, false));
+            juce::ParameterID(ACTIVE_ID_PREFIX + i_str, param_idx++),
+            "Active " + ip1_str, false));
     }
 
     return params;
