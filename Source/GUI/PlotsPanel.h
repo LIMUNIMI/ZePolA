@@ -155,7 +155,7 @@ public:
     //==========================================================================
     void buttonClicked(juce::Button*) override;
     void buttonStateChanged(juce::Button*) override;
-    void parameterChanged(const juce::String&, float);
+    void parameterChanged(const juce::String&, float) override;
     void resized() override;
     void paint(juce::Graphics&) override;
     /** Mark panel as to be recomputed */
