@@ -76,6 +76,7 @@ public:
     public:
         // =====================================================================
         FrequencyLabelSampleRateListener(DraggableLabelAttachment&);
+        virtual ~FrequencyLabelSampleRateListener();
 
         // =====================================================================
         virtual void sampleRateChangedCallback(double) override;
@@ -137,6 +138,9 @@ public:
     class LookAndFeelMethods
     {
     public:
+        // =====================================================================
+        virtual ~LookAndFeelMethods();
+
         // =====================================================================
         virtual void drawZPoint(juce::Graphics&, float x, float y, float width,
                                 float height, float p_x, float p_y, bool type,
@@ -451,6 +455,9 @@ public:
     class LookAndFeelMethods
     {
     public:
+        // =====================================================================
+        virtual ~LookAndFeelMethods();
+
         // =====================================================================
         virtual void drawGaussianPlane(juce::Graphics&, float x, float y,
                                        float width, float height, float radius,

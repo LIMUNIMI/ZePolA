@@ -56,6 +56,10 @@ ParameterStrip::FrequencyLabelSampleRateListener::
     : dla(a)
 {
 }
+ParameterStrip::FrequencyLabelSampleRateListener::
+    ~FrequencyLabelSampleRateListener()
+{
+}
 void ParameterStrip::FrequencyLabelSampleRateListener::
     sampleRateChangedCallback(double sr)
 {
@@ -162,6 +166,9 @@ bool ParameterStrip::parentComponentIsActive(const juce::Component& c)
     auto ps = dynamic_cast<ParameterStrip*>(c.getParentComponent());
     return !ps || ps->isActive();
 }
+
+// =============================================================================
+ZPoint::LookAndFeelMethods::~LookAndFeelMethods() {}
 
 // =============================================================================
 ZPoint::MagnitudeListener::MagnitudeListener(ZPoint* p) : parent(p) {}
@@ -461,6 +468,9 @@ void ZPoint::mouseDrag(const juce::MouseEvent& event)
                              * zplane->getRadius() / zplane->getHeight());
     }
 }
+
+// =============================================================================
+GaussianPlanePanel::LookAndFeelMethods::~LookAndFeelMethods() {}
 
 // =============================================================================
 GaussianPlanePanel::GaussianPlanePanel(ZePolAudioProcessor& p) : radius(1.05f)
