@@ -225,7 +225,6 @@ void AnalogFilterFactory::bilinearTransform(FilterParameters::ZPK& zpk)
     double k_z = 1.0, k_p = 1.0, a;
 
     // Bilinear transform
-    std::complex<double> tmp;
     for (auto& z : zpk.zeros)
     {
         // (4.0 - z) * (4.0 - z*) Also accounts for conjugate
