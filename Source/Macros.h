@@ -46,12 +46,12 @@
 #define DEBUG_VS_RELEASE(D, R) ONLY_ON_DEBUG(D) ONLY_ON_RELEASE(R)
 
 #define SAFE_MessageManager_LOCK(THIS, BODY)                                   \
-    if ((MessageManager::getInstanceWithoutCreating() != nullptr               \
-         && MessageManager::getInstanceWithoutCreating()                       \
+    if ((juce::MessageManager::getInstanceWithoutCreating() != nullptr         \
+         && juce::MessageManager::getInstanceWithoutCreating()                 \
                 ->currentThreadHasLockedMessageManager())                      \
         || THIS->getPeer() == nullptr)                                         \
     {                                                                          \
-        const MessageManagerLock mmLock;                                       \
+        const juce::MessageManagerLock mmLock;                                 \
         {                                                                      \
             BODY                                                               \
         }                                                                      \

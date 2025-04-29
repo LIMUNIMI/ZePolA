@@ -106,7 +106,7 @@ TextAndImageButton::TextAndImageButton(const juce::String& name,
 
     label.setJustificationType(j);
 }
-void TextAndImageButton::paintButton(Graphics& g,
+void TextAndImageButton::paintButton(juce::Graphics& g,
                                      bool /* shouldDrawButtonAsHighlighted */,
                                      bool /* shouldDrawButtonAsDown */)
 {

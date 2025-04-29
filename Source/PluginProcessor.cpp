@@ -37,10 +37,10 @@
 static std::vector<std::unique_ptr<juce::RangedAudioParameter>>
 createParameterLayout(int n_elements)
 {
-    std::vector<std::unique_ptr<RangedAudioParameter>> params;
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     int param_idx = 1;
 
-    params.push_back(std::make_unique<AudioParameterBool>(
+    params.push_back(std::make_unique<juce::AudioParameterBool>(
         juce::ParameterID(BYPASS_ID, param_idx++), "Bypass", false));
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID(GAIN_ID, param_idx++), "Gain",

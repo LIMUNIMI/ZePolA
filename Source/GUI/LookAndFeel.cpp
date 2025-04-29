@@ -300,11 +300,11 @@ void CustomLookAndFeel::setPhasePlotProperties(PlotComponent& pc, double sr)
                  juce::MathConstants<float>::halfPi,
                  juce::MathConstants<float>::pi},
                 {
-                    CharPointer_UTF8("-π"),
-                    CharPointer_UTF8("-π/2"),
-                    CharPointer_UTF8("0"),
-                    CharPointer_UTF8("+π/2"),
-                    CharPointer_UTF8("+π"),
+                    juce::CharPointer_UTF8("-π"),
+                    juce::CharPointer_UTF8("-π/2"),
+                    juce::CharPointer_UTF8("0"),
+                    juce::CharPointer_UTF8("+π/2"),
+                    juce::CharPointer_UTF8("+π"),
                 });
     pc.setXGrid((pc.getLogX()) ? makeLogXTicks(sr) : makeLinearXTicks(sr));
 }
@@ -635,9 +635,9 @@ void CustomLookAndFeel::drawLinearSlider(
 }
 void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
 {
-    auto textColour       = label.findColour(Label::textColourId);
-    auto outlineColour    = label.findColour(Label::outlineColourId);
-    auto backgroundColour = label.findColour(Label::backgroundColourId);
+    auto textColour       = label.findColour(juce::Label::textColourId);
+    auto outlineColour    = label.findColour(juce::Label::outlineColourId);
+    auto backgroundColour = label.findColour(juce::Label::backgroundColourId);
 
     // Also check if label is inside a ParameterStrip slider
     if (!ParameterStrip::parentComponentIsActive(label)
@@ -748,7 +748,8 @@ void CustomLookAndFeel::_drawToggleButton(
     g.drawEllipse(led_rect, othick * 0.5f);
 }
 
-void CustomLookAndFeel::_drawCheckbox(Graphics& g, juce::ToggleButton& button,
+void CustomLookAndFeel::_drawCheckbox(juce::Graphics& g,
+                                      juce::ToggleButton& button,
                                       bool /* shouldDrawButtonAsHighlighted */,
                                       bool /* shouldDrawButtonAsDown */)
 {
@@ -756,8 +757,9 @@ void CustomLookAndFeel::_drawCheckbox(Graphics& g, juce::ToggleButton& button,
     auto tickBounds = button.getLocalBounds().toFloat().reduced(t, t);
     auto r          = relativeButtonRadius * tickBounds.getHeight();
 
-    auto outlineColour = button.findColour(ToggleButton::tickDisabledColourId);
-    auto tickColour    = button.findColour(ToggleButton::tickColourId);
+    auto outlineColour
+        = button.findColour(juce::ToggleButton::tickDisabledColourId);
+    auto tickColour = button.findColour(juce::ToggleButton::tickColourId);
     if (!ParameterStrip::parentComponentIsActive(button))
     {
         outlineColour = outlineColour.brighter(inactiveBrightness);

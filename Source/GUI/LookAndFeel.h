@@ -317,7 +317,7 @@ private:
                            juce::Colour ledOutlineColour,
                            juce::Colour textColour, const juce::String& label,
                            bool ledSide);
-    void _drawCheckbox(Graphics&, juce::ToggleButton&,
+    void _drawCheckbox(juce::Graphics&, juce::ToggleButton&,
                        bool shouldDrawButtonAsHighlighted,
                        bool shouldDrawButtonAsDown);
     template <typename ValueType>

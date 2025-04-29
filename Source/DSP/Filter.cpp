@@ -75,7 +75,7 @@ double FilterElement::getMagnitude() const { return magnitude; }
 double FilterElement::getPhase() const { return phase; }
 double FilterElement::getAngle() const
 {
-    return getPhase() * MathConstants<double>::pi;
+    return getPhase() * juce::MathConstants<double>::pi;
 }
 bool FilterElement::getType() const { return type; }
 bool FilterElement::getSingle() const { return single; }

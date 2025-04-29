@@ -104,7 +104,7 @@ public:
 
 protected:
     // =========================================================================
-    void paintButton(Graphics&, bool shouldDrawButtonAsHighlighted,
+    void paintButton(juce::Graphics&, bool shouldDrawButtonAsHighlighted,
                      bool shouldDrawButtonAsDown) override;
 
 private:
