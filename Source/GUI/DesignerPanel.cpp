@@ -236,7 +236,8 @@ void DesignerPanel::updatePassbandRippleVisibility()
     switch (filterParams.type)
     {
     case FilterParameters::FilterType::ChebyshevI:
-    case FilterParameters::FilterType::Elliptic: shouldBeVisible = true;
+    case FilterParameters::FilterType::Elliptic: shouldBeVisible = true; break;
+    default: break;  // Nothing to do
     }
     DBG("PassbandRipple slider should" << ((shouldBeVisible) ? "" : "n't")
                                        << " be visible");
@@ -255,7 +256,8 @@ void DesignerPanel::updateStopbandRippleVisibility()
     switch (filterParams.type)
     {
     case FilterParameters::FilterType::ChebyshevII:
-    case FilterParameters::FilterType::Elliptic: shouldBeVisible = true;
+    case FilterParameters::FilterType::Elliptic: shouldBeVisible = true; break;
+    default: break;  // Nothing to do
     }
     DBG("StopbandRipple slider should" << ((shouldBeVisible) ? "" : "n't")
                                        << " be visible");
