@@ -72,8 +72,9 @@ public:
     ~VTSAudioProcessor();
 
     //==============================================================================
-    virtual void getStateInformation(juce::MemoryBlock& destData);
-    virtual void setStateInformation(const void* data, int sizeInBytes);
+    virtual void getStateInformation(juce::MemoryBlock& destData) override;
+    virtual void setStateInformation(const void* data,
+                                     int sizeInBytes) override;
 
     //==============================================================================
     /** Make an attachment for the value tree state */

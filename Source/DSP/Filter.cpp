@@ -46,24 +46,24 @@ const std::string FilterElement::typeToString(float t)
 
 // =============================================================================
 FilterElement::FilterElement()
-    : type(false)
-    , magnitude(0.0)
+    : magnitude(0.0)
     , phase(0.0)
     , gain(1.0)
     , active(false)
     , inverted(false)
     , single(false)
+    , type(false)
     , processSampleFunc(&FilterElement::processSampleZero)
 {
     resetMemory();
     computeCoefficients();
 }
 FilterElement::FilterElement(const FilterElement& other)
-    : type(other.type)
-    , magnitude(other.magnitude)
+    : magnitude(other.magnitude)
     , phase(other.phase)
     , gain(other.gain)
     , active(other.active)
+    , type(other.type)
     , processSampleFunc(other.processSampleFunc)
 {
     resetMemory();

@@ -113,7 +113,7 @@ private:
 
     // =========================================================================
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
-        mSliderAttachment, pSliderAttachment, gSliderAttachment;
+        mSliderAttachment, pSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
         aButtonAttachment, tButtonAttachment, sButtonAttachment,
         iButtonAttachment;

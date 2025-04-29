@@ -38,12 +38,14 @@ static std::vector<std::unique_ptr<juce::RangedAudioParameter>>
 createParameterLayout(int n_elements)
 {
     std::vector<std::unique_ptr<RangedAudioParameter>> params;
+    int param_idx = 1;
 
-    params.push_back(
-        std::make_unique<AudioParameterBool>(BYPASS_ID, "Bypass", false));
+    params.push_back(std::make_unique<AudioParameterBool>(
+        juce::ParameterID(BYPASS_ID, param_idx++), "Bypass", false));
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
-        GAIN_ID, "Gain", juce::NormalisableRange<float>(-48.0f, 48.0f, 0.01f),
-        0.0f, juce::AudioParameterFloatAttributes {}.withLabel("dB")));
+        juce::ParameterID(GAIN_ID, param_idx++), "Gain",
+        juce::NormalisableRange<float>(-48.0f, 48.0f, 0.01f), 0.0f,
+        juce::AudioParameterFloatAttributes {}.withLabel("dB")));
 
     for (int i = 0; i < n_elements; ++i)
     {
@@ -51,25 +53,32 @@ createParameterLayout(int n_elements)
         juce::String ip1_str(i + 1);
 
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            MAGNITUDE_ID_PREFIX + i_str, "Magnitude " + ip1_str,
+            juce::ParameterID(MAGNITUDE_ID_PREFIX + i_str, param_idx++),
+            "Magnitude " + ip1_str,
             juce::NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            PHASE_ID_PREFIX + i_str, "Phase " + ip1_str,
+            juce::ParameterID(PHASE_ID_PREFIX + i_str, param_idx++),
+            "Phase " + ip1_str,
             juce::NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f,
             juce::AudioParameterFloatAttributes {}.withLabel(
                 juce::CharPointer_UTF8("×π rad"))));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            GAIN_ID_PREFIX + i_str, "Gain " + ip1_str,
+            juce::ParameterID(GAIN_ID_PREFIX + i_str, param_idx++),
+            "Gain " + ip1_str,
             juce::NormalisableRange<float>(-128.0f, 24.0f, 0.001f), 0.0f,
             juce::AudioParameterFloatAttributes {}.withLabel("dB")));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
-            TYPE_ID_PREFIX + i_str, "Type " + ip1_str, false));
+            juce::ParameterID(TYPE_ID_PREFIX + i_str, param_idx++),
+            "Type " + ip1_str, false));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
-            INVERTED_ID_PREFIX + i_str, "Inverted " + ip1_str, false));
+            juce::ParameterID(INVERTED_ID_PREFIX + i_str, param_idx++),
+            "Inverted " + ip1_str, false));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
-            SINGLE_ID_PREFIX + i_str, "Single " + ip1_str, false));
+            juce::ParameterID(SINGLE_ID_PREFIX + i_str, param_idx++),
+            "Single " + ip1_str, false));
         params.push_back(std::make_unique<juce::AudioParameterBool>(
-            ACTIVE_ID_PREFIX + i_str, "Active " + ip1_str, false));
+            juce::ParameterID(ACTIVE_ID_PREFIX + i_str, param_idx++),
+            "Active " + ip1_str, false));
     }
 
     return params;
@@ -80,9 +89,9 @@ void ZePolAudioProcessor::appendListeners()
     pushListenerForAllParameters(new TriggerListener(
         std::bind(&ZePolAudioProcessor::markAsSafe, this, true)));
 
-    pushListener(BYPASS_ID, new SimpleListener(std::bind(
-                                &ZePolAudioProcessor::setBypassTh,
-                                this, std::placeholders::_1)));
+    pushListener(BYPASS_ID,
+                 new SimpleListener(std::bind(&ZePolAudioProcessor::setBypassTh,
+                                              this, std::placeholders::_1)));
     pushListener(GAIN_ID, new SimpleListener(std::bind(
                               &juce::dsp::Gain<float>::setGainDecibels, &gain,
                               std::placeholders::_1)));
@@ -92,43 +101,43 @@ void ZePolAudioProcessor::appendListeners()
         auto i_str = juce::String(i);
 
         pushListener(MAGNITUDE_ID_PREFIX + i_str,
-                     new SimpleListener(std::bind(
-                         &ZePolAudioProcessor::setElementMagnitude,
-                         this, i, std::placeholders::_1)));
-        pushListener(PHASE_ID_PREFIX + i_str,
-                     new SimpleListener(std::bind(
-                         &ZePolAudioProcessor::setElementPhase, this,
-                         i, std::placeholders::_1)));
-        pushListener(GAIN_ID_PREFIX + i_str,
-                     new SimpleListener(std::bind(
-                         &ZePolAudioProcessor::setElementGainDb, this,
-                         i, std::placeholders::_1)));
+                     new SimpleListener(
+                         std::bind(&ZePolAudioProcessor::setElementMagnitude,
+                                   this, i, std::placeholders::_1)));
+        pushListener(
+            PHASE_ID_PREFIX + i_str,
+            new SimpleListener(std::bind(&ZePolAudioProcessor::setElementPhase,
+                                         this, i, std::placeholders::_1)));
+        pushListener(
+            GAIN_ID_PREFIX + i_str,
+            new SimpleListener(std::bind(&ZePolAudioProcessor::setElementGainDb,
+                                         this, i, std::placeholders::_1)));
         pushListener(ACTIVE_ID_PREFIX + i_str,
-                     new SimpleListener(std::bind(
-                         &ZePolAudioProcessor::setElementActiveTh,
-                         this, i, std::placeholders::_1)));
+                     new SimpleListener(
+                         std::bind(&ZePolAudioProcessor::setElementActiveTh,
+                                   this, i, std::placeholders::_1)));
         pushListener(INVERTED_ID_PREFIX + i_str,
-                     new SimpleListener(std::bind(
-                         &ZePolAudioProcessor::setElementInvertedTh,
-                         this, i, std::placeholders::_1)));
+                     new SimpleListener(
+                         std::bind(&ZePolAudioProcessor::setElementInvertedTh,
+                                   this, i, std::placeholders::_1)));
         pushListener(SINGLE_ID_PREFIX + i_str,
-                     new SimpleListener(std::bind(
-                         &ZePolAudioProcessor::setElementSingleTh,
-                         this, i, std::placeholders::_1)));
-        pushListener(TYPE_ID_PREFIX + i_str,
-                     new SimpleListener(std::bind(
-                         &ZePolAudioProcessor::setElementTypeTh, this,
-                         i, std::placeholders::_1)));
+                     new SimpleListener(
+                         std::bind(&ZePolAudioProcessor::setElementSingleTh,
+                                   this, i, std::placeholders::_1)));
+        pushListener(
+            TYPE_ID_PREFIX + i_str,
+            new SimpleListener(std::bind(&ZePolAudioProcessor::setElementTypeTh,
+                                         this, i, std::placeholders::_1)));
     }
 }
 
 // =============================================================================
 ZePolAudioProcessor::ZePolAudioProcessor(int n)
     : VTSAudioProcessor(createParameterLayout(n), getName())
+    , bypassed(false)
+    , unsafe(juce::var(false))
     , n_elements(n)
     , pivotBuffer()
-    , unsafe(juce::var(false))
-    , bypassed(false)
 {
     allocateChannelsIfNeeded(1);
     gain.setGainDecibels(0.0f);
@@ -150,8 +159,7 @@ void ZePolAudioProcessor::resetChannels()
 }
 
 // =============================================================================
-void ZePolAudioProcessor::prepareToPlay(double sampleRate,
-                                                  int samplesPerBlock)
+void ZePolAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     VTSAudioProcessor::prepareToPlay(sampleRate, samplesPerBlock);
     juce::dsp::ProcessSpec spec;
@@ -163,8 +171,7 @@ void ZePolAudioProcessor::prepareToPlay(double sampleRate,
 
     resetMemory();
 }
-bool ZePolAudioProcessor::isBusesLayoutSupported(
-    const BusesLayout&) const
+bool ZePolAudioProcessor::isBusesLayoutSupported(const BusesLayout&) const
 {
     return true;
 }
@@ -195,8 +202,8 @@ void ZePolAudioProcessor::processBlockExtraChannels(
         }
     }
 }
-void ZePolAudioProcessor::processBlock(
-    juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void ZePolAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
+                                       juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     if (bypassed) return processBlockBypassed(buffer, midiMessages);
@@ -233,8 +240,8 @@ void ZePolAudioProcessor::processBlock(
     if (!unsafe.getValue()) markAsSafe(buffer.getMagnitude(0, n_samples) < 4);
     if (unsafe.getValue()) buffer.clear();
 }
-void ZePolAudioProcessor::processBlockBypassed(
-    juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
+void ZePolAudioProcessor::processBlockBypassed(juce::AudioBuffer<float>& buffer,
+                                               juce::MidiBuffer&)
 {
     processBlockExtraChannels(buffer);
     resetMemory();
@@ -255,22 +262,14 @@ const juce::String ZePolAudioProcessor::getName() const
 bool ZePolAudioProcessor::acceptsMidi() const { return false; }
 bool ZePolAudioProcessor::producesMidi() const { return false; }
 bool ZePolAudioProcessor::isMidiEffect() const { return false; }
-double ZePolAudioProcessor::getTailLengthSeconds() const
-{
-    return 0.0;
-}
+double ZePolAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 
 // =============================================================================
 int ZePolAudioProcessor::getNumPrograms() { return 1; }
 int ZePolAudioProcessor::getCurrentProgram() { return 0; }
 void ZePolAudioProcessor::setCurrentProgram(int) {}
-const juce::String ZePolAudioProcessor::getProgramName(int)
-{
-    return {};
-}
-void ZePolAudioProcessor::changeProgramName(int, const juce::String&)
-{
-}
+const juce::String ZePolAudioProcessor::getProgramName(int) { return {}; }
+void ZePolAudioProcessor::changeProgramName(int, const juce::String&) {}
 
 // =============================================================================
 void ZePolAudioProcessor::setElementMagnitude(int i, float v)
@@ -329,8 +328,7 @@ std::complex<double> ZePolAudioProcessor::dtft(double omega) const
     return multiChannelCascade[0].dtft(omega)
            * static_cast<double>(gain.getGainLinear());
 }
-std::vector<std::array<double, 8>>
-ZePolAudioProcessor::getCoefficients() const
+std::vector<std::array<double, 8>> ZePolAudioProcessor::getCoefficients() const
 {
     return multiChannelCascade[0].getCoefficients();
 }
@@ -354,18 +352,13 @@ void ZePolAudioProcessor::setAllActive(bool active)
         setParameterValue(ACTIVE_ID_PREFIX + juce::String(i), active);
 }
 void ZePolAudioProcessor::setBypass(bool b) { bypassed = b; }
-void ZePolAudioProcessor::setBypassTh(float b)
-{
-    setBypass(b > 0.5f);
-}
-void ZePolAudioProcessor::addUnsafeOutputListener(
-    juce::Value::Listener* uol)
+void ZePolAudioProcessor::setBypassTh(float b) { setBypass(b > 0.5f); }
+void ZePolAudioProcessor::addUnsafeOutputListener(juce::Value::Listener* uol)
 {
     unsafe.addListener(uol);
     uol->valueChanged(unsafe);
 }
-void ZePolAudioProcessor::removeUnsafeOutputListener(
-    juce::Value::Listener* uol)
+void ZePolAudioProcessor::removeUnsafeOutputListener(juce::Value::Listener* uol)
 {
     unsafe.removeListener(uol);
 }

@@ -59,13 +59,13 @@ void AutoGainAttachment::ButtonListener::buttonClicked(juce::Button* b)
 void AutoGainAttachment::ButtonListener::buttonStateChanged(juce::Button*) {}
 
 // =============================================================================
-AutoGainAttachment::AutoGainAttachment(ZePolAudioProcessor& p,
-                                       juce::Button* b, int idx)
-    : processor(p)
-    , button(b)
-    , i(idx)
+AutoGainAttachment::AutoGainAttachment(ZePolAudioProcessor& p, juce::Button* b,
+                                       int idx)
+    : i(idx)
+    , processor(p)
     , autoGainListener(this)
     , paramListener(this)
+    , button(b)
     , doAutoGain(false)
 {
     juce::String i_str(i);
@@ -125,7 +125,6 @@ TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
                      .release(),
                  juce::Justification::centredRight)
     , resetButton("RESET", nullptr, juce::Justification::centredRight)
-    , autoGainLabel("", "GAIN")
     , exportButton("EXPORT", nullptr, juce::Justification::centredLeft)
     , saveButton("SAVE",
                  juce::Drawable::createFromImageData(
@@ -137,8 +136,9 @@ TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
                      BinaryData::load_icon_svg, BinaryData::load_icon_svgSize)
                      .release(),
                  juce::Justification::centredLeft)
-    , presetLocation(std::make_shared<juce::Value>())
+    , autoGainLabel("", "GAIN")
     , autoGainButton(std::make_shared<juce::ToggleButton>())
+    , presetLocation(std::make_shared<juce::Value>())
 {
     addAndMakeVisible(sep);
     addAndMakeVisible(undoButton);

@@ -28,12 +28,11 @@
 #include "PluginEditor.h"
 
 // =============================================================================
-ZePolAudioProcessorEditor::ZePolAudioProcessorEditor(
-    ZePolAudioProcessor& p)
+ZePolAudioProcessorEditor::ZePolAudioProcessorEditor(ZePolAudioProcessor& p)
     : juce::AudioProcessorEditor(&p)
     , processor(p)
-    , aspectRatioConstrainer()
     , tooltipWindow(this)
+    , aspectRatioConstrainer()
 {
     // Look and feel
     setResizable(true, true);
