@@ -1,339 +1,405 @@
-#include <JuceHeader.h>
+/*
+  ==============================================================================
+
+    PluginProcessor.cpp
+
+    Copyright (c) 2025 Laboratorio di Informatica Musicale
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to
+    deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+    sell copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+  ==============================================================================
+*/
+
 #include "PluginProcessor.h"
+#include "DSP/Filter.h"
+#include "DSP/Gradient.h"
+#include "Macros.h"
 #include "Parameters.h"
 #include "PluginEditor.h"
-#include "Filter.h"
+#include <JuceHeader.h>
 
-PolesAndZerosEQAudioProcessor::PolesAndZerosEQAudioProcessor()
-: parameters(*this, &undoManager, "PolesAndZero-EQ", Parameters::createParameterLayout())
+// =============================================================================
+static std::vector<std::unique_ptr<juce::RangedAudioParameter>>
+createParameterLayout(int n_elements)
 {
-    Parameters::addListenerToAllParameters(parameters, this);
-    
-    for (int i = 0; i < STEREO; ++ i)
-        multiChannelCascade.push_back(FilterElementCascade());
-}
+    std::vector<std::unique_ptr<RangedAudioParameter>> params;
 
-PolesAndZerosEQAudioProcessor::~PolesAndZerosEQAudioProcessor ()
-{
-}
+    params.push_back(
+        std::make_unique<AudioParameterBool>(BYPASS_ID, "Bypass", false));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>(
+        GAIN_ID, "Gain", juce::NormalisableRange<float>(-48.0f, 48.0f, 0.01f),
+        0.0f, juce::AudioParameterFloatAttributes {}.withLabel("dB")));
 
-void PolesAndZerosEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
-{
-    juce::dsp::ProcessSpec spec;
-    spec.sampleRate = sampleRate;
-    spec.maximumBlockSize = samplesPerBlock;
-    spec.numChannels = getTotalNumInputChannels();
-    
-    gainProcessor.prepare(spec);
-    gainProcessor.setGainDecibels(MASTER_GAIN_DEFAULT);
-    
-    for (auto& cascade : multiChannelCascade)
-        cascade.memoryReset();
-}
-
-void PolesAndZerosEQAudioProcessor::releaseResources ()
-{
-}
-
-template <typename TargetType, typename SourceType>
-void PolesAndZerosEQAudioProcessor::castBuffer(AudioBuffer<TargetType>& destination, const AudioBuffer<SourceType>& source, const int numChannels, const int numSamples)
-{
-    auto dst = destination.getArrayOfWritePointers();
-    auto src = source.getArrayOfReadPointers();
-
-    for (int ch = 0; ch < numChannels; ++ch)
-        for (int smp = 0; smp < numSamples; ++smp)
-            dst[ch][smp] = static_cast<TargetType>(src[ch][smp]);
-}
-
-void PolesAndZerosEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
-{
-    if (!active) return;
-    
-    juce::ScopedNoDenormals noDenormals;
-    
-    const auto numChannels = buffer.getNumChannels();
-    const auto numSamples = buffer.getNumSamples();
-
-    if (numChannels > multiChannelCascade.size())
+    for (int i = 0; i < n_elements; ++i)
     {
-        auto currentNumCh = multiChannelCascade.size();
-        for (int i = currentNumCh; i < numChannels; ++ i)
-            multiChannelCascade.push_back(FilterElementCascade(multiChannelCascade[0].getCascade()));
+        juce::String i_str(i);
+        juce::String ip1_str(i + 1);
+
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            MAGNITUDE_ID_PREFIX + i_str, "Magnitude " + ip1_str,
+            juce::NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f));
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            PHASE_ID_PREFIX + i_str, "Phase " + ip1_str,
+            juce::NormalisableRange<float>(0.0f, 1.0f, 0.00001f), 0.0f,
+            juce::AudioParameterFloatAttributes {}.withLabel(
+                juce::CharPointer_UTF8("×π rad"))));
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            GAIN_ID_PREFIX + i_str, "Gain " + ip1_str,
+            juce::NormalisableRange<float>(-128.0f, 24.0f, 0.001f), 0.0f,
+            juce::AudioParameterFloatAttributes {}.withLabel("dB")));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            TYPE_ID_PREFIX + i_str, "Type " + ip1_str, false));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            INVERTED_ID_PREFIX + i_str, "Inverted " + ip1_str, false));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            SINGLE_ID_PREFIX + i_str, "Single " + ip1_str, false));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            ACTIVE_ID_PREFIX + i_str, "Active " + ip1_str, false));
     }
-    else if (multiChannelCascade.size() > numChannels)
-        for (int i = numChannels; i < multiChannelCascade.size(); ++ i)
-            multiChannelCascade[i].memoryReset();
-    
-    AudioBuffer<double> doubleBuffer(numChannels, numSamples);
-    castBuffer(doubleBuffer, buffer, numChannels, numSamples);
-    
-    auto bufferData = doubleBuffer.getArrayOfWritePointers();
-    
-    for (int ch = 0; ch < numChannels; ++ ch)
-        multiChannelCascade[ch].processBlock(bufferData[ch], numSamples);
-    
-    juce::dsp::AudioBlock<double> block (doubleBuffer);
-    gainProcessor.process(juce::dsp::ProcessContextReplacing<double> (block));
-    
-    castBuffer(buffer, doubleBuffer, numChannels, numSamples);
-    
-    safetyFlag |= buffer.getMagnitude(0, numSamples) > 4;
-     
-    if (safetyFlag)
-        buffer.clear();
-}
 
-void PolesAndZerosEQAudioProcessor::processBlockBypassed(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+    return params;
+}
+void ZePolAudioProcessor::appendListeners()
 {
-    for (auto& cascade : multiChannelCascade)
-        cascade.memoryReset();
+    // The unsafe flag resetter listens to all parameters
+    pushListenerForAllParameters(new TriggerListener(
+        std::bind(&ZePolAudioProcessor::markAsSafe, this, true)));
+
+    pushListener(BYPASS_ID, new SimpleListener(std::bind(
+                                &ZePolAudioProcessor::setBypassTh,
+                                this, std::placeholders::_1)));
+    pushListener(GAIN_ID, new SimpleListener(std::bind(
+                              &juce::dsp::Gain<float>::setGainDecibels, &gain,
+                              std::placeholders::_1)));
+    // Listeners for element parameters
+    for (int i = 0; i < n_elements; ++i)
+    {
+        auto i_str = juce::String(i);
+
+        pushListener(MAGNITUDE_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &ZePolAudioProcessor::setElementMagnitude,
+                         this, i, std::placeholders::_1)));
+        pushListener(PHASE_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &ZePolAudioProcessor::setElementPhase, this,
+                         i, std::placeholders::_1)));
+        pushListener(GAIN_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &ZePolAudioProcessor::setElementGainDb, this,
+                         i, std::placeholders::_1)));
+        pushListener(ACTIVE_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &ZePolAudioProcessor::setElementActiveTh,
+                         this, i, std::placeholders::_1)));
+        pushListener(INVERTED_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &ZePolAudioProcessor::setElementInvertedTh,
+                         this, i, std::placeholders::_1)));
+        pushListener(SINGLE_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &ZePolAudioProcessor::setElementSingleTh,
+                         this, i, std::placeholders::_1)));
+        pushListener(TYPE_ID_PREFIX + i_str,
+                     new SimpleListener(std::bind(
+                         &ZePolAudioProcessor::setElementTypeTh, this,
+                         i, std::placeholders::_1)));
+    }
 }
 
-juce::AudioProcessorEditor* PolesAndZerosEQAudioProcessor::createEditor()
+// =============================================================================
+ZePolAudioProcessor::ZePolAudioProcessor(int n)
+    : VTSAudioProcessor(createParameterLayout(n), getName())
+    , n_elements(n)
+    , pivotBuffer()
+    , unsafe(juce::var(false))
+    , bypassed(false)
 {
-    return new WrappedEditor (*this, parameters);
+    allocateChannelsIfNeeded(1);
+    gain.setGainDecibels(0.0f);
+    initializeListeners();
 }
 
-void PolesAndZerosEQAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+// =============================================================================
+void ZePolAudioProcessor::allocateChannelsIfNeeded(int n)
 {
-    auto state = parameters.copyState();
-    std::unique_ptr<XmlElement> xml(state.createXml());
-    copyXmlToBinary(*xml, destData);
+    while (multiChannelCascade.size() < n)
+        multiChannelCascade.push_back(FilterElementCascade(
+            (multiChannelCascade.empty()) ? n_elements
+                                          : multiChannelCascade[0]));
 }
-
-void PolesAndZerosEQAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void ZePolAudioProcessor::resetChannels()
 {
-    std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
-    if (xmlState.get() != nullptr)
-        if (xmlState->hasTagName(parameters.state.getType()))
-            parameters.replaceState(ValueTree::fromXml(*xmlState));
+    multiChannelCascade.erase(multiChannelCascade.begin() + 1,
+                              multiChannelCascade.end());
 }
 
-bool PolesAndZerosEQAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+// =============================================================================
+void ZePolAudioProcessor::prepareToPlay(double sampleRate,
+                                                  int samplesPerBlock)
+{
+    VTSAudioProcessor::prepareToPlay(sampleRate, samplesPerBlock);
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate       = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels      = getTotalNumInputChannels();
+
+    gain.prepare(spec);
+
+    resetMemory();
+}
+bool ZePolAudioProcessor::isBusesLayoutSupported(
+    const BusesLayout&) const
 {
     return true;
 }
-
-void PolesAndZerosEQAudioProcessor::parameterChanged (const String& parameterID, float newValue)
+void ZePolAudioProcessor::releaseResources()
 {
-    juce::String parameter;
-    int elementNr;
-    
-    if (parameterID == "BYPASS")
-    {
-        active = !(newValue > 0.5f);
-        if (!active)
-            for (auto& cascade : multiChannelCascade)
-                cascade.memoryReset();
-        return;
-    }
-    else if (parameterID == "MSTR_GAIN")
-    {
-        gainProcessor.setGainLinear(Decibels::decibelsToGain(newValue, MASTER_GAIN_FLOOR - 1.0f));
-    }
-    else
-    {
-        parameter = parameterID.substring(0, 1);
-        elementNr = parameterID.substring(1).getIntValue();
-        
-        newValue = static_cast<double>(newValue);
-    }
-
-    if (parameter == "M")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade.setElementMagnitude(elementNr, newValue);
-    }
-    else if (parameter == "P")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade.setElementPhase(elementNr, newValue);
-    }
-    else if (parameter == "A")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade.setUnsetElementActive(elementNr, newValue > 0.5);
-    }
-    else if (parameter == "T")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade.setElementType(elementNr, newValue > 0.5);
-    }
-    else if (parameter == "G")
-    {
-        for (auto& cascade : multiChannelCascade)
-            cascade.setElementGain(elementNr, newValue);
-    }
-    
-    if (editorCallback)
-    {
-        editorCallback();
-    }
-    
-    resetSafetyFlag();
+    pivotBuffer.setSize(0, 0);
+    resetChannels();
 }
-
-void PolesAndZerosEQAudioProcessor::setParameterValue(juce::RangedAudioParameter *parameter, float value)
+void ZePolAudioProcessor::processBlockExtraChannels(
+    juce::AudioBuffer<float>& buffer)
 {
-    parameter->beginChangeGesture();
-    parameter->setValueNotifyingHost(value);
-    parameter->endChangeGesture();
-}
-
-void PolesAndZerosEQAudioProcessor::setUnactive (const int elementNr)
-{
-    setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)), ACTIVE_DEFAULT);
-}
-
-std::complex<double> PolesAndZerosEQAudioProcessor::getFrequencyResponseAtPhi (const double phi)
-{
-    return multiChannelCascade[0].getFrequencyResponseAtPhi(phi);
-}
-
-double PolesAndZerosEQAudioProcessor::getElementGain (const int elementNr)
-{
-    return multiChannelCascade[0].getElementGain(elementNr);
-}
-
-std::vector<FilterElement> PolesAndZerosEQAudioProcessor::getFilterElementsChain ()
-{
-    return multiChannelCascade[0].getElementsChain();
-}
-
-FilterElement PolesAndZerosEQAudioProcessor::getElementState(const int elementNr)
-{
-    auto elements = getFilterElementsChain();
-
-    if (elementNr > 0 && elementNr <= elements.size())
-        return elements[elementNr - 1];
-}
-
-void PolesAndZerosEQAudioProcessor::setEditorCallback(std::function<void()> callback)
-{
-    editorCallback = callback;
-}
-
-void PolesAndZerosEQAudioProcessor::resetFilter ()
-{
-    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++ i)
+    int n_in_channels  = getTotalNumInputChannels();
+    int n_out_channels = getTotalNumOutputChannels();
+    if (n_in_channels < n_out_channels)
     {
-        setParameterValue(parameters.getParameter(MAGNITUDE_NAME + std::to_string(i)), MAGNITUDE_DEFAULT);
-        setParameterValue(parameters.getParameter(PHASE_NAME + std::to_string(i)), PHASE_DEFAULT);
-        setParameterValue(parameters.getParameter(TYPE_NAME + std::to_string(i)), TYPE_DEFAULT);
-        setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(i)), ACTIVE_DEFAULT);
-        setParameterValue(parameters.getParameter(GAIN_NAME + std::to_string(i)), jmap(GAIN_DEFAULT, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
-    }
-    setParameterValue(parameters.getParameter(MASTER_GAIN_NAME), jmap(MASTER_GAIN_DEFAULT, MASTER_GAIN_FLOOR, MASTER_GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
-    setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME), BYPASS_DEFAULT);
-    
-    for (auto& cascade : multiChannelCascade)
-        cascade.memoryReset();
-}
-
-float PolesAndZerosEQAudioProcessor::getCurrentGain ()
-{
-    return gainProcessor.getGainLinear();
-}
-
-void PolesAndZerosEQAudioProcessor::setBypass(bool bypass)
-{
-    setParameterValue(parameters.getParameter(FILTER_BYPASS_NAME), bypass);
-}
-
-void PolesAndZerosEQAudioProcessor::doublePhases()
-{
-    auto elements = getFilterElementsChain();
-    double currentPhase;
-    double newPhase;
-    
-    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++ i)
-    {
-        currentPhase = elements[i - 1].getPhase();
-        if (currentPhase > (PHASE_CEILING / 2))
-            newPhase = 1.0;
-        else
-            newPhase = currentPhase * 2.0;
-        setParameterValue(parameters.getParameter(PHASE_NAME + std::to_string(i)), newPhase);
-    }
-}
-
-void PolesAndZerosEQAudioProcessor::halfPhases()
-{
-    auto elements = getFilterElementsChain();
-    double currentPhase;
-    
-    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++ i)
-    {
-        currentPhase = elements[i - 1].getPhase();
-        setParameterValue(parameters.getParameter(PHASE_NAME + std::to_string(i)), currentPhase * 0.5);
-    }
-}
-
-void PolesAndZerosEQAudioProcessor::swapPolesAndZeros()
-{
-    auto elements = getFilterElementsChain();
-    bool newType;
-    
-    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++ i)
-    {
-        newType = true;
-        auto currentType = elements[i - 1].getType();
-        if (currentType == FilterElement::ZERO)
+        int n_samples = buffer.getNumSamples();
+        // Handle channel mismatch
+        if (2 == n_out_channels)
         {
-            newType = false;
-            if (elements[i - 1].getMagnitude() == 1.0)
-                setParameterValue(parameters.getParameter(MAGNITUDE_NAME + std::to_string(i)), POLE_MAX_MAGNITUDE);
+            // in the case mono-to-stereo, copy channel output
+            buffer.copyFrom(1, 0, buffer, 0, 0, n_samples);
         }
-        setParameterValue(parameters.getParameter(TYPE_NAME + std::to_string(i)), newType);
+        else
+        {
+            // in the case any-to-any, clear extra channels
+            for (int c = n_in_channels; c < n_out_channels; ++c)
+                buffer.clear(c, 0, n_samples);
+        }
     }
 }
-
-void PolesAndZerosEQAudioProcessor::turnOnOffAllElements(bool option)
+void ZePolAudioProcessor::processBlock(
+    juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    bool active = false;
-    
-    if (option)
-        active = true;
-    for (int i = 1; i <= NUMBER_OF_FILTER_ELEMENTS; ++ i)
-        setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(i)), active);
+    juce::ScopedNoDenormals noDenormals;
+    if (bypassed) return processBlockBypassed(buffer, midiMessages);
+
+    // Ensure enough processors for input channels and reset memory of excess
+    // ones
+    int n_in_channels = getTotalNumInputChannels();
+    int n_samples     = buffer.getNumSamples();
+    allocateChannelsIfNeeded(n_in_channels);
+    size_t n_processors = multiChannelCascade.size();
+    for (int i = n_in_channels; i < n_processors; ++i)
+        multiChannelCascade[i].resetMemory();
+
+    pivotBuffer.makeCopyOf(buffer, true);
+    {
+        // Process in double precision
+        auto channels = pivotBuffer.getArrayOfWritePointers();
+        for (int c = 0; c < n_in_channels; ++c)
+            multiChannelCascade[c].processBlock(channels[c], channels[c],
+                                                n_samples);
+    }
+    buffer.makeCopyOf(pivotBuffer, true);
+
+    // Handle channel mismatch
+    processBlockExtraChannels(buffer);
+    {
+        // Apply gain
+        juce::dsp::AudioBlock<float> block(buffer);
+        juce::dsp::ProcessContextReplacing<float> prc_ctx(block);
+        gain.process(prc_ctx);
+    }
+
+    // Output safety check (not resetting)
+    if (!unsafe.getValue()) markAsSafe(buffer.getMagnitude(0, n_samples) < 4);
+    if (unsafe.getValue()) buffer.clear();
+}
+void ZePolAudioProcessor::processBlockBypassed(
+    juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
+{
+    processBlockExtraChannels(buffer);
+    resetMemory();
 }
 
-void PolesAndZerosEQAudioProcessor::setFilter(const double magnitude, const double phase, FilterElement::Type type, const int elementNr, double linearGain)
+// =============================================================================
+juce::AudioProcessorEditor* ZePolAudioProcessor::createEditor()
 {
-    if (elementNr > NUMBER_OF_FILTER_ELEMENTS)
-        return;
-    setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)), false);
-    
-    float gain = Decibels::gainToDecibels(linearGain, GAIN_FLOOR - 1.0);
-    
-    setParameterValue(parameters.getParameter(MAGNITUDE_NAME + std::to_string(elementNr)), magnitude);
-    setParameterValue(parameters.getParameter(PHASE_NAME + std::to_string(elementNr)), phase);
-    setParameterValue(parameters.getParameter(TYPE_NAME + std::to_string(elementNr)), !type);
-    setParameterValue(parameters.getParameter(ACTIVE_NAME + std::to_string(elementNr)), true);
-    setParameterValue(parameters.getParameter(GAIN_NAME + std::to_string(elementNr)), jmap(gain, GAIN_FLOOR, GAIN_CEILING, SLIDERS_FLOOR, SLIDERS_CEILING));
+    return new ZePolAudioProcessorEditor(*this);
+}
+bool ZePolAudioProcessor::hasEditor() const { return true; }
+
+// =============================================================================
+const juce::String ZePolAudioProcessor::getName() const
+{
+    return JucePlugin_Name;
+}
+bool ZePolAudioProcessor::acceptsMidi() const { return false; }
+bool ZePolAudioProcessor::producesMidi() const { return false; }
+bool ZePolAudioProcessor::isMidiEffect() const { return false; }
+double ZePolAudioProcessor::getTailLengthSeconds() const
+{
+    return 0.0;
 }
 
-bool PolesAndZerosEQAudioProcessor::getSafetyFlag ()
+// =============================================================================
+int ZePolAudioProcessor::getNumPrograms() { return 1; }
+int ZePolAudioProcessor::getCurrentProgram() { return 0; }
+void ZePolAudioProcessor::setCurrentProgram(int) {}
+const juce::String ZePolAudioProcessor::getProgramName(int)
 {
-    return safetyFlag;
+    return {};
+}
+void ZePolAudioProcessor::changeProgramName(int, const juce::String&)
+{
 }
 
-void PolesAndZerosEQAudioProcessor::resetSafetyFlag ()
+// =============================================================================
+void ZePolAudioProcessor::setElementMagnitude(int i, float v)
 {
-    safetyFlag = false;
+    for (auto& fec : multiChannelCascade) fec[i].setMagnitude(v);
+}
+void ZePolAudioProcessor::setElementPhase(int i, float v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setPhase(v);
+}
+void ZePolAudioProcessor::setElementGainDb(int i, float v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setGainDb(v);
+}
+void ZePolAudioProcessor::setElementActive(int i, bool v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setActive(v);
+}
+void ZePolAudioProcessor::setElementActiveTh(int i, float v)
+{
+    setElementActive(i, v > 0.5);
+}
+void ZePolAudioProcessor::setElementInverted(int i, bool v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setInverted(v);
+    // Magnitude inversion is allowed only for zeros
+    if (v) setParameterValue(TYPE_ID_PREFIX + juce::String(i), 0.0f);
+}
+void ZePolAudioProcessor::setElementInvertedTh(int i, float v)
+{
+    setElementInverted(i, v > 0.5);
+}
+void ZePolAudioProcessor::setElementSingle(int i, bool v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setSingle(v);
+}
+void ZePolAudioProcessor::setElementSingleTh(int i, float v)
+{
+    setElementSingle(i, v > 0.5);
+}
+void ZePolAudioProcessor::setElementType(int i, bool v)
+{
+    for (auto& fec : multiChannelCascade) fec[i].setType(v);
+    // Poles cannot have inverted magnitude
+    if (v) setParameterValue(INVERTED_ID_PREFIX + juce::String(i), 0.0f);
+}
+void ZePolAudioProcessor::setElementTypeTh(int i, float v)
+{
+    setElementType(i, v > 0.5f);
 }
 
-std::vector<double> PolesAndZerosEQAudioProcessor::getCoefficients()
+// =============================================================================
+int ZePolAudioProcessor::getNElements() const { return n_elements; }
+std::complex<double> ZePolAudioProcessor::dtft(double omega) const
+{
+    return multiChannelCascade[0].dtft(omega)
+           * static_cast<double>(gain.getGainLinear());
+}
+std::vector<std::array<double, 8>>
+ZePolAudioProcessor::getCoefficients() const
 {
     return multiChannelCascade[0].getCoefficients();
 }
-
-juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter ()
+double ZePolAudioProcessor::getCascadePeakGain() const
 {
-    return new PolesAndZerosEQAudioProcessor();
+    DifferentiableDTFT dDTFT(multiChannelCascade[0]);
+    return juce::Decibels::gainToDecibels(dDTFT.peakFrequency()[1], -300.0)
+           / 2.0;
+}
+double ZePolAudioProcessor::getElementAutoGain(int i) const
+{
+    return multiChannelCascade[0][i].getGainDb() - getCascadePeakGain();
+}
+void ZePolAudioProcessor::resetMemory()
+{
+    for (auto& cascade : multiChannelCascade) cascade.resetMemory();
+}
+void ZePolAudioProcessor::setAllActive(bool active)
+{
+    for (int i = 0; i < n_elements; ++i)
+        setParameterValue(ACTIVE_ID_PREFIX + juce::String(i), active);
+}
+void ZePolAudioProcessor::setBypass(bool b) { bypassed = b; }
+void ZePolAudioProcessor::setBypassTh(float b)
+{
+    setBypass(b > 0.5f);
+}
+void ZePolAudioProcessor::addUnsafeOutputListener(
+    juce::Value::Listener* uol)
+{
+    unsafe.addListener(uol);
+    uol->valueChanged(unsafe);
+}
+void ZePolAudioProcessor::removeUnsafeOutputListener(
+    juce::Value::Listener* uol)
+{
+    unsafe.removeListener(uol);
+}
+void ZePolAudioProcessor::markAsSafe(bool b) { unsafe = !b; }
+void ZePolAudioProcessor::multiplyPhases(double k)
+{
+    for (int i = 0; i < n_elements; ++i)
+        setParameterValue(
+            PHASE_ID_PREFIX + juce::String(i),
+            static_cast<float>(multiChannelCascade[0][i].getPhase() * k));
+}
+void ZePolAudioProcessor::doublePhases() { multiplyPhases(2.0); }
+void ZePolAudioProcessor::halfPhases() { multiplyPhases(0.5); }
+void ZePolAudioProcessor::swapPolesAndZeros()
+{
+    for (int i = 0; i < n_elements; ++i)
+        setParameterValue(
+            TYPE_ID_PREFIX + juce::String(i),
+            static_cast<float>(!multiChannelCascade[0][i].getType()));
+}
+void ZePolAudioProcessor::resetParameters()
+{
+    VTSAudioProcessor::resetParameters();
+    // Set gain parameters to actual 0.0
+    for (int i = 0; i < n_elements; ++i)
+    {
+        juce::String i_str(i);
+        setParameterValue(GAIN_ID_PREFIX + i_str, 0.0f);
+    }
+    setParameterValue(GAIN_ID, 0.0f);
 }
 
-
-
-
+// =============================================================================
+juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+{
+    return new ZePolAudioProcessor(10);
+}
