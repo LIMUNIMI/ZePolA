@@ -31,7 +31,7 @@
 // =============================================================================
 ApplicationPropertyButtonListener::ApplicationPropertyButtonListener(
     const juce::String& pID, juce::ApplicationProperties& properties)
-    : propertyID(pID), applicationProperties(properties)
+    : applicationProperties(properties), propertyID(pID)
 {
 }
 void ApplicationPropertyButtonListener::buttonClicked(juce::Button* b)
@@ -48,7 +48,7 @@ void ApplicationPropertyButtonListener::buttonStateChanged(
 // =============================================================================
 ButtonApplicationPropertyListener::ButtonApplicationPropertyListener(
     const juce::String& pID, std::shared_ptr<juce::Button> btn)
-    : propertyID(pID), button(btn)
+    : button(btn), propertyID(pID)
 {
 }
 void ButtonApplicationPropertyListener::changeListenerCallback(
@@ -62,7 +62,7 @@ void ButtonApplicationPropertyListener::changeListenerCallback(
 // =============================================================================
 ApplicationPropertyComboBoxListener::ApplicationPropertyComboBoxListener(
     const juce::String& pID, juce::ApplicationProperties& properties)
-    : propertyID(pID), applicationProperties(properties)
+    : applicationProperties(properties), propertyID(pID)
 {
 }
 void ApplicationPropertyComboBoxListener::comboBoxChanged(
@@ -76,7 +76,7 @@ void ApplicationPropertyComboBoxListener::comboBoxChanged(
 // =============================================================================
 ComboBoxApplicationPropertyListener::ComboBoxApplicationPropertyListener(
     const juce::String& pID, std::shared_ptr<juce::ComboBox> cb)
-    : propertyID(pID), comboBox(cb)
+    : comboBox(cb), propertyID(pID)
 {
 }
 void ComboBoxApplicationPropertyListener::changeListenerCallback(
@@ -90,7 +90,7 @@ void ComboBoxApplicationPropertyListener::changeListenerCallback(
 // =============================================================================
 ApplicationPropertySliderListener::ApplicationPropertySliderListener(
     const juce::String& pID, juce::ApplicationProperties& properties)
-    : propertyID(pID), applicationProperties(properties)
+    : applicationProperties(properties), propertyID(pID)
 {
 }
 void ApplicationPropertySliderListener::sliderValueChanged(juce::Slider* slider)
@@ -103,7 +103,7 @@ void ApplicationPropertySliderListener::sliderValueChanged(juce::Slider* slider)
 // =============================================================================
 SliderApplicationPropertyListener::SliderApplicationPropertyListener(
     const juce::String& pID, std::shared_ptr<juce::Slider> s)
-    : propertyID(pID), slider(s)
+    : slider(s), propertyID(pID)
 {
 }
 void SliderApplicationPropertyListener::changeListenerCallback(
@@ -118,7 +118,7 @@ void SliderApplicationPropertyListener::changeListenerCallback(
 // =============================================================================
 ApplicationPropertyValueListener::ApplicationPropertyValueListener(
     const juce::String& pID, juce::ApplicationProperties& properties)
-    : propertyID(pID), applicationProperties(properties)
+    : applicationProperties(properties), propertyID(pID)
 {
 }
 void ApplicationPropertyValueListener::valueChanged(juce::Value& v)
@@ -132,7 +132,7 @@ void ApplicationPropertyValueListener::valueChanged(juce::Value& v)
 ValueApplicationPropertyListener::ValueApplicationPropertyListener(
     const juce::String& pID, std::shared_ptr<juce::Value> v,
     ValueApplicationPropertyListener::ValueType t)
-    : propertyID(pID), value(v), type(t)
+    : value(v), propertyID(pID), type(t)
 {
 }
 
@@ -201,8 +201,8 @@ ApplicationPropertiesValueAttachment::ApplicationPropertiesValueAttachment(
     std::shared_ptr<juce::Value> v,
     ValueApplicationPropertyListener::ValueType t)
     : ApplicationPropertiesComponentAttachment<
-        juce::Value, ApplicationPropertyValueListener,
-        ValueApplicationPropertyListener>(properties, pID, v)
+          juce::Value, ApplicationPropertyValueListener,
+          ValueApplicationPropertyListener>(properties, pID, v)
 {
     propertyListener.setValueType(t);
     if (juce::PropertiesFile* pf

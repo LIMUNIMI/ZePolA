@@ -63,22 +63,7 @@ void DesignerPanel::ButtonListener::buttonStateChanged(juce::Button*) {}
 // =============================================================================
 DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
                              juce::ApplicationProperties& properties)
-    : processor(p)
-    , panelLabel("", "FILTER DESIGN")
-    , orderLabel("", "FILTER ORDER")
-    , cutoffLabel("", "CUTOFF FREQUENCY")
-    , rpLabel("", "PASSBAND RIPPLE")
-    , rsLabel("", "STOPBAND RIPPLE")
-    , applyButton("UPDATE")
-    , autoButton(std::make_shared<juce::ToggleButton>())
-    , typeCBox(std::make_shared<juce::ComboBox>())
-    , shapeCBox(std::make_shared<juce::ComboBox>())
-    , orderSlider(std::make_shared<juce::Slider>())
-    , cutoffSlider(std::make_shared<juce::Slider>())
-    , rpSlider(std::make_shared<juce::Slider>())
-    , rsSlider(std::make_shared<juce::Slider>())
-    , filterParams(p.getSampleRate())
-    , typeCBoxListener(std::bind(&DesignerPanel::setTypeFromCBoxId, this,
+    : typeCBoxListener(std::bind(&DesignerPanel::setTypeFromCBoxId, this,
                                  std::placeholders::_1))
     , shapeCBoxListener(std::bind(&DesignerPanel::setShapeFromCBoxId, this,
                                   std::placeholders::_1))
@@ -92,6 +77,21 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
                                  std::placeholders::_1))
     , autoButtonListener(
           std::bind(&DesignerPanel::setAuto, this, std::placeholders::_1))
+    , processor(p)
+    , panelLabel("", "FILTER DESIGN")
+    , orderLabel("", "FILTER ORDER")
+    , cutoffLabel("", "CUTOFF FREQUENCY")
+    , rpLabel("", "PASSBAND RIPPLE")
+    , rsLabel("", "STOPBAND RIPPLE")
+    , typeCBox(std::make_shared<juce::ComboBox>())
+    , shapeCBox(std::make_shared<juce::ComboBox>())
+    , orderSlider(std::make_shared<juce::Slider>())
+    , cutoffSlider(std::make_shared<juce::Slider>())
+    , rpSlider(std::make_shared<juce::Slider>())
+    , rsSlider(std::make_shared<juce::Slider>())
+    , autoButton(std::make_shared<juce::ToggleButton>())
+    , applyButton("UPDATE")
+    , filterParams(p.getSampleRate())
     , autoUpdate(false)
     , applicationProperties(properties)
 {

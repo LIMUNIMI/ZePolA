@@ -64,11 +64,13 @@ void ParameterStrip::FrequencyLabelSampleRateListener::
 
 // =============================================================================
 ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
-    : processor(p)
-    , tButton(FilterElement::typeToString(false),
+    : tButton(FilterElement::typeToString(false),
               FilterElement::typeToString(true),
               CustomLookAndFeel::ColourIDs::ZPoint_zerosColourId,
               CustomLookAndFeel::ColourIDs::ZPoint_polesColourId, false, true)
+    , gLabel(0.0f, 3)
+    , fLabel(0.0f, 0)
+    , processor(p)
     , mSliderAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
                            juce::Slider>(MAGNITUDE_ID_PREFIX + juce::String(i),
@@ -77,11 +79,6 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
           p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
                            juce::Slider>(PHASE_ID_PREFIX + juce::String(i),
                                          pSlider))
-    , fLabel(0.0f, 0)
-    , gLabel(0.0f, 3)
-    , fLabelAttachment(
-          p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
-              PHASE_ID_PREFIX + juce::String(i), fLabel))
     , aButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(ACTIVE_ID_PREFIX + juce::String(i),
@@ -90,17 +87,20 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(TYPE_ID_PREFIX + juce::String(i),
                                          tButton))
-    , iButtonAttachment(
-          p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
-                           juce::Button>(INVERTED_ID_PREFIX + juce::String(i),
-                                         iButton))
     , sButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(SINGLE_ID_PREFIX + juce::String(i),
                                          sButton))
+    , iButtonAttachment(
+          p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
+                           juce::Button>(INVERTED_ID_PREFIX + juce::String(i),
+                                         iButton))
     , gLabelAttachment(
           p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
               GAIN_ID_PREFIX + juce::String(i), gLabel))
+    , fLabelAttachment(
+          p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
+              PHASE_ID_PREFIX + juce::String(i), fLabel))
 {
     srListener = std::make_unique<FrequencyLabelSampleRateListener>(
         *fLabelAttachment.get());
@@ -271,9 +271,9 @@ ZPoint::MultiAttachment::MultiAttachment(VTSAudioProcessor& p, ZPoint* z, int i)
     , a_id(PHASE_ID_PREFIX + juce::String(i))
     , v_id(ACTIVE_ID_PREFIX + juce::String(i))
     , t_id(TYPE_ID_PREFIX + juce::String(i))
+    , g_id(GAIN_ID_PREFIX + juce::String(i))
     , s_id(SINGLE_ID_PREFIX + juce::String(i))
     , i_id(INVERTED_ID_PREFIX + juce::String(i))
-    , g_id(GAIN_ID_PREFIX + juce::String(i))
     , m_listen(z)
     , a_listen(z)
     , v_listen(z)
@@ -319,12 +319,12 @@ ZPoint::MultiAttachment::~MultiAttachment()
 
 // =============================================================================
 ZPoint::ZPoint()
-    : r(0.0f)
+    : type(false)
+    , r(0.0f)
     , a(0.0f)
-    , type(false)
     , conjugate(false)
-    , z_conj(nullptr)
     , single(false)
+    , z_conj(nullptr)
 {
 }
 
@@ -545,12 +545,12 @@ float GaussianPlanePanel::getRadius() const { return radius; }
 // =============================================================================
 ShortcutsPanel::ShortcutsPanel(ZePolAudioProcessor& p)
     : processor(p)
+    , panelLabel("", "SHORTCUTS")
     , allOnButton("ALL ON")
     , allOffButton("ALL OFF")
     , doublePhaseButton(juce::CharPointer_UTF8("PHASES ×2"))
     , halfPhaseButton(juce::CharPointer_UTF8("PHASES ÷2"))
     , swapTypeButton("SWAP Ps/Zs")
-    , panelLabel("", "SHORTCUTS")
 {
     allOnButton.onClick       = [this] { triggerAllOn(); };
     allOffButton.onClick      = [this] { triggerAllOff(); };
@@ -631,7 +631,7 @@ void ShortcutsPanel::triggerSwapTypes()
 
 // =============================================================================
 ParameterPanel::ParameterPanel(ZePolAudioProcessor& p)
-    : zplane(p), zplane_label("", "GAUSSIAN PLANE"), shortcutsPanel(p)
+    : zplane_label("", "GAUSSIAN PLANE"), zplane(p), shortcutsPanel(p)
 {
     for (auto s :
          {"RADIUS", "ANGLE", "Hz", "TYPE", "ACTIVE", "GAIN", "OUT", "1x"})

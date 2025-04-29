@@ -33,15 +33,15 @@
 
 // =============================================================================
 PlotComponent::PlotComponent(size_t n_points)
-    : y_values(n_points, 0.0f)
-    , x_values(n_points, 0.0f)
-    , period(-1.0f)
-    , y_grid({0.0f})
-    , y_labels({""})
-    , x_grid({0.0f})
+    : y_labels({""})
     , x_labels({""})
-    , log_x(false)
+    , y_values(n_points, 0.0f)
+    , x_values(n_points, 0.0f)
+    , y_grid({0.0f})
+    , x_grid({0.0f})
     , topRightText()
+    , period(-1.0f)
+    , log_x(false)
 {
 }
 
@@ -115,10 +115,11 @@ void PlotComponent::paint(juce::Graphics& g)
 // =============================================================================
 PlotsPanel::UnsafeOutputWarningPanel::UnsafeOutputWarningPanel()
     : message(
-        "",
-        "Caution! The current plugin configuration has caused an excessively "
-        "high output, and the audio stream has been stopped. Please reset the "
-        "plugin parameters to values that allow for a lower output volume.")
+          "",
+          "Caution! The current plugin configuration has caused an excessively "
+          "high output, and the audio stream has been stopped. Please reset "
+          "the "
+          "plugin parameters to values that allow for a lower output volume.")
 {
     message.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(message);
@@ -137,17 +138,17 @@ void PlotsPanel::UnsafeOutputWarningPanel::resized()
 // =============================================================================
 PlotsPanel::PlotsPanel(ZePolAudioProcessor& p,
                        juce::ApplicationProperties& properties)
-    : processor(p)
-    , db(false)
-    , linLogFreqButton(new LabelledToggleButton(
+    : linLogFreqButton(new LabelledToggleButton(
           "LIN", "LOG", CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
           CustomLookAndFeel::ColourIDs::PlotButtons_logColourId, false, true))
     , linLogAmpButton(new LabelledToggleButton(
           "LIN", "DB", CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
           CustomLookAndFeel::ColourIDs::PlotButtons_logColourId, false, true))
-    , shouldRecomputePoints(true)
+    , processor(p)
     , mLabel("", "MAGNITUDE RESPONSE")
     , pLabel("", "PHASE RESPONSE")
+    , db(false)
+    , shouldRecomputePoints(true)
 {
     addAndMakeVisible(*linLogFreqButton.get());
     addAndMakeVisible(*linLogAmpButton.get());
@@ -216,7 +217,7 @@ void PlotsPanel::updateValues()
     {
         auto omega = omegaTransform.map(static_cast<float>(i));
         auto nu    = static_cast<float>(omega * sr
-                                     / juce::MathConstants<double>::twoPi);
+                                        / juce::MathConstants<double>::twoPi);
         auto h     = processor.dtft(omega);
         auto m     = static_cast<float>(abs(h));
         if (db) m = juce::Decibels::gainToDecibels(m, m_min_db);
