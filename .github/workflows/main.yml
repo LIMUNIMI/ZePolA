@@ -16,9 +16,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-latest, windows-latest]
+        os: [ubuntu-22.04, macos-latest, windows-latest]
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             jucer: "Libraries/JUCE/extras/Projucer/Builds/LinuxMakefile/build/Projucer"
             jucer_buildir: "Libraries/JUCE/extras/Projucer/Builds/LinuxMakefile"
             plugin_buildir: "Builds/LinuxMakefile"
