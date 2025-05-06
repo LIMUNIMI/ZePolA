@@ -222,6 +222,7 @@ void ZePolAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
+    if (noise_gen) randomFill(buffer);
     if (bypassed) return processBlockBypassed(buffer, midiMessages);
 
     // Ensure enough processors for input channels and reset memory of excess
@@ -234,7 +235,6 @@ void ZePolAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
         multiChannelCascade[i].resetMemory();
 
     pivotBuffer.makeCopyOf(buffer, true);
-    if (noise_gen) randomFill(pivotBuffer);
     {
         // Process in double precision
         auto channels = pivotBuffer.getArrayOfWritePointers();
