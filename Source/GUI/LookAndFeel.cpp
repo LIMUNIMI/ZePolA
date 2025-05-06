@@ -475,8 +475,12 @@ CustomLookAndFeel::configureMasterPanel(const juce::Rectangle<int>& r) const
     auto buttonLabelRect
         = inner.removeFromBottom(resizeSize(fullMasterLabelSize));
     inner.removeFromBottom(resizeSize(fullMasterLabelSize));
+    auto ngButtonRect = buttonRect.removeFromRight(buttonRect.getWidth() / 2);
+    auto ngButtonLabelRect
+        = buttonLabelRect.removeFromRight(buttonLabelRect.getWidth() / 2);
 
-    return {sliderLabelRect, inner, buttonLabelRect, buttonRect};
+    return {sliderLabelRect,   inner,       buttonLabelRect, buttonRect,
+            ngButtonLabelRect, ngButtonRect};
 }
 
 // =============================================================================
