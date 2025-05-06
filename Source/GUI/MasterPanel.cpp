@@ -32,20 +32,27 @@
 MasterPanel::MasterPanel(VTSAudioProcessor& p)
     : gainLabel("", "OUTPUT GAIN")
     , bypassLabel("", "BYPASS")
+    , noiseGeneratorLabel("", "NOISE")
     , gainSliderAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
                            juce::Slider>(GAIN_ID, gainSlider))
     , bypassButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(BYPASS_ID, bypassButton))
+    , noiseGeneratorButtonAttachment(
+          p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
+                           juce::Button>(NOISE_ID, noiseGeneratorButton))
 {
     addAndMakeVisible(gainLabel);
     addAndMakeVisible(bypassLabel);
+    addAndMakeVisible(noiseGeneratorLabel);
     addAndMakeVisible(gainSlider);
     addAndMakeVisible(bypassButton);
+    addAndMakeVisible(noiseGeneratorButton);
 
     gainLabel.setJustificationType(juce::Justification::centred);
     bypassLabel.setJustificationType(juce::Justification::centred);
+    noiseGeneratorLabel.setJustificationType(juce::Justification::centred);
 
     gainSlider.setSliderStyle(juce::Slider::LinearVertical);
 }
@@ -54,12 +61,16 @@ void MasterPanel::resized()
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
         auto regions = claf->configureMasterPanel(getLocalBounds());
+        jassert(regions.size() == 6);
         gainLabel.setBounds(regions[0]);
         gainSlider.setBounds(regions[1]);
         bypassLabel.setBounds(regions[2]);
         bypassButton.setBounds(regions[3]);
+        noiseGeneratorLabel.setBounds(regions[4]);
+        noiseGeneratorButton.setBounds(regions[5]);
 
         claf->resizeToggleButton(bypassButton);
+        claf->resizeToggleButton(noiseGeneratorButton);
         gainSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false,
                                    gainSlider.getWidth(),
                                    bypassButton.getHeight());

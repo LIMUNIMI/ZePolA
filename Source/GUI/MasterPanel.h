@@ -42,15 +42,15 @@ public:
 
 private:
     // =========================================================================
-    juce::Label gainLabel, bypassLabel;
+    juce::Label gainLabel, bypassLabel, noiseGeneratorLabel;
     juce::Slider gainSlider;
-    juce::ToggleButton bypassButton;
+    juce::ToggleButton bypassButton, noiseGeneratorButton;
 
     // =========================================================================
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
         gainSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
-        bypassButtonAttachment;
+        bypassButtonAttachment, noiseGeneratorButtonAttachment;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MasterPanel)
