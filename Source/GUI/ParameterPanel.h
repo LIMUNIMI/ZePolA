@@ -32,6 +32,7 @@
 #include "CustomButtons.h"
 #include "DraggableLabel.h"
 #include "InvisibleGroupComponent.h"
+#include "PlotsPanel.h"
 #include <JuceHeader.h>
 
 // =============================================================================
@@ -486,35 +487,6 @@ private:
 };
 
 // =============================================================================
-/** Shortcuts panel  */
-class ShortcutsPanel : public juce::GroupComponent
-{
-public:
-    // =========================================================================
-    ShortcutsPanel(ZePolAudioProcessor&);
-
-    // =========================================================================
-    void resized() override;
-
-    // =========================================================================
-    void triggerAllOn();
-    void triggerAllOff();
-    void triggerDoublePhases();
-    void triggerHalfPhases();
-    void triggerSwapTypes();
-
-private:
-    // =========================================================================
-    ZePolAudioProcessor& processor;
-    juce::Label panelLabel;
-    juce::TextButton allOnButton, allOffButton, doublePhaseButton,
-        halfPhaseButton, swapTypeButton;
-
-    // =========================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ShortcutsPanel)
-};
-
-// =============================================================================
 /** Parameter control panel  */
 class ParameterPanel : public juce::GroupComponent
 {
@@ -530,9 +502,9 @@ private:
     std::vector<std::unique_ptr<ParameterStrip>> strips;
     std::vector<std::unique_ptr<SeparatorComponent>> separators;
     std::vector<std::unique_ptr<juce::Label>> headerLabels;
-    juce::Label zplane_label;
+    juce::Label zplane_label, ir_label;
     GaussianPlanePanel zplane;
-    ShortcutsPanel shortcutsPanel;
+    PlotComponent irPanel;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterPanel)
