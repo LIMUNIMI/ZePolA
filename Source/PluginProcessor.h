@@ -168,6 +168,11 @@ public:
     void setBypass(bool bypass);
     /** Set the bypassed state of the processor with a value threshold on 0.5 */
     void setBypassTh(float bypass);
+    /** Set the noise generator state of the processor */
+    void setNoiseGenerator(bool on);
+    /** Set the noise generator state of the processor with a value threshold on
+     * 0.5 */
+    void setNoiseGeneratorTh(float on);
     /** Double the value of the phases */
     void doublePhases();
     /** Divide by two the value of the phases */
@@ -198,16 +203,19 @@ private:
     void resetChannels();
     /** Multiply the value of the phases */
     void multiplyPhases(double);
+    /** Fill buffer with random values */
+    void randomFill(juce::AudioBuffer<double>&);
 
     // =========================================================================
     std::vector<FilterElementCascade> multiChannelCascade;
     juce::dsp::Gain<float> gain;
 
     // =========================================================================
-    bool bypassed;
+    bool bypassed, noise_gen;
     juce::Value unsafe;
     const int n_elements;
     juce::AudioBuffer<double> pivotBuffer;
+    juce::Random random;
 
     std::function<void()> editorCallback;
     juce::UndoManager undoManager;

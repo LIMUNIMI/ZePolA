@@ -41,6 +41,8 @@ createParameterLayout(int n_elements)
     int param_idx = 1;
 
     params.push_back(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID(NOISE_ID, param_idx++), "Noise Generator", false));
+    params.push_back(std::make_unique<juce::AudioParameterBool>(
         juce::ParameterID(BYPASS_ID, param_idx++), "Bypass", false));
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID(GAIN_ID, param_idx++), "Gain",
@@ -89,6 +91,9 @@ void ZePolAudioProcessor::appendListeners()
     pushListenerForAllParameters(new TriggerListener(
         std::bind(&ZePolAudioProcessor::markAsSafe, this, true)));
 
+    pushListener(NOISE_ID, new SimpleListener(std::bind(
+                               &ZePolAudioProcessor::setNoiseGeneratorTh, this,
+                               std::placeholders::_1)));
     pushListener(BYPASS_ID,
                  new SimpleListener(std::bind(&ZePolAudioProcessor::setBypassTh,
                                               this, std::placeholders::_1)));
@@ -135,6 +140,7 @@ void ZePolAudioProcessor::appendListeners()
 ZePolAudioProcessor::ZePolAudioProcessor(int n)
     : VTSAudioProcessor(createParameterLayout(n), getName())
     , bypassed(false)
+    , noise_gen(false)
     , unsafe(juce::var(false))
     , n_elements(n)
     , pivotBuffer()
@@ -202,6 +208,14 @@ void ZePolAudioProcessor::processBlockExtraChannels(
         }
     }
 }
+void ZePolAudioProcessor::randomFill(juce::AudioBuffer<double>& buffer)
+{
+    auto channels = buffer.getArrayOfWritePointers();
+    auto n_c      = buffer.getNumChannels();
+    auto n_s      = buffer.getNumSamples();
+    for (int c = 0; c < n_c; c++)
+        for (int s = 0; s < n_s; s++) channels[c][s] = random.nextDouble();
+}
 void ZePolAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)
 {
@@ -218,6 +232,7 @@ void ZePolAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
         multiChannelCascade[i].resetMemory();
 
     pivotBuffer.makeCopyOf(buffer, true);
+    if (noise_gen) randomFill(pivotBuffer);
     {
         // Process in double precision
         auto channels = pivotBuffer.getArrayOfWritePointers();
@@ -353,6 +368,11 @@ void ZePolAudioProcessor::setAllActive(bool active)
 }
 void ZePolAudioProcessor::setBypass(bool b) { bypassed = b; }
 void ZePolAudioProcessor::setBypassTh(float b) { setBypass(b > 0.5f); }
+void ZePolAudioProcessor::setNoiseGenerator(bool on) { noise_gen = on; }
+void ZePolAudioProcessor::setNoiseGeneratorTh(float on)
+{
+    setNoiseGenerator(on > 0.5f);
+}
 void ZePolAudioProcessor::addUnsafeOutputListener(juce::Value::Listener* uol)
 {
     unsafe.addListener(uol);

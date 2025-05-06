@@ -31,6 +31,7 @@
 // =============================================================================
 // Parameter ids
 #define BYPASS_ID "BYPASS"
+#define NOISE_ID "NOISE"
 #define GAIN_ID "GAIN"
 #define MAGNITUDE_ID_PREFIX "MAGNITUDE_"
 #define PHASE_ID_PREFIX "PHASE_"
