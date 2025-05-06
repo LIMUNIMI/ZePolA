@@ -365,6 +365,13 @@ double ZePolAudioProcessor::getElementAutoGain(int i) const
 {
     return multiChannelCascade[0][i].getGainDb() - getCascadePeakGain();
 }
+void ZePolAudioProcessor::ir(std::vector<double>& output) const
+{
+    FilterElementCascade clone(multiChannelCascade[0]);
+    std::fill(output.begin() + 1, output.end(), 0.0);
+    output[0] = static_cast<double>(gain.getGainLinear());
+    clone.processBlock(output.data(), output.data(), output.size());
+}
 void ZePolAudioProcessor::resetMemory()
 {
     for (auto& cascade : multiChannelCascade) cascade.resetMemory();
