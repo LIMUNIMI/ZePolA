@@ -208,13 +208,15 @@ void ZePolAudioProcessor::processBlockExtraChannels(
         }
     }
 }
-void ZePolAudioProcessor::randomFill(juce::AudioBuffer<double>& buffer)
+template <typename FloatType>
+void ZePolAudioProcessor::randomFill(juce::AudioBuffer<FloatType>& buffer)
 {
     auto channels = buffer.getArrayOfWritePointers();
     auto n_c      = buffer.getNumChannels();
     auto n_s      = buffer.getNumSamples();
     for (int c = 0; c < n_c; c++)
-        for (int s = 0; s < n_s; s++) channels[c][s] = random.nextDouble();
+        for (int s = 0; s < n_s; s++)
+            channels[c][s] = static_cast<FloatType>(random.nextDouble());
 }
 void ZePolAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)

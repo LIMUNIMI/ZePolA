@@ -204,7 +204,8 @@ private:
     /** Multiply the value of the phases */
     void multiplyPhases(double);
     /** Fill buffer with random values */
-    void randomFill(juce::AudioBuffer<double>&);
+    template <typename FloatType>
+    void randomFill(juce::AudioBuffer<FloatType>&);
 
     // =========================================================================
     std::vector<FilterElementCascade> multiChannelCascade;
