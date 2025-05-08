@@ -117,11 +117,46 @@ public:
 };
 
 // =============================================================================
+/** PlotsControl */
+class PlotsControl
+{
+public:
+    // =========================================================================
+    class Controlled
+    {
+    public:
+        // =====================================================================
+        Controlled();
+        virtual void updatePlotValues(const ZePolAudioProcessor&) = 0;
+    };
+
+    // =========================================================================
+    class Controller : public SampleRateListener,
+                       public juce::AudioProcessorValueTreeState::Listener
+    {
+    public:
+        // =====================================================================
+        Controller(ZePolAudioProcessor&);
+        ~Controller();
+        virtual void sampleRateChangedCallback(double) override;
+        virtual void parameterChanged(const juce::String&, float) override;
+        void addControlled(Controlled*);
+        void removeControlled(Controlled*);
+        void updateControlled(Controlled*);
+        void updateAllControlled();
+
+    private:
+        // =====================================================================
+        std::vector<Controlled*> controlled;
+        ZePolAudioProcessor& processor;
+    };
+};
+
+// =============================================================================
 /** Plots panel  */
 class PlotsPanel : public juce::GroupComponent,
-                   public juce::AudioProcessorValueTreeState::Listener,
                    public juce::Button::Listener,
-                   public SampleRateListener
+                   public PlotsControl::Controlled
 {
 public:
     // =========================================================================
@@ -149,20 +184,18 @@ public:
     ~PlotsPanel();
 
     //==========================================================================
-    virtual void sampleRateChangedCallback(double) override;
-    void updateValues();
-
-    //==========================================================================
     void buttonClicked(juce::Button*) override;
     void buttonStateChanged(juce::Button*) override;
-    void parameterChanged(const juce::String&, float) override;
     void resized() override;
     void paint(juce::Graphics&) override;
     /** Mark panel as to be recomputed */
     void recomputePoints();
+    void updateValues();
+    void updatePlotValues(const ZePolAudioProcessor&) override;
 
 private:
     // =========================================================================
+    PlotsControl::Controller plotsCtrl;
     UnsafeOutputWarningPanel uowPanel;
     std::unique_ptr<ApplicationPropertiesButtonAttachment>
         linLogFreqAPAttachment, linLogAmpAPAttachment;

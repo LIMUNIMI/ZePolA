@@ -66,6 +66,5 @@ private:
     std::unique_ptr<MasterPanel> masterPanel;
 
     // ===========================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
-        ZePolAudioProcessorEditor);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ZePolAudioProcessorEditor);
 };
