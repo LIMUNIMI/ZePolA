@@ -487,15 +487,21 @@ private:
 };
 
 // =============================================================================
-/** Parameter control panel  */
-class ParameterPanel : public juce::GroupComponent
+/** Parameter control panel */
+class ParameterPanel : public juce::GroupComponent,
+                       public PlotsControl::Controlled
 {
 public:
     // =========================================================================
     ParameterPanel(ZePolAudioProcessor&);
+    ~ParameterPanel();
 
     //==========================================================================
+    void updateIR();
+    void recomputeIR();
+    void updatePlotValues(const ZePolAudioProcessor&) override;
     void resized() override;
+    void paint(juce::Graphics&) override;
 
 private:
     // =========================================================================
@@ -505,6 +511,10 @@ private:
     juce::Label zplane_label, ir_label;
     GaussianPlanePanel zplane;
     PlotComponent irPanel;
+    std::vector<double> irSamples;
+    PlotsControl::Controller plotsCtrl;
+    bool shouldRecomputeIR;
+    ZePolAudioProcessor& processor;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterPanel)
