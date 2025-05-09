@@ -217,6 +217,7 @@ private:
     const int n_elements;
     juce::AudioBuffer<double> pivotBuffer;
     juce::Random random;
+    float noiseBaseGain;
 
     std::function<void()> editorCallback;
     juce::UndoManager undoManager;

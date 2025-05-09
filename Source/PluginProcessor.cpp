@@ -144,6 +144,7 @@ ZePolAudioProcessor::ZePolAudioProcessor(int n)
     , unsafe(juce::var(false))
     , n_elements(n)
     , pivotBuffer()
+    , noiseBaseGain(0.01f)
 {
     allocateChannelsIfNeeded(1);
     gain.setGainDecibels(0.0f);
@@ -216,13 +217,18 @@ void ZePolAudioProcessor::randomFill(juce::AudioBuffer<FloatType>& buffer)
     auto n_s      = buffer.getNumSamples();
     for (int c = 0; c < n_c; c++)
         for (int s = 0; s < n_s; s++)
-            channels[c][s] = static_cast<FloatType>(random.nextDouble());
+            channels[c][s]
+                = static_cast<FloatType>(2.0 * (random.nextDouble() - 1.0));
 }
 void ZePolAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    if (noise_gen) randomFill(buffer);
+    if (noise_gen)
+    {
+        randomFill(buffer);
+        buffer.applyGain(noiseBaseGain);
+    }
     if (bypassed) return processBlockBypassed(buffer, midiMessages);
 
     // Ensure enough processors for input channels and reset memory of excess
