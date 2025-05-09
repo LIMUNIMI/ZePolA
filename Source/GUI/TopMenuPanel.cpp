@@ -176,6 +176,12 @@ TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
     if (presetLocation->toString().isEmpty())
         setPresetLocation(juce::File::getSpecialLocation(
             juce::File::SpecialLocationType::userDocumentsDirectory));
+
+    autoFilterUpdateValue.reset(new juce::Value(juce::var(false)));
+    autoFilterUpdateValueAttachment.reset(
+        new ApplicationPropertiesValueAttachment(
+            properties, AUTO_FILTER_PROPERTY_ID, autoFilterUpdateValue,
+            ValueApplicationPropertyListener::ValueType::BOOL));
 }
 
 // =============================================================================
@@ -297,6 +303,8 @@ void TopMenuPanel::resetParameters()
     if (autoGainButton)
         autoGainButton->setToggleState(
             false, juce::NotificationType::sendNotification);
+    if (autoFilterUpdateValue)
+        autoFilterUpdateValue->setValue(juce::var(false));
 }
 
 // =============================================================================

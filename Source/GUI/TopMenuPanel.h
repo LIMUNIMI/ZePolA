@@ -140,6 +140,9 @@ private:
     std::shared_ptr<juce::ToggleButton> autoGainButton;
     SeparatorComponent sep;
     std::shared_ptr<juce::Value> presetLocation;
+    std::shared_ptr<juce::Value> autoFilterUpdateValue;
+    std::unique_ptr<ApplicationPropertiesValueAttachment>
+        autoFilterUpdateValueAttachment;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TopMenuPanel)

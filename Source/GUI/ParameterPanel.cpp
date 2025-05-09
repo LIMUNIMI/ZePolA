@@ -463,8 +463,7 @@ void ZPoint::mouseDrag(const juce::MouseEvent& event)
 }
 
 // =============================================================================
-GaussianPlanePanel::GaussianPlanePanel(ZePolAudioProcessor& p)
-    : radius(1.05f)
+GaussianPlanePanel::GaussianPlanePanel(ZePolAudioProcessor& p) : radius(1.05f)
 {
     auto n = p.getNElements();
     for (auto i = 0; i < n; ++i)

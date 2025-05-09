@@ -167,7 +167,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
 
     applyButton.onClick = std::bind(&DesignerPanel::designFilter, this);
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
-        properties, "autoFilterDesign", autoButton));
+        properties, AUTO_FILTER_PROPERTY_ID, autoButton));
 
     updatePassbandRippleVisibility();
     updateStopbandRippleVisibility();
