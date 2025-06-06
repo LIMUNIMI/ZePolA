@@ -63,6 +63,8 @@ FilterElement::FilterElement(const FilterElement& other)
     , phase(other.phase)
     , gain(other.gain)
     , active(other.active)
+    , inverted(other.inverted)
+    , single(other.single)
     , type(other.type)
     , processSampleFunc(other.processSampleFunc)
 {
