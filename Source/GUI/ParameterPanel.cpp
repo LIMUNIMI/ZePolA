@@ -542,96 +542,33 @@ void GaussianPlanePanel::setRadius(float r)
 float GaussianPlanePanel::getRadius() const { return radius; }
 
 // =============================================================================
-ShortcutsPanel::ShortcutsPanel(ZePolAudioProcessor& p)
-    : processor(p)
-    , panelLabel("", "SHORTCUTS")
-    , allOnButton("ALL ON")
-    , allOffButton("ALL OFF")
-    , doublePhaseButton(juce::CharPointer_UTF8("PHASES ×2"))
-    , halfPhaseButton(juce::CharPointer_UTF8("PHASES ÷2"))
-    , swapTypeButton("SWAP Ps/Zs")
-{
-    allOnButton.onClick       = [this] { triggerAllOn(); };
-    allOffButton.onClick      = [this] { triggerAllOff(); };
-    doublePhaseButton.onClick = [this] { triggerDoublePhases(); };
-    halfPhaseButton.onClick   = [this] { triggerHalfPhases(); };
-    swapTypeButton.onClick    = [this] { triggerSwapTypes(); };
-    panelLabel.setJustificationType(juce::Justification::centred);
-
-    addAndMakeVisible(panelLabel);
-    addAndMakeVisible(allOnButton);
-    addAndMakeVisible(allOffButton);
-    addAndMakeVisible(doublePhaseButton);
-    addAndMakeVisible(halfPhaseButton);
-    addAndMakeVisible(swapTypeButton);
-}
-void ShortcutsPanel::resized()
-{
-    if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
-    {
-        auto regions = claf->splitProportionalShortcuts(getLocalBounds());
-        jassert(regions.size() == 13);
-        panelLabel.setBounds(regions[1]);
-        allOnButton.setBounds(regions[3]);
-        allOffButton.setBounds(regions[5]);
-        doublePhaseButton.setBounds(regions[7]);
-        halfPhaseButton.setBounds(regions[9]);
-        swapTypeButton.setBounds(regions[11]);
-    }
-}
-
-// =============================================================================
-void ShortcutsPanel::triggerAllOn()
-{
-    auto n = processor.getNElements();
-    for (auto i = 0; i < n; ++i)
-        processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(i), true);
-}
-void ShortcutsPanel::triggerAllOff()
-{
-    auto n = processor.getNElements();
-    for (auto i = 0; i < n; ++i)
-        processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(i), false);
-}
-void ShortcutsPanel::triggerDoublePhases()
-{
-    auto n = processor.getNElements();
-    for (auto i = 0; i < n; ++i)
-    {
-        auto id_i = PHASE_ID_PREFIX + juce::String(i);
-        processor.setParameterValue(
-            id_i, 2.0f
-                      * std::clamp(processor.getParameterUnnormValue(id_i),
-                                   0.0f, 1.0f));
-    }
-}
-void ShortcutsPanel::triggerHalfPhases()
-{
-    auto n = processor.getNElements();
-    for (auto i = 0; i < n; ++i)
-    {
-        auto id_i = PHASE_ID_PREFIX + juce::String(i);
-        processor.setParameterValue(
-            id_i, 0.5f
-                      * std::clamp(processor.getParameterUnnormValue(id_i),
-                                   0.0f, 1.0f));
-    }
-}
-void ShortcutsPanel::triggerSwapTypes()
-{
-    auto n = processor.getNElements();
-    for (auto i = 0; i < n; ++i)
-    {
-        auto id_i = TYPE_ID_PREFIX + juce::String(i);
-        processor.setParameterValue(
-            id_i, 1.0f - processor.getParameterUnnormValue(id_i));
-    }
-}
-
-// =============================================================================
 ParameterPanel::ParameterPanel(ZePolAudioProcessor& p)
-    : zplane_label("", "GAUSSIAN PLANE"), zplane(p), shortcutsPanel(p)
+    : zplane_label("", "GAUSSIAN PLANE")
+    , ir_label("", "IR")
+    , zplane(p)
+    , irPanel(IR_PLOT_LENGTH)
+    , plotsCtrl(p)
+    , shouldRecomputeIR(false)
+    , processor(p)
 {
+    irPanel.setXGrid(IR_PLOT_AMP_GRID);
+    {
+        auto np       = static_cast<int>(irPanel.getSize());
+        auto n_labels = std::clamp(np, 2, 5) - 1;
+        std::vector<float> yticks;
+        std::vector<juce::String> ylabels;
+        yticks.push_back(static_cast<float>(np) - 2.0f);
+        ylabels.push_back("");
+        for (auto i = n_labels - 1; i >= 0; --i)
+        {
+            auto t = (i * np) / n_labels;
+            yticks.push_back(static_cast<float>(t));
+            ylabels.push_back(juce::String(t));
+        }
+        yticks.push_back(-1.0f);
+        ylabels.push_back("");
+        irPanel.setYGrid(yticks, ylabels);
+    }
     for (auto s :
          {"RADIUS", "ANGLE", "Hz", "TYPE", "ACTIVE", "GAIN", "OUT", "1x"})
     {
@@ -659,6 +596,7 @@ ParameterPanel::ParameterPanel(ZePolAudioProcessor& p)
 
     for (auto& s : separators) s->drawBottom = true;
     zplane_label.setJustificationType(juce::Justification::centred);
+    ir_label.setJustificationType(juce::Justification::centred);
     for (auto& l : headerLabels)
         l->setJustificationType(juce::Justification::centred);
 
@@ -666,11 +604,43 @@ ParameterPanel::ParameterPanel(ZePolAudioProcessor& p)
     for (auto& l : headerLabels) addAndMakeVisible(*l.get());
     for (auto& s : strips) addAndMakeVisible(*s.get());
     addAndMakeVisible(zplane_label);
+    addAndMakeVisible(ir_label);
     addAndMakeVisible(zplane);
-    addAndMakeVisible(shortcutsPanel);
+    addAndMakeVisible(irPanel);
+    plotsCtrl.addControlled(this);
 }
+ParameterPanel::~ParameterPanel() { plotsCtrl.removeControlled(this); }
 
 // =============================================================================
+void ParameterPanel::paint(juce::Graphics& g)
+{
+    if (shouldRecomputeIR) updateIR();
+    juce::GroupComponent::paint(g);
+}
+void ParameterPanel::updateIR()
+{
+    shouldRecomputeIR = false;
+    auto n            = irPanel.getSize();
+    irSamples.resize(--n);
+    processor.ir(irSamples);
+    irPanel.setPoint(0, 0.0f, -1.0f);
+    auto x_min = irPanel.getXMin();
+    auto x_max = irPanel.getXMax();
+    auto d     = 0.05f * (x_max - x_min);
+    x_min -= d;
+    x_max += d;
+    for (auto i = 0; i < n; ++i)
+        irPanel.setPoint(
+            i + 1, std::clamp(static_cast<float>(irSamples[i]), x_min, x_max),
+            static_cast<float>(i));
+    repaint();
+    irPanel.repaint();
+}
+void ParameterPanel::updatePlotValues(const ZePolAudioProcessor&)
+{
+    shouldRecomputeIR = true;
+    SAFE_MessageManager_LOCK(this, repaint(););
+}
 void ParameterPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
@@ -709,11 +679,16 @@ void ParameterPanel::resized()
 
         zplane.setBounds(regions[3].removeFromLeft(regions[3].getHeight()));
         regions[3].setLeft(claf->getPanelInnerRect(regions[3]).getX());
-        shortcutsPanel.setBounds(regions[3]);
+        irPanel.setBounds(regions[3]);
 
         juce::Rectangle<int> zplane_label_rect(
             zplane.getX(), zplane.getBottom(), zplane.getWidth(), 0);
         zplane_label_rect.setBottom(getHeight());
         zplane_label.setBounds(zplane_label_rect);
+
+        juce::Rectangle<int> ir_label_rect(irPanel.getX(), irPanel.getBottom(),
+                                           irPanel.getWidth(), 0);
+        ir_label_rect.setBottom(getHeight());
+        ir_label.setBounds(ir_label_rect);
     }
 }

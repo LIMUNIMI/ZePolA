@@ -160,6 +160,8 @@ public:
     double getCascadePeakGain() const;
     /** Get the auto gain value for the specified element */
     double getElementAutoGain(int) const;
+    /** Get the (truncated) IR of the filter */
+    void ir(std::vector<double>& output) const;
     /** Clear filter memory */
     void resetMemory();
     /** Activate or deactivate all filter elements */
