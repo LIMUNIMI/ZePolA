@@ -42,6 +42,14 @@
 #define TYPE_ID_PREFIX "TYPE_"
 #define AUTO_GAIN_PROPERTY_ID "autoGain"
 #define AUTO_FILTER_PROPERTY_ID "autoFilterDesign"
+#ifndef IR_PLOT_LENGTH
+#define IR_PLOT_LENGTH 64
+#endif
+#define IR_PLOT_AMP_GRID                                                       \
+    {-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5},                                    \
+    {                                                                          \
+        "", "-1", "", "0", "", "1", ""                                         \
+    }
 
 // =============================================================================
 namespace Parameters
