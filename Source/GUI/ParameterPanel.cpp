@@ -547,6 +547,9 @@ ParameterPanel::ParameterPanel(ZePolAudioProcessor& p)
     , ir_label("", "IR")
     , zplane(p)
     , irPanel(IR_PLOT_LENGTH)
+    , plotsCtrl(p)
+    , shouldRecomputeIR(false)
+    , processor(p)
 {
     irPanel.setXGrid(IR_PLOT_AMP_GRID);
     {
@@ -604,9 +607,40 @@ ParameterPanel::ParameterPanel(ZePolAudioProcessor& p)
     addAndMakeVisible(ir_label);
     addAndMakeVisible(zplane);
     addAndMakeVisible(irPanel);
+    plotsCtrl.addControlled(this);
 }
+ParameterPanel::~ParameterPanel() { plotsCtrl.removeControlled(this); }
 
 // =============================================================================
+void ParameterPanel::paint(juce::Graphics& g)
+{
+    if (shouldRecomputeIR) updateIR();
+    juce::GroupComponent::paint(g);
+}
+void ParameterPanel::updateIR()
+{
+    shouldRecomputeIR = false;
+    auto n            = irPanel.getSize();
+    irSamples.resize(--n);
+    processor.ir(irSamples);
+    irPanel.setPoint(0, 0.0f, -1.0f);
+    auto x_min = irPanel.getXMin();
+    auto x_max = irPanel.getXMax();
+    auto d     = 0.05f * (x_max - x_min);
+    x_min -= d;
+    x_max += d;
+    for (auto i = 0; i < n; ++i)
+        irPanel.setPoint(
+            i + 1, std::clamp(static_cast<float>(irSamples[i]), x_min, x_max),
+            static_cast<float>(i));
+    repaint();
+    irPanel.repaint();
+}
+void ParameterPanel::updatePlotValues(const ZePolAudioProcessor&)
+{
+    shouldRecomputeIR = true;
+    SAFE_MessageManager_LOCK(this, repaint(););
+}
 void ParameterPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
