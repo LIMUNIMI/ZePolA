@@ -429,5 +429,5 @@ void ZePolAudioProcessor::resetParameters()
 // =============================================================================
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new ZePolAudioProcessor(10);
+    return new ZePolAudioProcessor(N_FILTER_ELEMENTS);
 }
