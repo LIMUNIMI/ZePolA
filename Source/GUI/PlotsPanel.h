@@ -78,6 +78,10 @@ public:
                   const std::vector<juce::String>& labels);
     /** Set x grid values and automatic labels */
     void setXGrid(const std::vector<float>&);
+    /** Get minimum x value in the plot */
+    float getXMin();
+    /** Get maximum x value in the plot */
+    float getXMax();
     /** Get minimum y value in the plot */
     float getYMin();
     /** Get maximum y value in the plot */
