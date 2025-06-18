@@ -220,7 +220,8 @@ double FilterElement::processSamplePole(double x)
     pushSample(y);
     return y;
 }
-void FilterElement::processBlock(double* outputs, const double* inputs, int n)
+void FilterElement::processBlock(double* outputs, const double* inputs,
+                                 size_t n)
 {
     for (int i = 0; i < n; ++i)
         outputs[i] = (this->*processSampleFunc)(gain * inputs[i]);
@@ -356,7 +357,7 @@ std::vector<std::array<double, 8>> FilterElementCascade::getCoefficients() const
 
 // =========================================================================
 void FilterElementCascade::processBlock(double* outputs, const double* inputs,
-                                        int n)
+                                        size_t n)
 {
     for (auto& e : elements)
         if (e.getActive()) e.processBlock(outputs, inputs, n);
