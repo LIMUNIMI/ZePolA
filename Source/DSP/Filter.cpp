@@ -27,12 +27,13 @@
 
 #include "Filter.h"
 #include "../Macros.h"
+#include "../Parameters.h"
 #include <JuceHeader.h>
 
 // =============================================================================
-const double FilterElement::gain_floor_db       = -128.0;
-const double FilterElement::pole_magnitude_ceil = 0.99999;
-const double FilterElement::inv_magnitude_floor = 1e-6;
+const double FilterElement::gain_floor_db       = FILTER_ELEMENT_GAIN_FLOOR_DB;
+const double FilterElement::pole_magnitude_ceil = POLE_MAGNITUDE_CEIL;
+const double FilterElement::inv_magnitude_floor = INVERSE_MAGNITUDE_FLOOR;
 
 // =============================================================================
 const std::string FilterElement::typeToString(bool t)
