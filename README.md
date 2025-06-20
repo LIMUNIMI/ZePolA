@@ -60,12 +60,14 @@ Buttons:
 - **Man/Auto Gain** Toggles the auto-gain feature 
 
 ## Environment variables
-You can change the number of filter elements and the length of the IR plot by setting the corresponding environment variables. Please, note that changing these settings from the default values may severely hurt performance.
+You can change a number of constant in the plugin using environment variables.
+Please, note that changing these settings from the default values may severely hurt performance and/or stability and negatively affect the aesthetic appearance.
 ```
-ZEPOLA_N_FILTER_ELEMENTS
-```
-```
-ZEPOLA_IR_PLOT_LENGTH
+ZEPOLA_N_FILTER_ELEMENTS             // The number of filter elements
+ZEPOLA_IR_PLOT_LENGTH                // The length of the IR plot, in samples
+ZEPOLA_POLE_MAGNITUDE_CEIL           // The maximum radius for a pole element (linear)
+ZEPOLA_INVERSE_MAGNITUDE_FLOOR       // The minimum radius for an inverted element (linear)
+ZEPOLA_FILTER_ELEMENT_GAIN_FLOOR_DB  // The minimum gain for an element, in dB
 ```
 
 # License
