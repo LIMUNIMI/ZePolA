@@ -26,16 +26,15 @@
 */
 
 #pragma once
+#include "EnvVars.h"
 #include <JuceHeader.h>
 
 // =============================================================================
+// Environment variables
+const IntEnvVar N_FILTER_ELEMENTS("ZEPOLA_N_FILTER_ELEMENTS", 10);
+const IntEnvVar IR_PLOT_LENGTH("ZEPOLA_IR_PLOT_LENGTH", 64);
+
 // Plugin constants
-#ifndef N_FILTER_ELEMENTS
-#define N_FILTER_ELEMENTS 10
-#endif
-#ifndef IR_PLOT_LENGTH
-#define IR_PLOT_LENGTH 64
-#endif
 #define IR_PLOT_AMP_GRID                                                       \
     {-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5},                                    \
     {                                                                          \
