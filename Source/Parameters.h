@@ -31,8 +31,8 @@
 
 // =============================================================================
 // Environment variables
-const IntEnvVar N_FILTER_ELEMENTS("ZEPOLA_N_FILTER_ELEMENTS", 10);
-const IntEnvVar IR_PLOT_LENGTH("ZEPOLA_IR_PLOT_LENGTH", 64);
+const EnvVar<int> N_FILTER_ELEMENTS("ZEPOLA_N_FILTER_ELEMENTS", 10);
+const EnvVar<int> IR_PLOT_LENGTH("ZEPOLA_IR_PLOT_LENGTH", 64);
 
 // Plugin constants
 #define IR_PLOT_AMP_GRID                                                       \

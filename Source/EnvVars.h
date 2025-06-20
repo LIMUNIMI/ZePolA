@@ -29,18 +29,20 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 
 // =============================================================================
-/** Integer environment variables */
-class IntEnvVar
+/** Generic environment variable with fallback default */
+template <typename TypeName>
+class EnvVar
 {
 public:
-    //==========================================================================
-    IntEnvVar(const std::string& key, int dflt);
-    operator int() const;
+    EnvVar(const std::string& key, TypeName dflt);
+    operator TypeName() const;
 
 private:
-    //==========================================================================
     std::string key;
-    int dflt;
+    TypeName dflt;
+
+    static TypeName parse(const char* val);
 };

@@ -30,24 +30,44 @@
 #include <JuceHeader.h>
 
 // =============================================================================
-IntEnvVar::IntEnvVar(const std::string& k, int d) : key(k), dflt(d) {}
-IntEnvVar::operator int() const
+template <typename TypeName>
+EnvVar<TypeName>::EnvVar(const std::string& k, TypeName d) : key(k), dflt(d)
 {
-    int v = dflt;
-    if (const char* val = std::getenv(key.c_str()))
+}
+template <typename TypeName>
+EnvVar<TypeName>::operator TypeName() const
+{
+    TypeName v = dflt;
+    if (const char* s = std::getenv(key.c_str()))
     {
         DBG("Environment variable '" << key << "' found");
         try
         {
-            v = std::stoi(val);
+            v = parse(s);
         }
         catch (...)
         {
-            DBG("Error getting environment variable value: '" << key << "'");
+            DBG("Error parsing environment variable: '" << key << "'");
         }
     }
     ONLY_ON_DEBUG(
-        else { DBG("Environment variable '" << key << "' not found"); })
+        else { DBG("Environment variable '" << key << "' not found"); });
     DBG(key << "=" << v);
     return v;
 }
+
+// =============================================================================
+template <>
+int EnvVar<int>::parse(const char* v)
+{
+    return std::stoi(v);
+}
+template <>
+double EnvVar<double>::parse(const char* v)
+{
+    return std::stod(v);
+}
+
+// =============================================================================
+template class EnvVar<int>;
+template class EnvVar<double>;
