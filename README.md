@@ -59,6 +59,15 @@ Buttons:
 - **Export** Save filter coefficients to a CSV file
 - **Man/Auto Gain** Toggles the auto-gain feature 
 
+## Environment variables
+You can change the number of filter elements and the length of the IR plot by setting the corresponding environment variables. Please, note that changing these settings from the default values may severely hurt performance.
+```
+ZEPOLA_N_FILTER_ELEMENTS
+```
+```
+ZEPOLA_IR_PLOT_LENGTH
+```
+
 # License
 Copyright (c) 2025 Laboratorio di Informatica Musicale
 

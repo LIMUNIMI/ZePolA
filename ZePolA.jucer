@@ -35,6 +35,8 @@
       <FILE id="juXqX7" name="save_icon.svg" compile="0" resource="1" file="Graphics/save_icon.svg"/>
     </GROUP>
     <GROUP id="{7D61AFCF-4618-4DA8-96D3-B0DC7D2A26DB}" name="Source">
+      <FILE id="F1UX1g" name="EnvVars.cpp" compile="1" resource="0" file="Source/EnvVars.cpp"/>
+      <FILE id="FlLq7q" name="EnvVars.h" compile="0" resource="0" file="Source/EnvVars.h"/>
       <FILE id="llmHwa" name="Mappers.cpp" compile="1" resource="0" file="Source/Mappers.cpp"/>
       <FILE id="UGwiqN" name="Mappers.h" compile="0" resource="0" file="Source/Mappers.h"/>
       <FILE id="NcDhiw" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>
