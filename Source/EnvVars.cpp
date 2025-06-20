@@ -26,28 +26,59 @@
 */
 
 #include "EnvVars.h"
-#include "Macros.h"
-#include <JuceHeader.h>
+#include <algorithm>  // std::transform
+#include <cctype>     // std::tolower
+#include <cstdlib>    // std::getenv
+#include <unordered_set>
 
 // =============================================================================
-IntEnvVar::IntEnvVar(const std::string& k, int d) : key(k), dflt(d) {}
-IntEnvVar::operator int() const
+template <typename TypeName>
+EnvVar<TypeName>::EnvVar(const std::string& k, TypeName d) : key(k), dflt(d)
 {
-    int v = dflt;
-    if (const char* val = std::getenv(key.c_str()))
+}
+template <typename TypeName>
+EnvVar<TypeName>::operator TypeName() const
+{
+    TypeName v = dflt;
+    if (const char* s = std::getenv(key.c_str()))
     {
-        DBG("Environment variable '" << key << "' found");
         try
         {
-            v = std::stoi(val);
+            v = parse(s);
         }
         catch (...)
         {
-            DBG("Error getting environment variable value: '" << key << "'");
         }
     }
-    ONLY_ON_DEBUG(
-        else { DBG("Environment variable '" << key << "' not found"); })
-    DBG(key << "=" << v);
     return v;
 }
+
+// =============================================================================
+template <>
+int EnvVar<int>::parse(const char* v)
+{
+    return std::stoi(v);
+}
+template <>
+double EnvVar<double>::parse(const char* v)
+{
+    return std::stod(v);
+}
+static char _safe_tolower(unsigned char c)
+{
+    return static_cast<char>(std::tolower(c));
+}
+template <>
+bool EnvVar<bool>::parse(const char* v)
+{
+    static const std::unordered_set<std::string> _TRUES {"1", "true", "yes",
+                                                         "on"};
+    std::string s(v);
+    std::transform(s.begin(), s.end(), s.begin(), _safe_tolower);
+    return _TRUES.count(s) > 0;
+}
+
+// =============================================================================
+template class EnvVar<int>;
+template class EnvVar<double>;
+template class EnvVar<bool>;
