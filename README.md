@@ -68,6 +68,7 @@ ZEPOLA_IR_PLOT_LENGTH                // The length of the IR plot, in samples
 ZEPOLA_POLE_MAGNITUDE_CEIL           // The maximum radius for a pole element (linear)
 ZEPOLA_INVERSE_MAGNITUDE_FLOOR       // The minimum radius for an inverted element (linear)
 ZEPOLA_FILTER_ELEMENT_GAIN_FLOOR_DB  // The minimum gain for an element, in dB
+ZEPOLA_ALLOW_INVERTED_POLES          // Allow inverted magnitude for pole elements (extremely instable)
 ```
 
 # License
