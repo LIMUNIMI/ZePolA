@@ -38,6 +38,7 @@ const EnvVar<double> INVERSE_MAGNITUDE_FLOOR("ZEPOLA_INVERSE_MAGNITUDE_FLOOR",
                                              1e-6);
 const EnvVar<double>
     FILTER_ELEMENT_GAIN_FLOOR_DB("ZEPOLA_FILTER_ELEMENT_GAIN_FLOOR_DB", -128.0);
+const EnvVar<bool> ALLOW_INVERTED_POLES("ZEPOLA_ALLOW_INVERTED_POLES", false);
 
 // Plugin constants
 #define IR_PLOT_AMP_GRID                                                       \

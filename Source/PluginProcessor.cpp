@@ -315,11 +315,15 @@ void ZePolAudioProcessor::setElementActiveTh(int i, float v)
 {
     setElementActive(i, v > 0.5);
 }
+static const bool dont_allow_inverted_poles = !ALLOW_INVERTED_POLES;
 void ZePolAudioProcessor::setElementInverted(int i, bool v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setInverted(v);
-    // Magnitude inversion is allowed only for zeros
-    if (v) setParameterValue(TYPE_ID_PREFIX + juce::String(i), 0.0f);
+    if (dont_allow_inverted_poles)
+    {
+        // Magnitude inversion is allowed only for zeros
+        if (v) setParameterValue(TYPE_ID_PREFIX + juce::String(i), 0.0f);
+    }
 }
 void ZePolAudioProcessor::setElementInvertedTh(int i, float v)
 {
@@ -336,8 +340,11 @@ void ZePolAudioProcessor::setElementSingleTh(int i, float v)
 void ZePolAudioProcessor::setElementType(int i, bool v)
 {
     for (auto& fec : multiChannelCascade) fec[i].setType(v);
-    // Poles cannot have inverted magnitude
-    if (v) setParameterValue(INVERTED_ID_PREFIX + juce::String(i), 0.0f);
+    if (dont_allow_inverted_poles)
+    {
+        // Poles cannot have inverted magnitude
+        if (v) setParameterValue(INVERTED_ID_PREFIX + juce::String(i), 0.0f);
+    }
 }
 void ZePolAudioProcessor::setElementTypeTh(int i, float v)
 {
