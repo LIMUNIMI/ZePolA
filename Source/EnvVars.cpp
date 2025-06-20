@@ -26,6 +26,10 @@
 */
 
 #include "EnvVars.h"
+#include <algorithm>  // std::transform
+#include <cctype>     // std::tolower
+#include <cstdlib>    // std::getenv
+#include <unordered_set>
 
 // =============================================================================
 template <typename TypeName>
@@ -60,7 +64,21 @@ double EnvVar<double>::parse(const char* v)
 {
     return std::stod(v);
 }
+static char _safe_tolower(unsigned char c)
+{
+    return static_cast<char>(std::tolower(c));
+}
+template <>
+bool EnvVar<bool>::parse(const char* v)
+{
+    static const std::unordered_set<std::string> _TRUES {"1", "true", "yes",
+                                                         "on"};
+    std::string s(v);
+    std::transform(s.begin(), s.end(), s.begin(), _safe_tolower);
+    return _TRUES.count(s) > 0;
+}
 
 // =============================================================================
 template class EnvVar<int>;
 template class EnvVar<double>;
+template class EnvVar<bool>;

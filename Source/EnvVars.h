@@ -26,10 +26,7 @@
 */
 
 #pragma once
-#include <cstdlib>
-#include <stdexcept>
 #include <string>
-#include <type_traits>
 
 // =============================================================================
 /** Generic environment variable with fallback default */
