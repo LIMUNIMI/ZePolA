@@ -26,8 +26,6 @@
 */
 
 #include "EnvVars.h"
-#include "Macros.h"
-#include <JuceHeader.h>
 
 // =============================================================================
 template <typename TypeName>
@@ -40,19 +38,14 @@ EnvVar<TypeName>::operator TypeName() const
     TypeName v = dflt;
     if (const char* s = std::getenv(key.c_str()))
     {
-        DBG("Environment variable '" << key << "' found");
         try
         {
             v = parse(s);
         }
         catch (...)
         {
-            DBG("Error parsing environment variable: '" << key << "'");
         }
     }
-    ONLY_ON_DEBUG(
-        else { DBG("Environment variable '" << key << "' not found"); });
-    DBG(key << "=" << v);
     return v;
 }
 
