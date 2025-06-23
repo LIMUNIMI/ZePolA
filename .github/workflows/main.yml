@@ -83,7 +83,7 @@ jobs:
       id: plugin-version
       if: runner.os == 'Linux'
       shell: bash
-      run: echo '::set-output name=PLUGIN_VERSION::'$('${{ matrix.jucer }}' --get-version *.jucer)
+      run: echo 'PLUGIN_VERSION='$('${{ matrix.jucer }}' --get-version *.jucer) >> $GITHUB_OUTPUT
 
     - name: Resave jucer file
       shell: bash
