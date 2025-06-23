@@ -109,6 +109,13 @@ bool AutoGainAttachment::conditionalTrigger()
 void AutoGainAttachment::setState(bool active) { doAutoGain = active; }
 
 // =============================================================================
+InactiveLabel::InactiveLabel(const juce::String& componentName,
+                             const juce::String& labelText)
+    : juce::Label(componentName, labelText)
+{
+}
+
+// =============================================================================
 TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
                            juce::ApplicationProperties& properties)
     : processor(p)
@@ -137,6 +144,8 @@ TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
                      .release(),
                  juce::Justification::centredLeft)
     , autoGainLabel("", "GAIN")
+    , codedAtLim("", "Coded at Laboratorio di Informatica Musicale")
+    , nameAndVersion("", p.getName() + " v" + ProjectInfo::versionString)
     , autoGainButton(std::make_shared<juce::ToggleButton>())
     , presetLocation(std::make_shared<juce::Value>())
 {
@@ -145,6 +154,8 @@ TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
     addAndMakeVisible(redoButton);
     addAndMakeVisible(resetButton);
     addAndMakeVisible(autoGainLabel);
+    addAndMakeVisible(nameAndVersion);
+    addAndMakeVisible(codedAtLim);
     addAndMakeVisible(*autoGainButton.get());
     addAndMakeVisible(exportButton);
     addAndMakeVisible(saveButton);
@@ -152,6 +163,8 @@ TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
 
     Button_setOnOffLabel(*autoGainButton.get(), "MAN", "AUTO");
     autoGainLabel.setJustificationType(juce::Justification::centred);
+    codedAtLim.setJustificationType(juce::Justification::centredRight);
+    nameAndVersion.setJustificationType(juce::Justification::centredLeft);
     sep.drawBottom = true;
     undoButton.onClick
         = std::bind(&VTSAudioProcessor::undoManagerUndo, &processor);
@@ -323,6 +336,7 @@ void TopMenuPanel::resized()
         inner.removeFromLeft(pad);
         resetButton.setBounds(inner.removeFromLeft(w));
         inner.removeFromLeft(pad);
+        auto textRect = inner;
 
         {
             // Match button to parameter strip
@@ -341,6 +355,8 @@ void TopMenuPanel::resized()
             autoGainLabel.setBounds(paramaterStripRegions[3]
                                         .withY(inner.getY())
                                         .withHeight(inner.getHeight()));
+            // Align labels to plots
+            textRect.setLeft(panel_rects[2].getX());
         }
         claf->resizeToggleButton(*autoGainButton.get());
 
@@ -350,5 +366,11 @@ void TopMenuPanel::resized()
         inner.removeFromRight(pad);
         exportButton.setBounds(inner.removeFromRight(w));
         inner.removeFromRight(pad);
+
+        textRect.setRight(inner.getRight());
+        textRect.removeFromRight(pad);
+        textRect.removeFromLeft(pad);
+        nameAndVersion.setBounds(textRect);
+        codedAtLim.setBounds(textRect);
     }
 }

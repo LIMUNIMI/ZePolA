@@ -29,6 +29,7 @@
 #include "../Macros.h"
 #include "../Mappers.h"
 #include "ParameterPanel.h"
+#include "TopMenuPanel.h"
 
 // =============================================================================
 template <typename RectType>
@@ -645,8 +646,8 @@ void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
 
     // Also check if label is inside a ParameterStrip slider
     if (!ParameterStrip::parentComponentIsActive(label)
-        || !ParameterStrip::parentComponentIsActive(
-            *label.getParentComponent()))
+        || !ParameterStrip::parentComponentIsActive(*label.getParentComponent())
+        || dynamic_cast<InactiveLabel*>(&label))
     {
         textColour       = textColour.brighter(inactiveBrightness);
         outlineColour    = outlineColour.brighter(inactiveBrightness);
