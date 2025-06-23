@@ -1,7 +1,7 @@
 # ZePolA
 A Parametric Equalizer with Interactive Poles and Zeros Control for Digital Signal Processing Education
 
-![screenshot](https://gist.githubusercontent.com/ChromaticIsobar/2478ada1946b8af2f5f49840de30de5e/raw/97c026249ea2a2fcb71cfae6ab41e8344bdafb9e/screenshot.png)
+![screenshot](https://gist.githubusercontent.com/ChromaticIsobar/2478ada1946b8af2f5f49840de30de5e/raw/1909638bb2049c2ae3f3ca8b931f1011a35af959/screenshot.png)
 
 ZePolA is a parameteric equalizer that can be operated by specifying the positions of poles and zeros on the Gaussian plane. You can experiment with your own filter by either:
  - specifying the numeric values of the parameters of the filter elements
