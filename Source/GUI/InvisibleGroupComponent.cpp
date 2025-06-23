@@ -40,6 +40,15 @@ void InvisibleGroupComponent::paint(juce::Graphics& g)
 }
 
 // =============================================================================
+InvisibleGroupComponentLookAndFeelMethods::
+    ~InvisibleGroupComponentLookAndFeelMethods()
+{
+}
+
+// =============================================================================
+SeparatorComponent::LookAndFeelMethods::~LookAndFeelMethods() {}
+
+// =============================================================================
 SeparatorComponent::SeparatorComponent()
     : drawTop(false), drawBottom(false), drawLeft(false), drawRight(false)
 {

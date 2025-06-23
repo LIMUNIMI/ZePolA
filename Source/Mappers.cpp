@@ -36,7 +36,10 @@ LinearMapper<ValueType>::LinearMapper(ValueType x0, ValueType y0, ValueType x1,
     : m((y1 - y0) / (x1 - x0)), q((y1 - y0) * x0 / (x0 - x1) + y0)
 {
 }
-
+template <typename ValueType>
+LinearMapper<ValueType>::~LinearMapper()
+{
+}
 template <typename ValueType>
 ValueType LinearMapper<ValueType>::map(ValueType x) const
 {
@@ -61,7 +64,10 @@ InputTransformMapper<ValueType>::InputTransformMapper(
     : LinearMapper<ValueType>(t(x0), y0, t(x1), y1), transform(t)
 {
 }
-
+template <typename ValueType>
+InputTransformMapper<ValueType>::~InputTransformMapper()
+{
+}
 template <typename ValueType>
 ValueType InputTransformMapper<ValueType>::map(ValueType x) const
 {
@@ -76,10 +82,13 @@ OutputTransformMapper<ValueType>::OutputTransformMapper(
     ValueType x0, ValueType y0, ValueType x1, ValueType y1,
     std::function<ValueType(ValueType)> t,
     std::function<ValueType(ValueType)> t_i)
-    : transform_inverse(t_i), LinearMapper<ValueType>(x0, t(y0), x1, t(y1))
+    : LinearMapper<ValueType>(x0, t(y0), x1, t(y1)), transform_inverse(t_i)
 {
 }
-
+template <typename ValueType>
+OutputTransformMapper<ValueType>::~OutputTransformMapper()
+{
+}
 template <typename ValueType>
 ValueType OutputTransformMapper<ValueType>::map(ValueType x) const
 {

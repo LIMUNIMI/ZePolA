@@ -78,6 +78,9 @@ class SampleRateListener
 {
 public:
     // =========================================================================
+    virtual ~SampleRateListener();
+
+    // =========================================================================
     virtual void sampleRateChangedCallback(double) = 0;
 };
 

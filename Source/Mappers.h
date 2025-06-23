@@ -36,6 +36,7 @@ class LinearMapper
 public:
     // =========================================================================
     LinearMapper(ValueType x0, ValueType y0, ValueType x1, ValueType y1);
+    virtual ~LinearMapper();
 
     // =========================================================================
     /** Apply map */
@@ -61,6 +62,7 @@ public:
     InputTransformMapper(ValueType x0, ValueType y0, ValueType x1, ValueType y1,
                          std::function<ValueType(ValueType)> transform
                          = identity<ValueType>);
+    virtual ~InputTransformMapper();
 
     // =========================================================================
     /** Apply map */
@@ -84,6 +86,7 @@ public:
                           = identity<ValueType>,
                           std::function<ValueType(ValueType)> transform_inverse
                           = identity<ValueType>);
+    virtual ~OutputTransformMapper();
 
     // =========================================================================
     /** Apply map */

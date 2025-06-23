@@ -125,6 +125,7 @@ class FilterFactory
 public:
     // =========================================================================
     FilterFactory();
+    virtual ~FilterFactory();
 
     // =========================================================================
     /** Compute a filter's zeros, poles and gain. Zeros and poles should be
@@ -145,6 +146,7 @@ class AnalogFilterFactory : public FilterFactory
 public:
     // =========================================================================
     AnalogFilterFactory();
+    virtual ~AnalogFilterFactory();
 
     // =========================================================================
     /** Build an analog filter prototype low-pass filter */
@@ -172,6 +174,7 @@ class ButterworthFilterFactory : public AnalogFilterFactory
 public:
     // =========================================================================
     ButterworthFilterFactory();
+    virtual ~ButterworthFilterFactory();
 
     // =========================================================================
     virtual void buildAnalogPrototype(FilterParameters&) override;
@@ -190,6 +193,7 @@ class ChebyshevIFilterFactory : public AnalogFilterFactory
 public:
     // =========================================================================
     ChebyshevIFilterFactory();
+    virtual ~ChebyshevIFilterFactory();
 
     // =========================================================================
     virtual void buildAnalogPrototype(FilterParameters&) override;
@@ -206,6 +210,7 @@ class ChebyshevIIFilterFactory : public AnalogFilterFactory
 public:
     // =========================================================================
     ChebyshevIIFilterFactory();
+    virtual ~ChebyshevIIFilterFactory();
 
     // =========================================================================
     virtual void buildAnalogPrototype(FilterParameters&) override;

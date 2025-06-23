@@ -108,6 +108,9 @@ class PlotComponentLookAndFeelMethods
 {
 public:
     // =========================================================================
+    virtual ~PlotComponentLookAndFeelMethods();
+
+    // =========================================================================
     virtual void
     drawPlotComponent(juce::Graphics&, float x, float y, float width,
                       float height, const std::vector<float>& x_values,
@@ -131,6 +134,7 @@ public:
     public:
         // =====================================================================
         Controlled();
+        virtual ~Controlled();
         virtual void updatePlotValues(const ZePolAudioProcessor&) = 0;
     };
 

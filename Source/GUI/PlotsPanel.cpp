@@ -116,6 +116,7 @@ void PlotComponent::paint(juce::Graphics& g)
 
 // =============================================================================
 PlotsControl::Controlled::Controlled() {}
+PlotsControl::Controlled::~Controlled() {}
 PlotsControl::Controller::Controller(ZePolAudioProcessor& p) : processor(p)
 {
     processor.addSampleRateListener(this);
@@ -161,6 +162,7 @@ void PlotsControl::Controller::parameterChanged(const juce::String&, float)
 {
     updateAllControlled();
 }
+PlotComponentLookAndFeelMethods::~PlotComponentLookAndFeelMethods() {}
 
 // =============================================================================
 PlotsPanel::UnsafeOutputWarningPanel::UnsafeOutputWarningPanel()

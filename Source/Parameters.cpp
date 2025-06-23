@@ -60,6 +60,9 @@ void Parameters::resetParameterValue(juce::RangedAudioParameter* p)
     if (p) Parameters::setParameterValue(p, p->getDefaultValue());
 }
 
+// =============================================================================
+SampleRateListener::~SampleRateListener() {}
+
 // ============================================================================
 VTSAudioProcessor::VTSAudioProcessor(
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params,
