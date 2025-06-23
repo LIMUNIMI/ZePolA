@@ -25,13 +25,6 @@ Interact with the circles (zeros) and crosses (poles) on the plane to modify the
  - *Double-click* Swap between zero and pole
  - *Scroll* Adjust input gain
 
-### Shortcuts
-- **All On** Turn all elements on
-- **All Off** Turn all elements off
-- **Phases x2** Multiply all phase values by 2
-- **Phases ÷2** Divide all phase values by 2
-- **Swap Ps/Zs** Swaps all zeros with poles and vice-versa
-
 ## Plots
 The plots panel shows the filter's DTFT magnitude and phase
  - **LIN/DB** Toggle between linear amplitude or decibel
