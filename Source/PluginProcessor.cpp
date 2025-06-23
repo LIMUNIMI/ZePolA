@@ -224,17 +224,22 @@ void ZePolAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
+    int n_in_channels;
     if (noise_gen)
     {
         randomFill(buffer);
         buffer.applyGain(noiseBaseGain);
+        n_in_channels = getTotalNumOutputChannels();
+    }
+    else
+    {
+        n_in_channels = getTotalNumInputChannels();
     }
     if (bypassed) return processBlockBypassed(buffer, midiMessages);
 
     // Ensure enough processors for input channels and reset memory of excess
     // ones
-    int n_in_channels = getTotalNumInputChannels();
-    int n_samples     = buffer.getNumSamples();
+    int n_samples = buffer.getNumSamples();
     allocateChannelsIfNeeded(n_in_channels);
     size_t n_processors = multiChannelCascade.size();
     for (int i = n_in_channels; i < n_processors; ++i)
