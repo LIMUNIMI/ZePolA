@@ -8,6 +8,22 @@ ZePolA is a parameteric equalizer that can be operated by specifying the positio
  - interacting with the filter element representations in the Gaussian plane
  - designing a classical filter via the filter designer
 
+## Installation
+You can find the latest release on GitHub at https://github.com/LIMUNIMI/ZePolA/releases
+
+### Download
+You can either download only the specific plugin (standalone, VST3, or  Audio Unit) for your OS or the whole release in a single zip file
+<!-- TODO -->
+
+### Install
+Standalone applications require no installation. Plugins must be copied to the proper directory to be installed
+
+|    OS   |    Plugin    |                   Path                   |    Plugin    |                   Path                   |
+|---------|--------------|------------------------------------------|--------------|------------------------------------------|
+| Ubuntu  | VST3 | ~/.vst                                   |
+| Windows | VST3 | C:\Program Files\Common Files\VST3       |
+| MacOS   | VST3 | Library/Audio/Plug-ins/VST3              | AU           | Library/Audio/Plug-ins/Components        |
+
 ## Parameter panel
 - **Radius** Element distance from the origin in the Gaussian Plane
 - **Angle** Element angle in the Gaussian plane (normalized between 0 and 1)
