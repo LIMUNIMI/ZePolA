@@ -205,10 +205,18 @@ jobs:
     - name: List assets
       run: ls rassets
 
-    - uses: thejeff77/action-push-tag@v1.0.0
+    - uses: actions/checkout@v4
       with:
-        tag: v${{ needs.build.outputs.plugin_version }}
-        message: ":bookmark: Version ${{ needs.build.outputs.plugin_version }}"
+        # minimal, only needed in mathieudutour/github-tag-action
+        fetch-depth: 1
+        sparse-checkout: no-such-file
+        sparse-checkout-cone-mode: false
+
+    - name: Create and push tag
+      uses: mathieudutour/github-tag-action@v6.1
+      with:
+        custom_tag: ${{ needs.build.outputs.plugin_version }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Release
       uses: softprops/action-gh-release@v2
