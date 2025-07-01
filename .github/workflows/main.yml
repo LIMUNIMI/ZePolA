@@ -65,6 +65,10 @@ jobs:
       with:
         xcode-version: latest-stable
 
+    - name: Install "tree"
+      if: runner.os == 'MacOS'
+      run: brew install tree
+
     - uses: actions/checkout@v4
       with:
         submodules: true
@@ -113,33 +117,46 @@ jobs:
       run: chmod +x scripts/nest
 
     - name: Move AU artifacts
+      shell: bash
       if: runner.os == 'MacOS'
-      run: ./scripts/nest -cd ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.au_prefix }}${{ env.PLUGIN_NAME }}.component
+      run: ./scripts/nest -cd "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.au_prefix }}${{ env.PLUGIN_NAME }}.component"
+
+    - name: List AU artifacts
+      if: runner.os == 'MacOS'
+      run: tree "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.au_prefix }}${{ env.PLUGIN_NAME }}.component"
 
     - name: Move VST3 artifacts
-      run: ./scripts/nest -cd ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.vst3_prefix }}${{ env.PLUGIN_NAME }}.vst3
+      shell: bash
+      run: ./scripts/nest -cd "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.vst3_prefix }}${{ env.PLUGIN_NAME }}.vst3"
+
+    - name: List VST3 artifacts
+      run: tree "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.vst3_prefix }}${{ env.PLUGIN_NAME }}.vst3"
 
     - name: Move Standalone artifacts
-      run: ./scripts/nest -cd ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.standalone_prefix }}${{ env.PLUGIN_NAME }}${{ matrix.standalone_ext }}
+      shell: bash
+      run: ./scripts/nest -cd "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.standalone_prefix }}${{ env.PLUGIN_NAME }}${{ matrix.standalone_ext }}"
+
+    - name: List Standalone artifacts
+      run: tree "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.standalone_prefix }}${{ env.PLUGIN_NAME }}${{ matrix.standalone_ext }}"
 
     - name: Upload AU
       if: runner.os == 'MacOS'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.PLUGIN_NAME }}_${{ matrix.label }}_au
-        path: ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.au_prefix }}${{ env.PLUGIN_NAME }}.component
+        name: "${{ env.PLUGIN_NAME }}_${{ matrix.label }}_au"
+        path: "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.au_prefix }}${{ env.PLUGIN_NAME }}.component"
 
     - name: Upload VST3
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.PLUGIN_NAME }}_${{ matrix.label }}_vst3
-        path: ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.vst3_prefix }}${{ env.PLUGIN_NAME }}.vst3
+        name: "${{ env.PLUGIN_NAME }}_${{ matrix.label }}_vst3"
+        path: "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.vst3_prefix }}${{ env.PLUGIN_NAME }}.vst3"
 
     - name: Upload Standalone
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.PLUGIN_NAME }}_${{ matrix.label }}_standalone
-        path: ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.standalone_prefix }}${{ env.PLUGIN_NAME }}${{ matrix.standalone_ext }}
+        name: "${{ env.PLUGIN_NAME }}_${{ matrix.label }}_standalone"
+        path: "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.standalone_prefix }}${{ env.PLUGIN_NAME }}${{ matrix.standalone_ext }}"
 
     outputs:
       plugin_version: ${{ steps.plugin-version.outputs.PLUGIN_VERSION }}
