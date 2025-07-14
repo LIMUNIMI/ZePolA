@@ -223,5 +223,4 @@ jobs:
         name: Version ${{ needs.build.outputs.plugin_version }}
         draft: true
         prerelease: ${{ contains(github.event.head_commit.message, '[PRERELEASE]') }}
-        files:
-          rassets/*
+        files: rassets/*
