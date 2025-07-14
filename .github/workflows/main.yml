@@ -198,27 +198,6 @@ jobs:
           cd ..
         done;
 
-    - name: Copy assets to zip folder
-      run: |
-        for d in artifacts/${{ needs.build.outputs.plugin_name }}_*_* ; do
-          case "$d" in
-            *_linux_*) ZIP_PREFIX="Linux/" ;;
-            *_win_*)   ZIP_PREFIX="Windows/" ;;
-            *_macos_*) ZIP_PREFIX="MacOS/" ;;
-            *) ZIP_PREFIX="" ;;
-          esac                                                                    && \
-          dest="collection/${ZIP_PREFIX}"                                         && \
-          echo cp -r "${d}"/* "${dest}"                                           && \
-          cp -r "${d}"/* "${dest}"
-        done;
-
-    - name: List zip folder
-      run: tree collection
-
-    - name: Compress LIM Plugin Collection Specs zip file
-      working-directory: collection
-      run: zip -r ../rassets/${{ needs.build.outputs.plugin_name }}_v${{ needs.build.outputs.plugin_version }}.zip *
-
     - name: List assets
       run: ls rassets
 
