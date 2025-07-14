@@ -65,9 +65,13 @@ jobs:
       with:
         xcode-version: latest-stable
 
-    - name: Install "tree"
+    - name: Install tree on Mac
       if: runner.os == 'MacOS'
       run: brew install tree
+
+    - name: Install tree on Windows (bash)
+      if: runner.os == 'Windows'
+      run: choco install tree -y
 
     - uses: actions/checkout@v4
       with:
@@ -124,6 +128,7 @@ jobs:
     - name: List AU artifacts
       if: runner.os == 'MacOS'
       run: tree "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.au_prefix }}${{ env.PLUGIN_NAME }}.component"
+      shell: bash
 
     - name: Move VST3 artifacts
       shell: bash
@@ -131,6 +136,7 @@ jobs:
 
     - name: List VST3 artifacts
       run: tree "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.vst3_prefix }}${{ env.PLUGIN_NAME }}.vst3"
+      shell: bash
 
     - name: Move Standalone artifacts
       shell: bash
@@ -138,6 +144,7 @@ jobs:
 
     - name: List Standalone artifacts
       run: tree "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.standalone_prefix }}${{ env.PLUGIN_NAME }}${{ matrix.standalone_ext }}"
+      shell: bash
 
     - name: Upload AU
       if: runner.os == 'MacOS'
@@ -180,6 +187,7 @@ jobs:
 
     - name: List artifacts
       run: tree artifacts
+      shell: bash
 
     - name: Create release assets folder
       run: mkdir rassets
