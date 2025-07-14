@@ -9,13 +9,9 @@ ZePolA is a parameteric equalizer that can be operated by specifying the positio
  - designing a classical filter via the filter designer
 
 ## Installation
-You can find the latest release on GitHub at https://github.com/LIMUNIMI/ZePolA/releases
+You can find the latest release on GitHub at https://github.com/LIMUNIMI/ZePolA/releases.
+You can download only the specific plugin (standalone, VST3, or Audio Unit) for Linux, Windows, and MacOS.
 
-### Download
-You can either download only the specific plugin (standalone, VST3, or  Audio Unit) for your OS or the whole release in a single zip file
-<!-- TODO -->
-
-### Install
 Standalone applications require no installation. Plugins must be copied to the proper directory to be installed
 
 |    OS   |    Plugin    |                   Path                   |    Plugin    |                   Path                   |
@@ -42,12 +38,13 @@ Interact with the circles (zeros) and crosses (poles) on the plane to modify the
  - *Scroll* Adjust input gain
 
 ## Plots
-The plots panel shows the filter's DTFT magnitude and phase
+The plots panel shows the filter's DTFT magnitude and phase.
+There is also a plot of the filter's IR in the time-domain.
  - **LIN/DB** Toggle between linear amplitude or decibel
  - **LIN/LOG** Toggle between linear or logarithmic frequencies
 
 ## Filter Design
-Parameters:
+<!--Parameters:-->
 - **Type** Butterworth, Chebyshev Type-I, Chebyshev Type-II, or Elliptic
 - **Shape** Low-pass, or High-pass
 - **Order** Filter order (number of elements)
@@ -55,7 +52,7 @@ Parameters:
 - **Passband ripple** Ripple amplitude in the passband, in decibel
 - **Stopband ripple** Ripple amplitude in the stopband, in decibel
 
-Buttons:
+<!--Buttons:-->
 - **Update** Apply the settings to the filter elements
 - **Auto** Automatically update on parameter change
 
