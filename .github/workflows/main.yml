@@ -213,7 +213,7 @@ jobs:
         done;
 
     - name: Convert README to pdf
-      run: mdpdf README.md rassets/README_v${{ needs.build.outputs.plugin_version }}.pdf --orientation=portrait --gh-style
+      run: mdpdf README.md "rassets/${{ needs.build.outputs.plugin_name }}_README_v${{ needs.build.outputs.plugin_version }}.pdf" --orientation=portrait --gh-style
 
     - name: Changelog filename to look for
       run: echo 'CHANGELOG_FILENAME=./Changelogs/v'${{ needs.build.outputs.plugin_version }}'.md' | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*$/\1/' >> $GITHUB_ENV
