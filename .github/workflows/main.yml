@@ -43,7 +43,6 @@ jobs:
             standalone_prefix: "Standalone Plugin/"
             vst3_prefix: "VST3/"
             label: win
-          - plugin_name: ZePolA
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.label }}
 
@@ -58,13 +57,21 @@ jobs:
 
     - name: Add msbuild to PATH
       if: runner.os == 'Windows'
-      uses: microsoft/setup-msbuild@v1.0.3
+      uses: microsoft/setup-msbuild@v2
 
     - name: Set up Xcode
       if: runner.os == 'MacOS'
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: latest-stable
+
+    - name: Install tree on Mac
+      if: runner.os == 'MacOS'
+      run: brew install tree
+
+    - name: Install tree on Windows (bash)
+      if: runner.os == 'Windows'
+      run: choco install tree -y
 
     - uses: actions/checkout@v4
       with:
@@ -79,11 +86,21 @@ jobs:
       shell: bash
       run: ${{ matrix.jucer }} --status *.jucer
 
-    - name: Save jucer project version
+    - name: Save jucer project version (for next jobs)
       id: plugin-version
       if: runner.os == 'Linux'
       shell: bash
       run: echo 'PLUGIN_VERSION='$('${{ matrix.jucer }}' --get-version *.jucer) >> $GITHUB_OUTPUT
+
+    - name: Jucer project name to env variable
+      shell: bash
+      run: echo 'PLUGIN_NAME='$(awk '/<JUCERPROJECT/,/>/' *.jucer | tr -d '\n' | sed -n 's/.*name="\([^"]*\)".*/\1/p') >> $GITHUB_ENV
+
+    - name: Save jucer project name (for next jobs)
+      id: plugin-name
+      if: runner.os == 'Linux'
+      shell: bash
+      run: echo 'PLUGIN_NAME='${{ env.PLUGIN_NAME }} >> $GITHUB_OUTPUT
 
     - name: Resave jucer file
       shell: bash
@@ -104,33 +121,121 @@ jobs:
       run: chmod +x scripts/nest
 
     - name: Move AU artifacts
+      shell: bash
       if: runner.os == 'MacOS'
-      run: ./scripts/nest -cd ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.au_prefix }}${{ matrix.plugin_name }}.component
+      run: ./scripts/nest -cd "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.au_prefix }}${{ env.PLUGIN_NAME }}.component"
+
+    - name: List AU artifacts
+      if: runner.os == 'MacOS'
+      run: tree "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.au_prefix }}${{ env.PLUGIN_NAME }}.component"
+      shell: bash
 
     - name: Move VST3 artifacts
-      run: ./scripts/nest -cd ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.vst3_prefix }}${{ matrix.plugin_name }}.vst3
+      shell: bash
+      run: ./scripts/nest -cd "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.vst3_prefix }}${{ env.PLUGIN_NAME }}.vst3"
+
+    - name: List VST3 artifacts
+      run: tree "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.vst3_prefix }}${{ env.PLUGIN_NAME }}.vst3"
+      shell: bash
 
     - name: Move Standalone artifacts
-      run: ./scripts/nest -cd ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.standalone_prefix }}${{ matrix.plugin_name }}${{ matrix.standalone_ext }}
+      shell: bash
+      run: ./scripts/nest -cd "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.standalone_prefix }}${{ env.PLUGIN_NAME }}${{ matrix.standalone_ext }}"
+
+    - name: List Standalone artifacts
+      run: tree "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.standalone_prefix }}${{ env.PLUGIN_NAME }}${{ matrix.standalone_ext }}"
+      shell: bash
 
     - name: Upload AU
       if: runner.os == 'MacOS'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.plugin_name }}_${{ matrix.label }}_au
-        path: ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.au_prefix }}${{ matrix.plugin_name }}.component
+        name: "${{ env.PLUGIN_NAME }}_${{ matrix.label }}_au"
+        path: "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.au_prefix }}${{ env.PLUGIN_NAME }}.component"
 
     - name: Upload VST3
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.plugin_name }}_${{ matrix.label }}_vst3
-        path: ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.vst3_prefix }}${{ matrix.plugin_name }}.vst3
+        name: "${{ env.PLUGIN_NAME }}_${{ matrix.label }}_vst3"
+        path: "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.vst3_prefix }}${{ env.PLUGIN_NAME }}.vst3"
 
     - name: Upload Standalone
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.plugin_name }}_${{ matrix.label }}_standalone
-        path: ${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.standalone_prefix }}${{ matrix.plugin_name }}${{ matrix.standalone_ext }}
+        name: "${{ env.PLUGIN_NAME }}_${{ matrix.label }}_standalone"
+        path: "${{ matrix.plugin_buildir }}/${{ matrix.build_prefix }}/${{ matrix.standalone_prefix }}${{ env.PLUGIN_NAME }}${{ matrix.standalone_ext }}"
 
     outputs:
       plugin_version: ${{ steps.plugin-version.outputs.PLUGIN_VERSION }}
+      plugin_name: ${{ steps.plugin-name.outputs.PLUGIN_NAME }}
+
+  release:
+    if: ${{ contains(github.event.head_commit.message, '[RELEASE]') || contains(github.event.head_commit.message, '[PRERELEASE]') }}
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+    - uses: actions/setup-node@v4
+
+    - run: npm install mdpdf -g
+
+    - uses: actions/checkout@v4
+
+    - uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: List artifacts
+      run: tree artifacts
+      shell: bash
+
+    - name: Create release assets folder
+      run: mkdir rassets
+
+    - name: Prepare folder for LIM Plugin Collection Specs zip file
+      run: mkdir -p collection/Windows collection/MacOS collection/Linux
+
+    - name: Set permissions for Linux executable
+      run: chmod +x artifacts/${{ needs.build.outputs.plugin_name }}_linux_standalone/${{ needs.build.outputs.plugin_name }}
+
+    - name: Set permissions for Mac executable
+      run: chmod +x artifacts/${{ needs.build.outputs.plugin_name }}_macos_standalone/${{ needs.build.outputs.plugin_name }}.app/Contents/MacOS/${{ needs.build.outputs.plugin_name }}
+
+    - name: Compress assets
+      working-directory: artifacts
+      run: |
+        for d in ${{ needs.build.outputs.plugin_name }}_*_* ; do
+          cd "${d}"                                                               && \
+          dest="../../rassets/${d}_v${{ needs.build.outputs.plugin_version }}.zip" && \
+          echo zip -r "${dest}" *                                                 && \
+          zip -r "${dest}" *                                                      && \
+          cd ..
+        done;
+
+    - name: Convert README to pdf
+      run: mdpdf README.md "rassets/${{ needs.build.outputs.plugin_name }}_README_v${{ needs.build.outputs.plugin_version }}.pdf" --orientation=portrait --gh-style
+
+    - name: Changelog filename to look for
+      run: echo 'CHANGELOG_FILENAME=./Changelogs/v'$(echo ${{ needs.build.outputs.plugin_version }} | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')'.md' >> $GITHUB_ENV
+
+    - name: Empty changelog as default
+      run: touch "$CHANGELOG_FILENAME"
+
+    - name: List assets
+      run: ls rassets
+
+    - name: Create and push tag
+      uses: mathieudutour/github-tag-action@v6.1
+      with:
+        custom_tag: ${{ needs.build.outputs.plugin_version }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ needs.build.outputs.plugin_version }}
+        name: Version ${{ needs.build.outputs.plugin_version }}
+        draft: true
+        prerelease: ${{ contains(github.event.head_commit.message, '[PRERELEASE]') }}
+        files: rassets/*
+        body_path: ${{ env.CHANGELOG_FILENAME }}
