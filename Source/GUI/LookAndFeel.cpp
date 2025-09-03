@@ -67,7 +67,7 @@ forceAspectRatioCentered(const juce::Rectangle<float>&, float);
 // =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
     : typeface(juce::Typeface::createSystemTypefaceFor(
-          BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
+        BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
     , boldTypeface(juce::Typeface::createSystemTypefaceFor(
           BinaryData::MuktaBold_ttf, BinaryData::MuktaBold_ttfSize))
     , fullWidth(1200)
@@ -759,34 +759,48 @@ void CustomLookAndFeel::_drawCheckbox(juce::Graphics& g,
                                       bool /* shouldDrawButtonAsDown */)
 {
     auto t          = resizeSize(fullLabelledButtonOutline);
-    auto tickBounds = button.getLocalBounds().toFloat().reduced(t, t);
-    auto r          = relativeButtonRadius * tickBounds.getHeight();
+    const auto rect = button.getLocalBounds().toFloat().reduced(t, t);
+    const bool on   = button.getToggleState();
+    float led_diam  = rect.getHeight() - 6.5f * t;
+    juce::Rectangle<float> led_rect(0.0f, 0.0f, led_diam, led_diam);
+    led_rect = led_rect.withCentre(rect.getCentre());
 
-    auto outlineColour
-        = button.findColour(juce::ToggleButton::tickDisabledColourId);
-    auto tickColour = button.findColour(juce::ToggleButton::tickColourId);
+    auto backgroundColour
+        = button.findColour((on) ? OnOffButton_backgroundOnColourId
+                                 : OnOffButton_backgroundOffColourId);
+    auto outlineColour = button.findColour(OnOffButton_outlineColourId);
+    auto ledColour     = button.findColour((on) ? OnOffButton_ledOnColourId
+                                                : OnOffButton_ledOffColourId);
+    auto shadowColour  = juce::Colours::black.withAlpha(0.25f);
+
     if (!ParameterStrip::parentComponentIsActive(button))
     {
-        outlineColour = outlineColour.brighter(inactiveBrightness);
-        tickColour    = tickColour.brighter(inactiveBrightness);
+        backgroundColour = backgroundColour.brighter(inactiveBrightness);
+        outlineColour    = outlineColour.brighter(inactiveBrightness);
+        ledColour        = ledColour.brighter(inactiveBrightness);
+        shadowColour     = shadowColour.brighter(inactiveBrightness);
     }
 
-    g.setColour(outlineColour);
-    g.drawRoundedRectangle(tickBounds, r, t);
-    if (button.getToggleState())
+    if (on)
     {
-        g.setColour(tickColour);
-        auto tick = getTickShape(0.75f);
-        g.fillPath(tick, tick.getTransformToScaleToFit(tickBounds.reduced(r, r),
-                                                       false));
+        g.setColour(shadowColour);
+        g.fillEllipse(rect.expanded(t));
     }
+    g.setColour(backgroundColour);
+    g.fillEllipse(rect);
+    g.setColour(outlineColour);
+    g.drawEllipse(rect, t);
+    g.setColour(ledColour);
+    g.fillEllipse(led_rect);
+    if (led_rect.getWidth() >= 1.0f && led_rect.getHeight() >= 1.0f)
+        g.setColour(outlineColour);
+    g.drawEllipse(led_rect, t);
 }
 void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
                                          juce::ToggleButton& button,
                                          bool shouldDrawButtonAsHighlighted,
                                          bool shouldDrawButtonAsDown)
 {
-    bool on = button.getToggleState();
     if (dynamic_cast<ToggleButtonCheckbox*>(&button))
     {
         _drawCheckbox(g, button, shouldDrawButtonAsHighlighted,
@@ -794,6 +808,7 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     }
     else
     {
+        const bool on = button.getToggleState();
         _drawToggleButton(
             g, button, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown,
             fullButtonOutline, fullButtonPadding, relativeButtonRadius,

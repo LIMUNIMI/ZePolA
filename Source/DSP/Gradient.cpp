@@ -330,7 +330,7 @@ std::array<double, 2> DifferentiableDTFT::peakFrequency()
             = gd(a, std::bind(&DifferentiableDTFT::forward<DualValue<double>>,
                               this, std::placeholders::_1));
         auto h2_w_a = forward(w_a);
-        jassert(h2_w_a >= 0.0);
+        jassert(h2_w_a >= 0.0 || h2_w_a != h2_w_a);
         if (h2_w_a > h2)
         {
             h2 = h2_w_a;
