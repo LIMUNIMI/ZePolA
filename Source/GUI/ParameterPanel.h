@@ -32,6 +32,7 @@
 #include "CustomButtons.h"
 #include "DraggableLabel.h"
 #include "InvisibleGroupComponent.h"
+#include "PlotsPanel.h"
 #include <JuceHeader.h>
 
 // =============================================================================
@@ -75,6 +76,7 @@ public:
     public:
         // =====================================================================
         FrequencyLabelSampleRateListener(DraggableLabelAttachment&);
+        virtual ~FrequencyLabelSampleRateListener();
 
         // =====================================================================
         virtual void sampleRateChangedCallback(double) override;
@@ -113,7 +115,7 @@ private:
 
     // =========================================================================
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
-        mSliderAttachment, pSliderAttachment, gSliderAttachment;
+        mSliderAttachment, pSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
         aButtonAttachment, tButtonAttachment, sButtonAttachment,
         iButtonAttachment;
@@ -136,6 +138,9 @@ public:
     class LookAndFeelMethods
     {
     public:
+        // =====================================================================
+        virtual ~LookAndFeelMethods();
+
         // =====================================================================
         virtual void drawZPoint(juce::Graphics&, float x, float y, float width,
                                 float height, float p_x, float p_y, bool type,
@@ -451,6 +456,9 @@ public:
     {
     public:
         // =====================================================================
+        virtual ~LookAndFeelMethods();
+
+        // =====================================================================
         virtual void drawGaussianPlane(juce::Graphics&, float x, float y,
                                        float width, float height, float radius,
                                        GaussianPlanePanel&)
@@ -486,53 +494,33 @@ private:
 };
 
 // =============================================================================
-/** Shortcuts panel  */
-class ShortcutsPanel : public juce::GroupComponent
-{
-public:
-    // =========================================================================
-    ShortcutsPanel(ZePolAudioProcessor&);
-
-    // =========================================================================
-    void resized() override;
-
-    // =========================================================================
-    void triggerAllOn();
-    void triggerAllOff();
-    void triggerDoublePhases();
-    void triggerHalfPhases();
-    void triggerSwapTypes();
-
-private:
-    // =========================================================================
-    ZePolAudioProcessor& processor;
-    juce::Label panelLabel;
-    juce::TextButton allOnButton, allOffButton, doublePhaseButton,
-        halfPhaseButton, swapTypeButton;
-
-    // =========================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ShortcutsPanel)
-};
-
-// =============================================================================
-/** Parameter control panel  */
-class ParameterPanel : public juce::GroupComponent
+/** Parameter control panel */
+class ParameterPanel : public juce::GroupComponent,
+                       public PlotsControl::Controlled
 {
 public:
     // =========================================================================
     ParameterPanel(ZePolAudioProcessor&);
+    ~ParameterPanel();
 
     //==========================================================================
+    void updateIR();
+    void updatePlotValues(const ZePolAudioProcessor&) override;
     void resized() override;
+    void paint(juce::Graphics&) override;
 
 private:
     // =========================================================================
     std::vector<std::unique_ptr<ParameterStrip>> strips;
     std::vector<std::unique_ptr<SeparatorComponent>> separators;
     std::vector<std::unique_ptr<juce::Label>> headerLabels;
-    juce::Label zplane_label;
+    juce::Label zplane_label, ir_label;
     GaussianPlanePanel zplane;
-    ShortcutsPanel shortcutsPanel;
+    PlotComponent irPanel;
+    std::vector<double> irSamples;
+    PlotsControl::Controller plotsCtrl;
+    bool shouldRecomputeIR;
+    ZePolAudioProcessor& processor;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParameterPanel)

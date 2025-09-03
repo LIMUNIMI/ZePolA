@@ -29,6 +29,7 @@
 #include "../Macros.h"
 #include "../Mappers.h"
 #include "ParameterPanel.h"
+#include "TopMenuPanel.h"
 
 // =============================================================================
 template <typename RectType>
@@ -65,67 +66,67 @@ forceAspectRatioCentered(const juce::Rectangle<float>&, float);
 
 // =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
-    : resizeRatio(1.0f)
+    : typeface(juce::Typeface::createSystemTypefaceFor(
+          BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
+    , boldTypeface(juce::Typeface::createSystemTypefaceFor(
+          BinaryData::MuktaBold_ttf, BinaryData::MuktaBold_ttfSize))
     , fullWidth(1200)
     , fullHeight(790)
     , fullHeaderHeight(40)
     , fullPanelOuterMargin(15)
+    , resizeRatio(1.0f)
     , fullPanelMargin(0.0f)
     , groupComponentThickness(1.5f)
     , groupComponentCornerSize(14.5f)
+    , fullSeparatorThickness(1.0f)
     // radius, angle, frequency, type, active, gain, invert, single
     , stripColumnProportions({90, 90, 50, 50, 50, 50, 25, 25})
     , panelRowProportions({25, 450, 50, 450, 25})
     , panelProportions({510, 480, 180})
     , lastPanelProportions({396, 324})
-    , fontName("Gill Sans")
+    , linLogSwitchesHeightProportions({20, 60, 20})
+    , linLogSwitchesRowProportions({1, 12, 74, 12, 1})
+    , shortcutsWidthProportions({15, 100, 15})
+    , shortcutsColumnProportions(
+          {66, 33, 225, 100, 66, 100, 66, 100, 66, 100, 66, 100, 66})
+    , topRightTextScale(0.75f)
     , fullLabelFontSize(18.0f)
     , fullSliderHeight(2.0f)
     , fullSliderThumbRadius(4.5f)
-    , inactiveBrightness(0.8f)
     , sliderTextBoxProportionW(50.0f / 120.0f)
     , sliderTextBoxProportionH(0.5f)
-    , fullSeparatorThickness(1.0f)
+    , inactiveBrightness(0.8f)
+    , fontName("Gill Sans")
     , buttonAspectRatio(2.75f)
     , fullButtonPadding(5.0f)
     , fullButtonOutline(2.5f)
     , fullLabelledButtonOutline(1.25f)
     , relativeButtonRadius(0.3f)
     , relativeLabelledButtonRadius(0.5f)
+    , n_x_ticks(9)
     , fullPlotComponentCornerSize(6.0f)
     , fullPlotStrokeThickness(1.5f)
     , fullPlotGridThickness(1.0f)
-    , n_x_ticks(9)
     , logPlotCenterFreq(1000.0f)
     , logPlotCenterFreqUnits({1.0f, 2.0f, 5.0f})
     , dbPlotTicks({6.0f, 12.0f, 20.0f, 40.0f, 60.0f})
-    , typeface(juce::Typeface::createSystemTypefaceFor(
-          BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
-    , boldTypeface(juce::Typeface::createSystemTypefaceFor(
-          BinaryData::MuktaBold_ttf, BinaryData::MuktaBold_ttfSize))
-    , topRightTextScale(0.75f)
     , fullGaussianCircleThickness(1.5f)
     , fullGaussianMinorThickness(0.5f)
-    , nGaussianCircleMajorTicks(4)
-    , nGaussianCircleMinorTicksRadial(12)
-    , nGaussianCircleMinorTicksCircular(5)
     , relativePointSize(0.05f)
     , fullPointThickness(3.0f)
     , singlePointRelativeThickness(0.75f)
     , conjugateAlpha(0.5f)
-    , linLogSwitchesHeightProportions({20, 60, 20})
-    , linLogSwitchesRowProportions({1, 12, 74, 12, 1})
-    , shortcutsWidthProportions({15, 100, 15})
-    , shortcutsColumnProportions(
-          {66, 33, 225, 100, 66, 100, 66, 100, 66, 100, 66, 100, 66})
+    , nGaussianCircleMajorTicks(4)
+    , nGaussianCircleMinorTicksRadial(12)
+    , nGaussianCircleMinorTicksCircular(5)
     , designerParamToSpacerRatio(3.0f)
     , designerLastRowFraction(1.0 / 16.0)
-    , designerLastRowProportions({40, 5, 55})
-    , designerMaxParams(11)
-    , designerMaxSpacers(7)
     , fullComboBoxArrowWidth(8.0f)
     , fullComboBoxArrowHeight(5.0f)
     , popupMenuSeparatorTextAlpha(0.3f)
+    , designerMaxParams(11)
+    , designerMaxSpacers(7)
+    , designerLastRowProportions({40, 5, 55})
     , fullMasterLabelSize(12)
     , fullMasterButtonSize(28)
 {
@@ -300,11 +301,11 @@ void CustomLookAndFeel::setPhasePlotProperties(PlotComponent& pc, double sr)
                  juce::MathConstants<float>::halfPi,
                  juce::MathConstants<float>::pi},
                 {
-                    CharPointer_UTF8("-π"),
-                    CharPointer_UTF8("-π/2"),
-                    CharPointer_UTF8("0"),
-                    CharPointer_UTF8("+π/2"),
-                    CharPointer_UTF8("+π"),
+                    juce::CharPointer_UTF8("-π"),
+                    juce::CharPointer_UTF8("-π/2"),
+                    juce::CharPointer_UTF8("0"),
+                    juce::CharPointer_UTF8("+π/2"),
+                    juce::CharPointer_UTF8("+π"),
                 });
     pc.setXGrid((pc.getLogX()) ? makeLogXTicks(sr) : makeLinearXTicks(sr));
 }
@@ -475,8 +476,12 @@ CustomLookAndFeel::configureMasterPanel(const juce::Rectangle<int>& r) const
     auto buttonLabelRect
         = inner.removeFromBottom(resizeSize(fullMasterLabelSize));
     inner.removeFromBottom(resizeSize(fullMasterLabelSize));
+    auto ngButtonRect = buttonRect.removeFromRight(buttonRect.getWidth() / 2);
+    auto ngButtonLabelRect
+        = buttonLabelRect.removeFromRight(buttonLabelRect.getWidth() / 2);
 
-    return {sliderLabelRect, inner, buttonLabelRect, buttonRect};
+    return {sliderLabelRect,   inner,       buttonLabelRect, buttonRect,
+            ngButtonLabelRect, ngButtonRect};
 }
 
 // =============================================================================
@@ -635,14 +640,14 @@ void CustomLookAndFeel::drawLinearSlider(
 }
 void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
 {
-    auto textColour       = label.findColour(Label::textColourId);
-    auto outlineColour    = label.findColour(Label::outlineColourId);
-    auto backgroundColour = label.findColour(Label::backgroundColourId);
+    auto textColour       = label.findColour(juce::Label::textColourId);
+    auto outlineColour    = label.findColour(juce::Label::outlineColourId);
+    auto backgroundColour = label.findColour(juce::Label::backgroundColourId);
 
     // Also check if label is inside a ParameterStrip slider
     if (!ParameterStrip::parentComponentIsActive(label)
-        || !ParameterStrip::parentComponentIsActive(
-            *label.getParentComponent()))
+        || !ParameterStrip::parentComponentIsActive(*label.getParentComponent())
+        || dynamic_cast<InactiveLabel*>(&label))
     {
         textColour       = textColour.brighter(inactiveBrightness);
         outlineColour    = outlineColour.brighter(inactiveBrightness);
@@ -748,7 +753,8 @@ void CustomLookAndFeel::_drawToggleButton(
     g.drawEllipse(led_rect, othick * 0.5f);
 }
 
-void CustomLookAndFeel::_drawCheckbox(Graphics& g, juce::ToggleButton& button,
+void CustomLookAndFeel::_drawCheckbox(juce::Graphics& g,
+                                      juce::ToggleButton& button,
                                       bool /* shouldDrawButtonAsHighlighted */,
                                       bool /* shouldDrawButtonAsDown */)
 {
@@ -756,8 +762,9 @@ void CustomLookAndFeel::_drawCheckbox(Graphics& g, juce::ToggleButton& button,
     auto tickBounds = button.getLocalBounds().toFloat().reduced(t, t);
     auto r          = relativeButtonRadius * tickBounds.getHeight();
 
-    auto outlineColour = button.findColour(ToggleButton::tickDisabledColourId);
-    auto tickColour    = button.findColour(ToggleButton::tickColourId);
+    auto outlineColour
+        = button.findColour(juce::ToggleButton::tickDisabledColourId);
+    auto tickColour = button.findColour(juce::ToggleButton::tickColourId);
     if (!ParameterStrip::parentComponentIsActive(button))
     {
         outlineColour = outlineColour.brighter(inactiveBrightness);

@@ -49,6 +49,10 @@ private:
 class InvisibleGroupComponentLookAndFeelMethods
 {
 public:
+    // =========================================================================
+    virtual ~InvisibleGroupComponentLookAndFeelMethods();
+
+    // =========================================================================
     virtual void dontDrawGroupComponent(juce::Graphics&, int width, int height,
                                         const juce::String& text,
                                         const juce::Justification&,
@@ -65,6 +69,10 @@ public:
     class LookAndFeelMethods
     {
     public:
+        // =====================================================================
+        virtual ~LookAndFeelMethods();
+
+        // =====================================================================
         virtual void drawSeparator(juce::Graphics&, int x, int y, int width,
                                    int height, bool drawTop, bool drawBottom,
                                    bool drawLeft, bool drawRight,

@@ -59,13 +59,13 @@ void AutoGainAttachment::ButtonListener::buttonClicked(juce::Button* b)
 void AutoGainAttachment::ButtonListener::buttonStateChanged(juce::Button*) {}
 
 // =============================================================================
-AutoGainAttachment::AutoGainAttachment(ZePolAudioProcessor& p,
-                                       juce::Button* b, int idx)
-    : processor(p)
-    , button(b)
-    , i(idx)
+AutoGainAttachment::AutoGainAttachment(ZePolAudioProcessor& p, juce::Button* b,
+                                       int idx)
+    : i(idx)
+    , processor(p)
     , autoGainListener(this)
     , paramListener(this)
+    , button(b)
     , doAutoGain(false)
 {
     juce::String i_str(i);
@@ -109,6 +109,13 @@ bool AutoGainAttachment::conditionalTrigger()
 void AutoGainAttachment::setState(bool active) { doAutoGain = active; }
 
 // =============================================================================
+InactiveLabel::InactiveLabel(const juce::String& componentName,
+                             const juce::String& labelText)
+    : juce::Label(componentName, labelText)
+{
+}
+
+// =============================================================================
 TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
                            juce::ApplicationProperties& properties)
     : processor(p)
@@ -125,7 +132,6 @@ TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
                      .release(),
                  juce::Justification::centredRight)
     , resetButton("RESET", nullptr, juce::Justification::centredRight)
-    , autoGainLabel("", "GAIN")
     , exportButton("EXPORT", nullptr, juce::Justification::centredLeft)
     , saveButton("SAVE",
                  juce::Drawable::createFromImageData(
@@ -137,14 +143,19 @@ TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
                      BinaryData::load_icon_svg, BinaryData::load_icon_svgSize)
                      .release(),
                  juce::Justification::centredLeft)
-    , presetLocation(std::make_shared<juce::Value>())
+    , autoGainLabel("", "GAIN")
+    , codedAtLim("", "Coded at Laboratorio di Informatica Musicale")
+    , nameAndVersion("", p.getName() + " v" + ProjectInfo::versionString)
     , autoGainButton(std::make_shared<juce::ToggleButton>())
+    , presetLocation(std::make_shared<juce::Value>())
 {
     addAndMakeVisible(sep);
     addAndMakeVisible(undoButton);
     addAndMakeVisible(redoButton);
     addAndMakeVisible(resetButton);
     addAndMakeVisible(autoGainLabel);
+    addAndMakeVisible(nameAndVersion);
+    addAndMakeVisible(codedAtLim);
     addAndMakeVisible(*autoGainButton.get());
     addAndMakeVisible(exportButton);
     addAndMakeVisible(saveButton);
@@ -152,6 +163,8 @@ TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
 
     Button_setOnOffLabel(*autoGainButton.get(), "MAN", "AUTO");
     autoGainLabel.setJustificationType(juce::Justification::centred);
+    codedAtLim.setJustificationType(juce::Justification::centredRight);
+    nameAndVersion.setJustificationType(juce::Justification::centredLeft);
     sep.drawBottom = true;
     undoButton.onClick
         = std::bind(&VTSAudioProcessor::undoManagerUndo, &processor);
@@ -176,6 +189,12 @@ TopMenuPanel::TopMenuPanel(ZePolAudioProcessor& p,
     if (presetLocation->toString().isEmpty())
         setPresetLocation(juce::File::getSpecialLocation(
             juce::File::SpecialLocationType::userDocumentsDirectory));
+
+    autoFilterUpdateValue.reset(new juce::Value(juce::var(false)));
+    autoFilterUpdateValueAttachment.reset(
+        new ApplicationPropertiesValueAttachment(
+            properties, AUTO_FILTER_PROPERTY_ID, autoFilterUpdateValue,
+            ValueApplicationPropertyListener::ValueType::BOOL));
 }
 
 // =============================================================================
@@ -297,6 +316,8 @@ void TopMenuPanel::resetParameters()
     if (autoGainButton)
         autoGainButton->setToggleState(
             false, juce::NotificationType::sendNotification);
+    if (autoFilterUpdateValue)
+        autoFilterUpdateValue->setValue(juce::var(false));
 }
 
 // =============================================================================
@@ -315,6 +336,7 @@ void TopMenuPanel::resized()
         inner.removeFromLeft(pad);
         resetButton.setBounds(inner.removeFromLeft(w));
         inner.removeFromLeft(pad);
+        auto textRect = inner;
 
         {
             // Match button to parameter strip
@@ -333,6 +355,8 @@ void TopMenuPanel::resized()
             autoGainLabel.setBounds(paramaterStripRegions[3]
                                         .withY(inner.getY())
                                         .withHeight(inner.getHeight()));
+            // Align labels to plots
+            textRect.setLeft(panel_rects[2].getX());
         }
         claf->resizeToggleButton(*autoGainButton.get());
 
@@ -342,5 +366,11 @@ void TopMenuPanel::resized()
         inner.removeFromRight(pad);
         exportButton.setBounds(inner.removeFromRight(w));
         inner.removeFromRight(pad);
+
+        textRect.setRight(inner.getRight());
+        textRect.removeFromRight(pad);
+        textRect.removeFromLeft(pad);
+        nameAndVersion.setBounds(textRect);
+        codedAtLim.setBounds(textRect);
     }
 }

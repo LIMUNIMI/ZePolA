@@ -33,15 +33,15 @@
 
 // =============================================================================
 PlotComponent::PlotComponent(size_t n_points)
-    : y_values(n_points, 0.0f)
-    , x_values(n_points, 0.0f)
-    , period(-1.0f)
-    , y_grid({0.0f})
-    , y_labels({""})
-    , x_grid({0.0f})
+    : y_labels({""})
     , x_labels({""})
-    , log_x(false)
+    , y_values(n_points, 0.0f)
+    , x_values(n_points, 0.0f)
+    , y_grid({0.0f})
+    , x_grid({0.0f})
     , topRightText()
+    , period(-1.0f)
+    , log_x(false)
 {
 }
 
@@ -97,6 +97,8 @@ void PlotComponent::setXGrid(const std::vector<float>& ticks)
                                     : juce::String(s / 1000) + "k");
     setXGrid(ticks, labels);
 }
+float PlotComponent::getXMin() { return x_grid.front(); }
+float PlotComponent::getXMax() { return x_grid.back(); }
 float PlotComponent::getYMin() { return y_grid.front(); }
 float PlotComponent::getYMax() { return y_grid.back(); }
 
@@ -113,12 +115,63 @@ void PlotComponent::paint(juce::Graphics& g)
 }
 
 // =============================================================================
+PlotsControl::Controlled::Controlled() {}
+PlotsControl::Controlled::~Controlled() {}
+PlotsControl::Controller::Controller(ZePolAudioProcessor& p) : processor(p)
+{
+    processor.addSampleRateListener(this);
+    for (auto i : processor.parameterIDs())
+        processor.addParameterListener(i, this);
+}
+PlotsControl::Controller::~Controller()
+{
+    processor.removeSampleRateListener(this);
+    for (auto i : processor.parameterIDs())
+        processor.removeParameterListener(i, this);
+    jassert(controlled.size() == 0);
+}
+void PlotsControl::Controller::addControlled(PlotsControl::Controlled* c)
+{
+    // Check that controlled is not already in the list
+    ONLY_ON_DEBUG(std::vector<PlotsControl::Controlled*>::iterator pos
+                  = std::find(controlled.begin(), controlled.end(), c);
+                  jassert(pos == controlled.end());)
+    controlled.push_back(c);
+    updateControlled(c);
+}
+void PlotsControl::Controller::removeControlled(PlotsControl::Controlled* c)
+{
+    std::vector<PlotsControl::Controlled*>::iterator pos
+        = std::find(controlled.begin(), controlled.end(), c);
+    if (pos != controlled.end()) controlled.erase(pos);
+    ONLY_ON_DEBUG(else jassertfalse;)
+}
+void PlotsControl::Controller::updateControlled(PlotsControl::Controlled* c)
+{
+    c->updatePlotValues(processor);
+}
+void PlotsControl::Controller::updateAllControlled()
+{
+    for (auto c : controlled) updateControlled(c);
+}
+void PlotsControl::Controller::sampleRateChangedCallback(double)
+{
+    updateAllControlled();
+}
+void PlotsControl::Controller::parameterChanged(const juce::String&, float)
+{
+    updateAllControlled();
+}
+PlotComponentLookAndFeelMethods::~PlotComponentLookAndFeelMethods() {}
+
+// =============================================================================
 PlotsPanel::UnsafeOutputWarningPanel::UnsafeOutputWarningPanel()
     : message(
-        "",
-        "Caution! The current plugin configuration has caused an excessively "
-        "high output, and the audio stream has been stopped. Please reset the "
-        "plugin parameters to values that allow for a lower output volume.")
+          "",
+          "Caution! The current plugin configuration has caused an excessively "
+          "high output, and the audio stream has been stopped. Please reset "
+          "the "
+          "plugin parameters to values that allow for a lower output volume.")
 {
     message.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(message);
@@ -137,17 +190,18 @@ void PlotsPanel::UnsafeOutputWarningPanel::resized()
 // =============================================================================
 PlotsPanel::PlotsPanel(ZePolAudioProcessor& p,
                        juce::ApplicationProperties& properties)
-    : processor(p)
-    , db(false)
+    : plotsCtrl(p)
     , linLogFreqButton(new LabelledToggleButton(
           "LIN", "LOG", CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
           CustomLookAndFeel::ColourIDs::PlotButtons_logColourId, false, true))
     , linLogAmpButton(new LabelledToggleButton(
           "LIN", "DB", CustomLookAndFeel::ColourIDs::PlotButtons_linColourId,
           CustomLookAndFeel::ColourIDs::PlotButtons_logColourId, false, true))
-    , shouldRecomputePoints(true)
+    , processor(p)
     , mLabel("", "MAGNITUDE RESPONSE")
     , pLabel("", "PHASE RESPONSE")
+    , db(false)
+    , shouldRecomputePoints(true)
 {
     addAndMakeVisible(*linLogFreqButton.get());
     addAndMakeVisible(*linLogAmpButton.get());
@@ -158,8 +212,6 @@ PlotsPanel::PlotsPanel(ZePolAudioProcessor& p,
     addAndMakeVisible(uowPanel);
     mLabel.setJustificationType(juce::Justification::centred);
     pLabel.setJustificationType(juce::Justification::centred);
-    for (auto i : processor.parameterIDs())
-        processor.addParameterListener(i, this);
     linLogFreqButton->addListener(&mPlot);
     linLogFreqButton->addListener(&pPlot);
     linLogFreqButton->addListener(this);
@@ -168,25 +220,17 @@ PlotsPanel::PlotsPanel(ZePolAudioProcessor& p,
         properties, "linLogFreq", linLogFreqButton));
     linLogAmpAPAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, "linLogAmp", linLogAmpButton));
-    processor.addSampleRateListener(this);
     processor.addUnsafeOutputListener(&uowPanel);
+    plotsCtrl.addControlled(this);
 }
 PlotsPanel::~PlotsPanel()
 {
+    plotsCtrl.removeControlled(this);
     processor.removeUnsafeOutputListener(&uowPanel);
-    processor.removeSampleRateListener(this);
-    for (auto i : processor.parameterIDs())
-        processor.removeParameterListener(i, this);
     linLogFreqButton->removeListener(&mPlot);
     linLogFreqButton->removeListener(&pPlot);
     linLogFreqButton->removeListener(this);
     linLogAmpButton->removeListener(this);
-}
-
-// =============================================================================
-void PlotsPanel::sampleRateChangedCallback(double /* sr */)
-{
-    recomputePoints();
 }
 
 // =============================================================================
@@ -216,7 +260,7 @@ void PlotsPanel::updateValues()
     {
         auto omega = omegaTransform.map(static_cast<float>(i));
         auto nu    = static_cast<float>(omega * sr
-                                     / juce::MathConstants<double>::twoPi);
+                                        / juce::MathConstants<double>::twoPi);
         auto h     = processor.dtft(omega);
         auto m     = static_cast<float>(abs(h));
         if (db) m = juce::Decibels::gainToDecibels(m, m_min_db);
@@ -227,18 +271,12 @@ void PlotsPanel::updateValues()
     mPlot.repaint();
     pPlot.repaint();
 }
-
-// =============================================================================
 void PlotsPanel::buttonClicked(juce::Button* b)
 {
     if (b == linLogAmpButton.get()) db = b->getToggleState();
     recomputePoints();
 }
 void PlotsPanel::buttonStateChanged(juce::Button*) {}
-void PlotsPanel::parameterChanged(const juce::String&, float)
-{
-    recomputePoints();
-}
 void PlotsPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
@@ -272,4 +310,8 @@ void PlotsPanel::recomputePoints()
 {
     shouldRecomputePoints = true;
     SAFE_MessageManager_LOCK(this, repaint(););
+}
+void PlotsPanel::updatePlotValues(const ZePolAudioProcessor&)
+{
+    recomputePoints();
 }

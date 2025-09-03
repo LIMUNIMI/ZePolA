@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    MasterPanel.h
+    EnvVars.cpp
 
     Copyright (c) 2025 Laboratorio di Informatica Musicale
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,33 +25,60 @@
   ==============================================================================
 */
 
-#pragma once
-#include "../Parameters.h"
-#include <JuceHeader.h>
+#include "EnvVars.h"
+#include <algorithm>  // std::transform
+#include <cctype>     // std::tolower
+#include <cstdlib>    // std::getenv
+#include <unordered_set>
 
 // =============================================================================
-/** Master control panel  */
-class MasterPanel : public juce::GroupComponent
+template <typename TypeName>
+EnvVar<TypeName>::EnvVar(const std::string& k, TypeName d) : key(k), dflt(d)
 {
-public:
-    // =========================================================================
-    MasterPanel(VTSAudioProcessor&);
+}
+template <typename TypeName>
+EnvVar<TypeName>::operator TypeName() const
+{
+    TypeName v = dflt;
+    if (const char* s = std::getenv(key.c_str()))
+    {
+        try
+        {
+            v = parse(s);
+        }
+        catch (...)
+        {
+        }
+    }
+    return v;
+}
 
-    // =========================================================================
-    void resized() override;
+// =============================================================================
+template <>
+int EnvVar<int>::parse(const char* v)
+{
+    return std::stoi(v);
+}
+template <>
+double EnvVar<double>::parse(const char* v)
+{
+    return std::stod(v);
+}
+static char _safe_tolower(unsigned char c)
+{
+    return static_cast<char>(std::tolower(c));
+}
+template <>
+bool EnvVar<bool>::parse(const char* v)
+{
+    static const std::unordered_set<std::string> _TRUES {"1", "true", "yes",
+                                                         "on"};
+    std::string s(v);
+    std::transform(s.begin(), s.end(), s.begin(), _safe_tolower);
+    return _TRUES.count(s) > 0;
+}
 
-private:
-    // =========================================================================
-    juce::Label gainLabel, bypassLabel, noiseGeneratorLabel;
-    juce::Slider gainSlider;
-    juce::ToggleButton bypassButton, noiseGeneratorButton;
-
-    // =========================================================================
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
-        gainSliderAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
-        bypassButtonAttachment, noiseGeneratorButtonAttachment;
-
-    // =========================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MasterPanel)
-};
+// =============================================================================
+template class EnvVar<int>;
+template class EnvVar<double>;
+template class EnvVar<bool>;

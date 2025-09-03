@@ -113,7 +113,7 @@ public:
     void setAuto(bool);
 
     // =========================================================================
-    virtual void sampleRateChangedCallback(double);
+    virtual void sampleRateChangedCallback(double) override;
     void resized() override;
 
 private:

@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    MasterPanel.h
+    EnvVars.h
 
     Copyright (c) 2025 Laboratorio di Informatica Musicale
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,32 +26,20 @@
 */
 
 #pragma once
-#include "../Parameters.h"
-#include <JuceHeader.h>
+#include <string>
 
 // =============================================================================
-/** Master control panel  */
-class MasterPanel : public juce::GroupComponent
+/** Generic environment variable with fallback default */
+template <typename TypeName>
+class EnvVar
 {
 public:
-    // =========================================================================
-    MasterPanel(VTSAudioProcessor&);
-
-    // =========================================================================
-    void resized() override;
+    EnvVar(const std::string& key, TypeName dflt);
+    operator TypeName() const;
 
 private:
-    // =========================================================================
-    juce::Label gainLabel, bypassLabel, noiseGeneratorLabel;
-    juce::Slider gainSlider;
-    juce::ToggleButton bypassButton, noiseGeneratorButton;
+    std::string key;
+    TypeName dflt;
 
-    // =========================================================================
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
-        gainSliderAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
-        bypassButtonAttachment, noiseGeneratorButtonAttachment;
-
-    // =========================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MasterPanel)
+    static TypeName parse(const char* val);
 };

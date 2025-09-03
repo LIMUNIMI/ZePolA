@@ -99,6 +99,16 @@ private:
 };
 
 // =============================================================================
+/** Label that always looks inactive  */
+class InactiveLabel : public juce::Label
+{
+public:
+    // =========================================================================
+    InactiveLabel(const juce::String& componentName = juce::String(),
+                  const juce::String& labelText     = juce::String());
+};
+
+// =============================================================================
 /** Top menu panel  */
 class TopMenuPanel : public InvisibleGroupComponent
 {
@@ -137,9 +147,13 @@ private:
     TextAndImageButton undoButton, redoButton, resetButton, exportButton,
         saveButton, loadButton;
     juce::Label autoGainLabel;
+    InactiveLabel codedAtLim, nameAndVersion;
     std::shared_ptr<juce::ToggleButton> autoGainButton;
     SeparatorComponent sep;
     std::shared_ptr<juce::Value> presetLocation;
+    std::shared_ptr<juce::Value> autoFilterUpdateValue;
+    std::unique_ptr<ApplicationPropertiesValueAttachment>
+        autoFilterUpdateValueAttachment;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TopMenuPanel)

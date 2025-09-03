@@ -84,6 +84,9 @@ class LabelledToggleButtonLookAndFeelMethods
 {
 public:
     // =========================================================================
+    virtual ~LabelledToggleButtonLookAndFeelMethods();
+
+    // =========================================================================
     virtual void drawLabelledToggleButton(juce::Graphics& g,
                                           LabelledToggleButton& button,
                                           bool shouldDrawButtonAsHighlighted,
@@ -104,7 +107,7 @@ public:
 
 protected:
     // =========================================================================
-    void paintButton(Graphics&, bool shouldDrawButtonAsHighlighted,
+    void paintButton(juce::Graphics&, bool shouldDrawButtonAsHighlighted,
                      bool shouldDrawButtonAsDown) override;
 
 private:

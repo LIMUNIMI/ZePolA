@@ -26,11 +26,30 @@
 */
 
 #pragma once
+#include "EnvVars.h"
 #include <JuceHeader.h>
 
 // =============================================================================
-// Parameter ids
+// Environment variables
+const EnvVar<int> N_FILTER_ELEMENTS("ZEPOLA_N_FILTER_ELEMENTS", 10);
+const EnvVar<int> IR_PLOT_LENGTH("ZEPOLA_IR_PLOT_LENGTH", 64);
+const EnvVar<double> POLE_MAGNITUDE_CEIL("ZEPOLA_POLE_MAGNITUDE_CEIL", 0.99999);
+const EnvVar<double> INVERSE_MAGNITUDE_FLOOR("ZEPOLA_INVERSE_MAGNITUDE_FLOOR",
+                                             1e-6);
+const EnvVar<double>
+    FILTER_ELEMENT_GAIN_FLOOR_DB("ZEPOLA_FILTER_ELEMENT_GAIN_FLOOR_DB", -128.0);
+const EnvVar<bool> ALLOW_INVERTED_POLES("ZEPOLA_ALLOW_INVERTED_POLES", false);
+
+// Plugin constants
+#define IR_PLOT_AMP_GRID                                                       \
+    {-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5},                                    \
+    {                                                                          \
+        "", "-1", "", "0", "", "1", ""                                         \
+    }
+
+// Parameter IDs
 #define BYPASS_ID "BYPASS"
+#define NOISE_ID "NOISE"
 #define GAIN_ID "GAIN"
 #define MAGNITUDE_ID_PREFIX "MAGNITUDE_"
 #define PHASE_ID_PREFIX "PHASE_"
@@ -39,7 +58,10 @@
 #define INVERTED_ID_PREFIX "INVERTED_"
 #define SINGLE_ID_PREFIX "SINGLE_"
 #define TYPE_ID_PREFIX "TYPE_"
+
+// Property IDs
 #define AUTO_GAIN_PROPERTY_ID "autoGain"
+#define AUTO_FILTER_PROPERTY_ID "autoFilterDesign"
 
 // =============================================================================
 namespace Parameters
@@ -55,6 +77,9 @@ void resetParameterValue(juce::RangedAudioParameter*);
 class SampleRateListener
 {
 public:
+    // =========================================================================
+    virtual ~SampleRateListener();
+
     // =========================================================================
     virtual void sampleRateChangedCallback(double) = 0;
 };
@@ -72,8 +97,9 @@ public:
     ~VTSAudioProcessor();
 
     //==============================================================================
-    virtual void getStateInformation(juce::MemoryBlock& destData);
-    virtual void setStateInformation(const void* data, int sizeInBytes);
+    virtual void getStateInformation(juce::MemoryBlock& destData) override;
+    virtual void setStateInformation(const void* data,
+                                     int sizeInBytes) override;
 
     //==============================================================================
     /** Make an attachment for the value tree state */

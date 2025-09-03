@@ -1,12 +1,24 @@
 # ZePolA
 A Parametric Equalizer with Interactive Poles and Zeros Control for Digital Signal Processing Education
 
-![screenshot](https://gist.githubusercontent.com/ChromaticIsobar/2478ada1946b8af2f5f49840de30de5e/raw/97c026249ea2a2fcb71cfae6ab41e8344bdafb9e/screenshot.png)
+![screenshot](https://gist.githubusercontent.com/ChromaticIsobar/2478ada1946b8af2f5f49840de30de5e/raw/1909638bb2049c2ae3f3ca8b931f1011a35af959/screenshot.png)
 
 ZePolA is a parameteric equalizer that can be operated by specifying the positions of poles and zeros on the Gaussian plane. You can experiment with your own filter by either:
  - specifying the numeric values of the parameters of the filter elements
  - interacting with the filter element representations in the Gaussian plane
  - designing a classical filter via the filter designer
+
+## Installation
+You can find the latest release on GitHub at https://github.com/LIMUNIMI/ZePolA/releases.
+You can download only the specific plugin (standalone, VST3, or Audio Unit) for Linux, Windows, and MacOS.
+
+Standalone applications require no installation. Plugins must be copied to the proper directory to be installed
+
+|    OS   |    Plugin    |                   Path                   |    Plugin    |                   Path                   |
+|---------|--------------|------------------------------------------|--------------|------------------------------------------|
+| Ubuntu  | VST3 | ~/.vst                                   |
+| Windows | VST3 | C:\Program Files\Common Files\VST3       |
+| MacOS   | VST3 | Library/Audio/Plug-ins/VST3              | AU           | Library/Audio/Plug-ins/Components        |
 
 ## Parameter panel
 - **Radius** Element distance from the origin in the Gaussian Plane
@@ -25,20 +37,14 @@ Interact with the circles (zeros) and crosses (poles) on the plane to modify the
  - *Double-click* Swap between zero and pole
  - *Scroll* Adjust input gain
 
-### Shortcuts
-- **All On** Turn all elements on
-- **All Off** Turn all elements off
-- **Phases x2** Multiply all phase values by 2
-- **Phases ÷2** Divide all phase values by 2
-- **Swap Ps/Zs** Swaps all zeros with poles and vice-versa
-
 ## Plots
-The plots panel shows the filter's DTFT magnitude and phase
+The plots panel shows the filter's DTFT magnitude and phase.
+There is also a plot of the filter's IR in the time-domain.
  - **LIN/DB** Toggle between linear amplitude or decibel
  - **LIN/LOG** Toggle between linear or logarithmic frequencies
 
 ## Filter Design
-Parameters:
+<!--Parameters:-->
 - **Type** Butterworth, Chebyshev Type-I, Chebyshev Type-II, or Elliptic
 - **Shape** Low-pass, or High-pass
 - **Order** Filter order (number of elements)
@@ -46,7 +52,7 @@ Parameters:
 - **Passband ripple** Ripple amplitude in the passband, in decibel
 - **Stopband ripple** Ripple amplitude in the stopband, in decibel
 
-Buttons:
+<!--Buttons:-->
 - **Update** Apply the settings to the filter elements
 - **Auto** Automatically update on parameter change
 
@@ -58,6 +64,18 @@ Buttons:
 - **Load** Read parameters from an XML file
 - **Export** Save filter coefficients to a CSV file
 - **Man/Auto Gain** Toggles the auto-gain feature 
+
+## Environment variables
+You can change a number of constant in the plugin using environment variables.
+Please, note that changing these settings from the default values may severely hurt performance and/or stability and negatively affect the aesthetic appearance.
+```
+ZEPOLA_N_FILTER_ELEMENTS             // The number of filter elements
+ZEPOLA_IR_PLOT_LENGTH                // The length of the IR plot, in samples
+ZEPOLA_POLE_MAGNITUDE_CEIL           // The maximum radius for a pole element (linear)
+ZEPOLA_INVERSE_MAGNITUDE_FLOOR       // The minimum radius for an inverted element (linear)
+ZEPOLA_FILTER_ELEMENT_GAIN_FLOOR_DB  // The minimum gain for an element, in dB
+ZEPOLA_ALLOW_INVERTED_POLES          // Allow inverted magnitude for pole elements (extremely instable)
+```
 
 # License
 Copyright (c) 2025 Laboratorio di Informatica Musicale

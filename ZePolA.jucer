@@ -3,7 +3,8 @@
 <JUCERPROJECT id="AyGleg" name="ZePolA" projectType="audioplug" jucerFormatVersion="1"
               companyName="LIM" pluginCode="pz3q" pluginFormats="buildAU,buildStandalone,buildVST3"
               pluginAUMainType="'aufx'" displaySplashScreen="1" defines="JUCE_MODAL_LOOPS_PERMITTED = 1"
-              compilerFlagSchemes="CEPHES">
+              compilerFlagSchemes="CEPHES" addUsingNamespaceToJuceHeader="0"
+              version="1.0.0">
   <MAINGROUP id="ZGYPR9" name="ZePolA">
     <GROUP id="{7794416C-2582-84D2-8698-6726C2584579}" name="Libraries">
       <GROUP id="{EA664D3A-CD7E-6259-E9FE-6D2C9EAC7FAB}" name="cephes">
@@ -35,6 +36,8 @@
       <FILE id="juXqX7" name="save_icon.svg" compile="0" resource="1" file="Graphics/save_icon.svg"/>
     </GROUP>
     <GROUP id="{7D61AFCF-4618-4DA8-96D3-B0DC7D2A26DB}" name="Source">
+      <FILE id="F1UX1g" name="EnvVars.cpp" compile="1" resource="0" file="Source/EnvVars.cpp"/>
+      <FILE id="FlLq7q" name="EnvVars.h" compile="0" resource="0" file="Source/EnvVars.h"/>
       <FILE id="llmHwa" name="Mappers.cpp" compile="1" resource="0" file="Source/Mappers.cpp"/>
       <FILE id="UGwiqN" name="Mappers.h" compile="0" resource="0" file="Source/Mappers.h"/>
       <FILE id="NcDhiw" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>
@@ -109,7 +112,7 @@
   </MODULES>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX">
+    <XCODE_MAC targetFolder="Builds/MacOSX" CEPHES="-w">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" defines="PAND0_OSX"/>
         <CONFIGURATION isDebug="0" name="Release" defines="PAND0_OSX"/>

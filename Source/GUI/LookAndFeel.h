@@ -143,7 +143,8 @@ public:
                            GaussianPlanePanel&) override;
     void drawZPoint(juce::Graphics&, float x, float y, float width,
                     float height, float p_x, float p_y, bool type,
-                    bool conjugate, bool single, bool inverted, ZPoint&);
+                    bool conjugate, bool single, bool inverted,
+                    ZPoint&) override;
     void drawComboBox(juce::Graphics&, int width, int height, bool isButtonDown,
                       int buttonX, int buttonY, int buttonW, int buttonH,
                       juce::ComboBox&) override;
@@ -316,7 +317,7 @@ private:
                            juce::Colour ledOutlineColour,
                            juce::Colour textColour, const juce::String& label,
                            bool ledSide);
-    void _drawCheckbox(Graphics&, juce::ToggleButton&,
+    void _drawCheckbox(juce::Graphics&, juce::ToggleButton&,
                        bool shouldDrawButtonAsHighlighted,
                        bool shouldDrawButtonAsDown);
     template <typename ValueType>

@@ -67,7 +67,7 @@ public:
     int getNumPrograms() override;
     int getCurrentProgram() override;
     void setCurrentProgram(int) override;
-    const juce::String getProgramName(int);
+    const juce::String getProgramName(int) override;
     void changeProgramName(int index, const juce::String& newName) override;
 
     // =========================================================================
@@ -160,6 +160,8 @@ public:
     double getCascadePeakGain() const;
     /** Get the auto gain value for the specified element */
     double getElementAutoGain(int) const;
+    /** Get the (truncated) IR of the filter */
+    void ir(std::vector<double>& output) const;
     /** Clear filter memory */
     void resetMemory();
     /** Activate or deactivate all filter elements */
@@ -168,6 +170,11 @@ public:
     void setBypass(bool bypass);
     /** Set the bypassed state of the processor with a value threshold on 0.5 */
     void setBypassTh(float bypass);
+    /** Set the noise generator state of the processor */
+    void setNoiseGenerator(bool on);
+    /** Set the noise generator state of the processor with a value threshold on
+     * 0.5 */
+    void setNoiseGeneratorTh(float on);
     /** Double the value of the phases */
     void doublePhases();
     /** Divide by two the value of the phases */
@@ -198,16 +205,21 @@ private:
     void resetChannels();
     /** Multiply the value of the phases */
     void multiplyPhases(double);
+    /** Fill buffer with random values */
+    template <typename FloatType>
+    void randomFill(juce::AudioBuffer<FloatType>&);
 
     // =========================================================================
     std::vector<FilterElementCascade> multiChannelCascade;
     juce::dsp::Gain<float> gain;
 
     // =========================================================================
-    bool bypassed;
+    bool bypassed, noise_gen;
     juce::Value unsafe;
     const int n_elements;
     juce::AudioBuffer<double> pivotBuffer;
+    juce::Random random;
+    float noiseBaseGain;
 
     std::function<void()> editorCallback;
     juce::UndoManager undoManager;

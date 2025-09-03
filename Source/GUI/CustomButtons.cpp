@@ -93,6 +93,12 @@ void LabelledToggleButton::paintButton(juce::Graphics& g,
 }
 
 // =============================================================================
+LabelledToggleButtonLookAndFeelMethods::
+    ~LabelledToggleButtonLookAndFeelMethods()
+{
+}
+
+// =============================================================================
 static const juce::String _tandiButtPadding("  ");
 TextAndImageButton::TextAndImageButton(const juce::String& name,
                                        juce::Drawable* d,
@@ -106,7 +112,7 @@ TextAndImageButton::TextAndImageButton(const juce::String& name,
 
     label.setJustificationType(j);
 }
-void TextAndImageButton::paintButton(Graphics& g,
+void TextAndImageButton::paintButton(juce::Graphics& g,
                                      bool /* shouldDrawButtonAsHighlighted */,
                                      bool /* shouldDrawButtonAsDown */)
 {

@@ -27,12 +27,13 @@
 
 #include "Filter.h"
 #include "../Macros.h"
+#include "../Parameters.h"
 #include <JuceHeader.h>
 
 // =============================================================================
-const double FilterElement::gain_floor_db       = -128.0;
-const double FilterElement::pole_magnitude_ceil = 0.99999;
-const double FilterElement::inv_magnitude_floor = 1e-6;
+const double FilterElement::gain_floor_db       = FILTER_ELEMENT_GAIN_FLOOR_DB;
+const double FilterElement::pole_magnitude_ceil = POLE_MAGNITUDE_CEIL;
+const double FilterElement::inv_magnitude_floor = INVERSE_MAGNITUDE_FLOOR;
 
 // =============================================================================
 const std::string FilterElement::typeToString(bool t)
@@ -46,24 +47,26 @@ const std::string FilterElement::typeToString(float t)
 
 // =============================================================================
 FilterElement::FilterElement()
-    : type(false)
-    , magnitude(0.0)
+    : magnitude(0.0)
     , phase(0.0)
     , gain(1.0)
     , active(false)
     , inverted(false)
     , single(false)
+    , type(false)
     , processSampleFunc(&FilterElement::processSampleZero)
 {
     resetMemory();
     computeCoefficients();
 }
 FilterElement::FilterElement(const FilterElement& other)
-    : type(other.type)
-    , magnitude(other.magnitude)
+    : magnitude(other.magnitude)
     , phase(other.phase)
     , gain(other.gain)
     , active(other.active)
+    , inverted(other.inverted)
+    , single(other.single)
+    , type(other.type)
     , processSampleFunc(other.processSampleFunc)
 {
     resetMemory();
@@ -75,7 +78,7 @@ double FilterElement::getMagnitude() const { return magnitude; }
 double FilterElement::getPhase() const { return phase; }
 double FilterElement::getAngle() const
 {
-    return getPhase() * MathConstants<double>::pi;
+    return getPhase() * juce::MathConstants<double>::pi;
 }
 bool FilterElement::getType() const { return type; }
 bool FilterElement::getSingle() const { return single; }
@@ -218,7 +221,8 @@ double FilterElement::processSamplePole(double x)
     pushSample(y);
     return y;
 }
-void FilterElement::processBlock(double* outputs, const double* inputs, int n)
+void FilterElement::processBlock(double* outputs, const double* inputs,
+                                 size_t n)
 {
     for (int i = 0; i < n; ++i)
         outputs[i] = (this->*processSampleFunc)(gain * inputs[i]);
@@ -235,29 +239,15 @@ std::complex<double> FilterElement::dtft(double omega) const
 {
     return _dtft_withGain(omega, gain);
 }
-// static double _wgl(double x)
-// {
-//     static const double c = -2.0 * exp(-0.5);
-//     return (x < 0.5) ? exp(-2.0 * x * x) : c * (x - 1.0);
-// }
 double FilterElement::rmsg() const
 {
     double g;
     if (type)
     {
-        // double r = getRealPart();
-        // double i = getImagPart();
         double a     = getAngle();
         auto one_mp2 = abs(1.0 - std::polar(coeffs[1], a + a));
-        // Approx v0
-        // |1 - |p|^2| * (Re^2{p} - 2|Re{z}| + Im^2{p} + 1)
-        // g = abs(1.0 - coeffs[1]) * (r * r + coeffs[0] + i * i + 1.0);
-        // Approx v1
         // |1 - |p|^2| * |1 - p^2|^2
         g = abs(1.0 - coeffs[1]) * one_mp2 * one_mp2;
-        // Approx v2
-        // W_GL(|p|) * |1 - p^2|^2
-        // g = _wgl(sqrt(coeffs[1])) * one_mp2 * one_mp2;
     }
     else
     {
@@ -354,7 +344,7 @@ std::vector<std::array<double, 8>> FilterElementCascade::getCoefficients() const
 
 // =========================================================================
 void FilterElementCascade::processBlock(double* outputs, const double* inputs,
-                                        int n)
+                                        size_t n)
 {
     for (auto& e : elements)
         if (e.getActive()) e.processBlock(outputs, inputs, n);
