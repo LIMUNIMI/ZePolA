@@ -216,7 +216,7 @@ jobs:
       run: mdpdf README.md "rassets/${{ needs.build.outputs.plugin_name }}_README_v${{ needs.build.outputs.plugin_version }}.pdf" --orientation=portrait --gh-style
 
     - name: Changelog filename to look for
-      run: echo 'CHANGELOG_FILENAME=./Changelogs/v'${{ needs.build.outputs.plugin_version }}'.md' | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*$/\1/' >> $GITHUB_ENV
+      run: echo 'CHANGELOG_FILENAME=./Changelogs/v'$(echo ${{ needs.build.outputs.plugin_version }} | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')'.md' >> $GITHUB_ENV
 
     - name: Empty changelog as default
       run: touch "$CHANGELOG_FILENAME"
