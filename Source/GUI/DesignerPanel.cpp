@@ -65,8 +65,12 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
                              juce::ApplicationProperties& properties)
     : typeCBoxListener(std::bind(&DesignerPanel::setTypeFromCBoxId, this,
                                  std::placeholders::_1))
-    , shapeCBoxListener(std::bind(&DesignerPanel::setShapeFromCBoxId, this,
-                                  std::placeholders::_1))
+    , analogShapeCBoxListener(
+          std::bind(&DesignerPanel::setAnalogShapeFromCBoxId, this,
+                    std::placeholders::_1))
+    , biquadShapeCBoxListener(
+          std::bind(&DesignerPanel::setBiquadShapeFromCBoxId, this,
+                    std::placeholders::_1))
     , orderSliderListener(
           std::bind(&DesignerPanel::setOrder, this, std::placeholders::_1))
     , cutoffSliderListener(
@@ -149,13 +153,15 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
 
     typeCBox->setSelectedId(1 + filterParams.type);
     analogShapeCBox->setSelectedId(1 + filterParams.analogFShape);
+    biquadShapeCBox->setSelectedId(1 + filterParams.biquadFShape);
     orderSlider->setValue(static_cast<double>(filterParams.order));
     cutoffSlider->setValue(filterParams.cutoff);
     rpSlider->setValue(filterParams.passbandRippleDb);
     rsSlider->setValue(filterParams.stopbandRippleDb);
 
     typeCBox->addListener(&typeCBoxListener);
-    analogShapeCBox->addListener(&shapeCBoxListener);
+    analogShapeCBox->addListener(&analogShapeCBoxListener);
+    biquadShapeCBox->addListener(&biquadShapeCBoxListener);
     orderSlider->addListener(&orderSliderListener);
     cutoffSlider->addListener(&cutoffSliderListener);
     rpSlider->addListener(&rpSliderListener);
@@ -164,8 +170,10 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
 
     typeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
         properties, "typeFilterDesign", typeCBox));
-    shapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
-        properties, "shapeFilterDesign", analogShapeCBox));
+    analogShapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
+        properties, "analogShapeFilterDesign", analogShapeCBox));
+    biquadShapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
+        properties, "biquadShapeFilterDesign", biquadShapeCBox));
     orderSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "orderFilterDesign", orderSlider));
     cutoffSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
@@ -188,7 +196,8 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
 DesignerPanel::~DesignerPanel()
 {
     typeCBox->removeListener(&typeCBoxListener);
-    analogShapeCBox->removeListener(&shapeCBoxListener);
+    analogShapeCBox->removeListener(&analogShapeCBoxListener);
+    biquadShapeCBox->removeListener(&biquadShapeCBoxListener);
     orderSlider->removeListener(&orderSliderListener);
     cutoffSlider->removeListener(&cutoffSliderListener);
     rpSlider->removeListener(&rpSliderListener);
@@ -205,13 +214,47 @@ void DesignerPanel::setTypeFromCBoxId(int i)
     updateBiquadFilterShapeVisibility();
     updateAnalogFilterShapeVisibility();
 }
-void DesignerPanel::setShapeFromCBoxId(int i)
+void DesignerPanel::setAnalogShapeFromCBoxId(int i)
 {
     filterParams.analogFShape
         = static_cast<FilterParameters::AnalogFilterShape>(i - 1);
-    DBG("SHAPE: " << FilterParameters::shapeToString(
+    DBG("ANALOG_SHAPE: " << FilterParameters::shapeToString(
             filterParams.analogFShape));
     autoDesignFilter();
+    // Cross-update to biquad filter shapes if compatible
+    int j;
+    switch (filterParams.analogFShape)
+    {
+    case FilterParameters::AnalogFilterShape::AnalogLowPass:
+        j = FilterParameters::BiquadFilterShape::BiquadLowPass + 1;
+        break;
+    case FilterParameters::AnalogFilterShape::AnalogHighPass:
+        j = FilterParameters::BiquadFilterShape::BiquadHighPass + 1;
+        break;
+    default: j = 0; break;  // Incompatible filter shape
+    }
+    if (j) biquadShapeCBox->setSelectedId(j);
+}
+void DesignerPanel::setBiquadShapeFromCBoxId(int i)
+{
+    filterParams.biquadFShape
+        = static_cast<FilterParameters::BiquadFilterShape>(i - 1);
+    DBG("BIQUAD_SHAPE: " << FilterParameters::shapeToString(
+            filterParams.biquadFShape));
+    autoDesignFilter();
+    // Cross-update to analog filter shapes if compatible
+    int j;
+    switch (filterParams.biquadFShape)
+    {
+    case FilterParameters::BiquadFilterShape::BiquadLowPass:
+        j = FilterParameters::AnalogFilterShape::AnalogLowPass + 1;
+        break;
+    case FilterParameters::BiquadFilterShape::BiquadHighPass:
+        j = FilterParameters::AnalogFilterShape::AnalogHighPass + 1;
+        break;
+    default: j = 0; break;  // Incompatible filter shape
+    }
+    if (j) analogShapeCBox->setSelectedId(j);
 }
 void DesignerPanel::setOrder(double f)
 {
@@ -255,6 +298,8 @@ void DesignerPanel::updateBiquadFilterShapeVisibility()
     }
     DBG("BiquadFilterShape menu should" << ((shouldBeVisible) ? "" : "n't")
                                         << " be visible");
+    if (shouldBeVisible)
+        setBiquadShapeFromCBoxId(biquadShapeCBox->getSelectedId());
     if (shouldBeVisible != biquadShapeCBox->isVisible())
     {
         DBG(" Setting BiquadFilterShape menu visibility");
@@ -275,15 +320,17 @@ void DesignerPanel::updateAnalogFilterShapeVisibility()
     }
     DBG("AnalogFilterShape menu should" << ((shouldBeVisible) ? "" : "n't")
                                         << " be visible");
+    if (shouldBeVisible)
+        setAnalogShapeFromCBoxId(analogShapeCBox->getSelectedId());
     if (shouldBeVisible != analogShapeCBox->isVisible())
     {
         DBG(" Setting AnalogFilterShape menu visibility");
         analogShapeCBox->setVisible(shouldBeVisible);
-        updatePassbandRippleVisibility();
-        updateStopbandRippleVisibility();
-        updateFilterOrderVisibility();
         resized();
     }
+    updatePassbandRippleVisibility();
+    updateStopbandRippleVisibility();
+    updateFilterOrderVisibility();
 }
 void DesignerPanel::updateFilterOrderVisibility()
 {

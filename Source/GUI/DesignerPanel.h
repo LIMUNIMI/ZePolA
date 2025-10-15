@@ -99,8 +99,10 @@ public:
     // =========================================================================
     /** Set filter type from ComboBox Id (+1 offset) */
     void setTypeFromCBoxId(int);
-    /** Set filter shape from ComboBox Id (+1 offset) */
-    void setShapeFromCBoxId(int);
+    /** Set analog filter shape from ComboBox Id (+1 offset) */
+    void setAnalogShapeFromCBoxId(int);
+    /** Set biquad filter shape from ComboBox Id (+1 offset) */
+    void setBiquadShapeFromCBoxId(int);
     /** Set filter order */
     void setOrder(double);
     /** Set filter cutoff frequency */
@@ -138,11 +140,12 @@ private:
     // =========================================================================
     std::unique_ptr<ApplicationPropertiesButtonAttachment> autoButtonAttachment;
     std::unique_ptr<ApplicationPropertiesComboBoxAttachment> typeCBoxAttachment,
-        shapeCBoxAttachment;
+        analogShapeCBoxAttachment, biquadShapeCBoxAttachment;
     std::unique_ptr<ApplicationPropertiesSliderAttachment>
         orderSliderAttachment, cutoffSliderAttachment, rpSliderAttachment,
         rsSliderAttachment;
-    CBoxListener typeCBoxListener, shapeCBoxListener;
+    CBoxListener typeCBoxListener, analogShapeCBoxListener,
+        biquadShapeCBoxListener;
     SliderListener orderSliderListener, cutoffSliderListener, rpSliderListener,
         rsSliderListener;
     ButtonListener autoButtonListener;
