@@ -79,6 +79,10 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
                                  std::placeholders::_1))
     , rsSliderListener(std::bind(&DesignerPanel::setStopbandRipple, this,
                                  std::placeholders::_1))
+    , qualitySliderListener(
+          std::bind(&DesignerPanel::setQuality, this, std::placeholders::_1))
+    , gainDBSliderListener(
+          std::bind(&DesignerPanel::setGainDB, this, std::placeholders::_1))
     , autoButtonListener(
           std::bind(&DesignerPanel::setAuto, this, std::placeholders::_1))
     , processor(p)
@@ -87,6 +91,8 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     , cutoffLabel("", "CUTOFF FREQUENCY")
     , rpLabel("", "PASSBAND RIPPLE")
     , rsLabel("", "STOPBAND RIPPLE")
+    , qualityLabel("", "QUALITY")
+    , gainDBLabel("", "GAIN")
     , typeCBox(std::make_shared<juce::ComboBox>())
     , analogShapeCBox(std::make_shared<juce::ComboBox>())
     , biquadShapeCBox(std::make_shared<juce::ComboBox>())
@@ -94,6 +100,8 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     , cutoffSlider(std::make_shared<juce::Slider>())
     , rpSlider(std::make_shared<juce::Slider>())
     , rsSlider(std::make_shared<juce::Slider>())
+    , qualitySlider(std::make_shared<juce::Slider>())
+    , gainDBSlider(std::make_shared<juce::Slider>())
     , autoButton(std::make_shared<juce::ToggleButton>())
     , applyButton("UPDATE")
     , filterParams(p.getSampleRate())
@@ -105,6 +113,8 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     addAndMakeVisible(cutoffLabel);
     addAndMakeVisible(rpLabel);
     addAndMakeVisible(rsLabel);
+    addAndMakeVisible(qualityLabel);
+    addAndMakeVisible(gainDBLabel);
     addAndMakeVisible(*typeCBox.get());
     addAndMakeVisible(*analogShapeCBox.get());
     addAndMakeVisible(*biquadShapeCBox.get());
@@ -112,6 +122,8 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     addAndMakeVisible(*cutoffSlider.get());
     addAndMakeVisible(*rpSlider.get());
     addAndMakeVisible(*rsSlider.get());
+    addAndMakeVisible(*qualitySlider.get());
+    addAndMakeVisible(*gainDBSlider.get());
     addAndMakeVisible(*autoButton.get());
     addAndMakeVisible(applyButton);
 
@@ -120,6 +132,8 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     cutoffLabel.setJustificationType(juce::Justification::centred);
     rpLabel.setJustificationType(juce::Justification::centred);
     rsLabel.setJustificationType(juce::Justification::centred);
+    qualityLabel.setJustificationType(juce::Justification::centred);
+    gainDBLabel.setJustificationType(juce::Justification::centred);
 
     for (auto i = 0; i < FilterParameters::FilterType::N_FILTER_TYPES; ++i)
         typeCBox->addItem(FilterParameters::typeToString(
@@ -148,6 +162,10 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     rpSlider->setNormalisableRange({0.1, 5.0, 0.001});
     rsSlider->setSliderStyle(juce::Slider::LinearHorizontal);
     rsSlider->setNormalisableRange({6.0, 60.0, 0.001});
+    qualitySlider->setSliderStyle(juce::Slider::LinearHorizontal);
+    qualitySlider->setNormalisableRange({0.25, 8.0, 0.001});
+    gainDBSlider->setSliderStyle(juce::Slider::LinearHorizontal);
+    gainDBSlider->setNormalisableRange({-20.0, 20.0, 0.001});
 
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
@@ -158,6 +176,8 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     cutoffSlider->setValue(filterParams.cutoff);
     rpSlider->setValue(filterParams.passbandRippleDb);
     rsSlider->setValue(filterParams.stopbandRippleDb);
+    qualitySlider->setValue(filterParams.quality);
+    gainDBSlider->setValue(filterParams.gain_db);
 
     typeCBox->addListener(&typeCBoxListener);
     analogShapeCBox->addListener(&analogShapeCBoxListener);
@@ -166,6 +186,8 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     cutoffSlider->addListener(&cutoffSliderListener);
     rpSlider->addListener(&rpSliderListener);
     rsSlider->addListener(&rsSliderListener);
+    qualitySlider->addListener(&qualitySliderListener);
+    gainDBSlider->addListener(&gainDBSliderListener);
     autoButton->addListener(&autoButtonListener);
 
     typeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
@@ -182,6 +204,10 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
         properties, "rpFilterDesign", rpSlider));
     rsSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "rsFilterDesign", rsSlider));
+    qualitySliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
+        properties, "qualityFilterDesign", qualitySlider));
+    gainDBSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
+        properties, "gainDBFilterDesign", gainDBSlider));
 
     applyButton.onClick = std::bind(&DesignerPanel::designFilter, this);
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
@@ -189,9 +215,6 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
 
     updateBiquadFilterShapeVisibility();
     updateAnalogFilterShapeVisibility();
-    updateFilterOrderVisibility();
-    updatePassbandRippleVisibility();
-    updateStopbandRippleVisibility();
 }
 DesignerPanel::~DesignerPanel()
 {
@@ -202,6 +225,8 @@ DesignerPanel::~DesignerPanel()
     cutoffSlider->removeListener(&cutoffSliderListener);
     rpSlider->removeListener(&rpSliderListener);
     rsSlider->removeListener(&rsSliderListener);
+    qualitySlider->removeListener(&qualitySliderListener);
+    gainDBSlider->removeListener(&gainDBSliderListener);
     autoButton->removeListener(&autoButtonListener);
 }
 
@@ -255,6 +280,8 @@ void DesignerPanel::setBiquadShapeFromCBoxId(int i)
     default: j = 0; break;  // Incompatible filter shape
     }
     if (j) analogShapeCBox->setSelectedId(j);
+    updateQualityVisibility();
+    updateGainDBVisibility();
 }
 void DesignerPanel::setOrder(double f)
 {
@@ -278,6 +305,18 @@ void DesignerPanel::setStopbandRipple(double rs)
 {
     filterParams.stopbandRippleDb = rs;
     DBG("STOPBAND RIPPLE: " << filterParams.stopbandRippleDb);
+    autoDesignFilter();
+}
+void DesignerPanel::setQuality(double q)
+{
+    filterParams.quality = q;
+    DBG("QUALITY: " << filterParams.quality);
+    autoDesignFilter();
+}
+void DesignerPanel::setGainDB(double db)
+{
+    filterParams.gain_db = db;
+    DBG("GAIN dB: " << filterParams.gain_db);
     autoDesignFilter();
 }
 void DesignerPanel::setAuto(bool b)
@@ -306,6 +345,8 @@ void DesignerPanel::updateBiquadFilterShapeVisibility()
         biquadShapeCBox->setVisible(shouldBeVisible);
         resized();
     }
+    updateQualityVisibility();
+    updateGainDBVisibility();
 }
 void DesignerPanel::updateAnalogFilterShapeVisibility()
 {
@@ -394,6 +435,52 @@ void DesignerPanel::updateStopbandRippleVisibility()
         resized();
     }
 }
+void DesignerPanel::updateQualityVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Biquad: shouldBeVisible = true; break;
+    default: break;  // Nothing to do
+    }
+    DBG("Quality slider should" << ((shouldBeVisible) ? "" : "n't")
+                                << " be visible");
+    if (shouldBeVisible != qualitySlider->isVisible()
+        || shouldBeVisible != qualityLabel.isVisible())
+    {
+        DBG(" Setting Quality slider visibility");
+        qualityLabel.setVisible(shouldBeVisible);
+        qualitySlider->setVisible(shouldBeVisible);
+        resized();
+    }
+}
+void DesignerPanel::updateGainDBVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Biquad:
+        switch (filterParams.biquadFShape)
+        {
+        case FilterParameters::BiquadFilterShape::BiquadPeaking:
+            shouldBeVisible = true;
+            break;
+        default: break;  // Nothing to do
+        };
+        break;
+    default: break;  // Nothing to do
+    }
+    DBG("GainDB slider should" << ((shouldBeVisible) ? "" : "n't")
+                               << " be visible");
+    if (shouldBeVisible != gainDBSlider->isVisible()
+        || shouldBeVisible != gainDBLabel.isVisible())
+    {
+        DBG(" Setting GainDB slider visibility");
+        gainDBLabel.setVisible(shouldBeVisible);
+        gainDBSlider->setVisible(shouldBeVisible);
+        resized();
+    }
+}
 
 // =============================================================================
 void DesignerPanel::autoDesignFilter()
@@ -468,6 +555,18 @@ void DesignerPanel::sampleRateChangedCallback(double sr)
 }
 
 // =============================================================================
+void DesignerPanel::appendLabelAndSliderIfVisible(juce::Rectangle<int>& r,
+                                                  int sh, int ph,
+                                                  juce::Label* lbl,
+                                                  juce::Slider* sli)
+{
+    if (!lbl->isVisible() && !sli->isVisible()) return;
+    r.removeFromTop(sh);
+    lbl->setBounds(r.removeFromTop(ph));
+    sli->setBounds(r.removeFromTop(ph));
+    sli->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                         sli->getTextBoxWidth(), sli->getTextBoxHeight());
+}
 void DesignerPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
@@ -537,5 +636,18 @@ void DesignerPanel::resized()
                                       rsSlider->getTextBoxWidth(),
                                       rsSlider->getTextBoxHeight());
         }
+        // Quality slider
+        if (qualityLabel.isVisible() || qualitySlider->isVisible())
+        {
+            regions[0].removeFromTop(sh);
+            qualityLabel.setBounds(regions[0].removeFromTop(ph));
+            qualitySlider->setBounds(regions[0].removeFromTop(ph));
+            qualitySlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                                           qualitySlider->getTextBoxWidth(),
+                                           qualitySlider->getTextBoxHeight());
+        }
+        // Gain dB slider
+        appendLabelAndSliderIfVisible(regions[0], sh, ph, &gainDBLabel,
+                                      gainDBSlider.get());
     }
 }
