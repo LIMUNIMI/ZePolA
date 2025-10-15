@@ -85,6 +85,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     , rsLabel("", "STOPBAND RIPPLE")
     , typeCBox(std::make_shared<juce::ComboBox>())
     , analogShapeCBox(std::make_shared<juce::ComboBox>())
+    , biquadShapeCBox(std::make_shared<juce::ComboBox>())
     , orderSlider(std::make_shared<juce::Slider>())
     , cutoffSlider(std::make_shared<juce::Slider>())
     , rpSlider(std::make_shared<juce::Slider>())
@@ -102,6 +103,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     addAndMakeVisible(rsLabel);
     addAndMakeVisible(*typeCBox.get());
     addAndMakeVisible(*analogShapeCBox.get());
+    addAndMakeVisible(*biquadShapeCBox.get());
     addAndMakeVisible(*orderSlider.get());
     addAndMakeVisible(*cutoffSlider.get());
     addAndMakeVisible(*rpSlider.get());
@@ -119,11 +121,17 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
         typeCBox->addItem(FilterParameters::typeToString(
                               static_cast<FilterParameters::FilterType>(i)),
                           i + 1);
-    for (auto i = 0; i < FilterParameters::AnalogFilterShape::N_FILTER_SHAPES;
-         ++i)
+    for (auto i = 0;
+         i < FilterParameters::AnalogFilterShape::N_ANALOG_FILTER_SHAPES; ++i)
         analogShapeCBox->addItem(
             FilterParameters::shapeToString(
                 static_cast<FilterParameters::AnalogFilterShape>(i)),
+            i + 1);
+    for (auto i = 0;
+         i < FilterParameters::BiquadFilterShape::N_BIQUAD_FILTER_SHAPES; ++i)
+        biquadShapeCBox->addItem(
+            FilterParameters::shapeToString(
+                static_cast<FilterParameters::BiquadFilterShape>(i)),
             i + 1);
 
     orderSlider->setSliderStyle(juce::Slider::LinearHorizontal);
@@ -171,6 +179,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, AUTO_FILTER_PROPERTY_ID, autoButton));
 
+    updateBiquadFilterShapeVisibility();
     updateAnalogFilterShapeVisibility();
     updateFilterOrderVisibility();
     updatePassbandRippleVisibility();
@@ -193,6 +202,7 @@ void DesignerPanel::setTypeFromCBoxId(int i)
     filterParams.type = static_cast<FilterParameters::FilterType>(i - 1);
     DBG("TYPE: " << FilterParameters::typeToString(filterParams.type));
     autoDesignFilter();
+    updateBiquadFilterShapeVisibility();
     updateAnalogFilterShapeVisibility();
 }
 void DesignerPanel::setShapeFromCBoxId(int i)
@@ -235,6 +245,23 @@ void DesignerPanel::setAuto(bool b)
 }
 
 // =============================================================================
+void DesignerPanel::updateBiquadFilterShapeVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Biquad: shouldBeVisible = true; break;
+    default: break;  // Nothing to do
+    }
+    DBG("BiquadFilterShape menu should" << ((shouldBeVisible) ? "" : "n't")
+                                        << " be visible");
+    if (shouldBeVisible != biquadShapeCBox->isVisible())
+    {
+        DBG(" Setting BiquadFilterShape menu visibility");
+        biquadShapeCBox->setVisible(shouldBeVisible);
+        resized();
+    }
+}
 void DesignerPanel::updateAnalogFilterShapeVisibility()
 {
     bool shouldBeVisible = false;
@@ -413,6 +440,11 @@ void DesignerPanel::resized()
         typeCBox->setBounds(regions[0].removeFromTop(ph));
 
         // Shape combobox
+        if (biquadShapeCBox->isVisible())
+        {
+            regions[0].removeFromTop(sh);
+            biquadShapeCBox->setBounds(regions[0].removeFromTop(ph));
+        }
         if (analogShapeCBox->isVisible())
         {
             regions[0].removeFromTop(sh);

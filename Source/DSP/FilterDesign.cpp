@@ -49,8 +49,22 @@ FilterParameters::shapeToString(FilterParameters::AnalogFilterShape s)
 {
     switch (s)
     {
-    case FilterParameters::AnalogFilterShape::LowPass: return "LowPass";
-    case FilterParameters::AnalogFilterShape::HighPass: return "HighPass";
+    case FilterParameters::AnalogFilterShape::AnalogLowPass: return "LowPass";
+    case FilterParameters::AnalogFilterShape::AnalogHighPass: return "HighPass";
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for filter shape. Defaulting to 'UNKNOWN'");
+        return "UNKNOWN";
+    }
+}
+juce::String
+FilterParameters::shapeToString(FilterParameters::BiquadFilterShape s)
+{
+    switch (s)
+    {
+    case FilterParameters::BiquadFilterShape::BiquadLowPass: return "LowPass";
+    case FilterParameters::BiquadFilterShape::BiquadHighPass: return "HighPass";
+    case FilterParameters::BiquadFilterShape::BiquadPeaking: return "Peaking";
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter shape. Defaulting to 'UNKNOWN'");
@@ -62,7 +76,8 @@ FilterParameters::shapeToString(FilterParameters::AnalogFilterShape s)
 FilterParameters::FilterParameters(double f)
     : sr(f)
     , type(FilterParameters::FilterType::Butterworth)
-    , analogFShape(FilterParameters::AnalogFilterShape::LowPass)
+    , analogFShape(FilterParameters::AnalogFilterShape::AnalogLowPass)
+    , biquadFShape(FilterParameters::BiquadFilterShape::BiquadLowPass)
     , order(2)
     , cutoff(0.25 * f)
     , passbandRippleDb(3.0)
@@ -151,8 +166,13 @@ void FilterFactory::sanitizeParams(FilterParameters& params)
     if (params.type >= FilterParameters::FilterType::N_FILTER_TYPES)
         params.type = FilterParameters::FilterType::Butterworth;
     if (params.analogFShape
-        >= FilterParameters::AnalogFilterShape::N_FILTER_SHAPES)
-        params.analogFShape = FilterParameters::AnalogFilterShape::LowPass;
+        >= FilterParameters::AnalogFilterShape::N_ANALOG_FILTER_SHAPES)
+        params.analogFShape
+            = FilterParameters::AnalogFilterShape::AnalogLowPass;
+    if (params.biquadFShape
+        >= FilterParameters::BiquadFilterShape::N_BIQUAD_FILTER_SHAPES)
+        params.biquadFShape
+            = FilterParameters::BiquadFilterShape::BiquadLowPass;
     if (!params.sr) params.sr = 1.0;
     if (params.order < 2) params.order = 2;
     if (params.order % 2) params.order++;
@@ -176,10 +196,10 @@ void AnalogFilterFactory::applyParamsToPrototype(FilterParameters& params)
 {
     switch (params.analogFShape)
     {
-    case (FilterParameters::AnalogFilterShape::LowPass):
+    case (FilterParameters::AnalogFilterShape::AnalogLowPass):
         applyLowPassParamsToPrototype(params);
         break;
-    case (FilterParameters::AnalogFilterShape::HighPass):
+    case (FilterParameters::AnalogFilterShape::AnalogHighPass):
         applyHighPassParamsToPrototype(params);
         break;
     default:

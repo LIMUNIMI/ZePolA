@@ -118,6 +118,8 @@ public:
 
 private:
     // =========================================================================
+    /** Update visibility of the biquad filter shape menu */
+    void updateBiquadFilterShapeVisibility();
     /** Update visibility of the analog filter shape menu */
     void updateAnalogFilterShapeVisibility();
     /** Update visibility of the filter order slider */
@@ -146,7 +148,7 @@ private:
     ButtonListener autoButtonListener;
     ZePolAudioProcessor& processor;
     juce::Label panelLabel, orderLabel, cutoffLabel, rpLabel, rsLabel;
-    std::shared_ptr<juce::ComboBox> typeCBox, analogShapeCBox;
+    std::shared_ptr<juce::ComboBox> typeCBox, analogShapeCBox, biquadShapeCBox;
     std::shared_ptr<juce::Slider> orderSlider, cutoffSlider, rpSlider, rsSlider;
     std::shared_ptr<juce::ToggleButton> autoButton;
     juce::TextButton applyButton;

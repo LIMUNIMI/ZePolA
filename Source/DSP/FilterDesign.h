@@ -82,15 +82,29 @@ public:
     // =========================================================================
     enum AnalogFilterShape
     {
-        LowPass = 0,
-        HighPass,
+        AnalogLowPass = 0,
+        AnalogHighPass,
 
         // This should not be used as a shape, but only to get how many
         // shapes there are
-        N_FILTER_SHAPES
+        N_ANALOG_FILTER_SHAPES
     };
     /** Encode filter shape as a string */
     static juce::String shapeToString(AnalogFilterShape);
+
+    // =========================================================================
+    enum BiquadFilterShape
+    {
+        BiquadLowPass = 0,
+        BiquadHighPass,
+        BiquadPeaking,
+
+        // This should not be used as a shape, but only to get how many
+        // shapes there are
+        N_BIQUAD_FILTER_SHAPES
+    };
+    /** Encode filter shape as a string */
+    static juce::String shapeToString(BiquadFilterShape);
 
     // =========================================================================
     FilterParameters(double sr = 1.0);
@@ -108,6 +122,7 @@ public:
     double sr;
     FilterType type;
     AnalogFilterShape analogFShape;
+    BiquadFilterShape biquadFShape;
     int order;
     double cutoff;
     double passbandRippleDb;
