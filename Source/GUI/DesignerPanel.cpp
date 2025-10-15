@@ -171,6 +171,8 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, AUTO_FILTER_PROPERTY_ID, autoButton));
 
+    updateAnalogFilterShapeVisibility();
+    updateFilterOrderVisibility();
     updatePassbandRippleVisibility();
     updateStopbandRippleVisibility();
 }
@@ -191,8 +193,7 @@ void DesignerPanel::setTypeFromCBoxId(int i)
     filterParams.type = static_cast<FilterParameters::FilterType>(i - 1);
     DBG("TYPE: " << FilterParameters::typeToString(filterParams.type));
     autoDesignFilter();
-    updatePassbandRippleVisibility();
-    updateStopbandRippleVisibility();
+    updateAnalogFilterShapeVisibility();
 }
 void DesignerPanel::setShapeFromCBoxId(int i)
 {
@@ -234,6 +235,51 @@ void DesignerPanel::setAuto(bool b)
 }
 
 // =============================================================================
+void DesignerPanel::updateAnalogFilterShapeVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Butterworth:
+    case FilterParameters::FilterType::ChebyshevI:
+    case FilterParameters::FilterType::ChebyshevII:
+    case FilterParameters::FilterType::Elliptic: shouldBeVisible = true; break;
+    default: break;  // Nothing to do
+    }
+    DBG("AnalogFilterShape menu should" << ((shouldBeVisible) ? "" : "n't")
+                                        << " be visible");
+    if (shouldBeVisible != analogShapeCBox->isVisible())
+    {
+        DBG(" Setting AnalogFilterShape menu visibility");
+        analogShapeCBox->setVisible(shouldBeVisible);
+        updatePassbandRippleVisibility();
+        updateStopbandRippleVisibility();
+        updateFilterOrderVisibility();
+        resized();
+    }
+}
+void DesignerPanel::updateFilterOrderVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Butterworth:
+    case FilterParameters::FilterType::ChebyshevI:
+    case FilterParameters::FilterType::ChebyshevII:
+    case FilterParameters::FilterType::Elliptic: shouldBeVisible = true; break;
+    default: break;  // Nothing to do
+    }
+    DBG("FilterOrder slider should" << ((shouldBeVisible) ? "" : "n't")
+                                    << " be visible");
+    if (shouldBeVisible != orderSlider->isVisible()
+        || shouldBeVisible != orderLabel.isVisible())
+    {
+        DBG(" Setting FilterOrder slider visibility");
+        orderSlider->setVisible(shouldBeVisible);
+        orderLabel.setVisible(shouldBeVisible);
+        resized();
+    }
+}
 void DesignerPanel::updatePassbandRippleVisibility()
 {
     bool shouldBeVisible = false;
@@ -367,16 +413,22 @@ void DesignerPanel::resized()
         typeCBox->setBounds(regions[0].removeFromTop(ph));
 
         // Shape combobox
-        regions[0].removeFromTop(sh);
-        analogShapeCBox->setBounds(regions[0].removeFromTop(ph));
+        if (analogShapeCBox->isVisible())
+        {
+            regions[0].removeFromTop(sh);
+            analogShapeCBox->setBounds(regions[0].removeFromTop(ph));
+        }
 
         // Order slider
-        regions[0].removeFromTop(sh);
-        orderLabel.setBounds(regions[0].removeFromTop(ph));
-        orderSlider->setBounds(regions[0].removeFromTop(ph));
-        orderSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                     orderSlider->getTextBoxWidth(),
-                                     orderSlider->getTextBoxHeight());
+        if (orderSlider->isVisible() || orderLabel.isVisible())
+        {
+            regions[0].removeFromTop(sh);
+            orderLabel.setBounds(regions[0].removeFromTop(ph));
+            orderSlider->setBounds(regions[0].removeFromTop(ph));
+            orderSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                                         orderSlider->getTextBoxWidth(),
+                                         orderSlider->getTextBoxHeight());
+        }
 
         // Cutoff frequency slider
         regions[0].removeFromTop(sh);

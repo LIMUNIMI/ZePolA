@@ -118,6 +118,10 @@ public:
 
 private:
     // =========================================================================
+    /** Update visibility of the analog filter shape menu */
+    void updateAnalogFilterShapeVisibility();
+    /** Update visibility of the filter order slider */
+    void updateFilterOrderVisibility();
     /** Update visibility of passband ripple slider */
     void updatePassbandRippleVisibility();
     /** Update visibility of stopband ripple slider */
