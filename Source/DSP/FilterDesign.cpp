@@ -64,7 +64,17 @@ FilterParameters::shapeToString(FilterParameters::BiquadFilterShape s)
     {
     case FilterParameters::BiquadFilterShape::BiquadLowPass: return "LowPass";
     case FilterParameters::BiquadFilterShape::BiquadHighPass: return "HighPass";
+    case FilterParameters::BiquadFilterShape::BiquadNotch: return "Notch";
+    case FilterParameters::BiquadFilterShape::BiquadAllPass: return "AllPass";
     case FilterParameters::BiquadFilterShape::BiquadPeaking: return "Peaking";
+    case FilterParameters::BiquadFilterShape::BiquadLowShelf1:
+        return "LowShelf";
+    case FilterParameters::BiquadFilterShape::BiquadHighShelf1:
+        return "HighShelf";
+    case FilterParameters::BiquadFilterShape::BiquadLowShelf2:
+        return "Resonant LowShelf";
+    case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
+        return "Resonant HighShelf";
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter shape. Defaulting to 'UNKNOWN'");

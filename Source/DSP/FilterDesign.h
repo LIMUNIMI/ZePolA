@@ -97,7 +97,13 @@ public:
     {
         BiquadLowPass = 0,
         BiquadHighPass,
+        BiquadNotch,
+        BiquadAllPass,
         BiquadPeaking,
+        BiquadLowShelf1,
+        BiquadHighShelf1,
+        BiquadLowShelf2,
+        BiquadHighShelf2,
 
         // This should not be used as a shape, but only to get how many
         // shapes there are
