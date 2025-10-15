@@ -133,6 +133,8 @@ public:
     double cutoff;
     double passbandRippleDb;
     double stopbandRippleDb;
+    double quality;
+    double gain_db;
     ZPK zpk;
 
 private:

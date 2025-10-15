@@ -92,6 +92,8 @@ FilterParameters::FilterParameters(double f)
     , cutoff(0.25 * f)
     , passbandRippleDb(3.0)
     , stopbandRippleDb(20.0)
+    , quality(1.0)
+    , gain_db(0.0)
 {
 }
 void FilterParameters::computeZPK()
@@ -516,8 +518,8 @@ void BiquadFilterFactory::build(FilterParameters& params)
     auto omega = params.cutoff * juce::MathConstants<double>::twoPi / params.sr;
     auto sn    = std::sin(omega);
     auto coeffs = computeBiquadCoeffs(
-        sn, std::cos(omega), sn / (2.0 * 4.0 /* Q */),
-        juce::Decibels::decibelsToGain(-6.0 /* gainDB */ / 2.0, -300.0));
+        sn, std::cos(omega), sn / (2.0 * params.quality),
+        juce::Decibels::decibelsToGain(params.gain_db / 2.0, -300.0));
 
     auto zeros = solveRealQuadratic(coeffs[0], coeffs[1], coeffs[2]);
     auto poles = solveRealQuadratic(coeffs[3], coeffs[4], coeffs[5]);
