@@ -162,7 +162,7 @@ private:
 };
 
 // =============================================================================
-/** Class for digital filters derived from analog filters */
+/** Abstract base class for digital filters derived from analog filters */
 class AnalogFilterFactory : public FilterFactory
 {
 public:
@@ -256,4 +256,54 @@ public:
 private:
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EllipticFilterFactory)
+};
+
+// =============================================================================
+/** Abstract base class for digital biquad filters */
+class BiquadFilterFactory : public FilterFactory
+{
+public:
+    // =========================================================================
+    BiquadFilterFactory();
+
+    // =========================================================================
+    static std::unique_ptr<BiquadFilterFactory>
+    buildFactory(const FilterParameters&);
+
+    // =========================================================================
+    /** Compute the biquad filter coefficients */
+    virtual std::array<double, 7>
+    computeBiquadCoeffs(double sn, double cs, double alpha, double gain);
+    /** Solve quadratic equation */
+    template <typename FloatType>
+    static std::array<std::complex<FloatType>, 2>
+    solveQuadratic(std::complex<FloatType> a, std::complex<FloatType> b,
+                   std::complex<FloatType> c);
+    /** Solve quadratic equation with real coefficients */
+    template <typename FloatType>
+    static std::array<std::complex<FloatType>, 2>
+    solveRealQuadratic(FloatType a, FloatType b, FloatType c);
+    virtual void build(FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BiquadFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for lowpass biquad filters */
+class LowPassBiquadFilterFactory : public BiquadFilterFactory
+{
+public:
+    // =========================================================================
+    LowPassBiquadFilterFactory();
+
+    // =========================================================================
+    std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                              double alpha,
+                                              double gain) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LowPassBiquadFilterFactory)
 };

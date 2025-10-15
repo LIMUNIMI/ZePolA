@@ -140,36 +140,29 @@ void FilterFactory::build(FilterParameters& params)
 {
     sanitizeParams(params);
     params.zpk.reset();
+    std::unique_ptr<FilterFactory> ff;
     switch (params.type)
     {
-    case (FilterParameters::FilterType::Butterworth):
-    {
-        ButterworthFilterFactory ff;
-        ff.build(params);
-    }
-    break;
-    case (FilterParameters::FilterType::ChebyshevI):
-    {
-        ChebyshevIFilterFactory ff;
-        ff.build(params);
-    }
-    break;
-    case (FilterParameters::FilterType::ChebyshevII):
-    {
-        ChebyshevIIFilterFactory ff;
-        ff.build(params);
-    }
-    break;
-    case (FilterParameters::FilterType::Elliptic):
-    {
-        EllipticFilterFactory ff;
-        ff.build(params);
-    }
-    break;
+    case FilterParameters::FilterType::Butterworth:
+        ff = std::make_unique<ButterworthFilterFactory>();
+        break;
+    case FilterParameters::FilterType::ChebyshevI:
+        ff = std::make_unique<ChebyshevIFilterFactory>();
+        break;
+    case FilterParameters::FilterType::ChebyshevII:
+        ff = std::make_unique<ChebyshevIIFilterFactory>();
+        break;
+    case FilterParameters::FilterType::Elliptic:
+        ff = std::make_unique<EllipticFilterFactory>();
+        break;
+    case FilterParameters::FilterType::Biquad:
+        ff = BiquadFilterFactory::buildFactory(params);
+        break;
     default:
         UNHANDLED_SWITCH_CASE("Unhandled case for filter type. Doing nothing");
-        break;
+        return;
     }
+    ff->build(params);
 }
 void FilterFactory::sanitizeParams(FilterParameters& params)
 {
@@ -494,4 +487,84 @@ void EllipticFilterFactory::buildAnalogPrototype(FilterParameters& params)
         k_p *= a * a;
     }
     params.zpk.gain = sqrt(1.0 + eps_2) * k_p / k_z;
+}
+
+// =============================================================================
+BiquadFilterFactory::BiquadFilterFactory() {}
+template <typename FloatType>
+std::array<std::complex<FloatType>, 2>
+BiquadFilterFactory::solveQuadratic(std::complex<FloatType> a,
+                                    std::complex<FloatType> b,
+                                    std::complex<FloatType> c)
+{
+    auto a2 = std::complex<FloatType>(4) * a;
+    auto s  = std::sqrt(b * b - std::complex<FloatType>(4) * a * c);
+    auto x0 = (-b + s) / a2;
+    auto x1 = (-b - s) / a2;
+    return {x0, x1};
+}
+template <typename FloatType>
+std::array<std::complex<FloatType>, 2>
+BiquadFilterFactory::solveRealQuadratic(FloatType a, FloatType b, FloatType c)
+{
+    return BiquadFilterFactory::solveQuadratic(std::complex<FloatType>(a),
+                                               std::complex<FloatType>(b),
+                                               std::complex<FloatType>(c));
+}
+void BiquadFilterFactory::build(FilterParameters& params)
+{
+    auto omega = params.cutoff * juce::MathConstants<double>::twoPi / params.sr;
+    auto sn    = std::sin(omega);
+    auto coeffs = computeBiquadCoeffs(
+        sn, std::cos(omega), sn / (2.0 * 4.0 /* Q */),
+        juce::Decibels::decibelsToGain(-6.0 /* gainDB */ / 2.0, -300.0));
+
+    auto zeros = solveRealQuadratic(coeffs[0], coeffs[1], coeffs[2]);
+    auto poles = solveRealQuadratic(coeffs[3], coeffs[4], coeffs[5]);
+    if ((zeros[0] * zeros[1]).imag() || (poles[0] * poles[1]).imag())
+    {
+        DBG("Error while computing poles and zeros for biquad");
+        jassertfalse;
+        return;
+    }
+
+    params.zpk.zeros.push_back(zeros[(zeros[0].imag() > 0) ? 0 : 1]);
+    params.zpk.poles.push_back(poles[(poles[0].imag() > 0) ? 0 : 1]);
+    params.zpk.gain = coeffs[6];
+}
+std::array<double, 7> BiquadFilterFactory::computeBiquadCoeffs(double sn,
+                                                               double cs,
+                                                               double alpha,
+                                                               double gain)
+{
+    return {1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0};
+}
+std::unique_ptr<BiquadFilterFactory>
+BiquadFilterFactory::buildFactory(const FilterParameters& params)
+{
+    switch (params.biquadFShape)
+    {
+    case FilterParameters::BiquadFilterShape::BiquadLowPass:
+        return std::make_unique<LowPassBiquadFilterFactory>();
+    default:
+        UNHANDLED_SWITCH_CASE("Unhandled case for biquad filter shape. Setting "
+                              "elements to (0, 0)");
+        break;
+    }
+    return std::make_unique<BiquadFilterFactory>();
+}
+
+// =============================================================================
+LowPassBiquadFilterFactory::LowPassBiquadFilterFactory() {}
+std::array<double, 7>
+LowPassBiquadFilterFactory::computeBiquadCoeffs(double sn, double cs,
+                                                double alpha, double gain)
+{
+    auto t1 = 1.0 - cs;
+    auto t2 = t1 / 2.0;
+
+    auto a0 = 1.0 + alpha;
+    auto g  = t2 / a0;
+    auto g0 = g * a0;
+    return {1.0, t1 / g0, t2 / g0, 1.0, -2.0 * cs / a0, (1.0 - alpha) / a0, g};
 }
