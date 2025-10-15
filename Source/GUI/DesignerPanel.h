@@ -142,7 +142,7 @@ private:
     ButtonListener autoButtonListener;
     ZePolAudioProcessor& processor;
     juce::Label panelLabel, orderLabel, cutoffLabel, rpLabel, rsLabel;
-    std::shared_ptr<juce::ComboBox> typeCBox, shapeCBox;
+    std::shared_ptr<juce::ComboBox> typeCBox, analogShapeCBox;
     std::shared_ptr<juce::Slider> orderSlider, cutoffSlider, rpSlider, rsSlider;
     std::shared_ptr<juce::ToggleButton> autoButton;
     juce::TextButton applyButton;

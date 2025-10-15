@@ -43,12 +43,13 @@ juce::String FilterParameters::typeToString(FilterParameters::FilterType t)
         return "UNKNOWN";
     }
 }
-juce::String FilterParameters::shapeToString(FilterParameters::FilterShape s)
+juce::String
+FilterParameters::shapeToString(FilterParameters::AnalogFilterShape s)
 {
     switch (s)
     {
-    case FilterParameters::FilterShape::LowPass: return "LowPass";
-    case FilterParameters::FilterShape::HighPass: return "HighPass";
+    case FilterParameters::AnalogFilterShape::LowPass: return "LowPass";
+    case FilterParameters::AnalogFilterShape::HighPass: return "HighPass";
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter shape. Defaulting to 'UNKNOWN'");
@@ -60,7 +61,7 @@ juce::String FilterParameters::shapeToString(FilterParameters::FilterShape s)
 FilterParameters::FilterParameters(double f)
     : sr(f)
     , type(FilterParameters::FilterType::Butterworth)
-    , shape(FilterParameters::FilterShape::LowPass)
+    , analogFShape(FilterParameters::AnalogFilterShape::LowPass)
     , order(2)
     , cutoff(0.25 * f)
     , passbandRippleDb(3.0)
@@ -148,8 +149,9 @@ void FilterFactory::sanitizeParams(FilterParameters& params)
 {
     if (params.type >= FilterParameters::FilterType::N_FILTER_TYPES)
         params.type = FilterParameters::FilterType::Butterworth;
-    if (params.shape >= FilterParameters::FilterShape::N_FILTER_SHAPES)
-        params.shape = FilterParameters::FilterShape::LowPass;
+    if (params.analogFShape
+        >= FilterParameters::AnalogFilterShape::N_FILTER_SHAPES)
+        params.analogFShape = FilterParameters::AnalogFilterShape::LowPass;
     if (!params.sr) params.sr = 1.0;
     if (params.order < 2) params.order = 2;
     if (params.order % 2) params.order++;
@@ -171,12 +173,12 @@ void AnalogFilterFactory::build(FilterParameters& params)
 }
 void AnalogFilterFactory::applyParamsToPrototype(FilterParameters& params)
 {
-    switch (params.shape)
+    switch (params.analogFShape)
     {
-    case (FilterParameters::FilterShape::LowPass):
+    case (FilterParameters::AnalogFilterShape::LowPass):
         applyLowPassParamsToPrototype(params);
         break;
-    case (FilterParameters::FilterShape::HighPass):
+    case (FilterParameters::AnalogFilterShape::HighPass):
         applyHighPassParamsToPrototype(params);
         break;
     default:

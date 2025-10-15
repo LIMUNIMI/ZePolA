@@ -84,7 +84,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     , rpLabel("", "PASSBAND RIPPLE")
     , rsLabel("", "STOPBAND RIPPLE")
     , typeCBox(std::make_shared<juce::ComboBox>())
-    , shapeCBox(std::make_shared<juce::ComboBox>())
+    , analogShapeCBox(std::make_shared<juce::ComboBox>())
     , orderSlider(std::make_shared<juce::Slider>())
     , cutoffSlider(std::make_shared<juce::Slider>())
     , rpSlider(std::make_shared<juce::Slider>())
@@ -101,7 +101,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     addAndMakeVisible(rpLabel);
     addAndMakeVisible(rsLabel);
     addAndMakeVisible(*typeCBox.get());
-    addAndMakeVisible(*shapeCBox.get());
+    addAndMakeVisible(*analogShapeCBox.get());
     addAndMakeVisible(*orderSlider.get());
     addAndMakeVisible(*cutoffSlider.get());
     addAndMakeVisible(*rpSlider.get());
@@ -119,10 +119,12 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
         typeCBox->addItem(FilterParameters::typeToString(
                               static_cast<FilterParameters::FilterType>(i)),
                           i + 1);
-    for (auto i = 0; i < FilterParameters::FilterShape::N_FILTER_SHAPES; ++i)
-        shapeCBox->addItem(FilterParameters::shapeToString(
-                               static_cast<FilterParameters::FilterShape>(i)),
-                           i + 1);
+    for (auto i = 0; i < FilterParameters::AnalogFilterShape::N_FILTER_SHAPES;
+         ++i)
+        analogShapeCBox->addItem(
+            FilterParameters::shapeToString(
+                static_cast<FilterParameters::AnalogFilterShape>(i)),
+            i + 1);
 
     orderSlider->setSliderStyle(juce::Slider::LinearHorizontal);
     orderSlider->setNormalisableRange(
@@ -138,14 +140,14 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
     typeCBox->setSelectedId(1 + filterParams.type);
-    shapeCBox->setSelectedId(1 + filterParams.shape);
+    analogShapeCBox->setSelectedId(1 + filterParams.analogFShape);
     orderSlider->setValue(static_cast<double>(filterParams.order));
     cutoffSlider->setValue(filterParams.cutoff);
     rpSlider->setValue(filterParams.passbandRippleDb);
     rsSlider->setValue(filterParams.stopbandRippleDb);
 
     typeCBox->addListener(&typeCBoxListener);
-    shapeCBox->addListener(&shapeCBoxListener);
+    analogShapeCBox->addListener(&shapeCBoxListener);
     orderSlider->addListener(&orderSliderListener);
     cutoffSlider->addListener(&cutoffSliderListener);
     rpSlider->addListener(&rpSliderListener);
@@ -155,7 +157,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     typeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
         properties, "typeFilterDesign", typeCBox));
     shapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
-        properties, "shapeFilterDesign", shapeCBox));
+        properties, "shapeFilterDesign", analogShapeCBox));
     orderSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "orderFilterDesign", orderSlider));
     cutoffSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
@@ -175,7 +177,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
 DesignerPanel::~DesignerPanel()
 {
     typeCBox->removeListener(&typeCBoxListener);
-    shapeCBox->removeListener(&shapeCBoxListener);
+    analogShapeCBox->removeListener(&shapeCBoxListener);
     orderSlider->removeListener(&orderSliderListener);
     cutoffSlider->removeListener(&cutoffSliderListener);
     rpSlider->removeListener(&rpSliderListener);
@@ -194,8 +196,10 @@ void DesignerPanel::setTypeFromCBoxId(int i)
 }
 void DesignerPanel::setShapeFromCBoxId(int i)
 {
-    filterParams.shape = static_cast<FilterParameters::FilterShape>(i - 1);
-    DBG("SHAPE: " << FilterParameters::shapeToString(filterParams.shape));
+    filterParams.analogFShape
+        = static_cast<FilterParameters::AnalogFilterShape>(i - 1);
+    DBG("SHAPE: " << FilterParameters::shapeToString(
+            filterParams.analogFShape));
     autoDesignFilter();
 }
 void DesignerPanel::setOrder(double f)
@@ -364,7 +368,7 @@ void DesignerPanel::resized()
 
         // Shape combobox
         regions[0].removeFromTop(sh);
-        shapeCBox->setBounds(regions[0].removeFromTop(ph));
+        analogShapeCBox->setBounds(regions[0].removeFromTop(ph));
 
         // Order slider
         regions[0].removeFromTop(sh);

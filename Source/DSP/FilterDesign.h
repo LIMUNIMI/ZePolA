@@ -79,7 +79,7 @@ public:
     static juce::String typeToString(FilterType);
 
     // =========================================================================
-    enum FilterShape
+    enum AnalogFilterShape
     {
         LowPass = 0,
         HighPass,
@@ -89,7 +89,7 @@ public:
         N_FILTER_SHAPES
     };
     /** Encode filter shape as a string */
-    static juce::String shapeToString(FilterShape);
+    static juce::String shapeToString(AnalogFilterShape);
 
     // =========================================================================
     FilterParameters(double sr = 1.0);
@@ -106,7 +106,7 @@ public:
     // =========================================================================
     double sr;
     FilterType type;
-    FilterShape shape;
+    AnalogFilterShape analogFShape;
     int order;
     double cutoff;
     double passbandRippleDb;
