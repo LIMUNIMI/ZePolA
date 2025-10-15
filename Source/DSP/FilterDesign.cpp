@@ -37,6 +37,7 @@ juce::String FilterParameters::typeToString(FilterParameters::FilterType t)
     case FilterParameters::FilterType::ChebyshevI: return "Chebyshev I";
     case FilterParameters::FilterType::ChebyshevII: return "Chebyshev II";
     case FilterParameters::FilterType::Elliptic: return "Elliptic";
+    case FilterParameters::FilterType::Biquad: return "Biquad";
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter type. Defaulting to 'UNKNOWN'");

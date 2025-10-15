@@ -70,6 +70,7 @@ public:
         ChebyshevI,
         ChebyshevII,
         Elliptic,
+        Biquad,
 
         // This should not be used as a type, but only to get how many types
         // there are
