@@ -154,6 +154,7 @@ private:
     // =========================================================================
     void appendLabelAndSliderIfVisible(juce::Rectangle<int>&, int sh, int ph,
                                        juce::Label*, juce::Slider*);
+    void setSafeValueForStopbandRipple();
 
     // =========================================================================
     std::unique_ptr<ApplicationPropertiesButtonAttachment> autoButtonAttachment;

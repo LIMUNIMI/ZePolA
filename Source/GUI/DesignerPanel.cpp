@@ -242,11 +242,32 @@ DesignerPanel::~DesignerPanel()
 }
 
 // =============================================================================
+static double _RIPPLE_DELTA = 0.25;
+void DesignerPanel::setSafeValueForStopbandRipple()
+{
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Elliptic:
+        if (filterParams.stopbandRippleDb - filterParams.passbandRippleDb
+            < _RIPPLE_DELTA)
+        {
+            rsSlider->setValue(filterParams.stopbandRippleDb
+                               = filterParams.passbandRippleDb + _RIPPLE_DELTA);
+        }
+        break;
+    default: break;  // Nothing to do
+    }
+    DBG("  Stopband ripple:             " << filterParams.stopbandRippleDb);
+    DBG("  Stopband ripple lower bound: " << filterParams.passbandRippleDb
+                                                 + _RIPPLE_DELTA);
+    autoDesignFilter();
+}
+
 void DesignerPanel::setTypeFromCBoxId(int i)
 {
     filterParams.type = static_cast<FilterParameters::FilterType>(i - 1);
     DBG("TYPE: " << FilterParameters::typeToString(filterParams.type));
-    autoDesignFilter();
+    setSafeValueForStopbandRipple();
     updateBiquadFilterShapeVisibility();
     updateAnalogFilterShapeVisibility();
 }
@@ -342,13 +363,13 @@ void DesignerPanel::setPassbandRipple(double rp)
 {
     filterParams.passbandRippleDb = rp;
     DBG("PASSBAND RIPPLE: " << filterParams.passbandRippleDb);
-    autoDesignFilter();
+    setSafeValueForStopbandRipple();
 }
 void DesignerPanel::setStopbandRipple(double rs)
 {
     filterParams.stopbandRippleDb = rs;
     DBG("STOPBAND RIPPLE: " << filterParams.stopbandRippleDb);
-    autoDesignFilter();
+    setSafeValueForStopbandRipple();
 }
 void DesignerPanel::setQuality(double q)
 {
@@ -631,9 +652,9 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z, bool t,
 }
 void DesignerPanel::sampleRateChangedCallback(double sr)
 {
-    auto nr = cutoffSlider->getNormalisableRange();
+    auto nr  = cutoffSlider->getNormalisableRange();
     nr.start = 0.0;
-    nr.end = sr * 0.5;
+    nr.end   = sr * 0.5;
     nr.setSkewForCentre(std::clamp(sr * 0.25, 0.0, 1000.0));
     cutoffSlider->setNormalisableRange(nr);
     cutoff2Slider->setNormalisableRange(nr);
