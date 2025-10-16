@@ -655,6 +655,8 @@ void DesignerPanel::sampleRateChangedCallback(double sr)
     auto nr  = cutoffSlider->getNormalisableRange();
     nr.start = 0.0;
     nr.end   = sr * 0.5;
+
+    nr.interval = std::clamp(sr * 0.001, 0.0, 0.1);
     nr.setSkewForCentre(std::clamp(sr * 0.25, 0.0, 1000.0));
     cutoffSlider->setNormalisableRange(nr);
     cutoff2Slider->setNormalisableRange(nr);
