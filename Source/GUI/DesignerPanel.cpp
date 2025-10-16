@@ -440,7 +440,21 @@ void DesignerPanel::updateQualityVisibility()
     bool shouldBeVisible = false;
     switch (filterParams.type)
     {
-    case FilterParameters::FilterType::Biquad: shouldBeVisible = true; break;
+    case FilterParameters::FilterType::Biquad: 
+        switch (filterParams.biquadFShape)
+        {
+        case FilterParameters::BiquadFilterShape::BiquadLowPass:
+        case FilterParameters::BiquadFilterShape::BiquadHighPass:
+        case FilterParameters::BiquadFilterShape::BiquadNotch:
+        case FilterParameters::BiquadFilterShape::BiquadAllPass:
+        case FilterParameters::BiquadFilterShape::BiquadPeaking:
+        case FilterParameters::BiquadFilterShape::BiquadLowShelf2:
+        case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
+            shouldBeVisible = true;
+            break;
+        default: break;  // Nothing to do
+        };
+        break;
     default: break;  // Nothing to do
     }
     DBG("Quality slider should" << ((shouldBeVisible) ? "" : "n't")
@@ -463,6 +477,10 @@ void DesignerPanel::updateGainDBVisibility()
         switch (filterParams.biquadFShape)
         {
         case FilterParameters::BiquadFilterShape::BiquadPeaking:
+        case FilterParameters::BiquadFilterShape::BiquadLowShelf1:
+        case FilterParameters::BiquadFilterShape::BiquadHighShelf1:
+        case FilterParameters::BiquadFilterShape::BiquadLowShelf2:
+        case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
             shouldBeVisible = true;
             break;
         default: break;  // Nothing to do
