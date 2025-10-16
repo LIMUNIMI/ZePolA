@@ -161,19 +161,16 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     orderSlider->setNormalisableRange(
         {2.0, static_cast<double>(processor.getNElements()), 2.0});
     cutoffSlider->setSliderStyle(juce::Slider::LinearHorizontal);
-    cutoffSlider->setNormalisableRange(
-        {0.0, processor.getSampleRate() * 0.5, 0.1, 0.25});
     cutoff2Slider->setSliderStyle(juce::Slider::LinearHorizontal);
-    cutoff2Slider->setNormalisableRange(
-        {0.0, processor.getSampleRate() * 0.5, 0.1, 0.25});
+    sampleRateChangedCallback(p.getSampleRate());
     rpSlider->setSliderStyle(juce::Slider::LinearHorizontal);
-    rpSlider->setNormalisableRange({0.1, 5.0, 0.001});
+    rpSlider->setNormalisableRange({1e-6, 12, 0.001});
     rsSlider->setSliderStyle(juce::Slider::LinearHorizontal);
-    rsSlider->setNormalisableRange({6.0, 60.0, 0.001});
+    rsSlider->setNormalisableRange({0.1, 60.0, 0.001});
     qualitySlider->setSliderStyle(juce::Slider::LinearHorizontal);
-    qualitySlider->setNormalisableRange({0.25, 8.0, 0.001});
+    qualitySlider->setNormalisableRange({0.5, 12.0, 0.001});
     gainDBSlider->setSliderStyle(juce::Slider::LinearHorizontal);
-    gainDBSlider->setNormalisableRange({-20.0, 20.0, 0.001});
+    gainDBSlider->setNormalisableRange({-60.0, 60.0, 0.001});
 
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
@@ -635,10 +632,11 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z, bool t,
 void DesignerPanel::sampleRateChangedCallback(double sr)
 {
     auto nr = cutoffSlider->getNormalisableRange();
-    cutoffSlider->setNormalisableRange(
-        {nr.start, sr * 0.5, nr.interval, nr.skew});
-    cutoff2Slider->setNormalisableRange(
-        {nr.start, sr * 0.5, nr.interval, nr.skew});
+    nr.start = 0.0;
+    nr.end = sr * 0.5;
+    nr.setSkewForCentre(std::clamp(sr * 0.25, 0.0, 1000.0));
+    cutoffSlider->setNormalisableRange(nr);
+    cutoff2Slider->setNormalisableRange(nr);
     filterParams.sr = sr;
     autoDesignFilter();
 }
