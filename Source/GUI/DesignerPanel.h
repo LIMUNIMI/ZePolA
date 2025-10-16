@@ -152,8 +152,8 @@ private:
                             double gain);
 
     // =========================================================================
-    void appendLabelAndSliderIfVisible(juce::Rectangle<int>&, int sh, int ph,
-                                       juce::Label*, juce::Slider*);
+    void appendLabelAndComponentIfVisible(juce::Rectangle<int>&, int sh, int ph,
+                                          juce::Label*, juce::Component*);
     void setSafeValueForStopbandRipple();
 
     // =========================================================================

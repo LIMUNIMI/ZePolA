@@ -663,17 +663,26 @@ void DesignerPanel::sampleRateChangedCallback(double sr)
 }
 
 // =============================================================================
-void DesignerPanel::appendLabelAndSliderIfVisible(juce::Rectangle<int>& r,
-                                                  int sh, int ph,
-                                                  juce::Label* lbl,
-                                                  juce::Slider* sli)
+void DesignerPanel::appendLabelAndComponentIfVisible(juce::Rectangle<int>& r,
+                                                     int sh, int ph,
+                                                     juce::Label* lbl,
+                                                     juce::Component* cmp)
 {
-    if (!lbl->isVisible() && !sli->isVisible()) return;
-    r.removeFromTop(sh);
-    lbl->setBounds(r.removeFromTop(ph));
-    sli->setBounds(r.removeFromTop(ph));
-    sli->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                         sli->getTextBoxWidth(), sli->getTextBoxHeight());
+    bool lbl_flag = lbl && lbl->isVisible();
+    bool cmp_flag = cmp && cmp->isVisible();
+    if (lbl_flag || cmp_flag)
+    {
+        r.removeFromTop(sh);
+        if (lbl_flag) lbl->setBounds(r.removeFromTop(ph));
+        if (cmp_flag)
+        {
+            cmp->setBounds(r.removeFromTop(ph));
+            if (auto sli = dynamic_cast<juce::Slider*>(cmp))
+                sli->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                                     sli->getTextBoxWidth(),
+                                     sli->getTextBoxHeight());
+        }
+    }
 }
 void DesignerPanel::resized()
 {
@@ -690,79 +699,29 @@ void DesignerPanel::resized()
         panelLabel.setBounds(regions[0].removeFromTop(ph));
 
         // Type combo box
-        regions[0].removeFromTop(sh);
-        typeCBox->setBounds(regions[0].removeFromTop(ph));
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, nullptr,
+                                         typeCBox.get());
 
-        // Shape combobox
-        if (biquadShapeCBox->isVisible())
-        {
-            regions[0].removeFromTop(sh);
-            biquadShapeCBox->setBounds(regions[0].removeFromTop(ph));
-        }
-        if (analogShapeCBox->isVisible())
-        {
-            regions[0].removeFromTop(sh);
-            analogShapeCBox->setBounds(regions[0].removeFromTop(ph));
-        }
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, nullptr,
+                                         biquadShapeCBox.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, nullptr,
+                                         analogShapeCBox.get());
 
-        // Order slider
-        if (orderSlider->isVisible() || orderLabel.isVisible())
-        {
-            regions[0].removeFromTop(sh);
-            orderLabel.setBounds(regions[0].removeFromTop(ph));
-            orderSlider->setBounds(regions[0].removeFromTop(ph));
-            orderSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                         orderSlider->getTextBoxWidth(),
-                                         orderSlider->getTextBoxHeight());
-        }
-
-        // Cutoff frequency slider
-        regions[0].removeFromTop(sh);
-        cutoffLabel.setBounds(regions[0].removeFromTop(ph));
-        cutoffSlider->setBounds(regions[0].removeFromTop(ph));
-        cutoffSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                      cutoffSlider->getTextBoxWidth(),
-                                      cutoffSlider->getTextBoxHeight());
-        if (cutoff2Slider->isVisible())
-        {
-            cutoff2Slider->setBounds(regions[0].removeFromTop(ph));
-            cutoff2Slider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                           cutoff2Slider->getTextBoxWidth(),
-                                           cutoff2Slider->getTextBoxHeight());
-        }
-
-        // Passband ripple slider
-        if (rpLabel.isVisible() || rpSlider->isVisible())
-        {
-            regions[0].removeFromTop(sh);
-            rpLabel.setBounds(regions[0].removeFromTop(ph));
-            rpSlider->setBounds(regions[0].removeFromTop(ph));
-            rpSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                      rpSlider->getTextBoxWidth(),
-                                      rpSlider->getTextBoxHeight());
-        }
-        // Stopband ripple slider
-        if (rsLabel.isVisible() || rsSlider->isVisible())
-        {
-            regions[0].removeFromTop(sh);
-            rsLabel.setBounds(regions[0].removeFromTop(ph));
-            rsSlider->setBounds(regions[0].removeFromTop(ph));
-            rsSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                      rsSlider->getTextBoxWidth(),
-                                      rsSlider->getTextBoxHeight());
-        }
-        // Quality slider
-        if (qualityLabel.isVisible() || qualitySlider->isVisible())
-        {
-            regions[0].removeFromTop(sh);
-            qualityLabel.setBounds(regions[0].removeFromTop(ph));
-            qualitySlider->setBounds(regions[0].removeFromTop(ph));
-            qualitySlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                           qualitySlider->getTextBoxWidth(),
-                                           qualitySlider->getTextBoxHeight());
-        }
-        // Gain dB slider
-        appendLabelAndSliderIfVisible(regions[0], sh, ph, &gainDBLabel,
-                                      gainDBSlider.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &orderLabel,
+                                         orderSlider.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &cutoffLabel,
+                                         cutoffSlider.get());
+        appendLabelAndComponentIfVisible(
+            regions[0], sh, ph,
+            (cutoffSlider->isVisible()) ? nullptr : &cutoffLabel,
+            cutoff2Slider.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &rpLabel,
+                                         rpSlider.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &rsLabel,
+                                         rsSlider.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &qualityLabel,
+                                         qualitySlider.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &gainDBLabel,
+                                         gainDBSlider.get());
     }
 }
