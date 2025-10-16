@@ -37,18 +37,48 @@ juce::String FilterParameters::typeToString(FilterParameters::FilterType t)
     case FilterParameters::FilterType::ChebyshevI: return "Chebyshev I";
     case FilterParameters::FilterType::ChebyshevII: return "Chebyshev II";
     case FilterParameters::FilterType::Elliptic: return "Elliptic";
+    case FilterParameters::FilterType::Biquad: return "Biquad";
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter type. Defaulting to 'UNKNOWN'");
         return "UNKNOWN";
     }
 }
-juce::String FilterParameters::shapeToString(FilterParameters::FilterShape s)
+juce::String
+FilterParameters::shapeToString(FilterParameters::AnalogFilterShape s)
 {
     switch (s)
     {
-    case FilterParameters::FilterShape::LowPass: return "LowPass";
-    case FilterParameters::FilterShape::HighPass: return "HighPass";
+    case FilterParameters::AnalogFilterShape::AnalogLowPass: return "LowPass";
+    case FilterParameters::AnalogFilterShape::AnalogHighPass: return "HighPass";
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for filter shape. Defaulting to 'UNKNOWN'");
+        return "UNKNOWN";
+    }
+}
+juce::String
+FilterParameters::shapeToString(FilterParameters::BiquadFilterShape s)
+{
+    switch (s)
+    {
+    case FilterParameters::BiquadFilterShape::BiquadLowPass: return "LowPass";
+    case FilterParameters::BiquadFilterShape::BiquadHighPass: return "HighPass";
+    case FilterParameters::BiquadFilterShape::BiquadNotch: return "Notch";
+    case FilterParameters::BiquadFilterShape::BiquadAllPass: return "AllPass";
+    case FilterParameters::BiquadFilterShape::BiquadPeaking: return "Peaking";
+    case FilterParameters::BiquadFilterShape::BiquadLowShelf1:
+        return "LowShelf";
+    case FilterParameters::BiquadFilterShape::BiquadHighShelf1:
+        return "HighShelf";
+    case FilterParameters::BiquadFilterShape::BiquadLowShelf2:
+        return "Resonant LowShelf";
+    case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
+        return "Resonant HighShelf";
+    case FilterParameters::BiquadFilterShape::BiquadBandPass1:
+        return "BandPass";
+    case FilterParameters::BiquadFilterShape::BiquadBandPass2:
+        return "Resonant BandPass";
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter shape. Defaulting to 'UNKNOWN'");
@@ -60,11 +90,14 @@ juce::String FilterParameters::shapeToString(FilterParameters::FilterShape s)
 FilterParameters::FilterParameters(double f)
     : sr(f)
     , type(FilterParameters::FilterType::Butterworth)
-    , shape(FilterParameters::FilterShape::LowPass)
+    , analogFShape(FilterParameters::AnalogFilterShape::AnalogLowPass)
+    , biquadFShape(FilterParameters::BiquadFilterShape::BiquadLowPass)
     , order(2)
     , cutoff(0.25 * f)
-    , passbandRippleDb(3.0)
-    , stopbandRippleDb(20.0)
+    , passbandRippleDb(1e-6)
+    , stopbandRippleDb(120.0)
+    , quality(1.0)
+    , gain_db(0.0)
 {
 }
 void FilterParameters::computeZPK()
@@ -113,43 +146,42 @@ void FilterFactory::build(FilterParameters& params)
 {
     sanitizeParams(params);
     params.zpk.reset();
+    std::unique_ptr<FilterFactory> ff;
     switch (params.type)
     {
-    case (FilterParameters::FilterType::Butterworth):
-    {
-        ButterworthFilterFactory ff;
-        ff.build(params);
-    }
-    break;
-    case (FilterParameters::FilterType::ChebyshevI):
-    {
-        ChebyshevIFilterFactory ff;
-        ff.build(params);
-    }
-    break;
-    case (FilterParameters::FilterType::ChebyshevII):
-    {
-        ChebyshevIIFilterFactory ff;
-        ff.build(params);
-    }
-    break;
-    case (FilterParameters::FilterType::Elliptic):
-    {
-        EllipticFilterFactory ff;
-        ff.build(params);
-    }
-    break;
+    case FilterParameters::FilterType::Butterworth:
+        ff = std::make_unique<ButterworthFilterFactory>();
+        break;
+    case FilterParameters::FilterType::ChebyshevI:
+        ff = std::make_unique<ChebyshevIFilterFactory>();
+        break;
+    case FilterParameters::FilterType::ChebyshevII:
+        ff = std::make_unique<ChebyshevIIFilterFactory>();
+        break;
+    case FilterParameters::FilterType::Elliptic:
+        ff = std::make_unique<EllipticFilterFactory>();
+        break;
+    case FilterParameters::FilterType::Biquad:
+        ff = BiquadFilterFactory::buildFactory(params);
+        break;
     default:
         UNHANDLED_SWITCH_CASE("Unhandled case for filter type. Doing nothing");
-        break;
+        return;
     }
+    ff->build(params);
 }
 void FilterFactory::sanitizeParams(FilterParameters& params)
 {
     if (params.type >= FilterParameters::FilterType::N_FILTER_TYPES)
         params.type = FilterParameters::FilterType::Butterworth;
-    if (params.shape >= FilterParameters::FilterShape::N_FILTER_SHAPES)
-        params.shape = FilterParameters::FilterShape::LowPass;
+    if (params.analogFShape
+        >= FilterParameters::AnalogFilterShape::N_ANALOG_FILTER_SHAPES)
+        params.analogFShape
+            = FilterParameters::AnalogFilterShape::AnalogLowPass;
+    if (params.biquadFShape
+        >= FilterParameters::BiquadFilterShape::N_BIQUAD_FILTER_SHAPES)
+        params.biquadFShape
+            = FilterParameters::BiquadFilterShape::BiquadLowPass;
     if (!params.sr) params.sr = 1.0;
     if (params.order < 2) params.order = 2;
     if (params.order % 2) params.order++;
@@ -157,7 +189,8 @@ void FilterFactory::sanitizeParams(FilterParameters& params)
         params.passbandRippleDb = 3.0;
     if (params.stopbandRippleDb <= std::numeric_limits<double>::epsilon())
         params.stopbandRippleDb = 20.0;
-    params.cutoff = std::clamp(params.cutoff, 0.0, params.sr * 0.5);
+    params.cutoff  = std::clamp(params.cutoff, 0.0, params.sr * 0.5);
+    params.cutoff2 = std::clamp(params.cutoff2, 0.0, params.sr * 0.5);
 }
 
 // =============================================================================
@@ -171,12 +204,12 @@ void AnalogFilterFactory::build(FilterParameters& params)
 }
 void AnalogFilterFactory::applyParamsToPrototype(FilterParameters& params)
 {
-    switch (params.shape)
+    switch (params.analogFShape)
     {
-    case (FilterParameters::FilterShape::LowPass):
+    case (FilterParameters::AnalogFilterShape::AnalogLowPass):
         applyLowPassParamsToPrototype(params);
         break;
-    case (FilterParameters::FilterShape::HighPass):
+    case (FilterParameters::AnalogFilterShape::AnalogHighPass):
         applyHighPassParamsToPrototype(params);
         break;
     default:
@@ -461,4 +494,215 @@ void EllipticFilterFactory::buildAnalogPrototype(FilterParameters& params)
         k_p *= a * a;
     }
     params.zpk.gain = sqrt(1.0 + eps_2) * k_p / k_z;
+}
+
+// =============================================================================
+BiquadFilterFactory::BiquadFilterFactory() {}
+template <typename FloatType>
+std::array<std::complex<FloatType>, 2>
+BiquadFilterFactory::solveQuadratic(std::complex<FloatType> a,
+                                    std::complex<FloatType> b,
+                                    std::complex<FloatType> c)
+{
+    auto a2 = std::complex<FloatType>(2) * a;
+    auto s  = std::sqrt(b * b - std::complex<FloatType>(4) * a * c);
+    auto x0 = (-b + s) / a2;
+    auto x1 = (-b - s) / a2;
+    return {x0, x1};
+}
+template <typename FloatType>
+std::array<std::complex<FloatType>, 2>
+BiquadFilterFactory::solveRealQuadratic(FloatType a, FloatType b, FloatType c)
+{
+    return BiquadFilterFactory::solveQuadratic(std::complex<FloatType>(a),
+                                               std::complex<FloatType>(b),
+                                               std::complex<FloatType>(c));
+}
+void BiquadFilterFactory::build(FilterParameters& params)
+{
+    auto omega = params.cutoff * juce::MathConstants<double>::twoPi / params.sr;
+    auto sn    = std::sin(omega);
+    auto coeffs
+        = computeBiquadCoeffs(sn, std::cos(omega), sn / (2.0 * params.quality),
+                              std::pow(10.0, params.gain_db * 0.025), params);
+
+    auto zeros = solveRealQuadratic(coeffs[0], coeffs[1], coeffs[2]);
+    auto poles = solveRealQuadratic(coeffs[3], coeffs[4], coeffs[5]);
+    if ((zeros[0] * zeros[1]).imag() || (poles[0] * poles[1]).imag())
+    {
+        DBG("Error while computing poles and zeros for biquad");
+        jassertfalse;
+        return;
+    }
+
+    params.zpk.zeros.push_back(zeros[(zeros[0].imag() > 0) ? 0 : 1]);
+    params.zpk.poles.push_back(poles[(poles[0].imag() > 0) ? 0 : 1]);
+    params.zpk.gain = coeffs[6] * coeffs[0] / coeffs[3];
+}
+std::array<double, 7>
+BiquadFilterFactory::computeBiquadCoeffs(double /* sn */, double /* cs */,
+                                         double /* alpha */, double /* gain */,
+                                         const FilterParameters&)
+{
+    return {1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0};
+}
+std::unique_ptr<BiquadFilterFactory>
+BiquadFilterFactory::buildFactory(const FilterParameters& params)
+{
+    switch (params.biquadFShape)
+    {
+    case FilterParameters::BiquadFilterShape::BiquadLowPass:
+        return std::make_unique<LowPassBiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadHighPass:
+        return std::make_unique<HighPassBiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadNotch:
+        return std::make_unique<NotchBiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadAllPass:
+        return std::make_unique<AllPassBiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadPeaking:
+        return std::make_unique<PeakingBiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadLowShelf1:
+        return std::make_unique<LowShelf1BiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadHighShelf1:
+        return std::make_unique<HighShelf1BiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadLowShelf2:
+        return std::make_unique<LowShelf2BiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
+        return std::make_unique<HighShelf2BiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadBandPass1:
+        return std::make_unique<BandPass1BiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadBandPass2:
+        return std::make_unique<BandPass2BiquadFilterFactory>();
+    default:
+        UNHANDLED_SWITCH_CASE("Unhandled case for biquad filter shape. Setting "
+                              "elements to (0, 0)");
+        break;
+    }
+    return std::make_unique<BiquadFilterFactory>();
+}
+
+// =============================================================================
+LowPassBiquadFilterFactory::LowPassBiquadFilterFactory() {}
+HighPassBiquadFilterFactory::HighPassBiquadFilterFactory() {}
+NotchBiquadFilterFactory::NotchBiquadFilterFactory() {}
+AllPassBiquadFilterFactory::AllPassBiquadFilterFactory() {}
+PeakingBiquadFilterFactory::PeakingBiquadFilterFactory() {}
+LowShelf1BiquadFilterFactory::LowShelf1BiquadFilterFactory() {}
+HighShelf1BiquadFilterFactory::HighShelf1BiquadFilterFactory() {}
+LowShelf2BiquadFilterFactory::LowShelf2BiquadFilterFactory() {}
+HighShelf2BiquadFilterFactory::HighShelf2BiquadFilterFactory() {}
+BandPass1BiquadFilterFactory::BandPass1BiquadFilterFactory() {}
+BandPass2BiquadFilterFactory::BandPass2BiquadFilterFactory() {}
+
+std::array<double, 7>
+LowPassBiquadFilterFactory::computeBiquadCoeffs(double /* sn */, double cs,
+                                                double alpha, double /* gain */,
+                                                const FilterParameters&)
+{
+    auto t1 = 1.0 - cs;
+    auto t2 = t1 * 0.5;
+
+    return {t2, t1, t2, 1.0 + alpha, -2.0 * cs, 1.0 - alpha, 1.0};
+}
+std::array<double, 7> HighPassBiquadFilterFactory::computeBiquadCoeffs(
+    double /* sn */, double cs, double alpha, double /* gain */,
+    const FilterParameters&)
+{
+    auto t1 = 1.0 + cs;
+    auto t2 = t1 * 0.5;
+
+    return {t2, -t1, t2, 1.0 + alpha, -2.0 * cs, 1.0 - alpha, 1.0};
+}
+std::array<double, 7>
+NotchBiquadFilterFactory::computeBiquadCoeffs(double /* sn */, double cs,
+                                              double alpha, double /* gain */,
+                                              const FilterParameters&)
+{
+    auto t1 = -2.0 * cs;
+    return {1.0, t1, 1.0, 1.0 + alpha, t1, 1 - alpha, 1.0};
+}
+std::array<double, 7>
+AllPassBiquadFilterFactory::computeBiquadCoeffs(double /* sn */, double cs,
+                                                double alpha, double /* gain */,
+                                                const FilterParameters&)
+{
+    return {1.0 - alpha, -2.0 * cs,   1.0 + alpha, 1.0 + alpha,
+            -2.0 * cs,   1.0 - alpha, 1.0};
+}
+std::array<double, 7>
+PeakingBiquadFilterFactory::computeBiquadCoeffs(double /* sn */, double cs,
+                                                double alpha, double gain,
+                                                const FilterParameters&)
+{
+    auto t1 = alpha * gain;
+    auto t2 = alpha / gain;
+    auto t3 = -2.0 * cs;
+
+    return {1.0 + t1, t3, 1.0 - t1, 1.0 + t2, t3, 1.0 - t2, 1.0};
+}
+std::array<double, 7> LowShelf1BiquadFilterFactory::computeBiquadCoeffs(
+    double sn, double cs, double /* alpha */, double gain,
+    const FilterParameters&)
+{
+    auto beta = std::sqrt(2.0 * gain) * sn;
+    auto t1   = (gain + 1.0) - (gain - 1.0) * cs;
+    auto t2   = (gain - 1.0) - (gain + 1.0) * cs;
+    auto t3   = (gain + 1.0) + (gain - 1.0) * cs;
+    auto t4   = (gain - 1.0) + (gain + 1.0) * cs;
+    return {t1 + beta, 2.0 * t2,  t1 - beta, t3 + beta,
+            -2.0 * t4, t3 - beta, gain};
+}
+std::array<double, 7> HighShelf1BiquadFilterFactory::computeBiquadCoeffs(
+    double sn, double cs, double /* alpha */, double gain,
+    const FilterParameters&)
+{
+    auto beta = std::sqrt(2.0 * gain) * sn;
+    auto t1   = (gain + 1.0) - (gain - 1.0) * cs;
+    auto t2   = (gain - 1.0) - (gain + 1.0) * cs;
+    auto t3   = (gain + 1.0) + (gain - 1.0) * cs;
+    auto t4   = (gain - 1.0) + (gain + 1.0) * cs;
+    return {t3 + beta, -2.0 * t4, t3 - beta, t1 + beta,
+            2.0 * t2,  t1 - beta, gain};
+}
+std::array<double, 7> LowShelf2BiquadFilterFactory::computeBiquadCoeffs(
+    double sn, double cs, double /* alpha */, double gain,
+    const FilterParameters& params)
+{
+    auto beta = sn * sqrt(gain) / params.quality;
+    auto t1   = (gain + 1.0) - (gain - 1.0) * cs;
+    auto t2   = (gain - 1.0) - (gain + 1.0) * cs;
+    auto t3   = (gain + 1.0) + (gain - 1.0) * cs;
+    auto t4   = (gain - 1.0) + (gain + 1.0) * cs;
+    return {t1 + beta, 2.0 * t2,  t1 - beta, t3 + beta,
+            -2.0 * t4, t3 - beta, gain};
+}
+std::array<double, 7> HighShelf2BiquadFilterFactory::computeBiquadCoeffs(
+    double sn, double cs, double /* alpha */, double gain,
+    const FilterParameters& params)
+{
+    auto beta = sn * std::sqrt(gain) / params.quality;
+    auto t1   = (gain + 1.0) - (gain - 1.0) * cs;
+    auto t2   = (gain - 1.0) - (gain + 1.0) * cs;
+    auto t3   = (gain + 1.0) + (gain - 1.0) * cs;
+    auto t4   = (gain - 1.0) + (gain + 1.0) * cs;
+    return {t3 + beta, -2.0 * t4, t3 - beta, t1 + beta,
+            2.0 * t2,  t1 - beta, gain};
+}
+std::array<double, 7> BandPass1BiquadFilterFactory::computeBiquadCoeffs(
+    double /* sn */, double cs, double alpha, double /* gain */,
+    const FilterParameters&)
+{
+    return {alpha, 0.0, -alpha, 1.0 + alpha, -2.0 * cs, 1.0 - alpha, 1.0};
+}
+std::array<double, 7> BandPass2BiquadFilterFactory::computeBiquadCoeffs(
+    double /* sn */, double cs, double alpha, double /* gain */,
+    const FilterParameters& params)
+{
+    return {params.quality * alpha,
+            0.0,
+            -params.quality * alpha,
+            1.0 + alpha,
+            -2.0 * cs,
+            1.0 - alpha,
+            1.0};
 }

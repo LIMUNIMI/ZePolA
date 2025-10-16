@@ -65,16 +65,26 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
                              juce::ApplicationProperties& properties)
     : typeCBoxListener(std::bind(&DesignerPanel::setTypeFromCBoxId, this,
                                  std::placeholders::_1))
-    , shapeCBoxListener(std::bind(&DesignerPanel::setShapeFromCBoxId, this,
-                                  std::placeholders::_1))
+    , analogShapeCBoxListener(
+          std::bind(&DesignerPanel::setAnalogShapeFromCBoxId, this,
+                    std::placeholders::_1))
+    , biquadShapeCBoxListener(
+          std::bind(&DesignerPanel::setBiquadShapeFromCBoxId, this,
+                    std::placeholders::_1))
     , orderSliderListener(
           std::bind(&DesignerPanel::setOrder, this, std::placeholders::_1))
     , cutoffSliderListener(
           std::bind(&DesignerPanel::setCutoff, this, std::placeholders::_1))
+    , cutoff2SliderListener(
+          std::bind(&DesignerPanel::setCutoff2, this, std::placeholders::_1))
     , rpSliderListener(std::bind(&DesignerPanel::setPassbandRipple, this,
                                  std::placeholders::_1))
     , rsSliderListener(std::bind(&DesignerPanel::setStopbandRipple, this,
                                  std::placeholders::_1))
+    , qualitySliderListener(
+          std::bind(&DesignerPanel::setQuality, this, std::placeholders::_1))
+    , gainDBSliderListener(
+          std::bind(&DesignerPanel::setGainDB, this, std::placeholders::_1))
     , autoButtonListener(
           std::bind(&DesignerPanel::setAuto, this, std::placeholders::_1))
     , processor(p)
@@ -83,16 +93,23 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     , cutoffLabel("", "CUTOFF FREQUENCY")
     , rpLabel("", "PASSBAND RIPPLE")
     , rsLabel("", "STOPBAND RIPPLE")
+    , qualityLabel("", "QUALITY")
+    , gainDBLabel("", "GAIN")
     , typeCBox(std::make_shared<juce::ComboBox>())
-    , shapeCBox(std::make_shared<juce::ComboBox>())
+    , analogShapeCBox(std::make_shared<juce::ComboBox>())
+    , biquadShapeCBox(std::make_shared<juce::ComboBox>())
     , orderSlider(std::make_shared<juce::Slider>())
     , cutoffSlider(std::make_shared<juce::Slider>())
+    , cutoff2Slider(std::make_shared<juce::Slider>())
     , rpSlider(std::make_shared<juce::Slider>())
     , rsSlider(std::make_shared<juce::Slider>())
+    , qualitySlider(std::make_shared<juce::Slider>())
+    , gainDBSlider(std::make_shared<juce::Slider>())
     , autoButton(std::make_shared<juce::ToggleButton>())
     , applyButton("UPDATE")
     , filterParams(p.getSampleRate())
     , autoUpdate(false)
+    , crossUpdateShape(false)
     , applicationProperties(properties)
 {
     addAndMakeVisible(panelLabel);
@@ -100,12 +117,18 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     addAndMakeVisible(cutoffLabel);
     addAndMakeVisible(rpLabel);
     addAndMakeVisible(rsLabel);
+    addAndMakeVisible(qualityLabel);
+    addAndMakeVisible(gainDBLabel);
     addAndMakeVisible(*typeCBox.get());
-    addAndMakeVisible(*shapeCBox.get());
+    addAndMakeVisible(*analogShapeCBox.get());
+    addAndMakeVisible(*biquadShapeCBox.get());
     addAndMakeVisible(*orderSlider.get());
     addAndMakeVisible(*cutoffSlider.get());
+    addAndMakeVisible(*cutoff2Slider.get());
     addAndMakeVisible(*rpSlider.get());
     addAndMakeVisible(*rsSlider.get());
+    addAndMakeVisible(*qualitySlider.get());
+    addAndMakeVisible(*gainDBSlider.get());
     addAndMakeVisible(*autoButton.get());
     addAndMakeVisible(applyButton);
 
@@ -114,89 +137,209 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     cutoffLabel.setJustificationType(juce::Justification::centred);
     rpLabel.setJustificationType(juce::Justification::centred);
     rsLabel.setJustificationType(juce::Justification::centred);
+    qualityLabel.setJustificationType(juce::Justification::centred);
+    gainDBLabel.setJustificationType(juce::Justification::centred);
 
     for (auto i = 0; i < FilterParameters::FilterType::N_FILTER_TYPES; ++i)
         typeCBox->addItem(FilterParameters::typeToString(
                               static_cast<FilterParameters::FilterType>(i)),
                           i + 1);
-    for (auto i = 0; i < FilterParameters::FilterShape::N_FILTER_SHAPES; ++i)
-        shapeCBox->addItem(FilterParameters::shapeToString(
-                               static_cast<FilterParameters::FilterShape>(i)),
-                           i + 1);
+    for (auto i = 0;
+         i < FilterParameters::AnalogFilterShape::N_ANALOG_FILTER_SHAPES; ++i)
+        analogShapeCBox->addItem(
+            FilterParameters::shapeToString(
+                static_cast<FilterParameters::AnalogFilterShape>(i)),
+            i + 1);
+    for (auto i = 0;
+         i < FilterParameters::BiquadFilterShape::N_BIQUAD_FILTER_SHAPES; ++i)
+        biquadShapeCBox->addItem(
+            FilterParameters::shapeToString(
+                static_cast<FilterParameters::BiquadFilterShape>(i)),
+            i + 1);
 
     orderSlider->setSliderStyle(juce::Slider::LinearHorizontal);
     orderSlider->setNormalisableRange(
         {2.0, static_cast<double>(processor.getNElements()), 2.0});
     cutoffSlider->setSliderStyle(juce::Slider::LinearHorizontal);
-    cutoffSlider->setNormalisableRange(
-        {0.0, processor.getSampleRate() * 0.5, 0.1, 0.25});
+    cutoff2Slider->setSliderStyle(juce::Slider::LinearHorizontal);
+    sampleRateChangedCallback(p.getSampleRate());
     rpSlider->setSliderStyle(juce::Slider::LinearHorizontal);
-    rpSlider->setNormalisableRange({0.1, 5.0, 0.001});
+    rpSlider->setNormalisableRange({1e-6, 12, 0.001});
     rsSlider->setSliderStyle(juce::Slider::LinearHorizontal);
-    rsSlider->setNormalisableRange({6.0, 60.0, 0.001});
+    rsSlider->setNormalisableRange({0.1, 60.0, 0.001});
+    qualitySlider->setSliderStyle(juce::Slider::LinearHorizontal);
+    qualitySlider->setNormalisableRange({0.5, 12.0, 0.001});
+    gainDBSlider->setSliderStyle(juce::Slider::LinearHorizontal);
+    gainDBSlider->setNormalisableRange({-60.0, 60.0, 0.001});
 
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
     typeCBox->setSelectedId(1 + filterParams.type);
-    shapeCBox->setSelectedId(1 + filterParams.shape);
+    analogShapeCBox->setSelectedId(1 + filterParams.analogFShape);
+    biquadShapeCBox->setSelectedId(1 + filterParams.biquadFShape);
     orderSlider->setValue(static_cast<double>(filterParams.order));
     cutoffSlider->setValue(filterParams.cutoff);
+    cutoff2Slider->setValue(filterParams.cutoff2);
     rpSlider->setValue(filterParams.passbandRippleDb);
     rsSlider->setValue(filterParams.stopbandRippleDb);
+    qualitySlider->setValue(filterParams.quality);
+    gainDBSlider->setValue(filterParams.gain_db);
 
     typeCBox->addListener(&typeCBoxListener);
-    shapeCBox->addListener(&shapeCBoxListener);
+    analogShapeCBox->addListener(&analogShapeCBoxListener);
+    biquadShapeCBox->addListener(&biquadShapeCBoxListener);
     orderSlider->addListener(&orderSliderListener);
     cutoffSlider->addListener(&cutoffSliderListener);
+    cutoff2Slider->addListener(&cutoff2SliderListener);
     rpSlider->addListener(&rpSliderListener);
     rsSlider->addListener(&rsSliderListener);
+    qualitySlider->addListener(&qualitySliderListener);
+    gainDBSlider->addListener(&gainDBSliderListener);
     autoButton->addListener(&autoButtonListener);
 
     typeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
         properties, "typeFilterDesign", typeCBox));
-    shapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
-        properties, "shapeFilterDesign", shapeCBox));
+    biquadShapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
+        properties, "biquadShapeFilterDesign", biquadShapeCBox));
+    analogShapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
+        properties, "analogShapeFilterDesign", analogShapeCBox));
     orderSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "orderFilterDesign", orderSlider));
     cutoffSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "cutoffFilterDesign", cutoffSlider));
+    cutoff2SliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
+        properties, "cutoff2FilterDesign", cutoff2Slider));
     rpSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "rpFilterDesign", rpSlider));
     rsSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "rsFilterDesign", rsSlider));
+    qualitySliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
+        properties, "qualityFilterDesign", qualitySlider));
+    gainDBSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
+        properties, "gainDBFilterDesign", gainDBSlider));
 
     applyButton.onClick = std::bind(&DesignerPanel::designFilter, this);
     autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
         properties, AUTO_FILTER_PROPERTY_ID, autoButton));
 
-    updatePassbandRippleVisibility();
-    updateStopbandRippleVisibility();
+    updateBiquadFilterShapeVisibility();
+    updateAnalogFilterShapeVisibility();
+    setCrossUpdateShape(true);
 }
 DesignerPanel::~DesignerPanel()
 {
     typeCBox->removeListener(&typeCBoxListener);
-    shapeCBox->removeListener(&shapeCBoxListener);
+    analogShapeCBox->removeListener(&analogShapeCBoxListener);
+    biquadShapeCBox->removeListener(&biquadShapeCBoxListener);
     orderSlider->removeListener(&orderSliderListener);
     cutoffSlider->removeListener(&cutoffSliderListener);
+    cutoff2Slider->removeListener(&cutoff2SliderListener);
     rpSlider->removeListener(&rpSliderListener);
     rsSlider->removeListener(&rsSliderListener);
+    qualitySlider->removeListener(&qualitySliderListener);
+    gainDBSlider->removeListener(&gainDBSliderListener);
     autoButton->removeListener(&autoButtonListener);
 }
 
 // =============================================================================
+static double _RIPPLE_DELTA = 0.25;
+void DesignerPanel::setSafeValueForStopbandRipple()
+{
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Elliptic:
+        if (filterParams.stopbandRippleDb - filterParams.passbandRippleDb
+            < _RIPPLE_DELTA)
+        {
+            rsSlider->setValue(filterParams.stopbandRippleDb
+                               = filterParams.passbandRippleDb + _RIPPLE_DELTA);
+        }
+        break;
+    default: break;  // Nothing to do
+    }
+    DBG("  Stopband ripple:             " << filterParams.stopbandRippleDb);
+    DBG("  Stopband ripple lower bound: " << filterParams.passbandRippleDb
+                                                 + _RIPPLE_DELTA);
+    autoDesignFilter();
+}
+
 void DesignerPanel::setTypeFromCBoxId(int i)
 {
     filterParams.type = static_cast<FilterParameters::FilterType>(i - 1);
     DBG("TYPE: " << FilterParameters::typeToString(filterParams.type));
-    autoDesignFilter();
-    updatePassbandRippleVisibility();
-    updateStopbandRippleVisibility();
+    setSafeValueForStopbandRipple();
+    updateBiquadFilterShapeVisibility();
+    updateAnalogFilterShapeVisibility();
 }
-void DesignerPanel::setShapeFromCBoxId(int i)
+void DesignerPanel::setAnalogShapeFromCBoxId(int i)
 {
-    filterParams.shape = static_cast<FilterParameters::FilterShape>(i - 1);
-    DBG("SHAPE: " << FilterParameters::shapeToString(filterParams.shape));
+    filterParams.analogFShape
+        = static_cast<FilterParameters::AnalogFilterShape>(i - 1);
+    DBG("ANALOG_SHAPE: " << FilterParameters::shapeToString(
+            filterParams.analogFShape));
     autoDesignFilter();
+    // Cross-update to biquad filter shapes if compatible
+    if (crossUpdateShape)
+    {
+        switch (filterParams.type)
+        {
+        case FilterParameters::FilterType::Biquad: break;
+        default:
+        {
+            int j;
+            switch (filterParams.analogFShape)
+            {
+            case FilterParameters::AnalogFilterShape::AnalogLowPass:
+                j = FilterParameters::BiquadFilterShape::BiquadLowPass + 1;
+                break;
+            case FilterParameters::AnalogFilterShape::AnalogHighPass:
+                j = FilterParameters::BiquadFilterShape::BiquadHighPass + 1;
+                break;
+            default: j = 0; break;  // Incompatible filter shape
+            }
+            if (j) biquadShapeCBox->setSelectedId(j);
+        }
+        break;
+        }
+    }
+}
+void DesignerPanel::setBiquadShapeFromCBoxId(int i)
+{
+    filterParams.biquadFShape
+        = static_cast<FilterParameters::BiquadFilterShape>(i - 1);
+    DBG("BIQUAD_SHAPE: " << FilterParameters::shapeToString(
+            filterParams.biquadFShape));
+    autoDesignFilter();
+    // Cross-update to analog filter shapes if compatible
+    if (crossUpdateShape)
+    {
+        switch (filterParams.type)
+        {
+        case FilterParameters::FilterType::Biquad:
+        {
+            int j;
+            switch (filterParams.biquadFShape)
+            {
+            case FilterParameters::BiquadFilterShape::BiquadLowPass:
+            case FilterParameters::BiquadFilterShape::BiquadHighShelf1:
+            case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
+                j = FilterParameters::AnalogFilterShape::AnalogLowPass + 1;
+                break;
+            case FilterParameters::BiquadFilterShape::BiquadHighPass:
+            case FilterParameters::BiquadFilterShape::BiquadLowShelf1:
+            case FilterParameters::BiquadFilterShape::BiquadLowShelf2:
+                j = FilterParameters::AnalogFilterShape::AnalogHighPass + 1;
+                break;
+            default: j = 0; break;  // Incompatible filter shape
+            }
+            if (j) analogShapeCBox->setSelectedId(j);
+        }
+        break;
+        default: break;
+        }
+    }
+    updateQualityVisibility();
+    updateGainDBVisibility();
 }
 void DesignerPanel::setOrder(double f)
 {
@@ -210,16 +353,34 @@ void DesignerPanel::setCutoff(double f)
     DBG("CUTOFF: " << filterParams.cutoff);
     autoDesignFilter();
 }
+void DesignerPanel::setCutoff2(double f)
+{
+    filterParams.cutoff2 = f;
+    DBG("CUTOFF_2: " << filterParams.cutoff2);
+    autoDesignFilter();
+}
 void DesignerPanel::setPassbandRipple(double rp)
 {
     filterParams.passbandRippleDb = rp;
     DBG("PASSBAND RIPPLE: " << filterParams.passbandRippleDb);
-    autoDesignFilter();
+    setSafeValueForStopbandRipple();
 }
 void DesignerPanel::setStopbandRipple(double rs)
 {
     filterParams.stopbandRippleDb = rs;
     DBG("STOPBAND RIPPLE: " << filterParams.stopbandRippleDb);
+    setSafeValueForStopbandRipple();
+}
+void DesignerPanel::setQuality(double q)
+{
+    filterParams.quality = q;
+    DBG("QUALITY: " << filterParams.quality);
+    autoDesignFilter();
+}
+void DesignerPanel::setGainDB(double db)
+{
+    filterParams.gain_db = db;
+    DBG("GAIN dB: " << filterParams.gain_db);
     autoDesignFilter();
 }
 void DesignerPanel::setAuto(bool b)
@@ -228,8 +389,95 @@ void DesignerPanel::setAuto(bool b)
     DBG(((autoUpdate) ? "AUTO" : "MANUAL"));
     autoDesignFilter();
 }
+void DesignerPanel::setCrossUpdateShape(bool b)
+{
+    crossUpdateShape = b;
+    DBG("CROSS UPDATE: " << ((crossUpdateShape) ? "on" : "off"));
+    autoDesignFilter();
+}
 
 // =============================================================================
+void DesignerPanel::updateBiquadFilterShapeVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Biquad: shouldBeVisible = true; break;
+    default: break;  // Nothing to do
+    }
+    DBG("BiquadFilterShape menu should" << ((shouldBeVisible) ? "" : "n't")
+                                        << " be visible");
+    if (shouldBeVisible)
+        setBiquadShapeFromCBoxId(biquadShapeCBox->getSelectedId());
+    if (shouldBeVisible != biquadShapeCBox->isVisible())
+    {
+        DBG(" Setting BiquadFilterShape menu visibility");
+        biquadShapeCBox->setVisible(shouldBeVisible);
+        resized();
+    }
+    updateQualityVisibility();
+    updateGainDBVisibility();
+    updateCutoff2Visibility();
+}
+void DesignerPanel::updateAnalogFilterShapeVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Butterworth:
+    case FilterParameters::FilterType::ChebyshevI:
+    case FilterParameters::FilterType::ChebyshevII:
+    case FilterParameters::FilterType::Elliptic: shouldBeVisible = true; break;
+    default: break;  // Nothing to do
+    }
+    DBG("AnalogFilterShape menu should" << ((shouldBeVisible) ? "" : "n't")
+                                        << " be visible");
+    if (shouldBeVisible)
+        setAnalogShapeFromCBoxId(analogShapeCBox->getSelectedId());
+    if (shouldBeVisible != analogShapeCBox->isVisible())
+    {
+        DBG(" Setting AnalogFilterShape menu visibility");
+        analogShapeCBox->setVisible(shouldBeVisible);
+        resized();
+    }
+    updatePassbandRippleVisibility();
+    updateStopbandRippleVisibility();
+    updateFilterOrderVisibility();
+}
+void DesignerPanel::updateFilterOrderVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Butterworth:
+    case FilterParameters::FilterType::ChebyshevI:
+    case FilterParameters::FilterType::ChebyshevII:
+    case FilterParameters::FilterType::Elliptic: shouldBeVisible = true; break;
+    default: break;  // Nothing to do
+    }
+    DBG("FilterOrder slider should" << ((shouldBeVisible) ? "" : "n't")
+                                    << " be visible");
+    if (shouldBeVisible != orderSlider->isVisible()
+        || shouldBeVisible != orderLabel.isVisible())
+    {
+        DBG(" Setting FilterOrder slider visibility");
+        orderSlider->setVisible(shouldBeVisible);
+        orderLabel.setVisible(shouldBeVisible);
+        resized();
+    }
+}
+void DesignerPanel::updateCutoff2Visibility()
+{
+    bool shouldBeVisible = false;
+    DBG("Cutoff2 slider should" << ((shouldBeVisible) ? "" : "n't")
+                                << " be visible");
+    if (shouldBeVisible != cutoff2Slider->isVisible())
+    {
+        DBG(" Setting Cutoff2 slider visibility");
+        cutoff2Slider->setVisible(shouldBeVisible);
+        resized();
+    }
+}
 void DesignerPanel::updatePassbandRippleVisibility()
 {
     bool shouldBeVisible = false;
@@ -267,6 +515,72 @@ void DesignerPanel::updateStopbandRippleVisibility()
         DBG(" Setting StopbandRipple slider visibility");
         rsLabel.setVisible(shouldBeVisible);
         rsSlider->setVisible(shouldBeVisible);
+        resized();
+    }
+}
+void DesignerPanel::updateQualityVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Biquad:
+        switch (filterParams.biquadFShape)
+        {
+        case FilterParameters::BiquadFilterShape::BiquadLowPass:
+        case FilterParameters::BiquadFilterShape::BiquadHighPass:
+        case FilterParameters::BiquadFilterShape::BiquadNotch:
+        case FilterParameters::BiquadFilterShape::BiquadAllPass:
+        case FilterParameters::BiquadFilterShape::BiquadPeaking:
+        case FilterParameters::BiquadFilterShape::BiquadLowShelf2:
+        case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
+        case FilterParameters::BiquadFilterShape::BiquadBandPass1:
+        case FilterParameters::BiquadFilterShape::BiquadBandPass2:
+            shouldBeVisible = true;
+            break;
+        default: break;  // Nothing to do
+        };
+        break;
+    default: break;  // Nothing to do
+    }
+    DBG("Quality slider should" << ((shouldBeVisible) ? "" : "n't")
+                                << " be visible");
+    if (shouldBeVisible != qualitySlider->isVisible()
+        || shouldBeVisible != qualityLabel.isVisible())
+    {
+        DBG(" Setting Quality slider visibility");
+        qualityLabel.setVisible(shouldBeVisible);
+        qualitySlider->setVisible(shouldBeVisible);
+        resized();
+    }
+}
+void DesignerPanel::updateGainDBVisibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Biquad:
+        switch (filterParams.biquadFShape)
+        {
+        case FilterParameters::BiquadFilterShape::BiquadPeaking:
+        case FilterParameters::BiquadFilterShape::BiquadLowShelf1:
+        case FilterParameters::BiquadFilterShape::BiquadHighShelf1:
+        case FilterParameters::BiquadFilterShape::BiquadLowShelf2:
+        case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
+            shouldBeVisible = true;
+            break;
+        default: break;  // Nothing to do
+        };
+        break;
+    default: break;  // Nothing to do
+    }
+    DBG("GainDB slider should" << ((shouldBeVisible) ? "" : "n't")
+                               << " be visible");
+    if (shouldBeVisible != gainDBSlider->isVisible()
+        || shouldBeVisible != gainDBLabel.isVisible())
+    {
+        DBG(" Setting GainDB slider visibility");
+        gainDBLabel.setVisible(shouldBeVisible);
+        gainDBSlider->setVisible(shouldBeVisible);
         resized();
     }
 }
@@ -320,13 +634,15 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z, bool t,
 {
     juce::String i_str(i);
     double m = abs(z), a = std::arg(z) / juce::MathConstants<double>::pi;
+    bool inv = m > 1.0;
+    if (inv) m = 1.0 / m;
     processor.setParameterValue(TYPE_ID_PREFIX + i_str, static_cast<float>(t));
     processor.setParameterValue(MAGNITUDE_ID_PREFIX + i_str,
                                 static_cast<float>(m));
     processor.setParameterValue(PHASE_ID_PREFIX + i_str, static_cast<float>(a));
     processor.setParameterValue(GAIN_ID_PREFIX + i_str,
                                 static_cast<float>(gain));
-    processor.setParameterValue(INVERTED_ID_PREFIX + i_str, false);
+    processor.setParameterValue(INVERTED_ID_PREFIX + i_str, inv);
     processor.setParameterValue(SINGLE_ID_PREFIX + i_str, false);
     processor.setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
     ONLY_ON_DEBUG(if (!autoUpdate) {
@@ -336,14 +652,38 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z, bool t,
 }
 void DesignerPanel::sampleRateChangedCallback(double sr)
 {
-    auto nr = cutoffSlider->getNormalisableRange();
-    cutoffSlider->setNormalisableRange(
-        {nr.start, sr * 0.5, nr.interval, nr.skew});
+    auto nr  = cutoffSlider->getNormalisableRange();
+    nr.start = 0.0;
+    nr.end   = sr * 0.5;
+    nr.setSkewForCentre(std::clamp(sr * 0.25, 0.0, 1000.0));
+    cutoffSlider->setNormalisableRange(nr);
+    cutoff2Slider->setNormalisableRange(nr);
     filterParams.sr = sr;
     autoDesignFilter();
 }
 
 // =============================================================================
+void DesignerPanel::appendLabelAndComponentIfVisible(juce::Rectangle<int>& r,
+                                                     int sh, int ph,
+                                                     juce::Label* lbl,
+                                                     juce::Component* cmp)
+{
+    bool lbl_flag = lbl && lbl->isVisible();
+    bool cmp_flag = cmp && cmp->isVisible();
+    if (lbl_flag || cmp_flag)
+    {
+        r.removeFromTop(sh);
+        if (lbl_flag) lbl->setBounds(r.removeFromTop(ph));
+        if (cmp_flag)
+        {
+            cmp->setBounds(r.removeFromTop(ph));
+            if (auto sli = dynamic_cast<juce::Slider*>(cmp))
+                sli->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                                     sli->getTextBoxWidth(),
+                                     sli->getTextBoxHeight());
+        }
+    }
+}
 void DesignerPanel::resized()
 {
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
@@ -359,48 +699,29 @@ void DesignerPanel::resized()
         panelLabel.setBounds(regions[0].removeFromTop(ph));
 
         // Type combo box
-        regions[0].removeFromTop(sh);
-        typeCBox->setBounds(regions[0].removeFromTop(ph));
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, nullptr,
+                                         typeCBox.get());
 
-        // Shape combobox
-        regions[0].removeFromTop(sh);
-        shapeCBox->setBounds(regions[0].removeFromTop(ph));
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, nullptr,
+                                         biquadShapeCBox.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, nullptr,
+                                         analogShapeCBox.get());
 
-        // Order slider
-        regions[0].removeFromTop(sh);
-        orderLabel.setBounds(regions[0].removeFromTop(ph));
-        orderSlider->setBounds(regions[0].removeFromTop(ph));
-        orderSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                     orderSlider->getTextBoxWidth(),
-                                     orderSlider->getTextBoxHeight());
-
-        // Cutoff frequency slider
-        regions[0].removeFromTop(sh);
-        cutoffLabel.setBounds(regions[0].removeFromTop(ph));
-        cutoffSlider->setBounds(regions[0].removeFromTop(ph));
-        cutoffSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                      cutoffSlider->getTextBoxWidth(),
-                                      cutoffSlider->getTextBoxHeight());
-
-        // Passband ripple slider
-        if (rpLabel.isVisible() || rpSlider->isVisible())
-        {
-            regions[0].removeFromTop(sh);
-            rpLabel.setBounds(regions[0].removeFromTop(ph));
-            rpSlider->setBounds(regions[0].removeFromTop(ph));
-            rpSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                      rpSlider->getTextBoxWidth(),
-                                      rpSlider->getTextBoxHeight());
-        }
-        // Stopband ripple slider
-        if (rsLabel.isVisible() || rsSlider->isVisible())
-        {
-            regions[0].removeFromTop(sh);
-            rsLabel.setBounds(regions[0].removeFromTop(ph));
-            rsSlider->setBounds(regions[0].removeFromTop(ph));
-            rsSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
-                                      rsSlider->getTextBoxWidth(),
-                                      rsSlider->getTextBoxHeight());
-        }
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &orderLabel,
+                                         orderSlider.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &cutoffLabel,
+                                         cutoffSlider.get());
+        appendLabelAndComponentIfVisible(
+            regions[0], sh, ph,
+            (cutoffSlider->isVisible()) ? nullptr : &cutoffLabel,
+            cutoff2Slider.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &rpLabel,
+                                         rpSlider.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &rsLabel,
+                                         rsSlider.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &qualityLabel,
+                                         qualitySlider.get());
+        appendLabelAndComponentIfVisible(regions[0], sh, ph, &gainDBLabel,
+                                         gainDBSlider.get());
     }
 }

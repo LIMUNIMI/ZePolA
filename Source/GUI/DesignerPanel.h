@@ -99,18 +99,28 @@ public:
     // =========================================================================
     /** Set filter type from ComboBox Id (+1 offset) */
     void setTypeFromCBoxId(int);
-    /** Set filter shape from ComboBox Id (+1 offset) */
-    void setShapeFromCBoxId(int);
+    /** Set analog filter shape from ComboBox Id (+1 offset) */
+    void setAnalogShapeFromCBoxId(int);
+    /** Set biquad filter shape from ComboBox Id (+1 offset) */
+    void setBiquadShapeFromCBoxId(int);
     /** Set filter order */
     void setOrder(double);
     /** Set filter cutoff frequency */
     void setCutoff(double);
+    /** Set filter second cutoff frequency */
+    void setCutoff2(double);
     /** Set the ripple amount (dB) in the passband */
     void setPassbandRipple(double);
     /** Set the ripple amount (dB) in the stopband */
     void setStopbandRipple(double);
+    /** Set the quality (for biquad filters) */
+    void setQuality(double q);
+    /** Set the gain (for biquad filters) in dB */
+    void setGainDB(double db);
     /** Set the designer in automatic (or manual) mode */
     void setAuto(bool);
+    /** Enable or disable the shape cross-update */
+    void setCrossUpdateShape(bool);
 
     // =========================================================================
     virtual void sampleRateChangedCallback(double) override;
@@ -118,10 +128,22 @@ public:
 
 private:
     // =========================================================================
+    /** Update visibility of the biquad filter shape menu */
+    void updateBiquadFilterShapeVisibility();
+    /** Update visibility of the analog filter shape menu */
+    void updateAnalogFilterShapeVisibility();
+    /** Update visibility of the filter order slider */
+    void updateFilterOrderVisibility();
+    /** Update visibility of the second cutoff frequency slider */
+    void updateCutoff2Visibility();
     /** Update visibility of passband ripple slider */
     void updatePassbandRippleVisibility();
     /** Update visibility of stopband ripple slider */
     void updateStopbandRippleVisibility();
+    /** Update visibility of the quality slider */
+    void updateQualityVisibility();
+    /** Update visibility of the gain db slider */
+    void updateGainDBVisibility();
 
     // =========================================================================
     void autoDesignFilter();
@@ -130,24 +152,34 @@ private:
                             double gain);
 
     // =========================================================================
+    void appendLabelAndComponentIfVisible(juce::Rectangle<int>&, int sh, int ph,
+                                          juce::Label*, juce::Component*);
+    void setSafeValueForStopbandRipple();
+
+    // =========================================================================
     std::unique_ptr<ApplicationPropertiesButtonAttachment> autoButtonAttachment;
     std::unique_ptr<ApplicationPropertiesComboBoxAttachment> typeCBoxAttachment,
-        shapeCBoxAttachment;
+        analogShapeCBoxAttachment, biquadShapeCBoxAttachment;
     std::unique_ptr<ApplicationPropertiesSliderAttachment>
-        orderSliderAttachment, cutoffSliderAttachment, rpSliderAttachment,
-        rsSliderAttachment;
-    CBoxListener typeCBoxListener, shapeCBoxListener;
-    SliderListener orderSliderListener, cutoffSliderListener, rpSliderListener,
-        rsSliderListener;
+        orderSliderAttachment, cutoffSliderAttachment, cutoff2SliderAttachment,
+        rpSliderAttachment, rsSliderAttachment, qualitySliderAttachment,
+        gainDBSliderAttachment;
+    CBoxListener typeCBoxListener, analogShapeCBoxListener,
+        biquadShapeCBoxListener;
+    SliderListener orderSliderListener, cutoffSliderListener,
+        cutoff2SliderListener, rpSliderListener, rsSliderListener,
+        qualitySliderListener, gainDBSliderListener;
     ButtonListener autoButtonListener;
     ZePolAudioProcessor& processor;
-    juce::Label panelLabel, orderLabel, cutoffLabel, rpLabel, rsLabel;
-    std::shared_ptr<juce::ComboBox> typeCBox, shapeCBox;
-    std::shared_ptr<juce::Slider> orderSlider, cutoffSlider, rpSlider, rsSlider;
+    juce::Label panelLabel, orderLabel, cutoffLabel, rpLabel, rsLabel,
+        qualityLabel, gainDBLabel;
+    std::shared_ptr<juce::ComboBox> typeCBox, analogShapeCBox, biquadShapeCBox;
+    std::shared_ptr<juce::Slider> orderSlider, cutoffSlider, cutoff2Slider,
+        rpSlider, rsSlider, qualitySlider, gainDBSlider;
     std::shared_ptr<juce::ToggleButton> autoButton;
     juce::TextButton applyButton;
     FilterParameters filterParams;
-    bool autoUpdate;
+    bool autoUpdate, crossUpdateShape;
     juce::ApplicationProperties& applicationProperties;
 
     // =========================================================================
