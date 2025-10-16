@@ -104,6 +104,8 @@ public:
         BiquadHighShelf1,
         BiquadLowShelf2,
         BiquadHighShelf2,
+        BiquadBandPass1,
+        BiquadBandPass2,
 
         // This should not be used as a shape, but only to get how many
         // shapes there are
@@ -131,6 +133,7 @@ public:
     BiquadFilterShape biquadFShape;
     int order;
     double cutoff;
+    double cutoff2;
     double passbandRippleDb;
     double stopbandRippleDb;
     double quality;

@@ -75,6 +75,10 @@ FilterParameters::shapeToString(FilterParameters::BiquadFilterShape s)
         return "Resonant LowShelf";
     case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
         return "Resonant HighShelf";
+    case FilterParameters::BiquadFilterShape::BiquadBandPass1:
+        return "BandPass";
+    case FilterParameters::BiquadFilterShape::BiquadBandPass2:
+        return "Resonant BandPass";
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for filter shape. Defaulting to 'UNKNOWN'");
@@ -185,7 +189,8 @@ void FilterFactory::sanitizeParams(FilterParameters& params)
         params.passbandRippleDb = 3.0;
     if (params.stopbandRippleDb <= std::numeric_limits<double>::epsilon())
         params.stopbandRippleDb = 20.0;
-    params.cutoff = std::clamp(params.cutoff, 0.0, params.sr * 0.5);
+    params.cutoff  = std::clamp(params.cutoff, 0.0, params.sr * 0.5);
+    params.cutoff2 = std::clamp(params.cutoff2, 0.0, params.sr * 0.5);
 }
 
 // =============================================================================

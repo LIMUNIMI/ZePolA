@@ -107,6 +107,8 @@ public:
     void setOrder(double);
     /** Set filter cutoff frequency */
     void setCutoff(double);
+    /** Set filter second cutoff frequency */
+    void setCutoff2(double);
     /** Set the ripple amount (dB) in the passband */
     void setPassbandRipple(double);
     /** Set the ripple amount (dB) in the stopband */
@@ -132,6 +134,8 @@ private:
     void updateAnalogFilterShapeVisibility();
     /** Update visibility of the filter order slider */
     void updateFilterOrderVisibility();
+    /** Update visibility of the second cutoff frequency slider */
+    void updateCutoff2Visibility();
     /** Update visibility of passband ripple slider */
     void updatePassbandRippleVisibility();
     /** Update visibility of stopband ripple slider */
@@ -156,19 +160,21 @@ private:
     std::unique_ptr<ApplicationPropertiesComboBoxAttachment> typeCBoxAttachment,
         analogShapeCBoxAttachment, biquadShapeCBoxAttachment;
     std::unique_ptr<ApplicationPropertiesSliderAttachment>
-        orderSliderAttachment, cutoffSliderAttachment, rpSliderAttachment,
-        rsSliderAttachment, qualitySliderAttachment, gainDBSliderAttachment;
+        orderSliderAttachment, cutoffSliderAttachment, cutoff2SliderAttachment,
+        rpSliderAttachment, rsSliderAttachment, qualitySliderAttachment,
+        gainDBSliderAttachment;
     CBoxListener typeCBoxListener, analogShapeCBoxListener,
         biquadShapeCBoxListener;
-    SliderListener orderSliderListener, cutoffSliderListener, rpSliderListener,
-        rsSliderListener, qualitySliderListener, gainDBSliderListener;
+    SliderListener orderSliderListener, cutoffSliderListener,
+        cutoff2SliderListener, rpSliderListener, rsSliderListener,
+        qualitySliderListener, gainDBSliderListener;
     ButtonListener autoButtonListener;
     ZePolAudioProcessor& processor;
     juce::Label panelLabel, orderLabel, cutoffLabel, rpLabel, rsLabel,
         qualityLabel, gainDBLabel;
     std::shared_ptr<juce::ComboBox> typeCBox, analogShapeCBox, biquadShapeCBox;
-    std::shared_ptr<juce::Slider> orderSlider, cutoffSlider, rpSlider, rsSlider,
-        qualitySlider, gainDBSlider;
+    std::shared_ptr<juce::Slider> orderSlider, cutoffSlider, cutoff2Slider,
+        rpSlider, rsSlider, qualitySlider, gainDBSlider;
     std::shared_ptr<juce::ToggleButton> autoButton;
     juce::TextButton applyButton;
     FilterParameters filterParams;

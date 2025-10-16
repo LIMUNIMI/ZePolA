@@ -75,6 +75,8 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
           std::bind(&DesignerPanel::setOrder, this, std::placeholders::_1))
     , cutoffSliderListener(
           std::bind(&DesignerPanel::setCutoff, this, std::placeholders::_1))
+    , cutoff2SliderListener(
+          std::bind(&DesignerPanel::setCutoff2, this, std::placeholders::_1))
     , rpSliderListener(std::bind(&DesignerPanel::setPassbandRipple, this,
                                  std::placeholders::_1))
     , rsSliderListener(std::bind(&DesignerPanel::setStopbandRipple, this,
@@ -98,6 +100,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     , biquadShapeCBox(std::make_shared<juce::ComboBox>())
     , orderSlider(std::make_shared<juce::Slider>())
     , cutoffSlider(std::make_shared<juce::Slider>())
+    , cutoff2Slider(std::make_shared<juce::Slider>())
     , rpSlider(std::make_shared<juce::Slider>())
     , rsSlider(std::make_shared<juce::Slider>())
     , qualitySlider(std::make_shared<juce::Slider>())
@@ -121,6 +124,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     addAndMakeVisible(*biquadShapeCBox.get());
     addAndMakeVisible(*orderSlider.get());
     addAndMakeVisible(*cutoffSlider.get());
+    addAndMakeVisible(*cutoff2Slider.get());
     addAndMakeVisible(*rpSlider.get());
     addAndMakeVisible(*rsSlider.get());
     addAndMakeVisible(*qualitySlider.get());
@@ -159,6 +163,9 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     cutoffSlider->setSliderStyle(juce::Slider::LinearHorizontal);
     cutoffSlider->setNormalisableRange(
         {0.0, processor.getSampleRate() * 0.5, 0.1, 0.25});
+    cutoff2Slider->setSliderStyle(juce::Slider::LinearHorizontal);
+    cutoff2Slider->setNormalisableRange(
+        {0.0, processor.getSampleRate() * 0.5, 0.1, 0.25});
     rpSlider->setSliderStyle(juce::Slider::LinearHorizontal);
     rpSlider->setNormalisableRange({0.1, 5.0, 0.001});
     rsSlider->setSliderStyle(juce::Slider::LinearHorizontal);
@@ -175,6 +182,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     biquadShapeCBox->setSelectedId(1 + filterParams.biquadFShape);
     orderSlider->setValue(static_cast<double>(filterParams.order));
     cutoffSlider->setValue(filterParams.cutoff);
+    cutoff2Slider->setValue(filterParams.cutoff2);
     rpSlider->setValue(filterParams.passbandRippleDb);
     rsSlider->setValue(filterParams.stopbandRippleDb);
     qualitySlider->setValue(filterParams.quality);
@@ -185,6 +193,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     biquadShapeCBox->addListener(&biquadShapeCBoxListener);
     orderSlider->addListener(&orderSliderListener);
     cutoffSlider->addListener(&cutoffSliderListener);
+    cutoff2Slider->addListener(&cutoff2SliderListener);
     rpSlider->addListener(&rpSliderListener);
     rsSlider->addListener(&rsSliderListener);
     qualitySlider->addListener(&qualitySliderListener);
@@ -201,6 +210,8 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
         properties, "orderFilterDesign", orderSlider));
     cutoffSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "cutoffFilterDesign", cutoffSlider));
+    cutoff2SliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
+        properties, "cutoff2FilterDesign", cutoff2Slider));
     rpSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "rpFilterDesign", rpSlider));
     rsSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
@@ -225,6 +236,7 @@ DesignerPanel::~DesignerPanel()
     biquadShapeCBox->removeListener(&biquadShapeCBoxListener);
     orderSlider->removeListener(&orderSliderListener);
     cutoffSlider->removeListener(&cutoffSliderListener);
+    cutoff2Slider->removeListener(&cutoff2SliderListener);
     rpSlider->removeListener(&rpSliderListener);
     rsSlider->removeListener(&rsSliderListener);
     qualitySlider->removeListener(&qualitySliderListener);
@@ -323,6 +335,12 @@ void DesignerPanel::setCutoff(double f)
     DBG("CUTOFF: " << filterParams.cutoff);
     autoDesignFilter();
 }
+void DesignerPanel::setCutoff2(double f)
+{
+    filterParams.cutoff2 = f;
+    DBG("CUTOFF_2: " << filterParams.cutoff2);
+    autoDesignFilter();
+}
 void DesignerPanel::setPassbandRipple(double rp)
 {
     filterParams.passbandRippleDb = rp;
@@ -381,6 +399,7 @@ void DesignerPanel::updateBiquadFilterShapeVisibility()
     }
     updateQualityVisibility();
     updateGainDBVisibility();
+    updateCutoff2Visibility();
 }
 void DesignerPanel::updateAnalogFilterShapeVisibility()
 {
@@ -426,6 +445,32 @@ void DesignerPanel::updateFilterOrderVisibility()
         DBG(" Setting FilterOrder slider visibility");
         orderSlider->setVisible(shouldBeVisible);
         orderLabel.setVisible(shouldBeVisible);
+        resized();
+    }
+}
+void DesignerPanel::updateCutoff2Visibility()
+{
+    bool shouldBeVisible = false;
+    switch (filterParams.type)
+    {
+    case FilterParameters::FilterType::Biquad:
+        switch (filterParams.biquadFShape)
+        {
+        case FilterParameters::BiquadFilterShape::BiquadBandPass1:
+        case FilterParameters::BiquadFilterShape::BiquadBandPass2:
+            shouldBeVisible = true;
+            break;
+        default: break;  // Nothing to do
+        }
+        break;
+    default: break;  // Nothing to do
+    }
+    DBG("Cutoff2 slider should" << ((shouldBeVisible) ? "" : "n't")
+                                << " be visible");
+    if (shouldBeVisible != cutoff2Slider->isVisible())
+    {
+        DBG(" Setting Cutoff2 slider visibility");
+        cutoff2Slider->setVisible(shouldBeVisible);
         resized();
     }
 }
@@ -604,6 +649,8 @@ void DesignerPanel::sampleRateChangedCallback(double sr)
     auto nr = cutoffSlider->getNormalisableRange();
     cutoffSlider->setNormalisableRange(
         {nr.start, sr * 0.5, nr.interval, nr.skew});
+    cutoff2Slider->setNormalisableRange(
+        {nr.start, sr * 0.5, nr.interval, nr.skew});
     filterParams.sr = sr;
     autoDesignFilter();
 }
@@ -669,6 +716,13 @@ void DesignerPanel::resized()
         cutoffSlider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
                                       cutoffSlider->getTextBoxWidth(),
                                       cutoffSlider->getTextBoxHeight());
+        if (cutoff2Slider->isVisible())
+        {
+            cutoff2Slider->setBounds(regions[0].removeFromTop(ph));
+            cutoff2Slider->setTextBoxStyle(juce::Slider::TextBoxRight, false,
+                                           cutoff2Slider->getTextBoxWidth(),
+                                           cutoff2Slider->getTextBoxHeight());
+        }
 
         // Passband ripple slider
         if (rpLabel.isVisible() || rpSlider->isVisible())
