@@ -451,20 +451,6 @@ void DesignerPanel::updateFilterOrderVisibility()
 void DesignerPanel::updateCutoff2Visibility()
 {
     bool shouldBeVisible = false;
-    switch (filterParams.type)
-    {
-    case FilterParameters::FilterType::Biquad:
-        switch (filterParams.biquadFShape)
-        {
-        case FilterParameters::BiquadFilterShape::BiquadBandPass1:
-        case FilterParameters::BiquadFilterShape::BiquadBandPass2:
-            shouldBeVisible = true;
-            break;
-        default: break;  // Nothing to do
-        }
-        break;
-    default: break;  // Nothing to do
-    }
     DBG("Cutoff2 slider should" << ((shouldBeVisible) ? "" : "n't")
                                 << " be visible");
     if (shouldBeVisible != cutoff2Slider->isVisible())
