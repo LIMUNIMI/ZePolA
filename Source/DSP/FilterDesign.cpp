@@ -499,7 +499,7 @@ BiquadFilterFactory::solveQuadratic(std::complex<FloatType> a,
                                     std::complex<FloatType> b,
                                     std::complex<FloatType> c)
 {
-    auto a2 = std::complex<FloatType>(4) * a;
+    auto a2 = std::complex<FloatType>(2) * a;
     auto s  = std::sqrt(b * b - std::complex<FloatType>(4) * a * c);
     auto x0 = (-b + s) / a2;
     auto x1 = (-b - s) / a2;
