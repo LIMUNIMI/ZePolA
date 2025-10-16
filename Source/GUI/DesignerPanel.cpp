@@ -634,7 +634,7 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z, bool t,
 {
     juce::String i_str(i);
     double m = abs(z), a = std::arg(z) / juce::MathConstants<double>::pi;
-    bool inv = m > 1.0;
+    bool inv = m > 1.0 + 1e-6;
     if (inv) m = 1.0 / m;
     processor.setParameterValue(TYPE_ID_PREFIX + i_str, static_cast<float>(t));
     processor.setParameterValue(MAGNITUDE_ID_PREFIX + i_str,
