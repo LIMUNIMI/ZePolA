@@ -192,10 +192,10 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
 
     typeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
         properties, "typeFilterDesign", typeCBox));
-    analogShapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
-        properties, "analogShapeFilterDesign", analogShapeCBox));
     biquadShapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
         properties, "biquadShapeFilterDesign", biquadShapeCBox));
+    analogShapeCBoxAttachment.reset(new ApplicationPropertiesComboBoxAttachment(
+        properties, "analogShapeFilterDesign", analogShapeCBox));
     orderSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "orderFilterDesign", orderSlider));
     cutoffSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
@@ -440,7 +440,7 @@ void DesignerPanel::updateQualityVisibility()
     bool shouldBeVisible = false;
     switch (filterParams.type)
     {
-    case FilterParameters::FilterType::Biquad: 
+    case FilterParameters::FilterType::Biquad:
         switch (filterParams.biquadFShape)
         {
         case FilterParameters::BiquadFilterShape::BiquadLowPass:

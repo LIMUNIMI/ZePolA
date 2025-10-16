@@ -274,8 +274,9 @@ public:
 
     // =========================================================================
     /** Compute the biquad filter coefficients */
-    virtual std::array<double, 7>
-    computeBiquadCoeffs(double sn, double cs, double alpha, double gain);
+    virtual std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                                      double alpha, double gain,
+                                                      const FilterParameters&);
     /** Solve quadratic equation */
     template <typename FloatType>
     static std::array<std::complex<FloatType>, 2>
@@ -302,10 +303,154 @@ public:
 
     // =========================================================================
     std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
-                                              double alpha,
-                                              double gain) override;
+                                              double alpha, double gain,
+                                              const FilterParameters&) override;
 
 private:
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LowPassBiquadFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for highpass biquad filters */
+class HighPassBiquadFilterFactory : public BiquadFilterFactory
+{
+public:
+    // =========================================================================
+    HighPassBiquadFilterFactory();
+
+    // =========================================================================
+    std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                              double alpha, double gain,
+                                              const FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(HighPassBiquadFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for notch biquad filters */
+class NotchBiquadFilterFactory : public BiquadFilterFactory
+{
+public:
+    // =========================================================================
+    NotchBiquadFilterFactory();
+
+    // =========================================================================
+    std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                              double alpha, double gain,
+                                              const FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(NotchBiquadFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for allpass biquad filters */
+class AllPassBiquadFilterFactory : public BiquadFilterFactory
+{
+public:
+    // =========================================================================
+    AllPassBiquadFilterFactory();
+
+    // =========================================================================
+    std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                              double alpha, double gain,
+                                              const FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AllPassBiquadFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for peak (bell) biquad filters */
+class PeakingBiquadFilterFactory : public BiquadFilterFactory
+{
+public:
+    // =========================================================================
+    PeakingBiquadFilterFactory();
+
+    // =========================================================================
+    std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                              double alpha, double gain,
+                                              const FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PeakingBiquadFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for low-shelf biquad filters */
+class LowShelf1BiquadFilterFactory : public BiquadFilterFactory
+{
+public:
+    // =========================================================================
+    LowShelf1BiquadFilterFactory();
+
+    // =========================================================================
+    std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                              double alpha, double gain,
+                                              const FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LowShelf1BiquadFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for high-shelf biquad filters */
+class HighShelf1BiquadFilterFactory : public BiquadFilterFactory
+{
+public:
+    // =========================================================================
+    HighShelf1BiquadFilterFactory();
+
+    // =========================================================================
+    std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                              double alpha, double gain,
+                                              const FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(HighShelf1BiquadFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for resonant low-shelf biquad filters */
+class LowShelf2BiquadFilterFactory : public BiquadFilterFactory
+{
+public:
+    // =========================================================================
+    LowShelf2BiquadFilterFactory();
+
+    // =========================================================================
+    std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                              double alpha, double gain,
+                                              const FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LowShelf2BiquadFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for resonant high-shelf biquad filters */
+class HighShelf2BiquadFilterFactory : public BiquadFilterFactory
+{
+public:
+    // =========================================================================
+    HighShelf2BiquadFilterFactory();
+
+    // =========================================================================
+    std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                              double alpha, double gain,
+                                              const FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(HighShelf2BiquadFilterFactory)
 };
