@@ -170,7 +170,7 @@ private:
     std::shared_ptr<juce::ToggleButton> autoButton;
     juce::TextButton applyButton;
     FilterParameters filterParams;
-    bool autoUpdate;
+    bool autoUpdate, crossUpdateShape;
     juce::ApplicationProperties& applicationProperties;
 
     // =========================================================================

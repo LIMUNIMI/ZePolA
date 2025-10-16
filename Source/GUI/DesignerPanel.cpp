@@ -106,6 +106,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     , applyButton("UPDATE")
     , filterParams(p.getSampleRate())
     , autoUpdate(false)
+    , crossUpdateShape(false)
     , applicationProperties(properties)
 {
     addAndMakeVisible(panelLabel);
@@ -247,18 +248,21 @@ void DesignerPanel::setAnalogShapeFromCBoxId(int i)
             filterParams.analogFShape));
     autoDesignFilter();
     // Cross-update to biquad filter shapes if compatible
-    int j;
-    switch (filterParams.analogFShape)
+    if (crossUpdateShape)
     {
-    case FilterParameters::AnalogFilterShape::AnalogLowPass:
-        j = FilterParameters::BiquadFilterShape::BiquadLowPass + 1;
-        break;
-    case FilterParameters::AnalogFilterShape::AnalogHighPass:
-        j = FilterParameters::BiquadFilterShape::BiquadHighPass + 1;
-        break;
-    default: j = 0; break;  // Incompatible filter shape
+        int j;
+        switch (filterParams.analogFShape)
+        {
+        case FilterParameters::AnalogFilterShape::AnalogLowPass:
+            j = FilterParameters::BiquadFilterShape::BiquadLowPass + 1;
+            break;
+        case FilterParameters::AnalogFilterShape::AnalogHighPass:
+            j = FilterParameters::BiquadFilterShape::BiquadHighPass + 1;
+            break;
+        default: j = 0; break;  // Incompatible filter shape
+        }
+        if (j) biquadShapeCBox->setSelectedId(j);
     }
-    if (j) biquadShapeCBox->setSelectedId(j);
 }
 void DesignerPanel::setBiquadShapeFromCBoxId(int i)
 {
@@ -268,18 +272,21 @@ void DesignerPanel::setBiquadShapeFromCBoxId(int i)
             filterParams.biquadFShape));
     autoDesignFilter();
     // Cross-update to analog filter shapes if compatible
-    int j;
-    switch (filterParams.biquadFShape)
+    if (crossUpdateShape)
     {
-    case FilterParameters::BiquadFilterShape::BiquadLowPass:
-        j = FilterParameters::AnalogFilterShape::AnalogLowPass + 1;
-        break;
-    case FilterParameters::BiquadFilterShape::BiquadHighPass:
-        j = FilterParameters::AnalogFilterShape::AnalogHighPass + 1;
-        break;
-    default: j = 0; break;  // Incompatible filter shape
+        int j;
+        switch (filterParams.biquadFShape)
+        {
+        case FilterParameters::BiquadFilterShape::BiquadLowPass:
+            j = FilterParameters::AnalogFilterShape::AnalogLowPass + 1;
+            break;
+        case FilterParameters::BiquadFilterShape::BiquadHighPass:
+            j = FilterParameters::AnalogFilterShape::AnalogHighPass + 1;
+            break;
+        default: j = 0; break;  // Incompatible filter shape
+        }
+        if (j) analogShapeCBox->setSelectedId(j);
     }
-    if (j) analogShapeCBox->setSelectedId(j);
     updateQualityVisibility();
     updateGainDBVisibility();
 }
