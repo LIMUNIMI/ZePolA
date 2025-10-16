@@ -531,13 +531,15 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z, bool t,
 {
     juce::String i_str(i);
     double m = abs(z), a = std::arg(z) / juce::MathConstants<double>::pi;
+    bool inv = m > 1.0;
+    if (inv) m = 1.0 / m;
     processor.setParameterValue(TYPE_ID_PREFIX + i_str, static_cast<float>(t));
     processor.setParameterValue(MAGNITUDE_ID_PREFIX + i_str,
                                 static_cast<float>(m));
     processor.setParameterValue(PHASE_ID_PREFIX + i_str, static_cast<float>(a));
     processor.setParameterValue(GAIN_ID_PREFIX + i_str,
                                 static_cast<float>(gain));
-    processor.setParameterValue(INVERTED_ID_PREFIX + i_str, false);
+    processor.setParameterValue(INVERTED_ID_PREFIX + i_str, inv);
     processor.setParameterValue(SINGLE_ID_PREFIX + i_str, false);
     processor.setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
     ONLY_ON_DEBUG(if (!autoUpdate) {
