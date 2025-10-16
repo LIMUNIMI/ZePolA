@@ -457,3 +457,39 @@ private:
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(HighShelf2BiquadFilterFactory)
 };
+
+// =============================================================================
+/** Factory class for bandpass biquad filters */
+class BandPass1BiquadFilterFactory : public BiquadFilterFactory
+{
+public:
+    // =========================================================================
+    BandPass1BiquadFilterFactory();
+
+    // =========================================================================
+    std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                              double alpha, double gain,
+                                              const FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BandPass1BiquadFilterFactory)
+};
+
+// =============================================================================
+/** Factory class for resonant bandpass biquad filters */
+class BandPass2BiquadFilterFactory : public BiquadFilterFactory
+{
+public:
+    // =========================================================================
+    BandPass2BiquadFilterFactory();
+
+    // =========================================================================
+    std::array<double, 7> computeBiquadCoeffs(double sn, double cs,
+                                              double alpha, double gain,
+                                              const FilterParameters&) override;
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BandPass2BiquadFilterFactory)
+};

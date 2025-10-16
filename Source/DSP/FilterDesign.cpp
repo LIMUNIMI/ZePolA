@@ -569,6 +569,10 @@ BiquadFilterFactory::buildFactory(const FilterParameters& params)
         return std::make_unique<LowShelf2BiquadFilterFactory>();
     case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
         return std::make_unique<HighShelf2BiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadBandPass1:
+        return std::make_unique<BandPass1BiquadFilterFactory>();
+    case FilterParameters::BiquadFilterShape::BiquadBandPass2:
+        return std::make_unique<BandPass2BiquadFilterFactory>();
     default:
         UNHANDLED_SWITCH_CASE("Unhandled case for biquad filter shape. Setting "
                               "elements to (0, 0)");
@@ -587,6 +591,8 @@ LowShelf1BiquadFilterFactory::LowShelf1BiquadFilterFactory() {}
 HighShelf1BiquadFilterFactory::HighShelf1BiquadFilterFactory() {}
 LowShelf2BiquadFilterFactory::LowShelf2BiquadFilterFactory() {}
 HighShelf2BiquadFilterFactory::HighShelf2BiquadFilterFactory() {}
+BandPass1BiquadFilterFactory::BandPass1BiquadFilterFactory() {}
+BandPass2BiquadFilterFactory::BandPass2BiquadFilterFactory() {}
 
 std::array<double, 7>
 LowPassBiquadFilterFactory::computeBiquadCoeffs(double /* sn */, double cs,
@@ -681,4 +687,22 @@ std::array<double, 7> HighShelf2BiquadFilterFactory::computeBiquadCoeffs(
     auto t4   = (gain - 1.0) + (gain + 1.0) * cs;
     return {t3 + beta, -2.0 * t4, t3 - beta, t1 + beta,
             2.0 * t2,  t1 - beta, gain};
+}
+std::array<double, 7> BandPass1BiquadFilterFactory::computeBiquadCoeffs(
+    double /* sn */, double cs, double alpha, double /* gain */,
+    const FilterParameters&)
+{
+    return {alpha, 0.0, -alpha, 1.0 + alpha, -2.0 * cs, 1.0 - alpha, 1.0};
+}
+std::array<double, 7> BandPass2BiquadFilterFactory::computeBiquadCoeffs(
+    double /* sn */, double cs, double alpha, double /* gain */,
+    const FilterParameters& params)
+{
+    return {params.quality * alpha,
+            0.0,
+            -params.quality * alpha,
+            1.0 + alpha,
+            -2.0 * cs,
+            1.0 - alpha,
+            1.0};
 }

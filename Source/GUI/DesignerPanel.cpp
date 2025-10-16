@@ -515,6 +515,8 @@ void DesignerPanel::updateQualityVisibility()
         case FilterParameters::BiquadFilterShape::BiquadPeaking:
         case FilterParameters::BiquadFilterShape::BiquadLowShelf2:
         case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
+        case FilterParameters::BiquadFilterShape::BiquadBandPass1:
+        case FilterParameters::BiquadFilterShape::BiquadBandPass2:
             shouldBeVisible = true;
             break;
         default: break;  // Nothing to do
