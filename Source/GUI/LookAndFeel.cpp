@@ -170,7 +170,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(OnOffButton_backgroundOnColourId, juce::Colour(0xff909497));
     setColour(OnOffButton_backgroundOffColourId, juce::Colour(0xffcacfd2));
     setColour(OnOffButton_ledOnColourId, juce::Colour(0xffff5f58));
-    setColour(OnOffButton_ledOffColourId, juce::Colour(0xff781a13));
+    setColour(OnOffButton_ledOffColourId, juce::Colour(0xff8e4a46));
     setColour(OnOffButton_textOnColourId, juce::Colours::white);
     setColour(OnOffButton_textOffColourId, juce::Colours::black);
     setColour(OnOffButton_outlineColourId, juce::Colours::black);
