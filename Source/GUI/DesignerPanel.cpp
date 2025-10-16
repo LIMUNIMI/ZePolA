@@ -216,6 +216,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
 
     updateBiquadFilterShapeVisibility();
     updateAnalogFilterShapeVisibility();
+    setCrossUpdateShape(true);
 }
 DesignerPanel::~DesignerPanel()
 {
@@ -250,18 +251,26 @@ void DesignerPanel::setAnalogShapeFromCBoxId(int i)
     // Cross-update to biquad filter shapes if compatible
     if (crossUpdateShape)
     {
-        int j;
-        switch (filterParams.analogFShape)
+        switch (filterParams.type)
         {
-        case FilterParameters::AnalogFilterShape::AnalogLowPass:
-            j = FilterParameters::BiquadFilterShape::BiquadLowPass + 1;
-            break;
-        case FilterParameters::AnalogFilterShape::AnalogHighPass:
-            j = FilterParameters::BiquadFilterShape::BiquadHighPass + 1;
-            break;
-        default: j = 0; break;  // Incompatible filter shape
+        case FilterParameters::FilterType::Biquad: break;
+        default:
+        {
+            int j;
+            switch (filterParams.analogFShape)
+            {
+            case FilterParameters::AnalogFilterShape::AnalogLowPass:
+                j = FilterParameters::BiquadFilterShape::BiquadLowPass + 1;
+                break;
+            case FilterParameters::AnalogFilterShape::AnalogHighPass:
+                j = FilterParameters::BiquadFilterShape::BiquadHighPass + 1;
+                break;
+            default: j = 0; break;  // Incompatible filter shape
+            }
+            if (j) biquadShapeCBox->setSelectedId(j);
         }
-        if (j) biquadShapeCBox->setSelectedId(j);
+        break;
+        }
     }
 }
 void DesignerPanel::setBiquadShapeFromCBoxId(int i)
@@ -274,18 +283,30 @@ void DesignerPanel::setBiquadShapeFromCBoxId(int i)
     // Cross-update to analog filter shapes if compatible
     if (crossUpdateShape)
     {
-        int j;
-        switch (filterParams.biquadFShape)
+        switch (filterParams.type)
         {
-        case FilterParameters::BiquadFilterShape::BiquadLowPass:
-            j = FilterParameters::AnalogFilterShape::AnalogLowPass + 1;
-            break;
-        case FilterParameters::BiquadFilterShape::BiquadHighPass:
-            j = FilterParameters::AnalogFilterShape::AnalogHighPass + 1;
-            break;
-        default: j = 0; break;  // Incompatible filter shape
+        case FilterParameters::FilterType::Biquad:
+        {
+            int j;
+            switch (filterParams.biquadFShape)
+            {
+            case FilterParameters::BiquadFilterShape::BiquadLowPass:
+            case FilterParameters::BiquadFilterShape::BiquadHighShelf1:
+            case FilterParameters::BiquadFilterShape::BiquadHighShelf2:
+                j = FilterParameters::AnalogFilterShape::AnalogLowPass + 1;
+                break;
+            case FilterParameters::BiquadFilterShape::BiquadHighPass:
+            case FilterParameters::BiquadFilterShape::BiquadLowShelf1:
+            case FilterParameters::BiquadFilterShape::BiquadLowShelf2:
+                j = FilterParameters::AnalogFilterShape::AnalogHighPass + 1;
+                break;
+            default: j = 0; break;  // Incompatible filter shape
+            }
+            if (j) analogShapeCBox->setSelectedId(j);
         }
-        if (j) analogShapeCBox->setSelectedId(j);
+        break;
+        default: break;
+        }
     }
     updateQualityVisibility();
     updateGainDBVisibility();
@@ -330,6 +351,12 @@ void DesignerPanel::setAuto(bool b)
 {
     autoUpdate = b;
     DBG(((autoUpdate) ? "AUTO" : "MANUAL"));
+    autoDesignFilter();
+}
+void DesignerPanel::setCrossUpdateShape(bool b)
+{
+    crossUpdateShape = b;
+    DBG("CROSS UPDATE: " << ((crossUpdateShape) ? "on" : "off"));
     autoDesignFilter();
 }
 

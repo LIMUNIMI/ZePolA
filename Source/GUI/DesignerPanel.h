@@ -117,6 +117,8 @@ public:
     void setGainDB(double db);
     /** Set the designer in automatic (or manual) mode */
     void setAuto(bool);
+    /** Enable or disable the shape cross-update */
+    void setCrossUpdateShape(bool);
 
     // =========================================================================
     virtual void sampleRateChangedCallback(double) override;
