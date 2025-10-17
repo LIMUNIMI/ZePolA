@@ -45,9 +45,12 @@ public:
 
         // =====================================================================
         std::vector<std::complex<double>> zeros, poles;
+        std::vector<bool> single_zeros, single_poles;
         double gain;
 
         // =====================================================================
+        void pushZero(std::complex<double>, bool is_single = false);
+        void pushPole(std::complex<double>, bool is_single = false);
         void reset();
 
         // =====================================================================

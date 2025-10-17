@@ -603,12 +603,18 @@ void DesignerPanel::designFilter()
             "---------------------------------");
         DBG("Filter Design");
     })
+    jassert(filterParams.zpk.zeros.size()
+            == filterParams.zpk.single_zeros.size());
+    jassert(filterParams.zpk.poles.size()
+            == filterParams.zpk.single_poles.size());
     for (auto i = 0; i < degree; ++i)
     {
         if (i < filterParams.zpk.zeros.size())
-            applyFilterElement(e++, filterParams.zpk.zeros[i], false, k_db);
+            applyFilterElement(e++, filterParams.zpk.zeros[i], false, k_db,
+                               filterParams.zpk.single_zeros[i]);
         if (i < filterParams.zpk.poles.size())
-            applyFilterElement(e++, filterParams.zpk.poles[i], true, k_db);
+            applyFilterElement(e++, filterParams.zpk.poles[i], true, k_db,
+                               filterParams.zpk.single_poles[i]);
     }
     auto n = processor.getNElements();
     for (auto i = e; i < n; ++i)
@@ -630,7 +636,7 @@ void DesignerPanel::designFilter()
                                        "---------------------------------");)
 }
 void DesignerPanel::applyFilterElement(int i, std::complex<double> z, bool t,
-                                       double gain)
+                                       double gain, bool is_single)
 {
     juce::String i_str(i);
     double m = abs(z), a = std::arg(z) / juce::MathConstants<double>::pi;
@@ -643,7 +649,7 @@ void DesignerPanel::applyFilterElement(int i, std::complex<double> z, bool t,
     processor.setParameterValue(GAIN_ID_PREFIX + i_str,
                                 static_cast<float>(gain));
     processor.setParameterValue(INVERTED_ID_PREFIX + i_str, inv);
-    processor.setParameterValue(SINGLE_ID_PREFIX + i_str, false);
+    processor.setParameterValue(SINGLE_ID_PREFIX + i_str, is_single);
     processor.setParameterValue(ACTIVE_ID_PREFIX + i_str, true);
     ONLY_ON_DEBUG(if (!autoUpdate) {
         DBG("  " << ((t) ? "P" : "Z") << "(" << m << "; " << a << ") " << gain

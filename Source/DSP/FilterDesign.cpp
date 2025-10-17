@@ -117,10 +117,22 @@ double FilterParameters::warpedFrequency() const
 
 // =============================================================================
 FilterParameters::ZPK::ZPK() {}
+void FilterParameters::ZPK::pushZero(std::complex<double> z, bool is_single)
+{
+    zeros.push_back(z);
+    single_zeros.push_back(is_single);
+}
+void FilterParameters::ZPK::pushPole(std::complex<double> p, bool is_single)
+{
+    poles.push_back(p);
+    single_poles.push_back(is_single);
+}
 void FilterParameters::ZPK::reset()
 {
     poles.clear();
     zeros.clear();
+    single_poles.clear();
+    single_zeros.clear();
     gain = 1.0;
 }
 size_t FilterParameters::ZPK::nElements() const
@@ -251,7 +263,7 @@ void AnalogFilterFactory::applyHighPassParamsToPrototype(
     // Half the amount because they will be doubled by their conjugates
     rdeg /= 2;
     for (auto i = 0; i < rdeg; i++)
-        params.zpk.zeros.push_back(std::complex<double>(0.0, 0.0));
+        params.zpk.pushZero(std::complex<double>(0.0, 0.0));
     // Gain compensation
     params.zpk.gain *= k_z / k_p;
 }
@@ -281,7 +293,7 @@ void AnalogFilterFactory::bilinearTransform(FilterParameters::ZPK& zpk)
     // Half the amount because they will be doubled by their conjugates
     rdeg /= 2;
     for (auto i = 0; i < rdeg; i++)
-        zpk.zeros.push_back(std::complex<double>(-1.0, 0.0));
+        zpk.pushZero(std::complex<double>(-1.0, 0.0));
 
     // Gain compensation
     zpk.gain *= k_z / k_p;
@@ -298,7 +310,7 @@ void ButterworthFilterFactory::buildAnalogPrototype(FilterParameters& params)
     // This only generates positive imaginary-part poles (conjugates will be
     // added later)
     for (auto m = 1; m < params.order; m += 2)
-        params.zpk.poles.push_back(-exp(std::complex(
+        params.zpk.pushPole(-exp(std::complex(
             0.0, juce::MathConstants<double>::pi * m / (-2 * params.order))));
 }
 
@@ -314,7 +326,7 @@ void ChebyshevIFilterFactory::buildAnalogPrototype(FilterParameters& params)
     // This only generates positive imaginary-part poles (conjugates will be
     // added later)
     for (auto m = 1 - params.order; m < 0; m += 2)
-        params.zpk.poles.push_back(-std::sinh(std::complex(
+        params.zpk.pushPole(-std::sinh(std::complex(
             mu, juce::MathConstants<double>::pi * m / (2 * params.order))));
 
     // Gain compensation
@@ -343,14 +355,14 @@ void ChebyshevIIFilterFactory::buildAnalogPrototype(FilterParameters& params)
     // will be added later)
     for (auto m = 1; m < params.order; m += 2)
     {
-        params.zpk.zeros.push_back(-conj(
+        params.zpk.pushZero(-conj(
             (std::complex(0.0, 1.0)
              / sin(m * juce::MathConstants<double>::halfPi / params.order))));
         auto p = -exp(std::complex(0.0, juce::MathConstants<double>::pi * m
                                             / (2 * params.order)));
         p = std::complex(std::sinh(mu) * p.real(), std::cosh(mu) * p.imag());
         p = 1.0 / p;
-        params.zpk.poles.push_back(p);
+        params.zpk.pushPole(p);
     }
 
     // Gain compensation
@@ -475,7 +487,7 @@ void EllipticFilterFactory::buildAnalogPrototype(FilterParameters& params)
         if (abs(s_i) > std::numeric_limits<double>::epsilon())
         {
             a = 1.0 / (m_sqrt * s_i);
-            params.zpk.zeros.push_back(std::complex(0.0, a));
+            params.zpk.pushZero(std::complex(0.0, a));
             a = abs(a);
             k_z *= a * a;
         }
@@ -487,9 +499,8 @@ void EllipticFilterFactory::buildAnalogPrototype(FilterParameters& params)
     ellpj(v0, 1.0 - m, &sv, &cv, &dv, &phiv);
     for (auto i = 0; i < jj; ++i)
     {
-        params.zpk.poles.push_back(
-            std::complex(c[i] * d[i] * sv * cv, -s[i] * dv)
-            / (pow(d[i] * sv, 2.0) - 1));
+        params.zpk.pushPole(std::complex(c[i] * d[i] * sv * cv, -s[i] * dv)
+                            / (pow(d[i] * sv, 2.0) - 1));
         a = abs(params.zpk.poles.back());
         k_p *= a * a;
     }
@@ -535,8 +546,8 @@ void BiquadFilterFactory::build(FilterParameters& params)
         return;
     }
 
-    params.zpk.zeros.push_back(zeros[(zeros[0].imag() > 0) ? 0 : 1]);
-    params.zpk.poles.push_back(poles[(poles[0].imag() > 0) ? 0 : 1]);
+    params.zpk.pushZero(zeros[(zeros[0].imag() > 0) ? 0 : 1]);
+    params.zpk.pushPole(poles[(poles[0].imag() > 0) ? 0 : 1]);
     params.zpk.gain = coeffs[6] * coeffs[0] / coeffs[3];
 }
 std::array<double, 7>

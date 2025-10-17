@@ -148,8 +148,8 @@ private:
     // =========================================================================
     void autoDesignFilter();
     void designFilter();
-    void applyFilterElement(int i, std::complex<double>, bool type,
-                            double gain);
+    void applyFilterElement(int i, std::complex<double>, bool type, double gain,
+                            bool is_single);
 
     // =========================================================================
     void appendLabelAndComponentIfVisible(juce::Rectangle<int>&, int sh, int ph,
