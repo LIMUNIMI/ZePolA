@@ -139,16 +139,32 @@ size_t FilterParameters::ZPK::nElements() const
 {
     return poles.size() + zeros.size();
 }
+int FilterParameters::ZPK::poleDegree() const
+{
+    jassert(poles.size() == single_poles.size());
+    // Account for conjugates
+    return static_cast<int>(
+        poles.size()
+        + std::count(single_poles.begin(), single_poles.end(), false));
+}
+int FilterParameters::ZPK::zeroDegree() const
+{
+    jassert(zeros.size() == single_zeros.size());
+    // Account for conjugates
+    return static_cast<int>(
+        zeros.size()
+        + std::count(single_zeros.begin(), single_zeros.end(), false));
+}
 int FilterParameters::ZPK::relativeDegree() const
 {
     // Double the degree to account for conjugates
-    return 2
-           * (static_cast<int>(poles.size()) - static_cast<int>(zeros.size()));
+    return poleDegree() - zeroDegree();
 }
 size_t FilterParameters::ZPK::degree() const
 {
-    // Double the degree to account for conjugates
-    return 2 * std::max(poles.size(), zeros.size());
+    jassert(zeros.size() == single_zeros.size());
+    // Account for conjugates
+    return std::max(poleDegree(), zeroDegree());
 }
 
 // =============================================================================

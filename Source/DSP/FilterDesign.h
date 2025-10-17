@@ -54,8 +54,12 @@ public:
         void reset();
 
         // =====================================================================
-        /** Number of element conjugate pairs (poles + zeros) / 2 */
+        /** Number of elements */
         size_t nElements() const;
+        /** Poles degree */
+        int poleDegree() const;
+        /** Zeros degree */
+        int zeroDegree() const;
         /** Relative degree (poles - zeros) */
         int relativeDegree() const;
         /** Degree max(poles, zeros) */

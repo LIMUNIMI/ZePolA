@@ -594,43 +594,63 @@ void DesignerPanel::designFilter()
 {
     filterParams.computeZPK();
 
-    auto degree = filterParams.zpk.degree();
-    auto k_db   = juce::Decibels::gainToDecibels(filterParams.zpk.gain, -600.0);
-    k_db /= filterParams.zpk.nElements();
-    int e = 0;
+    auto k_db = juce::Decibels::gainToDecibels(filterParams.zpk.gain, -600.0);
+    auto db_denom = filterParams.zpk.degree() * 2;
+    k_db /= db_denom;
+    auto n_p = filterParams.zpk.poles.size();
+    auto n_z = filterParams.zpk.zeros.size();
+    int e    = 0;
+    auto n   = processor.getNElements();
+    std::vector<int> gain_db_multipliers(n, 1);
     ONLY_ON_DEBUG(if (!autoUpdate) {
         DBG("---------------------------------"
             "---------------------------------");
         DBG("Filter Design");
     })
-    jassert(filterParams.zpk.zeros.size()
-            == filterParams.zpk.single_zeros.size());
-    jassert(filterParams.zpk.poles.size()
-            == filterParams.zpk.single_poles.size());
-    for (auto i = 0; i < degree; ++i)
+    for (int pi = 0, zi = 0, pd = 0, zd = 0; e < n && (pi < n_p || zi < n_z);)
     {
-        if (i < filterParams.zpk.zeros.size())
-            applyFilterElement(e++, filterParams.zpk.zeros[i], false, k_db,
-                               filterParams.zpk.single_zeros[i]);
-        if (i < filterParams.zpk.poles.size())
-            applyFilterElement(e++, filterParams.zpk.poles[i], true, k_db,
-                               filterParams.zpk.single_poles[i]);
+        ONLY_ON_DEBUG(auto prev_e = e;)
+        auto next_pd
+            = pd + ((pi < n_p && filterParams.zpk.single_poles[pi]) ? 1 : 2);
+        if (zi < n_z && (pi >= n_p || zd <= next_pd))
+        {
+            if (!filterParams.zpk.single_zeros[zi]) gain_db_multipliers[e] = 2;
+            applyFilterElement(e, filterParams.zpk.zeros[zi], false,
+                               k_db * gain_db_multipliers[e],
+                               filterParams.zpk.single_zeros[zi]);
+            zd += gain_db_multipliers[e];
+            zi++;
+            e++;
+        }
+        if (pi < n_p && (zi >= n_z || zd > next_pd))
+        {
+            if (!filterParams.zpk.single_poles[pi]) gain_db_multipliers[e] = 2;
+            applyFilterElement(e, filterParams.zpk.poles[pi], true,
+                               k_db * gain_db_multipliers[e],
+                               filterParams.zpk.single_poles[pi]);
+            pd += gain_db_multipliers[e];
+            pi++;
+            e++;
+        }
+        jassert(prev_e < e);
     }
-    auto n = processor.getNElements();
     for (auto i = e; i < n; ++i)
         processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(i), false);
+    if (juce::PropertiesFile* pf
+        = applicationProperties.getCommonSettings(true))
     {
-        // AUTO GAIN
-        juce::PropertiesFile* pf
-            = applicationProperties.getCommonSettings(true);
-        if (pf && pf->getBoolValue(AUTO_GAIN_PROPERTY_ID, false))
-            k_db -= processor.getCascadePeakGain()
-                    / filterParams.zpk.nElements();
-        ONLY_ON_DEBUG(
-            if (!autoUpdate) { DBG("FILTER DESIGNER AUTO GAIN: " << k_db); })
-        for (auto i = 0; i < e; ++i)
-            processor.setParameterValue(GAIN_ID_PREFIX + juce::String(i),
-                                        static_cast<float>(k_db));
+        if (pf->getBoolValue(AUTO_GAIN_PROPERTY_ID, false))
+        {
+            // AUTO GAIN
+            k_db -= processor.getCascadePeakGain() / db_denom;
+            ONLY_ON_DEBUG(if (!autoUpdate) {
+                DBG("FILTER DESIGNER AUTO GAIN: " << k_db);
+            })
+            for (auto i = 0; i < e; ++i)
+                processor.setParameterValue(
+                    GAIN_ID_PREFIX + juce::String(i),
+                    static_cast<float>(k_db * gain_db_multipliers[i]));
+        }
     }
     ONLY_ON_DEBUG(if (!autoUpdate) DBG("---------------------------------"
                                        "---------------------------------");)
