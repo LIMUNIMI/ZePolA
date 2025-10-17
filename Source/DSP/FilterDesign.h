@@ -45,14 +45,21 @@ public:
 
         // =====================================================================
         std::vector<std::complex<double>> zeros, poles;
+        std::vector<bool> single_zeros, single_poles;
         double gain;
 
         // =====================================================================
+        void pushZero(std::complex<double>, bool is_single = false);
+        void pushPole(std::complex<double>, bool is_single = false);
         void reset();
 
         // =====================================================================
-        /** Number of element conjugate pairs (poles + zeros) / 2 */
+        /** Number of elements */
         size_t nElements() const;
+        /** Poles degree */
+        int poleDegree() const;
+        /** Zeros degree */
+        int zeroDegree() const;
         /** Relative degree (poles - zeros) */
         int relativeDegree() const;
         /** Degree max(poles, zeros) */

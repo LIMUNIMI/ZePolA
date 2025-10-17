@@ -117,26 +117,54 @@ double FilterParameters::warpedFrequency() const
 
 // =============================================================================
 FilterParameters::ZPK::ZPK() {}
+void FilterParameters::ZPK::pushZero(std::complex<double> z, bool is_single)
+{
+    zeros.push_back(z);
+    single_zeros.push_back(is_single);
+}
+void FilterParameters::ZPK::pushPole(std::complex<double> p, bool is_single)
+{
+    poles.push_back(p);
+    single_poles.push_back(is_single);
+}
 void FilterParameters::ZPK::reset()
 {
     poles.clear();
     zeros.clear();
+    single_poles.clear();
+    single_zeros.clear();
     gain = 1.0;
 }
 size_t FilterParameters::ZPK::nElements() const
 {
     return poles.size() + zeros.size();
 }
+int FilterParameters::ZPK::poleDegree() const
+{
+    jassert(poles.size() == single_poles.size());
+    // Account for conjugates
+    return static_cast<int>(
+        poles.size()
+        + std::count(single_poles.begin(), single_poles.end(), false));
+}
+int FilterParameters::ZPK::zeroDegree() const
+{
+    jassert(zeros.size() == single_zeros.size());
+    // Account for conjugates
+    return static_cast<int>(
+        zeros.size()
+        + std::count(single_zeros.begin(), single_zeros.end(), false));
+}
 int FilterParameters::ZPK::relativeDegree() const
 {
     // Double the degree to account for conjugates
-    return 2
-           * (static_cast<int>(poles.size()) - static_cast<int>(zeros.size()));
+    return poleDegree() - zeroDegree();
 }
 size_t FilterParameters::ZPK::degree() const
 {
-    // Double the degree to account for conjugates
-    return 2 * std::max(poles.size(), zeros.size());
+    jassert(zeros.size() == single_zeros.size());
+    // Account for conjugates
+    return std::max(poleDegree(), zeroDegree());
 }
 
 // =============================================================================
@@ -251,7 +279,7 @@ void AnalogFilterFactory::applyHighPassParamsToPrototype(
     // Half the amount because they will be doubled by their conjugates
     rdeg /= 2;
     for (auto i = 0; i < rdeg; i++)
-        params.zpk.zeros.push_back(std::complex<double>(0.0, 0.0));
+        params.zpk.pushZero(std::complex<double>(0.0, 0.0));
     // Gain compensation
     params.zpk.gain *= k_z / k_p;
 }
@@ -281,7 +309,7 @@ void AnalogFilterFactory::bilinearTransform(FilterParameters::ZPK& zpk)
     // Half the amount because they will be doubled by their conjugates
     rdeg /= 2;
     for (auto i = 0; i < rdeg; i++)
-        zpk.zeros.push_back(std::complex<double>(-1.0, 0.0));
+        zpk.pushZero(std::complex<double>(-1.0, 0.0));
 
     // Gain compensation
     zpk.gain *= k_z / k_p;
@@ -298,7 +326,7 @@ void ButterworthFilterFactory::buildAnalogPrototype(FilterParameters& params)
     // This only generates positive imaginary-part poles (conjugates will be
     // added later)
     for (auto m = 1; m < params.order; m += 2)
-        params.zpk.poles.push_back(-exp(std::complex(
+        params.zpk.pushPole(-exp(std::complex(
             0.0, juce::MathConstants<double>::pi * m / (-2 * params.order))));
 }
 
@@ -314,7 +342,7 @@ void ChebyshevIFilterFactory::buildAnalogPrototype(FilterParameters& params)
     // This only generates positive imaginary-part poles (conjugates will be
     // added later)
     for (auto m = 1 - params.order; m < 0; m += 2)
-        params.zpk.poles.push_back(-std::sinh(std::complex(
+        params.zpk.pushPole(-std::sinh(std::complex(
             mu, juce::MathConstants<double>::pi * m / (2 * params.order))));
 
     // Gain compensation
@@ -343,14 +371,14 @@ void ChebyshevIIFilterFactory::buildAnalogPrototype(FilterParameters& params)
     // will be added later)
     for (auto m = 1; m < params.order; m += 2)
     {
-        params.zpk.zeros.push_back(-conj(
+        params.zpk.pushZero(-conj(
             (std::complex(0.0, 1.0)
              / sin(m * juce::MathConstants<double>::halfPi / params.order))));
         auto p = -exp(std::complex(0.0, juce::MathConstants<double>::pi * m
                                             / (2 * params.order)));
         p = std::complex(std::sinh(mu) * p.real(), std::cosh(mu) * p.imag());
         p = 1.0 / p;
-        params.zpk.poles.push_back(p);
+        params.zpk.pushPole(p);
     }
 
     // Gain compensation
@@ -475,7 +503,7 @@ void EllipticFilterFactory::buildAnalogPrototype(FilterParameters& params)
         if (abs(s_i) > std::numeric_limits<double>::epsilon())
         {
             a = 1.0 / (m_sqrt * s_i);
-            params.zpk.zeros.push_back(std::complex(0.0, a));
+            params.zpk.pushZero(std::complex(0.0, a));
             a = abs(a);
             k_z *= a * a;
         }
@@ -487,9 +515,8 @@ void EllipticFilterFactory::buildAnalogPrototype(FilterParameters& params)
     ellpj(v0, 1.0 - m, &sv, &cv, &dv, &phiv);
     for (auto i = 0; i < jj; ++i)
     {
-        params.zpk.poles.push_back(
-            std::complex(c[i] * d[i] * sv * cv, -s[i] * dv)
-            / (pow(d[i] * sv, 2.0) - 1));
+        params.zpk.pushPole(std::complex(c[i] * d[i] * sv * cv, -s[i] * dv)
+                            / (pow(d[i] * sv, 2.0) - 1));
         a = abs(params.zpk.poles.back());
         k_p *= a * a;
     }
@@ -518,6 +545,30 @@ BiquadFilterFactory::solveRealQuadratic(FloatType a, FloatType b, FloatType c)
                                                std::complex<FloatType>(b),
                                                std::complex<FloatType>(c));
 }
+template <typename FloatType>
+static void
+_biquad_push_element(const std::array<std::complex<FloatType>, 2>& z,
+                     FilterParameters& params, bool pole)
+{
+    void (FilterParameters::ZPK::*pushFoo)(std::complex<double>, bool)
+        = ((pole) ? &FilterParameters::ZPK::pushPole
+                  : &FilterParameters::ZPK::pushZero);
+    if (std::conj(z[0]) == z[1])
+    {
+        // Elements are conjugate
+        (params.zpk.*pushFoo)(z[(z[0].imag() > 0) ? 0 : 1], false);
+    }
+    else
+    {
+        // Elements are not conjugate
+        for (size_t i = 0; i < z.size(); ++i)
+        {
+            // Check they are real
+            jassert(!z[i].imag());
+            (params.zpk.*pushFoo)(std::complex(z[i].real()), true);
+        }
+    }
+}
 void BiquadFilterFactory::build(FilterParameters& params)
 {
     auto omega = params.cutoff * juce::MathConstants<double>::twoPi / params.sr;
@@ -526,17 +577,11 @@ void BiquadFilterFactory::build(FilterParameters& params)
         = computeBiquadCoeffs(sn, std::cos(omega), sn / (2.0 * params.quality),
                               std::pow(10.0, params.gain_db * 0.025), params);
 
-    auto zeros = solveRealQuadratic(coeffs[0], coeffs[1], coeffs[2]);
-    auto poles = solveRealQuadratic(coeffs[3], coeffs[4], coeffs[5]);
-    if ((zeros[0] * zeros[1]).imag() || (poles[0] * poles[1]).imag())
-    {
-        DBG("Error while computing poles and zeros for biquad");
-        jassertfalse;
-        return;
-    }
+    _biquad_push_element(solveRealQuadratic(coeffs[0], coeffs[1], coeffs[2]),
+                         params, false);
+    _biquad_push_element(solveRealQuadratic(coeffs[3], coeffs[4], coeffs[5]),
+                         params, true);
 
-    params.zpk.zeros.push_back(zeros[(zeros[0].imag() > 0) ? 0 : 1]);
-    params.zpk.poles.push_back(poles[(poles[0].imag() > 0) ? 0 : 1]);
     params.zpk.gain = coeffs[6] * coeffs[0] / coeffs[3];
 }
 std::array<double, 7>
