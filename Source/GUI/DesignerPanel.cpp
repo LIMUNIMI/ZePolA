@@ -168,7 +168,11 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     rsSlider->setSliderStyle(juce::Slider::LinearHorizontal);
     rsSlider->setNormalisableRange({0.1, 60.0, 0.001});
     qualitySlider->setSliderStyle(juce::Slider::LinearHorizontal);
-    qualitySlider->setNormalisableRange({0.5, 12.0, 0.001});
+    {
+        juce::NormalisableRange<double> qnr(0.2, 12.0, 0.001);
+        qnr.setSkewForCentre(3.0);
+        qualitySlider->setNormalisableRange(qnr);
+    }
     gainDBSlider->setSliderStyle(juce::Slider::LinearHorizontal);
     gainDBSlider->setNormalisableRange({-60.0, 60.0, 0.001});
 
