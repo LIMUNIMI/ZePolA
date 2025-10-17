@@ -529,6 +529,30 @@ BiquadFilterFactory::solveRealQuadratic(FloatType a, FloatType b, FloatType c)
                                                std::complex<FloatType>(b),
                                                std::complex<FloatType>(c));
 }
+template <typename FloatType>
+static void
+_biquad_push_element(const std::array<std::complex<FloatType>, 2>& z,
+                     FilterParameters& params, bool pole)
+{
+    void (FilterParameters::ZPK::*pushFoo)(std::complex<double>, bool)
+        = ((pole) ? &FilterParameters::ZPK::pushPole
+                  : &FilterParameters::ZPK::pushZero);
+    if (std::conj(z[0]) == z[1])
+    {
+        // Elements are conjugate
+        (params.zpk.*pushFoo)(z[(z[0].imag() > 0) ? 0 : 1], false);
+    }
+    else
+    {
+        // Elements are not conjugate
+        for (size_t i = 0; i < z.size(); ++i)
+        {
+            // Check they are real
+            jassert(!z[i].imag());
+            (params.zpk.*pushFoo)(std::complex(z[i].real()), true);
+        }
+    }
+}
 void BiquadFilterFactory::build(FilterParameters& params)
 {
     auto omega = params.cutoff * juce::MathConstants<double>::twoPi / params.sr;
@@ -537,17 +561,11 @@ void BiquadFilterFactory::build(FilterParameters& params)
         = computeBiquadCoeffs(sn, std::cos(omega), sn / (2.0 * params.quality),
                               std::pow(10.0, params.gain_db * 0.025), params);
 
-    auto zeros = solveRealQuadratic(coeffs[0], coeffs[1], coeffs[2]);
-    auto poles = solveRealQuadratic(coeffs[3], coeffs[4], coeffs[5]);
-    if ((zeros[0] * zeros[1]).imag() || (poles[0] * poles[1]).imag())
-    {
-        DBG("Error while computing poles and zeros for biquad");
-        jassertfalse;
-        return;
-    }
+    _biquad_push_element(solveRealQuadratic(coeffs[0], coeffs[1], coeffs[2]),
+                         params, false);
+    _biquad_push_element(solveRealQuadratic(coeffs[3], coeffs[4], coeffs[5]),
+                         params, true);
 
-    params.zpk.pushZero(zeros[(zeros[0].imag() > 0) ? 0 : 1]);
-    params.zpk.pushPole(poles[(poles[0].imag() > 0) ? 0 : 1]);
     params.zpk.gain = coeffs[6] * coeffs[0] / coeffs[3];
 }
 std::array<double, 7>
