@@ -37,6 +37,18 @@ class PlotComponent : public juce::Component, public juce::Button::Listener
 {
 public:
     // =========================================================================
+    enum LineType
+    {
+        Linear = 0,
+        StepX,
+        StepY,
+
+        // This should not be used as a type, but only to get how many types
+        // there are
+        N_LINE_TYPES
+    };
+
+    // =========================================================================
     PlotComponent(size_t n_points = 1024);
 
     // =====================================================================
@@ -78,6 +90,8 @@ public:
                   const std::vector<juce::String>& labels);
     /** Set x grid values and automatic labels */
     void setXGrid(const std::vector<float>&);
+    /** Set the plot line type */
+    void setLineType(LineType);
     /** Get minimum x value in the plot */
     float getXMin();
     /** Get maximum x value in the plot */
@@ -86,6 +100,8 @@ public:
     float getYMin();
     /** Get maximum y value in the plot */
     float getYMax();
+    /** Get the plot line type */
+    LineType getLineType();
 
     //==========================================================================
     void paint(juce::Graphics&) override;
@@ -97,6 +113,7 @@ private:
     juce::String topRightText;
     float period;
     bool log_x;
+    LineType lineType;
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlotComponent);

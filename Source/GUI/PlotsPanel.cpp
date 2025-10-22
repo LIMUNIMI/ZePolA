@@ -42,6 +42,7 @@ PlotComponent::PlotComponent(size_t n_points)
     , topRightText()
     , period(-1.0f)
     , log_x(false)
+    , lineType(PlotComponent::LineType::Linear)
 {
 }
 
@@ -97,10 +98,12 @@ void PlotComponent::setXGrid(const std::vector<float>& ticks)
                                     : juce::String(s / 1000) + "k");
     setXGrid(ticks, labels);
 }
+void PlotComponent::setLineType(LineType lt) { lineType = lt; }
 float PlotComponent::getXMin() { return x_grid.front(); }
 float PlotComponent::getXMax() { return x_grid.back(); }
 float PlotComponent::getYMin() { return y_grid.front(); }
 float PlotComponent::getYMax() { return y_grid.back(); }
+LineType PlotComponent::getLineType() { return lineType; }
 
 // =============================================================================
 void PlotComponent::paint(juce::Graphics& g)
