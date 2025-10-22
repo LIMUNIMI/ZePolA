@@ -883,6 +883,14 @@ static void _add_point_to_path(juce::Path& p, FloatType x, FloatType y,
 
     switch (lt)
     {
+    case PlotComponent::LineType::StepX:
+        p.lineTo(x, prev_y);
+        p.lineTo(x, y);
+        break;
+    case PlotComponent::LineType::StepY:
+        p.lineTo(prev_x, y);
+        p.lineTo(x, y);
+        break;
     default:
         UNHANDLED_SWITCH_CASE(
             "Unhandled case for line type. Defaulting to 'Linear'");
