@@ -561,6 +561,7 @@ ParameterPanel::ParameterPanel(ZePolAudioProcessor& p)
     , shouldRecomputeIR(false)
     , processor(p)
 {
+    irPanel.setLineType(PlotComponent::LineType::StepY);
     irPanel.setXGrid(IR_PLOT_AMP_GRID);
     {
         auto np       = static_cast<int>(irPanel.getSize());
