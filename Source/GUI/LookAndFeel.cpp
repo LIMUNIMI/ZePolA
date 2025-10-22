@@ -67,7 +67,7 @@ forceAspectRatioCentered(const juce::Rectangle<float>&, float);
 // =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
     : typeface(juce::Typeface::createSystemTypefaceFor(
-        BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
+          BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
     , boldTypeface(juce::Typeface::createSystemTypefaceFor(
           BinaryData::MuktaBold_ttf, BinaryData::MuktaBold_ttfSize))
     , fullWidth(1200)
@@ -873,6 +873,22 @@ void CustomLookAndFeel::drawButtonText(juce::Graphics& g,
     g.setFont(font);
     g.drawText(text, text_rect, juce::Justification::centred);
 }
+template <typename FloatType>
+static void _add_point_to_path(juce::Path& p, FloatType x, FloatType y,
+                               FloatType prev_x, FloatType prev_y,
+                               PlotComponent::LineType lt)
+{
+    jassert(x);
+    jassert(y);
+
+    switch (lt)
+    {
+    default:
+        UNHANDLED_SWITCH_CASE(
+            "Unhandled case for line type. Defaulting to 'Linear'");
+    case PlotComponent::LineType::Linear: p.lineTo(x, y); break;
+    }
+}
 void CustomLookAndFeel::drawPlotComponent(
     juce::Graphics& g, float /* x */, float /* y */, float width, float height,
     const std::vector<float>& x_values, const std::vector<float>& y_values,
@@ -1002,22 +1018,39 @@ void CustomLookAndFeel::drawPlotComponent(
     else
     {
         juce::Path plot;
-        plot.startNewSubPath(x_mapper.map(x_values[0]),
-                             y_mapper.map(y_values[0]));
+        float x_mapped = x_mapper.map(x_values[0]);
+        float y_mapped = y_mapper.map(y_values[0]);
+        plot.startNewSubPath(x_mapped, y_mapped);
+
         auto period_half = period * 0.5f;
         auto is_periodic = period > 0.0f;
+        float x_mapped_prev, y_mapped_prev;
+        auto lt = pc.getLineType();
         for (auto i = 1; i < n_points; ++i)
         {
+            x_mapped_prev = x_mapped;
+            y_mapped_prev = y_mapped;
             if (is_periodic && abs(y_values[i] - y_values[i - 1]) > period_half)
             {
                 float offset
                     = (y_values[i] > y_values[i - 1]) ? -period : period;
-                plot.lineTo(x_mapper.map(x_values[i]),
-                            y_mapper.map(y_values[i] + offset));
-                plot.startNewSubPath(x_mapper.map(x_values[i - 1]),
-                                     y_mapper.map(y_values[i - 1] - offset));
+
+                x_mapped = x_mapper.map(x_values[i]);
+                y_mapped = y_mapper.map(y_values[i] + offset);
+                _add_point_to_path(plot, x_mapped, y_mapped, x_mapped_prev,
+                                   y_mapped_prev, lt);
+
+                x_mapped = x_mapper.map(x_values[i - 1]);
+                y_mapped = y_mapper.map(y_values[i - 1] + offset);
+                plot.startNewSubPath(x_mapped, y_mapped);
+                x_mapped_prev = x_mapped;
+                y_mapped_prev = y_mapped;
             }
-            plot.lineTo(x_mapper.map(x_values[i]), y_mapper.map(y_values[i]));
+
+            x_mapped = x_mapper.map(x_values[i]);
+            y_mapped = y_mapper.map(y_values[i]);
+            _add_point_to_path(plot, x_mapped, y_mapped, x_mapped_prev,
+                               y_mapped_prev, lt);
         }
         g.setColour(pc.findColour(PlotComponent_lineColourId));
         g.strokePath(plot,
