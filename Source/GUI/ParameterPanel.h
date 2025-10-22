@@ -49,6 +49,39 @@ private:
 };
 
 // =============================================================================
+/** A triangular button */
+class TriButton : public juce::Button
+{
+public:
+    // =========================================================================
+    class LookAndFeelMethods
+    {
+    public:
+        // =====================================================================
+        virtual ~LookAndFeelMethods();
+
+        // =====================================================================
+        virtual void
+        paintTriButton(juce::Graphics&, bool shouldDrawButtonAsHighlighted,
+                       bool shouldDrawButtonAsDown, bool triButtonUp)
+            = 0;
+    };
+
+    // =========================================================================
+    TriButton(bool up = false);
+    virtual void paintButton(juce::Graphics&,
+                             bool shouldDrawButtonAsHighlighted,
+                             bool shouldDrawButtonAsDown);
+
+private:
+    // =========================================================================
+    bool up;
+
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TriButton)
+};
+
+// =============================================================================
 /** Single parameter row  */
 class ParameterStrip : public InvisibleGroupComponent
 {
@@ -91,7 +124,7 @@ public:
     };
 
     // =========================================================================
-    ParameterStrip(VTSAudioProcessor&, int index);
+    ParameterStrip(VTSAudioProcessor&, int index, int tot);
     ~ParameterStrip();
 
     //==========================================================================
@@ -110,6 +143,8 @@ private:
     juce::ToggleButton aButton;
     ToggleButtonCheckbox iButton, sButton;
     LabelledToggleButton tButton;
+    juce::String swapUpSuffix, swapDownSuffix;
+    std::unique_ptr<TriButton> swapUpButton, swapDownButton;
     DraggableLabel gLabel, fLabel;
     VTSAudioProcessor& processor;
 

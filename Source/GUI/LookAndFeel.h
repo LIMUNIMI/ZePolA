@@ -56,7 +56,8 @@ class CustomLookAndFeel : public juce::LookAndFeel_V4,
                           public PlotComponentLookAndFeelMethods,
                           public GaussianPlanePanel::LookAndFeelMethods,
                           public ZPoint::LookAndFeelMethods,
-                          public LabelledToggleButtonLookAndFeelMethods
+                          public LabelledToggleButtonLookAndFeelMethods,
+                          public TriButton::LookAndFeelMethods
 {
 public:
     // =========================================================================
@@ -83,7 +84,8 @@ public:
         ZPoint_zerosColourId,
         ZPoint_polesColourId,
         PlotButtons_linColourId,
-        PlotButtons_logColourId
+        PlotButtons_logColourId,
+        TriButton_faceColour
     };
 
     // =========================================================================
@@ -129,6 +131,8 @@ public:
     void drawButtonText(juce::Graphics&, juce::TextButton&,
                         bool shouldDrawButtonAsHighlighted,
                         bool shouldDrawButtonAsDown) override;
+    void paintTriButton(juce::Graphics&, bool shouldDrawButtonAsHighlighted,
+                        bool shouldDrawButtonAsDown, bool triButtonUp) override;
     void drawPlotComponent(juce::Graphics&, float x, float y, float width,
                            float height, const std::vector<float>& x_values,
                            const std::vector<float>& y_values, float period,
