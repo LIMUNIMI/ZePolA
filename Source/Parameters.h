@@ -42,10 +42,7 @@ const EnvVar<bool> ALLOW_INVERTED_POLES("ZEPOLA_ALLOW_INVERTED_POLES", false);
 
 // Plugin constants
 #define IR_PLOT_AMP_GRID                                                       \
-    {-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5},                                    \
-    {                                                                          \
-        "", "-1", "", "0", "", "1", ""                                         \
-    }
+    {-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5}, {"", "-1", "", "0", "", "1", ""}
 
 // Parameter IDs
 #define BYPASS_ID "BYPASS"
@@ -131,6 +128,8 @@ public:
     void setParameterValue(juce::StringRef parameterID, float value);
     /** Get parameter unnormalized value by parameter ID */
     float getParameterUnnormValue(juce::StringRef parameterID) const;
+    /** Swap two parameters by ID, notifying the host */
+    void swapParameters(juce::StringRef paramID1, juce::StringRef paramID2);
     /** Set parameter value to default, enclosing the operation in a gesture */
     virtual void resetParameterValue(juce::StringRef);
     /** Reset value of all parameters */

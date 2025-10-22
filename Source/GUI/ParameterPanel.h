@@ -128,6 +128,11 @@ public:
     ~ParameterStrip();
 
     //==========================================================================
+    void swap(juce::StringRef suffix);
+    void swapDown();
+    void swapUp();
+
+    //==========================================================================
     void resized() override;
 
     //==========================================================================
@@ -139,11 +144,11 @@ public:
 
 private:
     // =========================================================================
+    juce::String thisSuffix, swapUpSuffix, swapDownSuffix;
     ParameterSlider mSlider, pSlider;
     juce::ToggleButton aButton;
     ToggleButtonCheckbox iButton, sButton;
     LabelledToggleButton tButton;
-    juce::String swapUpSuffix, swapDownSuffix;
     std::unique_ptr<TriButton> swapUpButton, swapDownButton;
     DraggableLabel gLabel, fLabel;
     VTSAudioProcessor& processor;

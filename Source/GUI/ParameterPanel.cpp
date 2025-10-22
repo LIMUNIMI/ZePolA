@@ -83,45 +83,44 @@ void ParameterStrip::FrequencyLabelSampleRateListener::
 
 // =============================================================================
 ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i, int tot)
-    : tButton(FilterElement::typeToString(false),
+    : thisSuffix(i)
+    , swapUpSuffix(i - 1)
+    , swapDownSuffix(i + 1)
+    , tButton(FilterElement::typeToString(false),
               FilterElement::typeToString(true),
               CustomLookAndFeel::ColourIDs::ZPoint_zerosColourId,
               CustomLookAndFeel::ColourIDs::ZPoint_polesColourId, false, true)
-    , swapUpSuffix(i - 1)
-    , swapDownSuffix(i + 1)
     , gLabel(0.0f, 3)
     , fLabel(0.0f, 0)
     , processor(p)
     , mSliderAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
-                           juce::Slider>(MAGNITUDE_ID_PREFIX + juce::String(i),
+                           juce::Slider>(MAGNITUDE_ID_PREFIX + thisSuffix,
                                          mSlider))
     , pSliderAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
-                           juce::Slider>(PHASE_ID_PREFIX + juce::String(i),
-                                         pSlider))
+                           juce::Slider>(PHASE_ID_PREFIX + thisSuffix, pSlider))
     , aButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
-                           juce::Button>(ACTIVE_ID_PREFIX + juce::String(i),
+                           juce::Button>(ACTIVE_ID_PREFIX + thisSuffix,
                                          aButton))
     , tButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
-                           juce::Button>(TYPE_ID_PREFIX + juce::String(i),
-                                         tButton))
+                           juce::Button>(TYPE_ID_PREFIX + thisSuffix, tButton))
     , sButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
-                           juce::Button>(SINGLE_ID_PREFIX + juce::String(i),
+                           juce::Button>(SINGLE_ID_PREFIX + thisSuffix,
                                          sButton))
     , iButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
-                           juce::Button>(INVERTED_ID_PREFIX + juce::String(i),
+                           juce::Button>(INVERTED_ID_PREFIX + thisSuffix,
                                          iButton))
     , gLabelAttachment(
           p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
-              GAIN_ID_PREFIX + juce::String(i), gLabel))
+              GAIN_ID_PREFIX + thisSuffix, gLabel))
     , fLabelAttachment(
           p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
-              PHASE_ID_PREFIX + juce::String(i), fLabel))
+              PHASE_ID_PREFIX + thisSuffix, fLabel))
 {
     srListener = std::make_unique<FrequencyLabelSampleRateListener>(
         *fLabelAttachment.get());
@@ -130,11 +129,13 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i, int tot)
 
     if (i > 0)
     {
-        swapUpButton = std::make_unique<TriButton>(true);
+        swapUpButton          = std::make_unique<TriButton>(true);
+        swapUpButton->onClick = std::bind(&ParameterStrip::swapUp, this);
     }
     if (i < tot - 1)
     {
-        swapDownButton = std::make_unique<TriButton>(false);
+        swapDownButton          = std::make_unique<TriButton>(false);
+        swapDownButton->onClick = std::bind(&ParameterStrip::swapDown, this);
     }
 
     addAndMakeVisible(mSlider);
@@ -154,6 +155,43 @@ ParameterStrip::~ParameterStrip()
     // Reset this before the draggable label attachment
     srListener.reset();
 }
+
+// =============================================================================
+void ParameterStrip::swap(juce::StringRef otherSuffix)
+{
+    DBG("Swapping '" << thisSuffix << "' with '" << otherSuffix << "'");
+    static const std::vector<juce::String> PREFIXES(
+        {ACTIVE_ID_PREFIX, SINGLE_ID_PREFIX, INVERTED_ID_PREFIX, TYPE_ID_PREFIX,
+         MAGNITUDE_ID_PREFIX, PHASE_ID_PREFIX, GAIN_ID_PREFIX});
+    static const size_t n = PREFIXES.size();
+
+    std::vector<float> thisValues, otherValues;
+    for (size_t i = 0; i < n; ++i)
+    {
+        juce::String thisLabel(PREFIXES[i] + thisSuffix);
+        juce::String otherLabel(PREFIXES[i] + otherSuffix);
+        thisValues.push_back(processor.getParameterUnnormValue(thisLabel));
+        jassert(processor.getParameterUnnormValue(thisLabel) == thisValues[i]);
+        otherValues.push_back(processor.getParameterUnnormValue(otherLabel));
+        jassert(processor.getParameterUnnormValue(otherLabel)
+                == otherValues[i]);
+        processor.setParameterValue(thisLabel, 0.0f);
+        processor.setParameterValue(otherLabel, 0.0f);
+    }
+    jassert(thisValues.size() == n);
+    jassert(thisValues.size() == otherValues.size());
+    for (int i = n - 1; i >= 0; --i)
+    {
+        juce::String thisLabel(PREFIXES[i] + thisSuffix);
+        juce::String otherLabel(PREFIXES[i] + otherSuffix);
+        processor.setParameterValue(thisLabel, otherValues[i]);
+        jassert(processor.getParameterUnnormValue(thisLabel) == otherValues[i]);
+        processor.setParameterValue(otherLabel, thisValues[i]);
+        jassert(processor.getParameterUnnormValue(otherLabel) == thisValues[i]);
+    }
+}
+void ParameterStrip::swapDown() { swap(swapDownSuffix); }
+void ParameterStrip::swapUp() { swap(swapUpSuffix); }
 
 // =============================================================================
 void ParameterStrip::resized()
