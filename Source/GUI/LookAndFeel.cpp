@@ -878,9 +878,6 @@ static void _add_point_to_path(juce::Path& p, FloatType x, FloatType y,
                                FloatType prev_x, FloatType prev_y,
                                PlotComponent::LineType lt)
 {
-    jassert(x);
-    jassert(y);
-
     switch (lt)
     {
     case PlotComponent::LineType::StepX:
