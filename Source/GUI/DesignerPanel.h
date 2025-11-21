@@ -154,7 +154,10 @@ private:
     // =========================================================================
     void appendLabelAndComponentIfVisible(juce::Rectangle<int>&, int sh, int ph,
                                           juce::Label*, juce::Component*);
-    void setSafeValueForStopbandRipple();
+    void setSafeValueForStopbandRipple(double unsafeStopbandRippleDb);
+    void setInternalValuesToComponents(juce::NotificationType);
+    template <typename MemberType>
+    bool _checkChangedAndSetValue(MemberType*, const MemberType);
 
     // =========================================================================
     std::unique_ptr<ApplicationPropertiesButtonAttachment> autoButtonAttachment;
