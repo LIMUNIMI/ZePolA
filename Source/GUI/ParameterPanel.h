@@ -134,6 +134,9 @@ public:
 
     //==========================================================================
     void resized() override;
+    void mouseDown(const juce::MouseEvent&) override;
+    void mouseDrag(const juce::MouseEvent&) override;
+    void mouseUp(const juce::MouseEvent&) override;
 
     //==========================================================================
     /** Return true if the active button is down */
@@ -152,6 +155,7 @@ private:
     std::unique_ptr<TriButton> swapUpButton, swapDownButton;
     DraggableLabel gLabel, fLabel;
     VTSAudioProcessor& processor;
+    ParameterStrip* currentDragStart;
 
     // =========================================================================
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
@@ -548,6 +552,9 @@ public:
     void updatePlotValues(const ZePolAudioProcessor&) override;
     void resized() override;
     void paint(juce::Graphics&) override;
+
+    //==========================================================================
+    ParameterStrip* ParameterPanel::getStripAt(const juce::MouseEvent&);
 
 private:
     // =========================================================================

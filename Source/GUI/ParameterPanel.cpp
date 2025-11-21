@@ -148,6 +148,7 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i, int tot)
     addAndMakeVisible(sButton);
     if (swapUpButton) addAndMakeVisible(*swapUpButton.get());
     if (swapDownButton) addAndMakeVisible(*swapDownButton.get());
+    setInterceptsMouseClicks(true, true);
 }
 ParameterStrip::~ParameterStrip()
 {
@@ -198,6 +199,30 @@ void ParameterStrip::swap(juce::StringRef otherSuffix)
 }
 void ParameterStrip::swapDown() { swap(swapDownSuffix); }
 void ParameterStrip::swapUp() { swap(swapUpSuffix); }
+void ParameterStrip::mouseDown(const juce::MouseEvent&)
+{
+    currentDragStart = this;
+    DBG("DRAG: " << currentDragStart->thisSuffix);
+}
+void ParameterStrip::mouseDrag(const juce::MouseEvent& e)
+{
+    if (auto* parent = dynamic_cast<ParameterPanel*>(getParentComponent()))
+    {
+        auto* other = parent->getStripAt(e);
+        if (currentDragStart && other && other != currentDragStart)
+        {
+            DBG("DRAG: " << currentDragStart->thisSuffix << " <-> "
+                         << other->thisSuffix);
+            currentDragStart->swap(other->thisSuffix);
+            currentDragStart = other;
+        }
+    }
+}
+void ParameterStrip::mouseUp(const juce::MouseEvent&)
+{
+    currentDragStart = nullptr;
+    DBG("DRAG STOP");
+}
 
 // =============================================================================
 void ParameterStrip::resized()
@@ -787,4 +812,15 @@ void ParameterPanel::resized()
         ir_label_rect.setBottom(getHeight());
         ir_label.setBounds(ir_label_rect);
     }
+}
+
+// =============================================================================
+ParameterStrip* ParameterPanel::getStripAt(const juce::MouseEvent& e)
+{
+    auto p = e.getEventRelativeTo(this).position.toInt();
+
+    for (auto& s : strips)
+        if (s && s->isVisible() && s->getBounds().contains(p)) return s.get();
+
+    return nullptr;
 }
