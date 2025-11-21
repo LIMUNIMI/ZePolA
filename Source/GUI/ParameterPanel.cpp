@@ -161,8 +161,9 @@ void ParameterStrip::swap(juce::StringRef otherSuffix)
 {
     DBG("Swapping '" << thisSuffix << "' with '" << otherSuffix << "'");
     static const std::vector<juce::String> PREFIXES(
-        {ACTIVE_ID_PREFIX, SINGLE_ID_PREFIX, INVERTED_ID_PREFIX, TYPE_ID_PREFIX,
-         MAGNITUDE_ID_PREFIX, PHASE_ID_PREFIX, GAIN_ID_PREFIX});
+        {SINGLE_ID_PREFIX, INVERTED_ID_PREFIX, TYPE_ID_PREFIX,
+         MAGNITUDE_ID_PREFIX, PHASE_ID_PREFIX, ACTIVE_ID_PREFIX,
+         GAIN_ID_PREFIX});
     static const size_t n = PREFIXES.size();
 
     std::vector<float> thisValues, otherValues;
@@ -170,20 +171,25 @@ void ParameterStrip::swap(juce::StringRef otherSuffix)
     {
         juce::String thisLabel(PREFIXES[i] + thisSuffix);
         juce::String otherLabel(PREFIXES[i] + otherSuffix);
+
         thisValues.push_back(processor.getParameterUnnormValue(thisLabel));
         jassert(processor.getParameterUnnormValue(thisLabel) == thisValues[i]);
         otherValues.push_back(processor.getParameterUnnormValue(otherLabel));
         jassert(processor.getParameterUnnormValue(otherLabel)
                 == otherValues[i]);
-        processor.setParameterValue(thisLabel, 0.0f);
-        processor.setParameterValue(otherLabel, 0.0f);
+    }
+    for (auto& prefix : PREFIXES)
+    {
+        processor.setParameterValue(prefix + thisSuffix, 0.0f);
+        processor.setParameterValue(prefix + otherSuffix, 0.0f);
     }
     jassert(thisValues.size() == n);
     jassert(thisValues.size() == otherValues.size());
-    for (int i = n - 1; i >= 0; --i)
+    for (size_t i = 0; i < n; ++i)
     {
         juce::String thisLabel(PREFIXES[i] + thisSuffix);
         juce::String otherLabel(PREFIXES[i] + otherSuffix);
+
         processor.setParameterValue(thisLabel, otherValues[i]);
         jassert(processor.getParameterUnnormValue(thisLabel) == otherValues[i]);
         processor.setParameterValue(otherLabel, thisValues[i]);
