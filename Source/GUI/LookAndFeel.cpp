@@ -67,7 +67,7 @@ forceAspectRatioCentered(const juce::Rectangle<float>&, float);
 // =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
     : typeface(juce::Typeface::createSystemTypefaceFor(
-          BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
+        BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
     , boldTypeface(juce::Typeface::createSystemTypefaceFor(
           BinaryData::MuktaBold_ttf, BinaryData::MuktaBold_ttfSize))
     , fullWidth(1200)
@@ -177,8 +177,6 @@ CustomLookAndFeel::CustomLookAndFeel()
     setColour(juce::ToggleButton::textColourId, juce::Colours::black);
     setColour(juce::ToggleButton::tickColourId, juce::Colours::black);
     setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::black);
-    setColour(TriButton_faceColour,
-              findColour(OnOffButton_backgroundOnColourId));
     // Plots
     setColour(PlotComponent_backgroundColourId, juce::Colour(0x45979a9a));
     setColour(PlotComponent_lineColourId, juce::Colours::black);
@@ -874,41 +872,6 @@ void CustomLookAndFeel::drawButtonText(juce::Graphics& g,
     _autoFontScale(font, text_rect, text);
     g.setFont(font);
     g.drawText(text, text_rect, juce::Justification::centred);
-}
-void CustomLookAndFeel::paintTriButton(juce::Graphics& g,
-                                       bool /* shouldDrawBtnAsHighlighted */,
-                                       bool /* shouldDrawBtnAsDown */,
-                                       bool triButtonUp)
-{
-    // Use the clip bounds as available space (float version for precision)
-    auto bounds = g.getClipBounds().toFloat();
-
-    // If bounds are empty, nothing to do
-    if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) return;
-
-    // Compute the three points for an isosceles triangle that fills bounds
-    const float left   = bounds.getX();
-    const float right  = bounds.getRight();
-    const float top    = bounds.getY();
-    const float bottom = bounds.getBottom();
-    const float cx     = bounds.getCentreX();
-
-    juce::Path tri;
-    if (triButtonUp)
-    {
-        tri.addTriangle(cx, top,         // top middle
-                        left, bottom,    // bottom left
-                        right, bottom);  // bottom right
-    }
-    else
-    {
-        tri.addTriangle(left, top,    // top left
-                        right, top,   // top right
-                        cx, bottom);  // bottom middle
-    }
-
-    g.setColour(findColour(TriButton_faceColour));
-    g.fillPath(tri);
 }
 template <typename FloatType>
 static void _add_point_to_path(juce::Path& p, FloatType x, FloatType y,

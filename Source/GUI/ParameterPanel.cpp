@@ -38,21 +38,6 @@ ParameterSlider::ParameterSlider()
 }
 
 // =============================================================================
-TriButton::LookAndFeelMethods::~LookAndFeelMethods() {}
-
-// =============================================================================
-TriButton::TriButton(bool u) : juce::Button(""), up(u) {}
-void TriButton::paintButton(juce::Graphics& g,
-                            bool shouldDrawButtonAsHighlighted,
-                            bool shouldDrawButtonAsDown)
-{
-    if (auto laf
-        = dynamic_cast<TriButton::LookAndFeelMethods*>(&getLookAndFeel()))
-        laf->paintTriButton(g, shouldDrawButtonAsHighlighted,
-                            shouldDrawButtonAsDown, up);
-}
-
-// =============================================================================
 ParameterStrip::ParentRepaintButtonListener::ParentRepaintButtonListener() {}
 
 // =============================================================================
@@ -82,10 +67,8 @@ void ParameterStrip::FrequencyLabelSampleRateListener::
 }
 
 // =============================================================================
-ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i, int tot)
+ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     : thisSuffix(i)
-    , swapUpSuffix(i - 1)
-    , swapDownSuffix(i + 1)
     , tButton(FilterElement::typeToString(false),
               FilterElement::typeToString(true),
               CustomLookAndFeel::ColourIDs::ZPoint_zerosColourId,
@@ -127,17 +110,6 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i, int tot)
     p.addSampleRateListener(srListener.get());
     aButton.addListener(&aButtonListener);
 
-    if (i > 0)
-    {
-        swapUpButton          = std::make_unique<TriButton>(true);
-        swapUpButton->onClick = std::bind(&ParameterStrip::swapUp, this);
-    }
-    if (i < tot - 1)
-    {
-        swapDownButton          = std::make_unique<TriButton>(false);
-        swapDownButton->onClick = std::bind(&ParameterStrip::swapDown, this);
-    }
-
     addAndMakeVisible(mSlider);
     addAndMakeVisible(pSlider);
     addAndMakeVisible(fLabel);
@@ -146,8 +118,6 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i, int tot)
     addAndMakeVisible(gLabel);
     addAndMakeVisible(iButton);
     addAndMakeVisible(sButton);
-    if (swapUpButton) addAndMakeVisible(*swapUpButton.get());
-    if (swapDownButton) addAndMakeVisible(*swapDownButton.get());
     setInterceptsMouseClicks(true, true);
 }
 ParameterStrip::~ParameterStrip()
@@ -197,8 +167,6 @@ void ParameterStrip::swap(juce::StringRef otherSuffix)
         jassert(processor.getParameterUnnormValue(otherLabel) == thisValues[i]);
     }
 }
-void ParameterStrip::swapDown() { swap(swapDownSuffix); }
-void ParameterStrip::swapUp() { swap(swapUpSuffix); }
 void ParameterStrip::mouseDown(const juce::MouseEvent&)
 {
     currentDragStart = this;
@@ -243,19 +211,6 @@ void ParameterStrip::resized()
             rects[5]
                 .withHeight(juce::roundToInt(gLabel.getFont().getHeight()))
                 .withCentre(rects[5].getCentre()));
-
-        juce::Rectangle<int> rTriButts(getLocalBounds());
-        rTriButts.setLeft(rects[7].getX());
-        rTriButts.reduce(rTriButts.getHeight() / 10,
-                         rTriButts.getHeight() / 10);
-        juce::Rectangle<int> rButtUp(rTriButts);
-        rButtUp.setHeight(rButtUp.getHeight() * 25 / 100);
-        rButtUp.setWidth(rButtUp.getHeight());
-        rButtUp.setX(rTriButts.getRight() - rButtUp.getWidth());
-        juce::Rectangle<int> rButtDown(rButtUp);
-        rButtDown.setY(rTriButts.getBottom() - rButtDown.getHeight());
-        if (swapUpButton) swapUpButton->setBounds(rButtUp);
-        if (swapDownButton) swapDownButton->setBounds(rButtDown);
 
         rects[6].reduce(rects[6].getWidth() / 5, rects[6].getHeight() / 5);
         rects[7].reduce(rects[7].getWidth() / 5, rects[7].getHeight() / 5);
@@ -711,7 +666,7 @@ ParameterPanel::ParameterPanel(ZePolAudioProcessor& p)
     }
     auto n = p.getNElements();
     for (auto i = 0; i < n; ++i)
-        strips.push_back(std::make_unique<ParameterStrip>(p, i, n));
+        strips.push_back(std::make_unique<ParameterStrip>(p, i));
     for (auto i = 0; i <= n; ++i)
         separators.push_back(std::make_unique<SeparatorComponent>());
 

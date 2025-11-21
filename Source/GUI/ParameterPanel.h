@@ -49,39 +49,6 @@ private:
 };
 
 // =============================================================================
-/** A triangular button */
-class TriButton : public juce::Button
-{
-public:
-    // =========================================================================
-    class LookAndFeelMethods
-    {
-    public:
-        // =====================================================================
-        virtual ~LookAndFeelMethods();
-
-        // =====================================================================
-        virtual void
-        paintTriButton(juce::Graphics&, bool shouldDrawButtonAsHighlighted,
-                       bool shouldDrawButtonAsDown, bool triButtonUp)
-            = 0;
-    };
-
-    // =========================================================================
-    TriButton(bool up = false);
-    virtual void paintButton(juce::Graphics&,
-                             bool shouldDrawButtonAsHighlighted,
-                             bool shouldDrawButtonAsDown);
-
-private:
-    // =========================================================================
-    bool up;
-
-    // =========================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TriButton)
-};
-
-// =============================================================================
 /** Single parameter row  */
 class ParameterStrip : public InvisibleGroupComponent
 {
@@ -124,13 +91,11 @@ public:
     };
 
     // =========================================================================
-    ParameterStrip(VTSAudioProcessor&, int index, int tot);
+    ParameterStrip(VTSAudioProcessor&, int index);
     ~ParameterStrip();
 
     //==========================================================================
     void swap(juce::StringRef suffix);
-    void swapDown();
-    void swapUp();
 
     //==========================================================================
     void resized() override;
@@ -147,12 +112,11 @@ public:
 
 private:
     // =========================================================================
-    juce::String thisSuffix, swapUpSuffix, swapDownSuffix;
+    juce::String thisSuffix;
     ParameterSlider mSlider, pSlider;
     juce::ToggleButton aButton;
     ToggleButtonCheckbox iButton, sButton;
     LabelledToggleButton tButton;
-    std::unique_ptr<TriButton> swapUpButton, swapDownButton;
     DraggableLabel gLabel, fLabel;
     VTSAudioProcessor& processor;
     ParameterStrip* currentDragStart;
