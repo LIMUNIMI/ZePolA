@@ -178,16 +178,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
 
     Button_setOnOffLabel(*autoButton.get(), "MAN", "AUTO");
 
-    typeCBox->setSelectedId(1 + filterParams.type);
-    analogShapeCBox->setSelectedId(1 + filterParams.analogFShape);
-    biquadShapeCBox->setSelectedId(1 + filterParams.biquadFShape);
-    orderSlider->setValue(static_cast<double>(filterParams.order));
-    cutoffSlider->setValue(filterParams.cutoff);
-    cutoff2Slider->setValue(filterParams.cutoff2);
-    rpSlider->setValue(filterParams.passbandRippleDb);
-    rsSlider->setValue(filterParams.stopbandRippleDb);
-    qualitySlider->setValue(filterParams.quality);
-    gainDBSlider->setValue(filterParams.gain_db);
+    setInternalValuesToComponents(juce::NotificationType::sendNotificationSync);
 
     typeCBox->addListener(&typeCBoxListener);
     analogShapeCBox->addListener(&analogShapeCBoxListener);
@@ -222,13 +213,16 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     gainDBSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "gainDBFilterDesign", gainDBSlider));
 
-    applyButton.onClick = std::bind(&DesignerPanel::designFilter, this);
-    autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
-        properties, AUTO_FILTER_PROPERTY_ID, autoButton));
-
     updateBiquadFilterShapeVisibility();
     updateAnalogFilterShapeVisibility();
     setCrossUpdateShape(true);
+
+    applyButton.onClick = std::bind(&DesignerPanel::designFilter, this);
+
+    // Do not attach auto-button to property file: it causes inconsistencies
+    // dependent on order of operations
+    // autoButtonAttachment.reset(new ApplicationPropertiesButtonAttachment(
+    //     properties, AUTO_FILTER_PROPERTY_ID, autoButton));
 }
 DesignerPanel::~DesignerPanel()
 {
@@ -246,42 +240,76 @@ DesignerPanel::~DesignerPanel()
 }
 
 // =============================================================================
-static double _RIPPLE_DELTA = 0.25;
-void DesignerPanel::setSafeValueForStopbandRipple()
+void DesignerPanel::setInternalValuesToComponents(juce::NotificationType nt)
 {
+    typeCBox->setSelectedId(1 + filterParams.type, nt);
+    analogShapeCBox->setSelectedId(1 + filterParams.analogFShape, nt);
+    biquadShapeCBox->setSelectedId(1 + filterParams.biquadFShape, nt);
+    orderSlider->setValue(static_cast<double>(filterParams.order), nt);
+    cutoffSlider->setValue(filterParams.cutoff, nt);
+    cutoff2Slider->setValue(filterParams.cutoff2, nt);
+    rpSlider->setValue(filterParams.passbandRippleDb, nt);
+    rsSlider->setValue(filterParams.stopbandRippleDb, nt);
+    qualitySlider->setValue(filterParams.quality, nt);
+    gainDBSlider->setValue(filterParams.gain_db, nt);
+    autoButton->setToggleState(autoUpdate, nt);
+}
+template <typename MemberType>
+bool DesignerPanel::_checkChangedAndSetValue(MemberType* p, const MemberType v)
+{
+    bool b = *p != v;
+    if (b) *p = v;
+    return b;
+}
+
+// =============================================================================
+static double _RIPPLE_DELTA = 0.25;
+void DesignerPanel::setSafeValueForStopbandRipple(double unsafeStopbandRippleDb)
+{
+    double safeStopbandRippleDb = unsafeStopbandRippleDb;
+    double lowerBound           = filterParams.passbandRippleDb + _RIPPLE_DELTA;
     switch (filterParams.type)
     {
     case FilterParameters::FilterType::Elliptic:
-        if (filterParams.stopbandRippleDb - filterParams.passbandRippleDb
-            < _RIPPLE_DELTA)
+        if (unsafeStopbandRippleDb < lowerBound)
         {
-            rsSlider->setValue(filterParams.stopbandRippleDb
-                               = filterParams.passbandRippleDb + _RIPPLE_DELTA);
+            rsSlider->setValue(safeStopbandRippleDb = lowerBound);
+            DBG("  Stopband ripple lower bound: " << lowerBound);
         }
         break;
     default: break;  // Nothing to do
     }
+
+    if (!_checkChangedAndSetValue(&filterParams.stopbandRippleDb,
+                                  safeStopbandRippleDb))
+        return;
+
     DBG("  Stopband ripple:             " << filterParams.stopbandRippleDb);
-    DBG("  Stopband ripple lower bound: " << filterParams.passbandRippleDb
-                                                 + _RIPPLE_DELTA);
     autoDesignFilter();
 }
 
 void DesignerPanel::setTypeFromCBoxId(int i)
 {
-    filterParams.type = static_cast<FilterParameters::FilterType>(i - 1);
+    if (!_checkChangedAndSetValue(
+            &filterParams.type,
+            static_cast<FilterParameters::FilterType>(i - 1)))
+        return;
+
     DBG("TYPE: " << FilterParameters::typeToString(filterParams.type));
-    setSafeValueForStopbandRipple();
+    setSafeValueForStopbandRipple(filterParams.stopbandRippleDb);
     updateBiquadFilterShapeVisibility();
     updateAnalogFilterShapeVisibility();
 }
 void DesignerPanel::setAnalogShapeFromCBoxId(int i)
 {
-    filterParams.analogFShape
-        = static_cast<FilterParameters::AnalogFilterShape>(i - 1);
+    if (!_checkChangedAndSetValue(
+            &filterParams.analogFShape,
+            static_cast<FilterParameters::AnalogFilterShape>(i - 1)))
+        return;
+
     DBG("ANALOG_SHAPE: " << FilterParameters::shapeToString(
             filterParams.analogFShape));
-    autoDesignFilter();
+
     // Cross-update to biquad filter shapes if compatible
     if (crossUpdateShape)
     {
@@ -306,14 +334,16 @@ void DesignerPanel::setAnalogShapeFromCBoxId(int i)
         break;
         }
     }
+
+    autoDesignFilter();
 }
 void DesignerPanel::setBiquadShapeFromCBoxId(int i)
 {
-    filterParams.biquadFShape
-        = static_cast<FilterParameters::BiquadFilterShape>(i - 1);
-    DBG("BIQUAD_SHAPE: " << FilterParameters::shapeToString(
-            filterParams.biquadFShape));
-    autoDesignFilter();
+    if (!_checkChangedAndSetValue(
+            &filterParams.biquadFShape,
+            static_cast<FilterParameters::BiquadFilterShape>(i - 1)))
+        return;
+
     // Cross-update to analog filter shapes if compatible
     if (crossUpdateShape)
     {
@@ -344,58 +374,68 @@ void DesignerPanel::setBiquadShapeFromCBoxId(int i)
     }
     updateQualityVisibility();
     updateGainDBVisibility();
+
+    autoDesignFilter();
 }
 void DesignerPanel::setOrder(double f)
 {
-    filterParams.order = juce::roundToInt(f);
+    if (!_checkChangedAndSetValue(&filterParams.order, juce::roundToInt(f)))
+        return;
+
     DBG("ORDER: " << filterParams.order);
     autoDesignFilter();
 }
 void DesignerPanel::setCutoff(double f)
 {
-    filterParams.cutoff = f;
+    if (!_checkChangedAndSetValue(&filterParams.cutoff, f)) return;
+
     DBG("CUTOFF: " << filterParams.cutoff);
     autoDesignFilter();
 }
 void DesignerPanel::setCutoff2(double f)
 {
-    filterParams.cutoff2 = f;
+    if (!_checkChangedAndSetValue(&filterParams.cutoff2, f)) return;
+
     DBG("CUTOFF_2: " << filterParams.cutoff2);
     autoDesignFilter();
 }
 void DesignerPanel::setPassbandRipple(double rp)
 {
-    filterParams.passbandRippleDb = rp;
+    if (!_checkChangedAndSetValue(&filterParams.passbandRippleDb, rp)) return;
+
     DBG("PASSBAND RIPPLE: " << filterParams.passbandRippleDb);
-    setSafeValueForStopbandRipple();
+    setSafeValueForStopbandRipple(filterParams.stopbandRippleDb);
+    autoDesignFilter();
 }
 void DesignerPanel::setStopbandRipple(double rs)
 {
-    filterParams.stopbandRippleDb = rs;
-    DBG("STOPBAND RIPPLE: " << filterParams.stopbandRippleDb);
-    setSafeValueForStopbandRipple();
+    setSafeValueForStopbandRipple(rs);
 }
 void DesignerPanel::setQuality(double q)
 {
-    filterParams.quality = q;
+    if (!_checkChangedAndSetValue(&filterParams.quality, q)) return;
+
     DBG("QUALITY: " << filterParams.quality);
     autoDesignFilter();
 }
 void DesignerPanel::setGainDB(double db)
 {
-    filterParams.gain_db = db;
+    if (!_checkChangedAndSetValue(&filterParams.gain_db, db)) return;
+
     DBG("GAIN dB: " << filterParams.gain_db);
     autoDesignFilter();
 }
 void DesignerPanel::setAuto(bool b)
 {
-    autoUpdate = b;
+    if (!_checkChangedAndSetValue(&autoUpdate, b)) return;
+
     DBG(((autoUpdate) ? "AUTO" : "MANUAL"));
     autoDesignFilter();
 }
 void DesignerPanel::setCrossUpdateShape(bool b)
 {
-    crossUpdateShape = b;
+    if (!_checkChangedAndSetValue(&crossUpdateShape, b)) return;
+
     DBG("CROSS UPDATE: " << ((crossUpdateShape) ? "on" : "off"));
     autoDesignFilter();
 }

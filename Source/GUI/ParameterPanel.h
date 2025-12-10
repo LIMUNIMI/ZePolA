@@ -95,7 +95,13 @@ public:
     ~ParameterStrip();
 
     //==========================================================================
+    void swap(juce::StringRef suffix);
+
+    //==========================================================================
     void resized() override;
+    void mouseDown(const juce::MouseEvent&) override;
+    void mouseDrag(const juce::MouseEvent&) override;
+    void mouseUp(const juce::MouseEvent&) override;
 
     //==========================================================================
     /** Return true if the active button is down */
@@ -106,12 +112,14 @@ public:
 
 private:
     // =========================================================================
+    juce::String thisSuffix;
     ParameterSlider mSlider, pSlider;
     juce::ToggleButton aButton;
     ToggleButtonCheckbox iButton, sButton;
     LabelledToggleButton tButton;
     DraggableLabel gLabel, fLabel;
     VTSAudioProcessor& processor;
+    ParameterStrip* currentDragStart;
 
     // =========================================================================
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
@@ -508,6 +516,9 @@ public:
     void updatePlotValues(const ZePolAudioProcessor&) override;
     void resized() override;
     void paint(juce::Graphics&) override;
+
+    //==========================================================================
+    ParameterStrip* getStripAt(const juce::MouseEvent&);
 
 private:
     // =========================================================================

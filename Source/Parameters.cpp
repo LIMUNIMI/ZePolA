@@ -212,6 +212,14 @@ void VTSAudioProcessor::setParameterValue(juce::StringRef parameterID,
 {
     Parameters::setParameterValue(getParameterById(parameterID), value);
 }
+void VTSAudioProcessor::swapParameters(juce::StringRef paramID1,
+                                       juce::StringRef paramID2)
+{
+    auto v1 = getParameterUnnormValue(paramID1);
+    auto v2 = getParameterUnnormValue(paramID2);
+    setParameterValue(paramID1, v2);
+    setParameterValue(paramID2, v1);
+}
 void VTSAudioProcessor::resetParameterValue(juce::StringRef parameterID)
 {
     Parameters::resetParameterValue(getParameterById(parameterID));

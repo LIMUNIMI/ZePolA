@@ -68,7 +68,8 @@ void ParameterStrip::FrequencyLabelSampleRateListener::
 
 // =============================================================================
 ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
-    : tButton(FilterElement::typeToString(false),
+    : thisSuffix(i)
+    , tButton(FilterElement::typeToString(false),
               FilterElement::typeToString(true),
               CustomLookAndFeel::ColourIDs::ZPoint_zerosColourId,
               CustomLookAndFeel::ColourIDs::ZPoint_polesColourId, false, true)
@@ -77,34 +78,32 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     , processor(p)
     , mSliderAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
-                           juce::Slider>(MAGNITUDE_ID_PREFIX + juce::String(i),
+                           juce::Slider>(MAGNITUDE_ID_PREFIX + thisSuffix,
                                          mSlider))
     , pSliderAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::SliderAttachment,
-                           juce::Slider>(PHASE_ID_PREFIX + juce::String(i),
-                                         pSlider))
+                           juce::Slider>(PHASE_ID_PREFIX + thisSuffix, pSlider))
     , aButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
-                           juce::Button>(ACTIVE_ID_PREFIX + juce::String(i),
+                           juce::Button>(ACTIVE_ID_PREFIX + thisSuffix,
                                          aButton))
     , tButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
-                           juce::Button>(TYPE_ID_PREFIX + juce::String(i),
-                                         tButton))
+                           juce::Button>(TYPE_ID_PREFIX + thisSuffix, tButton))
     , sButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
-                           juce::Button>(SINGLE_ID_PREFIX + juce::String(i),
+                           juce::Button>(SINGLE_ID_PREFIX + thisSuffix,
                                          sButton))
     , iButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
-                           juce::Button>(INVERTED_ID_PREFIX + juce::String(i),
+                           juce::Button>(INVERTED_ID_PREFIX + thisSuffix,
                                          iButton))
     , gLabelAttachment(
           p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
-              GAIN_ID_PREFIX + juce::String(i), gLabel))
+              GAIN_ID_PREFIX + thisSuffix, gLabel))
     , fLabelAttachment(
           p.makeAttachment<DraggableLabelAttachment, DraggableLabel>(
-              PHASE_ID_PREFIX + juce::String(i), fLabel))
+              PHASE_ID_PREFIX + thisSuffix, fLabel))
 {
     srListener = std::make_unique<FrequencyLabelSampleRateListener>(
         *fLabelAttachment.get());
@@ -119,12 +118,78 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     addAndMakeVisible(gLabel);
     addAndMakeVisible(iButton);
     addAndMakeVisible(sButton);
+    setInterceptsMouseClicks(true, true);
 }
 ParameterStrip::~ParameterStrip()
 {
     processor.removeSampleRateListener(srListener.get());
     // Reset this before the draggable label attachment
     srListener.reset();
+}
+
+// =============================================================================
+void ParameterStrip::swap(juce::StringRef otherSuffix)
+{
+    DBG("Swapping '" << thisSuffix << "' with '" << otherSuffix << "'");
+    static const std::vector<juce::String> PREFIXES(
+        {SINGLE_ID_PREFIX, INVERTED_ID_PREFIX, TYPE_ID_PREFIX,
+         MAGNITUDE_ID_PREFIX, PHASE_ID_PREFIX, ACTIVE_ID_PREFIX,
+         GAIN_ID_PREFIX});
+    static const size_t n = PREFIXES.size();
+
+    std::vector<float> thisValues, otherValues;
+    for (size_t i = 0; i < n; ++i)
+    {
+        juce::String thisLabel(PREFIXES[i] + thisSuffix);
+        juce::String otherLabel(PREFIXES[i] + otherSuffix);
+
+        thisValues.push_back(processor.getParameterUnnormValue(thisLabel));
+        jassert(processor.getParameterUnnormValue(thisLabel) == thisValues[i]);
+        otherValues.push_back(processor.getParameterUnnormValue(otherLabel));
+        jassert(processor.getParameterUnnormValue(otherLabel)
+                == otherValues[i]);
+    }
+    for (auto& prefix : PREFIXES)
+    {
+        processor.setParameterValue(prefix + thisSuffix, 0.0f);
+        processor.setParameterValue(prefix + otherSuffix, 0.0f);
+    }
+    jassert(thisValues.size() == n);
+    jassert(thisValues.size() == otherValues.size());
+    for (size_t i = 0; i < n; ++i)
+    {
+        juce::String thisLabel(PREFIXES[i] + thisSuffix);
+        juce::String otherLabel(PREFIXES[i] + otherSuffix);
+
+        processor.setParameterValue(thisLabel, otherValues[i]);
+        jassert(processor.getParameterUnnormValue(thisLabel) == otherValues[i]);
+        processor.setParameterValue(otherLabel, thisValues[i]);
+        jassert(processor.getParameterUnnormValue(otherLabel) == thisValues[i]);
+    }
+}
+void ParameterStrip::mouseDown(const juce::MouseEvent&)
+{
+    currentDragStart = this;
+    DBG("DRAG: " << currentDragStart->thisSuffix);
+}
+void ParameterStrip::mouseDrag(const juce::MouseEvent& e)
+{
+    if (auto* parent = dynamic_cast<ParameterPanel*>(getParentComponent()))
+    {
+        auto* other = parent->getStripAt(e);
+        if (currentDragStart && other && other != currentDragStart)
+        {
+            DBG("DRAG: " << currentDragStart->thisSuffix << " <-> "
+                         << other->thisSuffix);
+            currentDragStart->swap(other->thisSuffix);
+            currentDragStart = other;
+        }
+    }
+}
+void ParameterStrip::mouseUp(const juce::MouseEvent&)
+{
+    currentDragStart = nullptr;
+    DBG("DRAG STOP");
 }
 
 // =============================================================================
@@ -702,4 +767,15 @@ void ParameterPanel::resized()
         ir_label_rect.setBottom(getHeight());
         ir_label.setBounds(ir_label_rect);
     }
+}
+
+// =============================================================================
+ParameterStrip* ParameterPanel::getStripAt(const juce::MouseEvent& e)
+{
+    auto p = e.getEventRelativeTo(this).position.toInt();
+
+    for (auto& s : strips)
+        if (s && s->isVisible() && s->getBounds().contains(p)) return s.get();
+
+    return nullptr;
 }
