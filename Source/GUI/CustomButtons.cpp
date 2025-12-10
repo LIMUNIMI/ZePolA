@@ -57,6 +57,7 @@ void Button_setOnOffLabel(juce::Button& b, const juce::String& labelOff,
 
 // =============================================================================
 ToggleButtonCheckbox::ToggleButtonCheckbox() {}
+LockToggleButton::LockToggleButton() {}
 
 // =============================================================================
 LabelledToggleButton::LabelledToggleButton(const juce::String& l0,

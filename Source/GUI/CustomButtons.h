@@ -51,6 +51,19 @@ private:
 };
 
 // =============================================================================
+/** Small lock icon toggle button */
+class LockToggleButton : public juce::ToggleButton
+{
+public:
+    // =========================================================================
+    LockToggleButton();
+
+private:
+    // =========================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LockToggleButton)
+};
+
+// =============================================================================
 /** Toggle button with labels */
 class LabelledToggleButton : public juce::ToggleButton
 {

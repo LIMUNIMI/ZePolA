@@ -118,6 +118,7 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     addAndMakeVisible(gLabel);
     addAndMakeVisible(iButton);
     addAndMakeVisible(sButton);
+    addAndMakeVisible(lockButton);
     setInterceptsMouseClicks(true, true);
 }
 ParameterStrip::~ParameterStrip()
@@ -214,8 +215,11 @@ void ParameterStrip::resized()
 
         rects[6].reduce(rects[6].getWidth() / 5, rects[6].getHeight() / 5);
         rects[7].reduce(rects[7].getWidth() / 5, rects[7].getHeight() / 5);
+        rects[8].reduce(rects[8].getWidth() / 5, rects[8].getHeight() / 5);
         iButton.setBounds(forceAspectRatioCentered(rects[6], 1.0));
         sButton.setBounds(forceAspectRatioCentered(rects[7], 1.0));
+        lockButton.setBounds(forceAspectRatioCentered(
+            rects[8], 2.0f / (1.0f + std::sqrt(5.0f))));
 
         claf->resizeToggleButton(tButton);
         claf->resizeToggleButton(aButton);

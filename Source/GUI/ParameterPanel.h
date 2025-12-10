@@ -116,6 +116,7 @@ private:
     ParameterSlider mSlider, pSlider;
     juce::ToggleButton aButton;
     ToggleButtonCheckbox iButton, sButton;
+    LockToggleButton lockButton;
     LabelledToggleButton tButton;
     DraggableLabel gLabel, fLabel;
     VTSAudioProcessor& processor;

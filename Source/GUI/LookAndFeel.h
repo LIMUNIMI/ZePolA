@@ -281,7 +281,7 @@ private:
     // =========================================================================
     float buttonAspectRatio, fullButtonPadding, fullButtonOutline,
         fullLabelledButtonOutline, relativeButtonRadius,
-        relativeLabelledButtonRadius;
+        relativeLabelledButtonRadius, relativeLockRadius;
 
     // =========================================================================
     int n_x_ticks;
@@ -320,6 +320,9 @@ private:
     void _drawCheckbox(juce::Graphics&, juce::ToggleButton&,
                        bool shouldDrawButtonAsHighlighted,
                        bool shouldDrawButtonAsDown);
+    void _drawLockToggleButton(juce::Graphics& g, juce::ToggleButton& button,
+                               bool shouldDrawButtonAsHighlighted,
+                               bool shouldDrawButtonAsDown);
     template <typename ValueType>
     void _autoFontScale(juce::Font&, const juce::Rectangle<ValueType>&,
                         const juce::String&);
