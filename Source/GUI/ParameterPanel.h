@@ -518,7 +518,7 @@ public:
     void paint(juce::Graphics&) override;
 
     //==========================================================================
-    ParameterStrip* ParameterPanel::getStripAt(const juce::MouseEvent&);
+    ParameterStrip* getStripAt(const juce::MouseEvent&);
 
 private:
     // =========================================================================
