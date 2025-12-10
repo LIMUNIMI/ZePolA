@@ -198,7 +198,7 @@ void ParameterStrip::resized()
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
         auto rects = claf->splitProportionalStrip(getLocalBounds());
-        jassert(rects.size() == 8);
+        jassert(rects.size() == 9);
         mSlider.setBounds(rects[0]);
         pSlider.setBounds(rects[1]);
         fLabel.setBounds(
@@ -728,7 +728,7 @@ void ParameterPanel::resized()
         regions[0].setTop(0);
         regions[1].setBottom(regions[2].getCentreY());
         auto header_rects = claf->splitProportionalStrip(regions[0]);
-        jassert(header_rects.size() == 8);
+        jassert(header_rects.size() == 9);
         jassert(headerLabels.size() <= header_rects.size());
         auto n = headerLabels.size();
         for (auto i = 0; i < n; ++i)

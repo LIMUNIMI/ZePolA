@@ -67,11 +67,11 @@ forceAspectRatioCentered(const juce::Rectangle<float>&, float);
 // =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
     : typeface(juce::Typeface::createSystemTypefaceFor(
-        BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
+          BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
     , boldTypeface(juce::Typeface::createSystemTypefaceFor(
           BinaryData::MuktaBold_ttf, BinaryData::MuktaBold_ttfSize))
-    , fullWidth(1200)
-    , fullHeight(790)
+    , fullWidth(1294)
+    , fullHeight(800)
     , fullHeaderHeight(40)
     , fullPanelOuterMargin(15)
     , resizeRatio(1.0f)
@@ -80,7 +80,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , groupComponentCornerSize(14.5f)
     , fullSeparatorThickness(1.0f)
     // radius, angle, frequency, type, active, gain, invert, single
-    , stripColumnProportions({90, 90, 50, 50, 50, 50, 25, 25})
+    , stripColumnProportions({90, 90, 50, 50, 50, 50, 25, 25, 10})
     , panelRowProportions({25, 450, 50, 450, 25})
     , panelProportions({510, 480, 180})
     , lastPanelProportions({396, 324})
