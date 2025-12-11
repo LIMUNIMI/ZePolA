@@ -145,6 +145,6 @@ public:
 private:
     // =========================================================================
     std::vector<std::array<double, 2>> coeffs;
-    std::vector<double> gains, angles;
+    std::vector<double> gains, angles, start_angles;
     std::vector<bool> isPole;
 };

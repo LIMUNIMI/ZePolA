@@ -215,11 +215,22 @@ double GradientAscent::operator()(
     double x, std::function<DualValue<double>(DualValue<double>)> f,
     int max_iters)
 {
-    auto x_i  = DualValue<double>::variable(x);
-    double mu = 0.0, ms = 0.0, step, g;
+    auto x_i   = DualValue<double>::variable(x);
+    auto x_max = x;
+    auto y_max = f(x_i).getValue();
+
+    DualValue<double> y(0.0, 0.0);
+    double mu = 0.0, ms = 0.0, step, g, v;
     for (int i = 0; i < max_iters; ++i)
     {
-        g  = f(x_i).getDerivative();
+        y = f(x_i);
+        v = y.getValue();
+        if (v > y_max)
+        {
+            y_max = v;
+            x_max = x_i.getValue();
+        }
+        g  = y.getDerivative();
         mu = theta * mu + theta_c * g;
         ms = theta * ms + theta_c * (g * g);
         if (ms < th) break;
@@ -227,14 +238,13 @@ double GradientAscent::operator()(
         x_i  = x_i + step;
         if (abs(step) < th) break;
     }
-    return x_i.getValue();
+    return x_max;
 }
 
 // =============================================================================
 DifferentiableDTFT::DifferentiableDTFT(const FilterElementCascade& fec)
 {
     auto n = fec.size();
-    // std::vector<double> angs;
     for (auto i = 0; i < n; ++i)
         if (fec[i].getActive())
         {
@@ -242,6 +252,7 @@ DifferentiableDTFT::DifferentiableDTFT(const FilterElementCascade& fec)
             isPole.push_back(fec[i].getType());
             gains.push_back(fec[i].getGain());
             angles.push_back(fec[i].getAngle());
+            start_angles.push_back(fec[i].getAngle());
         }
     jassert(coeffs.size() <= n);
     n = coeffs.size();
@@ -249,9 +260,19 @@ DifferentiableDTFT::DifferentiableDTFT(const FilterElementCascade& fec)
     jassert(angles.size() == n);
     jassert(gains.size() == n);
 
-    angles.push_back(0.0);
-    angles.push_back(juce::MathConstants<double>::pi);
-    jassert(angles.size() == n + 2);
+    start_angles.push_back(0.0);
+    start_angles.push_back(juce::MathConstants<double>::pi);
+    jassert(start_angles.size() == n + 2);
+    std::sort(start_angles.begin(), start_angles.end());
+    start_angles.erase(std::unique(start_angles.begin(), start_angles.end()),
+                       start_angles.end());
+    jassert(start_angles.size() <= n + 2);
+    n = start_angles.size() - 1;
+    for (auto i = 0; i < n; ++i)
+    {
+        start_angles.push_back((start_angles[i] + start_angles[i + 1]) * 0.5);
+    }
+    // std::sort(angles.begin(), angles.end());
 }
 
 // =============================================================================
@@ -324,7 +345,7 @@ std::array<double, 2> DifferentiableDTFT::peakFrequency()
 {
     double w = 0.0, h2 = 0.0;
     GradientAscent gd;
-    for (auto a : angles)
+    for (auto a : start_angles)
     {
         auto w_a
             = gd(a, std::bind(&DifferentiableDTFT::forward<DualValue<double>>,
