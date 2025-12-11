@@ -179,17 +179,23 @@ void ParameterStrip::mouseDown(const juce::MouseEvent&)
 }
 void ParameterStrip::mouseDrag(const juce::MouseEvent& e)
 {
+    if (!currentDragStart) currentDragStart = this;
+    auto* zp = dynamic_cast<ZePolAudioProcessor*>(&processor);
+
     if (auto* parent = dynamic_cast<ParameterPanel*>(getParentComponent()))
-    {
-        auto* other = parent->getStripAt(e);
-        if (currentDragStart && other && other != currentDragStart)
-        {
-            DBG("DRAG: " << currentDragStart->thisSuffix << " <-> "
-                         << other->thisSuffix);
-            currentDragStart->swap(other->thisSuffix);
-            currentDragStart = other;
-        }
-    }
+        if (auto* other = parent->getStripAt(e))
+            if (other != currentDragStart
+                && (!zp
+                    || !(zp->getParameterLocked(ACTIVE_ID_PREFIX
+                                                + currentDragStart->thisSuffix)
+                         || zp->getParameterLocked(ACTIVE_ID_PREFIX
+                                                   + other->thisSuffix))))
+            {
+                DBG("DRAG: " << currentDragStart->thisSuffix << " <-> "
+                             << other->thisSuffix);
+                currentDragStart->swap(other->thisSuffix);
+                currentDragStart = other;
+            }
 }
 void ParameterStrip::mouseUp(const juce::MouseEvent&)
 {
