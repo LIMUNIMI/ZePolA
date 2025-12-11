@@ -473,6 +473,13 @@ void ZePolAudioProcessor::swapPolesAndZeros()
 }
 void ZePolAudioProcessor::resetParameters()
 {
+    // Unlock parameters
+    for (int i = 0; i < n_elements; ++i)
+    {
+        juce::String i_str(i);
+        setParameterValue(LOCK_ID_PREFIX + i_str, 0.0f);
+    }
+    // Reset parameters
     VTSAudioProcessor::resetParameters();
     // Set gain parameters to actual 0.0
     for (int i = 0; i < n_elements; ++i)
