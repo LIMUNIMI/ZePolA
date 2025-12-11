@@ -639,63 +639,88 @@ void DesignerPanel::designFilter()
     filterParams.computeZPK();
 
     auto k_db = juce::Decibels::gainToDecibels(filterParams.zpk.gain, -600.0);
-    auto db_denom = filterParams.zpk.degree() * 2;
-    k_db /= db_denom;
-    auto n_p = filterParams.zpk.poles.size();
-    auto n_z = filterParams.zpk.zeros.size();
-    int e    = 0;
-    auto n   = processor.getNElements();
+    auto db_denom     = filterParams.zpk.degree() * 2;
+    auto k_db_portion = k_db / db_denom;
+    auto n_p          = filterParams.zpk.poles.size();
+    auto n_z          = filterParams.zpk.zeros.size();
+    auto n            = processor.getNElements();
+    int pd = 0, zd = 0;
     std::vector<int> gain_db_multipliers(n, 1);
+    std::vector<bool> designed_elements(n, false);
+
+    // Apply design to filter element
     ONLY_ON_DEBUG(if (!autoUpdate) {
         DBG("---------------------------------"
             "---------------------------------");
         DBG("Filter Design");
     })
-    for (int pi = 0, zi = 0, pd = 0, zd = 0; e < n && (pi < n_p || zi < n_z);)
+    for (int pi = 0, zi = 0, i = 0; i < n && (pi < n_p || zi < n_z);)
     {
-        ONLY_ON_DEBUG(auto prev_e = e;)
+        if (processor.getElementLocked(i))
+        {
+            i++;
+            continue;
+        }
+        ONLY_ON_DEBUG(auto prev_i = i;)
         auto next_pd
             = pd + ((pi < n_p && filterParams.zpk.single_poles[pi]) ? 1 : 2);
         if (zi < n_z && (pi >= n_p || zd <= next_pd))
         {
-            if (!filterParams.zpk.single_zeros[zi]) gain_db_multipliers[e] = 2;
-            applyFilterElement(e, filterParams.zpk.zeros[zi], false,
-                               k_db * gain_db_multipliers[e],
+            designed_elements[i] = true;
+            if (!filterParams.zpk.single_zeros[zi]) gain_db_multipliers[i] = 2;
+            applyFilterElement(i, filterParams.zpk.zeros[zi], false,
+                               k_db_portion * gain_db_multipliers[i],
                                filterParams.zpk.single_zeros[zi]);
-            zd += gain_db_multipliers[e];
+            zd += gain_db_multipliers[i];
             zi++;
-            e++;
+            i++;
         }
-        if (pi < n_p && (zi >= n_z || zd > next_pd))
+        if (i < n && pi < n_p && (zi >= n_z || zd > next_pd))
         {
-            if (!filterParams.zpk.single_poles[pi]) gain_db_multipliers[e] = 2;
-            applyFilterElement(e, filterParams.zpk.poles[pi], true,
-                               k_db * gain_db_multipliers[e],
+            designed_elements[i] = true;
+            if (!filterParams.zpk.single_poles[pi]) gain_db_multipliers[i] = 2;
+            applyFilterElement(i, filterParams.zpk.poles[pi], true,
+                               k_db_portion * gain_db_multipliers[i],
                                filterParams.zpk.single_poles[pi]);
-            pd += gain_db_multipliers[e];
+            pd += gain_db_multipliers[i];
             pi++;
-            e++;
+            i++;
         }
-        jassert(prev_e < e);
+        jassert(prev_i < i);
     }
-    for (auto i = e; i < n; ++i)
-        processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(i), false);
+    jassert(db_denom >= zd + pd);
+    ONLY_ON_DEBUG(if (db_denom > zd + pd) {
+        DBG("Filter elements overflow during design. Amount: " << db_denom - zd
+                                                                      - pd);
+    })
+
+    // Deactivate unaffected non-locked elements
+    for (auto i = 0; i < n; ++i)
+        if (!(designed_elements[i] || processor.getElementLocked(i)))
+            processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(i),
+                                        false);
+
     if (juce::PropertiesFile* pf
         = applicationProperties.getCommonSettings(true))
     {
-        if (pf->getBoolValue(AUTO_GAIN_PROPERTY_ID, false))
-        {
-            // AUTO GAIN
-            k_db -= processor.getCascadePeakGain() / db_denom;
-            ONLY_ON_DEBUG(if (!autoUpdate) {
-                DBG("FILTER DESIGNER AUTO GAIN: " << k_db);
-            })
-            for (auto i = 0; i < e; ++i)
+        // Divide for the actual weight of instantiated elements
+        k_db_portion = (k_db - processor.getCascadePeakGain()) / (zd + pd);
+
+        ONLY_ON_DEBUG(if (!autoUpdate) {
+            DBG("FILTER DESIGNER AUTO GAIN: " << k_db_portion);
+        })
+
+        // Apply weighted gain
+        for (auto i = 0; i < n; ++i)
+            if (designed_elements[i])
+            {
+                jassert(!processor.getElementLocked(i));
                 processor.setParameterValue(
                     GAIN_ID_PREFIX + juce::String(i),
-                    static_cast<float>(k_db * gain_db_multipliers[i]));
-        }
+                    static_cast<float>(k_db_portion * gain_db_multipliers[i]));
+            }
     }
+
     ONLY_ON_DEBUG(if (!autoUpdate) DBG("---------------------------------"
                                        "---------------------------------");)
 }
