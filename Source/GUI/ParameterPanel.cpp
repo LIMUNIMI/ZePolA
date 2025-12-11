@@ -87,6 +87,10 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(ACTIVE_ID_PREFIX + thisSuffix,
                                          aButton))
+    , lButtonAttachment(
+          p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
+                           juce::Button>(LOCK_ID_PREFIX + thisSuffix,
+                                         lockButton))
     , tButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(TYPE_ID_PREFIX + thisSuffix, tButton))

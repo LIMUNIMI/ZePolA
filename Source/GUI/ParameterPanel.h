@@ -126,8 +126,8 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
         mSliderAttachment, pSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
-        aButtonAttachment, tButtonAttachment, sButtonAttachment,
-        iButtonAttachment;
+        aButtonAttachment, lButtonAttachment, tButtonAttachment,
+        sButtonAttachment, iButtonAttachment;
     std::unique_ptr<DraggableLabelAttachment> gLabelAttachment,
         fLabelAttachment;
     std::unique_ptr<FrequencyLabelSampleRateListener> srListener;

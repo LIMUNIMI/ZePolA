@@ -42,7 +42,10 @@ const EnvVar<bool> ALLOW_INVERTED_POLES("ZEPOLA_ALLOW_INVERTED_POLES", false);
 
 // Plugin constants
 #define IR_PLOT_AMP_GRID                                                       \
-    {-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5}, {"", "-1", "", "0", "", "1", ""}
+    {-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5},                                    \
+    {                                                                          \
+        "", "-1", "", "0", "", "1", ""                                         \
+    }
 
 // Parameter IDs
 #define BYPASS_ID "BYPASS"
@@ -52,6 +55,7 @@ const EnvVar<bool> ALLOW_INVERTED_POLES("ZEPOLA_ALLOW_INVERTED_POLES", false);
 #define PHASE_ID_PREFIX "PHASE_"
 #define GAIN_ID_PREFIX "GAIN_"
 #define ACTIVE_ID_PREFIX "ACTIVE_"
+#define LOCK_ID_PREFIX "LOCK_"
 #define INVERTED_ID_PREFIX "INVERTED_"
 #define SINGLE_ID_PREFIX "SINGLE_"
 #define TYPE_ID_PREFIX "TYPE_"

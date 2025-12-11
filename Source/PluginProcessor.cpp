@@ -81,6 +81,9 @@ createParameterLayout(int n_elements)
         params.push_back(std::make_unique<juce::AudioParameterBool>(
             juce::ParameterID(ACTIVE_ID_PREFIX + i_str, param_idx++),
             "Active " + ip1_str, false));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            juce::ParameterID(LOCK_ID_PREFIX + i_str, param_idx++),
+            "Lock " + ip1_str, false));
     }
 
     return params;
@@ -121,6 +124,10 @@ void ZePolAudioProcessor::appendListeners()
                      new SimpleListener(
                          std::bind(&ZePolAudioProcessor::setElementActiveTh,
                                    this, i, std::placeholders::_1)));
+        pushListener(
+            LOCK_ID_PREFIX + i_str,
+            new SimpleListener(std::bind(&ZePolAudioProcessor::setElementLockTh,
+                                         this, i, std::placeholders::_1)));
         pushListener(INVERTED_ID_PREFIX + i_str,
                      new SimpleListener(
                          std::bind(&ZePolAudioProcessor::setElementInvertedTh,
@@ -139,6 +146,7 @@ void ZePolAudioProcessor::appendListeners()
 // =============================================================================
 ZePolAudioProcessor::ZePolAudioProcessor(int n)
     : VTSAudioProcessor(createParameterLayout(n), getName())
+    , locks(n, false)
     , bypassed(false)
     , noise_gen(false)
     , unsafe(juce::var(false))
@@ -319,6 +327,15 @@ void ZePolAudioProcessor::setElementActive(int i, bool v)
 void ZePolAudioProcessor::setElementActiveTh(int i, float v)
 {
     setElementActive(i, v > 0.5);
+}
+void ZePolAudioProcessor::setElementLock(int i, bool v)
+{
+    DBG("lock[" << i << "] = " << ((v) ? "true" : "false"));
+    locks[i] = v;
+}
+void ZePolAudioProcessor::setElementLockTh(int i, float v)
+{
+    setElementLock(i, v > 0.5);
 }
 static const bool dont_allow_inverted_poles = !ALLOW_INVERTED_POLES;
 void ZePolAudioProcessor::setElementInverted(int i, bool v)

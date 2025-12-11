@@ -107,6 +107,20 @@ public:
      */
     void setElementActiveTh(int i, float v);
     /**
+     * Set an element's lock state
+     *
+     * @param i Element index (zero-based)
+     * @param v New lock state
+     */
+    void setElementLock(int i, bool v);
+    /**
+     * Set an element's lock state, with a value threshold on 0.5
+     *
+     * @param i Element index (zero-based)
+     * @param v New lock state, as a float
+     */
+    void setElementLockTh(int i, float v);
+    /**
      * Set an element's magnitude as inverted
      *
      * @param i Element index (zero-based)
@@ -214,6 +228,7 @@ private:
     juce::dsp::Gain<float> gain;
 
     // =========================================================================
+    std::vector<bool> locks;
     bool bypassed, noise_gen;
     juce::Value unsafe;
     const int n_elements;
