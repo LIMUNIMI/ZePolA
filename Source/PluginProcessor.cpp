@@ -337,6 +337,26 @@ void ZePolAudioProcessor::setElementLockTh(int i, float v)
 {
     setElementLock(i, v > 0.5);
 }
+bool ZePolAudioProcessor::getElementLocked(int i) const { return locks[i]; }
+bool ZePolAudioProcessor::getParameterLocked(const juce::String& paramID) const
+{
+    // Find last '_'
+    int underscore_i = paramID.lastIndexOfChar('_');
+    if (underscore_i < 0) return false;
+    underscore_i++;
+
+    // Locks are never locked
+    if (paramID.substring(0, underscore_i) == LOCK_ID_PREFIX) return false;
+
+    // Check tail is numeric
+    const juce::String i_str = paramID.substring(underscore_i);
+    if (i_str.isEmpty() || !i_str.containsOnly("0123456789")) return false;
+
+    const int i = i_str.getIntValue();
+    if (i < 0 || i >= n_elements) return false;
+
+    return getElementLocked(i);
+}
 static const bool dont_allow_inverted_poles = !ALLOW_INVERTED_POLES;
 void ZePolAudioProcessor::setElementInverted(int i, bool v)
 {

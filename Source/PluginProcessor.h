@@ -121,6 +121,20 @@ public:
      */
     void setElementLockTh(int i, float v);
     /**
+     * Get an element's lock state
+     *
+     * @param i Element index (zero-based)
+     * @return Lock state
+     */
+    bool getElementLocked(int i) const;
+    /**
+     * Get a parameter's lock state
+     *
+     * @param paramID Parameter ID
+     * @return Lock state
+     */
+    bool getParameterLocked(const juce::String& paramID) const;
+    /**
      * Set an element's magnitude as inverted
      *
      * @param i Element index (zero-based)
