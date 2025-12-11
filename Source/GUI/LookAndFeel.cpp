@@ -80,7 +80,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , groupComponentCornerSize(14.5f)
     , fullSeparatorThickness(1.0f)
     // radius, angle, frequency, type, active, gain, invert, single, lock
-    , stripColumnProportions({90, 90, 50, 50, 50, 50, 25, 25, 15})
+    , stripColumnProportions({90, 90, 50, 50, 50, 50, 25, 25, 12})
     , panelRowProportions({25, 450, 50, 450, 25})
     , panelProportions({510, 480, 180})
     , lastPanelProportions({396, 324})
