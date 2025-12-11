@@ -256,3 +256,24 @@ private:
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ZePolAudioProcessor);
 };
+
+// =============================================================================
+/**
+ * A simple value tree state parameter change listener with boolean lock
+ */
+class LockableSimpleListener : public SimpleListener
+{
+public:
+    //==============================================================================
+    LockableSimpleListener(std::function<void(float)>, ZePolAudioProcessor&);
+    void parameterChanged(const juce::String&, float) override;
+
+private:
+    //==============================================================================
+    ZePolAudioProcessor& processor;
+    bool reverting;
+    float last;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LockableSimpleListener)
+};
