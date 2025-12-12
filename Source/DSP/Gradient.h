@@ -116,7 +116,7 @@ public:
     /** Run the gradient ascent and return the minimal argument */
     double operator()(double,
                       std::function<DualValue<double>(DualValue<double>)>,
-                      int max_iters = 1 << 7);
+                      int max_iters = 1 << 7, int early_stop = 0);
 
 private:
     // =========================================================================
@@ -145,6 +145,6 @@ public:
 private:
     // =========================================================================
     std::vector<std::array<double, 2>> coeffs;
-    std::vector<double> gains, angles;
+    std::vector<double> gains, angles, start_angles;
     std::vector<bool> isPole;
 };
