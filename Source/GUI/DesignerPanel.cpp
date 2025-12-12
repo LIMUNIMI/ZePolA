@@ -299,6 +299,8 @@ void DesignerPanel::setTypeFromCBoxId(int i)
     setSafeValueForStopbandRipple(filterParams.stopbandRippleDb);
     updateBiquadFilterShapeVisibility();
     updateAnalogFilterShapeVisibility();
+
+    autoDesignFilter();
 }
 void DesignerPanel::setAnalogShapeFromCBoxId(int i)
 {
