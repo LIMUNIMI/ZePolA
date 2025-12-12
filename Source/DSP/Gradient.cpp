@@ -213,7 +213,7 @@ GradientAscent::GradientAscent(double eta, double th, double theta)
 }
 double GradientAscent::operator()(
     double x, std::function<DualValue<double>(DualValue<double>)> f,
-    int max_iters)
+    int max_iters, int early_stop)
 {
     auto x_i   = DualValue<double>::variable(x);
     auto x_max = x;
@@ -221,14 +221,24 @@ double GradientAscent::operator()(
 
     DualValue<double> y(0.0, 0.0);
     double mu = 0.0, ms = 0.0, step, g, v;
+    int decrease_count = 0;
     for (int i = 0; i < max_iters; ++i)
     {
         y = f(x_i);
         v = y.getValue();
         if (v > y_max)
         {
-            y_max = v;
-            x_max = x_i.getValue();
+            y_max          = v;
+            x_max          = x_i.getValue();
+            decrease_count = 0;
+        }
+        else
+        {
+            decrease_count++;
+        }
+        if (early_stop && decrease_count >= early_stop)
+        {
+            break;
         }
         g  = y.getDerivative();
         mu = theta * mu + theta_c * g;
@@ -347,9 +357,10 @@ std::array<double, 2> DifferentiableDTFT::peakFrequency()
     GradientAscent gd;
     for (auto a : start_angles)
     {
-        auto w_a
-            = gd(a, std::bind(&DifferentiableDTFT::forward<DualValue<double>>,
-                              this, std::placeholders::_1));
+        auto w_a    = gd(a,
+                         std::bind(&DifferentiableDTFT::forward<DualValue<double>>,
+                                   this, std::placeholders::_1),
+                         1 << 7, 1 << 3);
         auto h2_w_a = forward(w_a);
         jassert(h2_w_a >= 0.0 || h2_w_a != h2_w_a);
         if (h2_w_a > h2)
