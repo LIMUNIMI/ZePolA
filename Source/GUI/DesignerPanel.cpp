@@ -706,7 +706,10 @@ void DesignerPanel::designFilter()
         = applicationProperties.getCommonSettings(true))
     {
         // Divide for the actual weight of instantiated elements
-        k_db_portion = (k_db - processor.getCascadePeakGain()) / (zd + pd);
+        k_db_portion = (k_db * static_cast<double>(zd + pd)
+                            / static_cast<double>(db_denom)
+                        - processor.getCascadePeakGain())
+                       / static_cast<double>(zd + pd);
 
         ONLY_ON_DEBUG(if (!autoUpdate) {
             DBG("FILTER DESIGNER AUTO GAIN: " << k_db_portion);
