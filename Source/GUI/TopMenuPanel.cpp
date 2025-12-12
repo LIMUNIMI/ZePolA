@@ -349,7 +349,7 @@ void TopMenuPanel::resized()
             jassert(parameterPanelRegions.size() == 5);
             auto paramaterStripRegions
                 = claf->splitProportionalStrip(parameterPanelRegions[0]);
-            jassert(paramaterStripRegions.size() == 8);
+            jassert(paramaterStripRegions.size() == 9);
             autoGainButton->setBounds(
                 paramaterStripRegions[4].withY(0).withHeight(getHeight()));
             autoGainLabel.setBounds(paramaterStripRegions[3]

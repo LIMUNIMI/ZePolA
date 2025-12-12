@@ -107,6 +107,34 @@ public:
      */
     void setElementActiveTh(int i, float v);
     /**
+     * Set an element's lock state
+     *
+     * @param i Element index (zero-based)
+     * @param v New lock state
+     */
+    void setElementLock(int i, bool v);
+    /**
+     * Set an element's lock state, with a value threshold on 0.5
+     *
+     * @param i Element index (zero-based)
+     * @param v New lock state, as a float
+     */
+    void setElementLockTh(int i, float v);
+    /**
+     * Get an element's lock state
+     *
+     * @param i Element index (zero-based)
+     * @return Lock state
+     */
+    bool getElementLocked(int i) const;
+    /**
+     * Get a parameter's lock state
+     *
+     * @param paramID Parameter ID
+     * @return Lock state
+     */
+    bool getParameterLocked(const juce::String& paramID) const;
+    /**
      * Set an element's magnitude as inverted
      *
      * @param i Element index (zero-based)
@@ -214,6 +242,7 @@ private:
     juce::dsp::Gain<float> gain;
 
     // =========================================================================
+    std::vector<bool> locks;
     bool bypassed, noise_gen;
     juce::Value unsafe;
     const int n_elements;
@@ -226,4 +255,25 @@ private:
 
     // =========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ZePolAudioProcessor);
+};
+
+// =============================================================================
+/**
+ * A simple value tree state parameter change listener with boolean lock
+ */
+class LockableSimpleListener : public SimpleListener
+{
+public:
+    //==============================================================================
+    LockableSimpleListener(std::function<void(float)>, ZePolAudioProcessor&);
+    void parameterChanged(const juce::String&, float) override;
+
+private:
+    //==============================================================================
+    ZePolAudioProcessor& processor;
+    bool reverting;
+    float last;
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LockableSimpleListener)
 };

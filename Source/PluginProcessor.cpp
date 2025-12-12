@@ -81,6 +81,9 @@ createParameterLayout(int n_elements)
         params.push_back(std::make_unique<juce::AudioParameterBool>(
             juce::ParameterID(ACTIVE_ID_PREFIX + i_str, param_idx++),
             "Active " + ip1_str, false));
+        params.push_back(std::make_unique<juce::AudioParameterBool>(
+            juce::ParameterID(LOCK_ID_PREFIX + i_str, param_idx++),
+            "Lock " + ip1_str, false));
     }
 
     return params;
@@ -100,45 +103,58 @@ void ZePolAudioProcessor::appendListeners()
     pushListener(GAIN_ID, new SimpleListener(std::bind(
                               &juce::dsp::Gain<float>::setGainDecibels, &gain,
                               std::placeholders::_1)));
+
     // Listeners for element parameters
     for (int i = 0; i < n_elements; ++i)
     {
         auto i_str = juce::String(i);
 
         pushListener(MAGNITUDE_ID_PREFIX + i_str,
-                     new SimpleListener(
+                     new LockableSimpleListener(
                          std::bind(&ZePolAudioProcessor::setElementMagnitude,
-                                   this, i, std::placeholders::_1)));
-        pushListener(
-            PHASE_ID_PREFIX + i_str,
-            new SimpleListener(std::bind(&ZePolAudioProcessor::setElementPhase,
-                                         this, i, std::placeholders::_1)));
-        pushListener(
-            GAIN_ID_PREFIX + i_str,
-            new SimpleListener(std::bind(&ZePolAudioProcessor::setElementGainDb,
-                                         this, i, std::placeholders::_1)));
+                                   this, i, std::placeholders::_1),
+                         *this));
+        pushListener(PHASE_ID_PREFIX + i_str,
+                     new LockableSimpleListener(
+                         std::bind(&ZePolAudioProcessor::setElementPhase, this,
+                                   i, std::placeholders::_1),
+                         *this));
+        pushListener(GAIN_ID_PREFIX + i_str,
+                     new LockableSimpleListener(
+                         std::bind(&ZePolAudioProcessor::setElementGainDb, this,
+                                   i, std::placeholders::_1),
+                         *this));
         pushListener(ACTIVE_ID_PREFIX + i_str,
-                     new SimpleListener(
+                     new LockableSimpleListener(
                          std::bind(&ZePolAudioProcessor::setElementActiveTh,
-                                   this, i, std::placeholders::_1)));
-        pushListener(INVERTED_ID_PREFIX + i_str,
-                     new SimpleListener(
-                         std::bind(&ZePolAudioProcessor::setElementInvertedTh,
-                                   this, i, std::placeholders::_1)));
-        pushListener(SINGLE_ID_PREFIX + i_str,
-                     new SimpleListener(
-                         std::bind(&ZePolAudioProcessor::setElementSingleTh,
-                                   this, i, std::placeholders::_1)));
+                                   this, i, std::placeholders::_1),
+                         *this));
         pushListener(
-            TYPE_ID_PREFIX + i_str,
-            new SimpleListener(std::bind(&ZePolAudioProcessor::setElementTypeTh,
+            LOCK_ID_PREFIX + i_str,
+            new SimpleListener(std::bind(&ZePolAudioProcessor::setElementLockTh,
                                          this, i, std::placeholders::_1)));
+        pushListener(INVERTED_ID_PREFIX + i_str,
+                     new LockableSimpleListener(
+                         std::bind(&ZePolAudioProcessor::setElementInvertedTh,
+                                   this, i, std::placeholders::_1),
+                         *this));
+        pushListener(SINGLE_ID_PREFIX + i_str,
+                     new LockableSimpleListener(
+                         std::bind(&ZePolAudioProcessor::setElementSingleTh,
+                                   this, i, std::placeholders::_1),
+                         *this));
+        pushListener(TYPE_ID_PREFIX + i_str,
+                     new LockableSimpleListener(
+                         std::bind(&ZePolAudioProcessor::setElementTypeTh, this,
+                                   i, std::placeholders::_1),
+                         *this));
     }
 }
 
 // =============================================================================
 ZePolAudioProcessor::ZePolAudioProcessor(int n)
     : VTSAudioProcessor(createParameterLayout(n), getName())
+    , locks(n, false)
     , bypassed(false)
     , noise_gen(false)
     , unsafe(juce::var(false))
@@ -320,6 +336,35 @@ void ZePolAudioProcessor::setElementActiveTh(int i, float v)
 {
     setElementActive(i, v > 0.5);
 }
+void ZePolAudioProcessor::setElementLock(int i, bool v)
+{
+    DBG("lock[" << i << "] = " << ((v) ? "true" : "false"));
+    locks[i] = v;
+}
+void ZePolAudioProcessor::setElementLockTh(int i, float v)
+{
+    setElementLock(i, v > 0.5);
+}
+bool ZePolAudioProcessor::getElementLocked(int i) const { return locks[i]; }
+bool ZePolAudioProcessor::getParameterLocked(const juce::String& paramID) const
+{
+    // Find last '_'
+    int underscore_i = paramID.lastIndexOfChar('_');
+    if (underscore_i < 0) return false;
+    underscore_i++;
+
+    // Locks are never locked
+    if (paramID.substring(0, underscore_i) == LOCK_ID_PREFIX) return false;
+
+    // Check tail is numeric
+    const juce::String i_str = paramID.substring(underscore_i);
+    if (i_str.isEmpty() || !i_str.containsOnly("0123456789")) return false;
+
+    const int i = i_str.getIntValue();
+    if (i < 0 || i >= n_elements) return false;
+
+    return getElementLocked(i);
+}
 static const bool dont_allow_inverted_poles = !ALLOW_INVERTED_POLES;
 void ZePolAudioProcessor::setElementInverted(int i, bool v)
 {
@@ -428,6 +473,13 @@ void ZePolAudioProcessor::swapPolesAndZeros()
 }
 void ZePolAudioProcessor::resetParameters()
 {
+    // Unlock parameters
+    for (int i = 0; i < n_elements; ++i)
+    {
+        juce::String i_str(i);
+        setParameterValue(LOCK_ID_PREFIX + i_str, 0.0f);
+    }
+    // Reset parameters
     VTSAudioProcessor::resetParameters();
     // Set gain parameters to actual 0.0
     for (int i = 0; i < n_elements; ++i)
@@ -436,6 +488,29 @@ void ZePolAudioProcessor::resetParameters()
         setParameterValue(GAIN_ID_PREFIX + i_str, 0.0f);
     }
     setParameterValue(GAIN_ID, 0.0f);
+}
+
+// =============================================================================
+LockableSimpleListener::LockableSimpleListener(std::function<void(float)> sfunc,
+                                               ZePolAudioProcessor& p)
+    : SimpleListener(sfunc), processor(p), reverting(false), last(0.0f)
+{
+}
+void LockableSimpleListener::parameterChanged(const juce::String& paramId,
+                                              float v)
+{
+    if (reverting) return;
+    if (processor.getParameterLocked(paramId))
+    {
+        // Revert param value in VTS
+        reverting = true;
+        if (auto* param = processor.getParameterById(paramId))
+            param->setValueNotifyingHost(param->convertTo0to1(last));
+        reverting = false;
+        return;
+    }
+    last = v;
+    SimpleListener::parameterChanged(paramId, v);
 }
 
 // =============================================================================

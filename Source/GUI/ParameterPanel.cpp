@@ -87,6 +87,10 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(ACTIVE_ID_PREFIX + thisSuffix,
                                          aButton))
+    , lButtonAttachment(
+          p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
+                           juce::Button>(LOCK_ID_PREFIX + thisSuffix,
+                                         lockButton))
     , tButtonAttachment(
           p.makeAttachment<juce::AudioProcessorValueTreeState::ButtonAttachment,
                            juce::Button>(TYPE_ID_PREFIX + thisSuffix, tButton))
@@ -118,6 +122,7 @@ ParameterStrip::ParameterStrip(VTSAudioProcessor& p, int i)
     addAndMakeVisible(gLabel);
     addAndMakeVisible(iButton);
     addAndMakeVisible(sButton);
+    addAndMakeVisible(lockButton);
     setInterceptsMouseClicks(true, true);
 }
 ParameterStrip::~ParameterStrip()
@@ -174,17 +179,23 @@ void ParameterStrip::mouseDown(const juce::MouseEvent&)
 }
 void ParameterStrip::mouseDrag(const juce::MouseEvent& e)
 {
+    if (!currentDragStart) currentDragStart = this;
+    auto* zp = dynamic_cast<ZePolAudioProcessor*>(&processor);
+
     if (auto* parent = dynamic_cast<ParameterPanel*>(getParentComponent()))
-    {
-        auto* other = parent->getStripAt(e);
-        if (currentDragStart && other && other != currentDragStart)
-        {
-            DBG("DRAG: " << currentDragStart->thisSuffix << " <-> "
-                         << other->thisSuffix);
-            currentDragStart->swap(other->thisSuffix);
-            currentDragStart = other;
-        }
-    }
+        if (auto* other = parent->getStripAt(e))
+            if (other != currentDragStart
+                && (!zp
+                    || !(zp->getParameterLocked(ACTIVE_ID_PREFIX
+                                                + currentDragStart->thisSuffix)
+                         || zp->getParameterLocked(ACTIVE_ID_PREFIX
+                                                   + other->thisSuffix))))
+            {
+                DBG("DRAG: " << currentDragStart->thisSuffix << " <-> "
+                             << other->thisSuffix);
+                currentDragStart->swap(other->thisSuffix);
+                currentDragStart = other;
+            }
 }
 void ParameterStrip::mouseUp(const juce::MouseEvent&)
 {
@@ -198,7 +209,7 @@ void ParameterStrip::resized()
     if (auto claf = dynamic_cast<CustomLookAndFeel*>(&getLookAndFeel()))
     {
         auto rects = claf->splitProportionalStrip(getLocalBounds());
-        jassert(rects.size() == 8);
+        jassert(rects.size() == 9);
         mSlider.setBounds(rects[0]);
         pSlider.setBounds(rects[1]);
         fLabel.setBounds(
@@ -214,8 +225,11 @@ void ParameterStrip::resized()
 
         rects[6].reduce(rects[6].getWidth() / 5, rects[6].getHeight() / 5);
         rects[7].reduce(rects[7].getWidth() / 5, rects[7].getHeight() / 5);
+        rects[8].reduce(rects[8].getWidth() / 5, rects[8].getHeight() / 5);
         iButton.setBounds(forceAspectRatioCentered(rects[6], 1.0));
         sButton.setBounds(forceAspectRatioCentered(rects[7], 1.0));
+        lockButton.setBounds(forceAspectRatioCentered(
+            rects[8], 2.0f / (1.0f + std::sqrt(5.0f))));
 
         claf->resizeToggleButton(tButton);
         claf->resizeToggleButton(aButton);
@@ -728,7 +742,7 @@ void ParameterPanel::resized()
         regions[0].setTop(0);
         regions[1].setBottom(regions[2].getCentreY());
         auto header_rects = claf->splitProportionalStrip(regions[0]);
-        jassert(header_rects.size() == 8);
+        jassert(header_rects.size() == 9);
         jassert(headerLabels.size() <= header_rects.size());
         auto n = headerLabels.size();
         for (auto i = 0; i < n; ++i)

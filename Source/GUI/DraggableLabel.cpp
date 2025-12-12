@@ -111,8 +111,9 @@ void DraggableLabelListener::labelTextChanged(juce::Label* label)
     float f = param->getNormalisableRange().snapToLegalValue(
         label->getText().getFloatValue() / scale);
     Parameters::setParameterValue(param, f);
-    setTextFromFloatDynamicCast(label, f * scale,
-                                juce::NotificationType::dontSendNotification);
+    setTextFromFloatDynamicCast(
+        label, param->convertFrom0to1(param->getValue()) * scale,
+        juce::NotificationType::dontSendNotification);
 }
 
 // =============================================================================

@@ -67,11 +67,11 @@ forceAspectRatioCentered(const juce::Rectangle<float>&, float);
 // =============================================================================
 CustomLookAndFeel::CustomLookAndFeel()
     : typeface(juce::Typeface::createSystemTypefaceFor(
-        BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
+          BinaryData::MuktaSemiBold_ttf, BinaryData::MuktaSemiBold_ttfSize))
     , boldTypeface(juce::Typeface::createSystemTypefaceFor(
           BinaryData::MuktaBold_ttf, BinaryData::MuktaBold_ttfSize))
-    , fullWidth(1200)
-    , fullHeight(790)
+    , fullWidth(1294)
+    , fullHeight(800)
     , fullHeaderHeight(40)
     , fullPanelOuterMargin(15)
     , resizeRatio(1.0f)
@@ -79,8 +79,8 @@ CustomLookAndFeel::CustomLookAndFeel()
     , groupComponentThickness(1.5f)
     , groupComponentCornerSize(14.5f)
     , fullSeparatorThickness(1.0f)
-    // radius, angle, frequency, type, active, gain, invert, single
-    , stripColumnProportions({90, 90, 50, 50, 50, 50, 25, 25})
+    // radius, angle, frequency, type, active, gain, invert, single, lock
+    , stripColumnProportions({90, 90, 50, 50, 50, 50, 25, 25, 12})
     , panelRowProportions({25, 450, 50, 450, 25})
     , panelProportions({510, 480, 180})
     , lastPanelProportions({396, 324})
@@ -103,6 +103,7 @@ CustomLookAndFeel::CustomLookAndFeel()
     , fullLabelledButtonOutline(1.25f)
     , relativeButtonRadius(0.3f)
     , relativeLabelledButtonRadius(0.5f)
+    , relativeLockRadius(0.2f)
     , n_x_ticks(9)
     , fullPlotComponentCornerSize(6.0f)
     , fullPlotStrokeThickness(1.5f)
@@ -796,6 +797,65 @@ void CustomLookAndFeel::_drawCheckbox(juce::Graphics& g,
         g.setColour(outlineColour);
     g.drawEllipse(led_rect, t);
 }
+
+void CustomLookAndFeel::_drawLockToggleButton(
+    juce::Graphics& g, juce::ToggleButton& button,
+    bool /* shouldDrawButtonAsHighlighted */, bool /* shouldDrawButtonAsDown */)
+{
+    const bool on   = button.getToggleState();
+    auto iconColour = button.findColour(on ? OnOffButton_ledOnColourId
+                                           : OnOffButton_ledOffColourId);
+
+    // Always active!
+    // if (!ParameterStrip::parentComponentIsActive(button))
+    // {
+    //     iconColour    = iconColour.brighter(inactiveBrightness);
+    //     outlineColour = outlineColour.brighter(inactiveBrightness);
+    //     shadowColour  = shadowColour.brighter(inactiveBrightness);
+    // }
+
+    auto bounds = button.getLocalBounds().toFloat();
+
+    juce::Rectangle<float> icon(bounds);
+
+    // Lock body
+    const float bodyHeight = icon.getHeight() * 0.5f;
+    const float bodyWidth  = icon.getWidth();
+    juce::Rectangle<float> body(icon.getCentreX() - bodyWidth * 0.5f,
+                                icon.getBottom() - bodyHeight, bodyWidth,
+                                bodyHeight);
+    const float bodyCorner = relativeLockRadius * bodyHeight;
+
+    // Lock shackle
+    const float shackleThickness = bodyWidth * 0.15f;
+    juce::Rectangle<float> arcRect(
+        icon.getX() + shackleThickness, icon.getY() + shackleThickness,
+        icon.getWidth() - 2.0f * shackleThickness,
+        (icon.getHeight() - bodyHeight) / 3.0f - shackleThickness);
+    if (on)
+    {
+        // Close lock but keep vertically centered
+        arcRect.setY(arcRect.getY() + bodyHeight * 0.125f);
+        body.setY(body.getY() - bodyHeight * 0.125f);
+    }
+
+    g.setColour(iconColour);
+    g.fillRoundedRectangle(body, bodyCorner);
+
+    juce::Path shackle;
+    shackle.startNewSubPath(arcRect.getX(), body.getY());
+    shackle.addCentredArc(arcRect.getCentreX(), arcRect.getBottom(),
+                          arcRect.getWidth() * 0.5f, arcRect.getHeight(), 0.0f,
+                          -juce::MathConstants<float>::halfPi,
+                          juce::MathConstants<float>::halfPi, false);
+    shackle.lineTo(arcRect.getRight(), (on) ? body.getY()
+                                            : (body.getY() - arcRect.getHeight()
+                                               - shackleThickness));
+    g.strokePath(shackle, juce::PathStrokeType(shackleThickness,
+                                               juce::PathStrokeType::curved,
+                                               juce::PathStrokeType::rounded));
+}
+
 void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
                                          juce::ToggleButton& button,
                                          bool shouldDrawButtonAsHighlighted,
@@ -805,6 +865,11 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,
     {
         _drawCheckbox(g, button, shouldDrawButtonAsHighlighted,
                       shouldDrawButtonAsDown);
+    }
+    else if (dynamic_cast<LockToggleButton*>(&button))
+    {
+        _drawLockToggleButton(g, button, shouldDrawButtonAsHighlighted,
+                              shouldDrawButtonAsDown);
     }
     else
     {

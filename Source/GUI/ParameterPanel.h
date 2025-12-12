@@ -116,6 +116,7 @@ private:
     ParameterSlider mSlider, pSlider;
     juce::ToggleButton aButton;
     ToggleButtonCheckbox iButton, sButton;
+    LockToggleButton lockButton;
     LabelledToggleButton tButton;
     DraggableLabel gLabel, fLabel;
     VTSAudioProcessor& processor;
@@ -125,8 +126,8 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
         mSliderAttachment, pSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
-        aButtonAttachment, tButtonAttachment, sButtonAttachment,
-        iButtonAttachment;
+        aButtonAttachment, lButtonAttachment, tButtonAttachment,
+        sButtonAttachment, iButtonAttachment;
     std::unique_ptr<DraggableLabelAttachment> gLabelAttachment,
         fLabelAttachment;
     std::unique_ptr<FrequencyLabelSampleRateListener> srListener;
