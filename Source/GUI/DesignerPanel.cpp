@@ -110,6 +110,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     , filterParams(p.getSampleRate())
     , autoUpdate(false)
     , crossUpdateShape(false)
+    , autoGainOn(false)
     , applicationProperties(properties)
 {
     addAndMakeVisible(panelLabel);
@@ -212,6 +213,11 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
         properties, "qualityFilterDesign", qualitySlider));
     gainDBSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "gainDBFilterDesign", gainDBSlider));
+    if (juce::PropertiesFile* pf = properties.getCommonSettings(true))
+    {
+        pf->addChangeListener(this);
+        changeListenerCallback(pf);
+    }
 
     updateBiquadFilterShapeVisibility();
     updateAnalogFilterShapeVisibility();
@@ -237,6 +243,11 @@ DesignerPanel::~DesignerPanel()
     qualitySlider->removeListener(&qualitySliderListener);
     gainDBSlider->removeListener(&gainDBSliderListener);
     autoButton->removeListener(&autoButtonListener);
+    if (juce::PropertiesFile* pf
+        = applicationProperties.getCommonSettings(true))
+    {
+        pf->removeChangeListener(this);
+    }
 }
 
 // =============================================================================
@@ -702,8 +713,7 @@ void DesignerPanel::designFilter()
             processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(i),
                                         false);
 
-    if (juce::PropertiesFile* pf
-        = applicationProperties.getCommonSettings(true))
+    if (autoGainOn)
     {
         // Divide for the actual weight of instantiated elements
         k_db_portion = (k_db * static_cast<double>(zd + pd)
@@ -762,6 +772,11 @@ void DesignerPanel::sampleRateChangedCallback(double sr)
     cutoff2Slider->setNormalisableRange(nr);
     filterParams.sr = sr;
     autoDesignFilter();
+}
+void DesignerPanel::changeListenerCallback(juce::ChangeBroadcaster* source)
+{
+    if (auto pf = dynamic_cast<juce::PropertiesFile*>(source))
+        autoGainOn = pf->getBoolValue(AUTO_GAIN_PROPERTY_ID, false);
 }
 
 // =============================================================================
