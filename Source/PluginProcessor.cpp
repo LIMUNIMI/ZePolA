@@ -418,9 +418,13 @@ double ZePolAudioProcessor::getCascadePeakGain() const
     return juce::Decibels::gainToDecibels(dDTFT.peakFrequency()[1], -300.0)
            / 2.0;
 }
+double ZePolAudioProcessor::getElementGain(int i) const
+{
+    return multiChannelCascade[0][i].getGainDb();
+}
 double ZePolAudioProcessor::getElementAutoGain(int i) const
 {
-    return multiChannelCascade[0][i].getGainDb() - getCascadePeakGain();
+    return getElementGain(i) - getCascadePeakGain();
 }
 void ZePolAudioProcessor::ir(std::vector<double>& output) const
 {

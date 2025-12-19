@@ -110,6 +110,7 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
     , filterParams(p.getSampleRate())
     , autoUpdate(false)
     , crossUpdateShape(false)
+    , autoGainOn(false)
     , applicationProperties(properties)
 {
     addAndMakeVisible(panelLabel);
@@ -212,6 +213,11 @@ DesignerPanel::DesignerPanel(ZePolAudioProcessor& p,
         properties, "qualityFilterDesign", qualitySlider));
     gainDBSliderAttachment.reset(new ApplicationPropertiesSliderAttachment(
         properties, "gainDBFilterDesign", gainDBSlider));
+    if (juce::PropertiesFile* pf = properties.getCommonSettings(true))
+    {
+        pf->addChangeListener(this);
+        changeListenerCallback(pf);
+    }
 
     updateBiquadFilterShapeVisibility();
     updateAnalogFilterShapeVisibility();
@@ -237,6 +243,11 @@ DesignerPanel::~DesignerPanel()
     qualitySlider->removeListener(&qualitySliderListener);
     gainDBSlider->removeListener(&gainDBSliderListener);
     autoButton->removeListener(&autoButtonListener);
+    if (juce::PropertiesFile* pf
+        = applicationProperties.getCommonSettings(true))
+    {
+        pf->removeChangeListener(this);
+    }
 }
 
 // =============================================================================
@@ -656,39 +667,28 @@ void DesignerPanel::designFilter()
             "---------------------------------");
         DBG("Filter Design");
     })
-    for (int pi = 0, zi = 0, i = 0; i < n && (pi < n_p || zi < n_z);)
+    for (int pi = 0, zi = 0, i = 0; i < n && (pi < n_p || zi < n_z); ++i)
     {
-        if (processor.getElementLocked(i))
+        if (processor.getElementLocked(i)) continue;
+        designed_elements[i] = true;
+        if (zi < n_z && (pi >= n_p || (1 + zd) / 2 <= (1 + pd) / 2))
         {
-            i++;
-            continue;
-        }
-        ONLY_ON_DEBUG(auto prev_i = i;)
-        auto next_pd
-            = pd + ((pi < n_p && filterParams.zpk.single_poles[pi]) ? 1 : 2);
-        if (zi < n_z && (pi >= n_p || zd <= next_pd))
-        {
-            designed_elements[i] = true;
             if (!filterParams.zpk.single_zeros[zi]) gain_db_multipliers[i] = 2;
             applyFilterElement(i, filterParams.zpk.zeros[zi], false,
                                k_db_portion * gain_db_multipliers[i],
                                filterParams.zpk.single_zeros[zi]);
             zd += gain_db_multipliers[i];
             zi++;
-            i++;
         }
-        if (i < n && pi < n_p && (zi >= n_z || zd > next_pd))
+        else
         {
-            designed_elements[i] = true;
             if (!filterParams.zpk.single_poles[pi]) gain_db_multipliers[i] = 2;
             applyFilterElement(i, filterParams.zpk.poles[pi], true,
                                k_db_portion * gain_db_multipliers[i],
                                filterParams.zpk.single_poles[pi]);
             pd += gain_db_multipliers[i];
             pi++;
-            i++;
         }
-        jassert(prev_i < i);
     }
     jassert(db_denom >= zd + pd);
     ONLY_ON_DEBUG(if (db_denom > zd + pd) {
@@ -702,14 +702,20 @@ void DesignerPanel::designFilter()
             processor.setParameterValue(ACTIVE_ID_PREFIX + juce::String(i),
                                         false);
 
-    if (juce::PropertiesFile* pf
-        = applicationProperties.getCommonSettings(true))
+    if (autoGainOn)
     {
-        // Divide for the actual weight of instantiated elements
-        k_db_portion = (k_db * static_cast<double>(zd + pd)
-                            / static_cast<double>(db_denom)
-                        - processor.getCascadePeakGain())
-                       / static_cast<double>(zd + pd);
+        // Get the currently applied gain parameters and peak DTFT gain
+        double peak_gain   = processor.getCascadePeakGain();
+        double actual_gain = 0.0;
+
+        for (auto i = 0; i < n; ++i)
+            if (designed_elements[i])
+            {
+                jassert(!processor.getElementLocked(i));
+                actual_gain += processor.getElementGain(i);
+            }
+
+        k_db_portion = (actual_gain - peak_gain) / static_cast<double>(zd + pd);
 
         ONLY_ON_DEBUG(if (!autoUpdate) {
             DBG("FILTER DESIGNER AUTO GAIN: " << k_db_portion);
@@ -762,6 +768,11 @@ void DesignerPanel::sampleRateChangedCallback(double sr)
     cutoff2Slider->setNormalisableRange(nr);
     filterParams.sr = sr;
     autoDesignFilter();
+}
+void DesignerPanel::changeListenerCallback(juce::ChangeBroadcaster* source)
+{
+    if (auto pf = dynamic_cast<juce::PropertiesFile*>(source))
+        autoGainOn = pf->getBoolValue(AUTO_GAIN_PROPERTY_ID, false);
 }
 
 // =============================================================================

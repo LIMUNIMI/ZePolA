@@ -493,6 +493,7 @@ public:
 
 private:
     // =========================================================================
+    ZePolAudioProcessor& processor;
     std::vector<std::unique_ptr<ZPoint::MultiAttachment>> point_attachments;
     std::vector<std::unique_ptr<ZPoint>> points;
     std::vector<std::unique_ptr<ZPoint>> conj_points;

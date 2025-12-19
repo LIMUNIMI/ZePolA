@@ -34,7 +34,9 @@
 
 // =============================================================================
 /** Filter design panel  */
-class DesignerPanel : public juce::GroupComponent, public SampleRateListener
+class DesignerPanel : public juce::GroupComponent,
+                      public SampleRateListener,
+                      public juce::ChangeListener
 {
 public:
     // =========================================================================
@@ -124,6 +126,7 @@ public:
 
     // =========================================================================
     virtual void sampleRateChangedCallback(double) override;
+    virtual void changeListenerCallback(juce::ChangeBroadcaster*) override;
     void resized() override;
 
 private:
@@ -182,7 +185,7 @@ private:
     std::shared_ptr<juce::ToggleButton> autoButton;
     juce::TextButton applyButton;
     FilterParameters filterParams;
-    bool autoUpdate, crossUpdateShape;
+    bool autoUpdate, crossUpdateShape, autoGainOn;
     juce::ApplicationProperties& applicationProperties;
 
     // =========================================================================
