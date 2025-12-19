@@ -715,11 +715,18 @@ void DesignerPanel::designFilter()
 
     if (autoGainOn)
     {
-        // Divide for the actual weight of instantiated elements
-        k_db_portion = (k_db * static_cast<double>(zd + pd)
-                            / static_cast<double>(db_denom)
-                        - processor.getCascadePeakGain())
-                       / static_cast<double>(zd + pd);
+        // Get the currently applied gain parameters and peak DTFT gain
+        double peak_gain   = processor.getCascadePeakGain();
+        double actual_gain = 0.0;
+
+        for (auto i = 0; i < n; ++i)
+            if (designed_elements[i])
+            {
+                jassert(!processor.getElementLocked(i));
+                actual_gain += processor.getElementGain(i);
+            }
+
+        k_db_portion = (actual_gain - peak_gain) / static_cast<double>(zd + pd);
 
         ONLY_ON_DEBUG(if (!autoUpdate) {
             DBG("FILTER DESIGNER AUTO GAIN: " << k_db_portion);

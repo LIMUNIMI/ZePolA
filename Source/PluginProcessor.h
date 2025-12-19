@@ -186,6 +186,8 @@ public:
     std::vector<std::array<double, 8>> getCoefficients() const;
     /** Get the peak gain value for the cascade (in dB) */
     double getCascadePeakGain() const;
+    /** Get the gain parameter for the specified element */
+    double getElementGain(int) const;
     /** Get the auto gain value for the specified element */
     double getElementAutoGain(int) const;
     /** Get the (truncated) IR of the filter */
