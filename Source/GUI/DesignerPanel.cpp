@@ -667,39 +667,28 @@ void DesignerPanel::designFilter()
             "---------------------------------");
         DBG("Filter Design");
     })
-    for (int pi = 0, zi = 0, i = 0; i < n && (pi < n_p || zi < n_z);)
+    for (int pi = 0, zi = 0, i = 0; i < n && (pi < n_p || zi < n_z); ++i)
     {
-        if (processor.getElementLocked(i))
+        if (processor.getElementLocked(i)) continue;
+        designed_elements[i] = true;
+        if (zi < n_z && (pi >= n_p || (1 + zd) / 2 <= (1 + pd) / 2))
         {
-            i++;
-            continue;
-        }
-        ONLY_ON_DEBUG(auto prev_i = i;)
-        auto next_pd
-            = pd + ((pi < n_p && filterParams.zpk.single_poles[pi]) ? 1 : 2);
-        if (zi < n_z && (pi >= n_p || zd <= next_pd))
-        {
-            designed_elements[i] = true;
             if (!filterParams.zpk.single_zeros[zi]) gain_db_multipliers[i] = 2;
             applyFilterElement(i, filterParams.zpk.zeros[zi], false,
                                k_db_portion * gain_db_multipliers[i],
                                filterParams.zpk.single_zeros[zi]);
             zd += gain_db_multipliers[i];
             zi++;
-            i++;
         }
-        if (i < n && pi < n_p && (zi >= n_z || zd > next_pd))
+        else
         {
-            designed_elements[i] = true;
             if (!filterParams.zpk.single_poles[pi]) gain_db_multipliers[i] = 2;
             applyFilterElement(i, filterParams.zpk.poles[pi], true,
                                k_db_portion * gain_db_multipliers[i],
                                filterParams.zpk.single_poles[pi]);
             pd += gain_db_multipliers[i];
             pi++;
-            i++;
         }
-        jassert(prev_i < i);
     }
     jassert(db_denom >= zd + pd);
     ONLY_ON_DEBUG(if (db_denom > zd + pd) {
