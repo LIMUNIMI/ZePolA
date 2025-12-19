@@ -552,7 +552,8 @@ void ZPoint::mouseDrag(const juce::MouseEvent& event)
 GaussianPlanePanel::LookAndFeelMethods::~LookAndFeelMethods() {}
 
 // =============================================================================
-GaussianPlanePanel::GaussianPlanePanel(ZePolAudioProcessor& p) : radius(1.05f)
+GaussianPlanePanel::GaussianPlanePanel(ZePolAudioProcessor& p)
+    : processor(p), radius(1.05f)
 {
     auto n = p.getNElements();
     for (auto i = 0; i < n; ++i)
@@ -604,7 +605,7 @@ void GaussianPlanePanel::mouseDown(const juce::MouseEvent& e)
             auto i_min  = n;
             float d_min = std::numeric_limits<float>::infinity(), d;
             for (auto i = 0; i < n; ++i)
-                if (!points[i]->isShowing())
+                if (!processor.getElementLocked(i) && !points[i]->isShowing())
                 {
                     juce::Point p(
                         points[i]->getX() + points[i]->getWidth() * 0.5f,
